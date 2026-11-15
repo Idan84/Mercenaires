@@ -783,15 +783,19 @@ function missionFatiguePercent(){
   return Math.round((Number(row?.valeur)||0.2)*100);
 }
 
+// Le choix de l'escouade (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait » ; puis « Oui, vas-y avec la
+// maquette de Chatty ») : la mission en grand ; à gauche, les mercenaires au camp (une recherche, les tags — « Tous »,
+// puis « comme premier tag, celui de la mission ! », les rôles, « Autres rôles » —, la galerie et ses flèches : « la
+// scroll bar : je ferais bien un bouton js pour descendre ») ; à droite, l'escouade (le compte, la croix pour retirer, les
+// fatigués, les primes, « Partir demain »). Seuls ceux qui peuvent partir sont dans la galerie : « tous ceux qui peuvent
+// pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là bien entendu » ; pas de picto
+// de combat (« on va le virer / refaire »). Un clic sur le portrait l'ajoute, sur le nom ouvre la fiche complète.
 // Mission Test : exactement 3 personnages. Contrat de la Taverne (doc 17) : de 1 à 20 mercenaires, au choix du joueur,
 // avec le coût des primes s'ils reviennent tous.
 function openMissionSelection(contract=null){
   // Garde du corps (Idan, 2026-10-25) : exactement le nombre demandé, du niveau de réputation demandé.
   if(contract&&contract.kind==="bodyguard") return openBodyguardSelection(contract);
-  game.missionSelect=contract&&typeof contract==="object"&&contract.camp?{contract,min:1,max:20}:{contract:null,min:3,max:3};
-  const {min,max}=game.missionSelect;
-  $("mission-select-eyebrow").textContent=game.missionSelect.contract?"Contrat · "+game.missionSelect.contract.name:"Mission Test";
-  $("mission-select-title").textContent=game.missionSelect.contract?"Choisir l’escouade ("+min+" à "+max+")":"Choisir 3 mercenaires";
+  const offer=contract&&typeof contract==="object"&&contract.camp?contract:null;
   // L'intendant ne part plus en mission (Idan, 2026-10-24) ; un mercenaire déjà en expédition non plus (doc 17).
   const away=c=>game.campaign&&campaignRules().expeditionOf(game.campaign,c.id);
   // À l'École (élève ou professeur d'un sort ; Idan, 2026-11-02) : il reste au camp jusqu'à la fin.
@@ -799,63 +803,362 @@ function openMissionSelection(contract=null){
   // Le médecin, le directeur de l'École et les maîtres (camp-posts.js) restent au camp, comme l'intendant.
   const offField=c=>game.campaign&&(c.id===game.campaign.company.intendantId||(game.campaign.company.medicId!=null&&c.id===game.campaign.company.medicId)||Boolean(MercenairesCampPosts.postOf(game.campaign,c)));
   const eligible=allCharacters().filter(c=>!offField(c)&&!away(c)&&!studying(c));
+  // Un blessé ne peut pas partir (10-mission-time §4 à §6) : il n'est pas dans la galerie ; un fatigué, si.
   const available=eligible.filter(c=>!missionWounded(c));
   // Mission Test : les reposés d'abord.
-  const preselected=new Set(game.missionSelect.contract?[]:[...available.filter(c=>!c.recovery),...available.filter(c=>c.recovery)].slice(0,3));
-  const offer=game.missionSelect.contract;
-  $("mission-select-list").innerHTML=eligible.map(c=>`
-    <label class="mission-pick${missionWounded(c)?" unavailable":""}">
-      <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${missionWounded(c)?"disabled":""}>
-      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}${missionFatigueNote(c,offer)?" · "+esc(missionFatigueNote(c,offer)):""}</small></span>
-      <em>${combatEngine().maxHp({character:c,activeSet:1})} PV</em>
-    </label>
-  `).join("");
-
-  $("mission-select-error").textContent=available.length<min
-    ?"Il faut au moins "+min+" personnage"+(min>1?"s":"")+" disponible"+(min>1?"s":"")+". Passe des jours pour soigner les blessés, ou génère quelques candidats de test."
-    :"";
-  updateMissionSelectionCount();
-  $("mission-select-dialog").showModal();
+  const preselected=offer?[]:[...available.filter(c=>!c.recovery),...available.filter(c=>c.recovery)].slice(0,3);
+  game.missionSelect=offer?{contract:offer,min:1,max:20,detailId:"contract:"+offer.id}:{contract:null,min:3,max:3};
+  Object.assign(game.missionSelect,{order:preselected.map(c=>c.id),tag:null,search:"",
+    // Encore fatigué au combat, ou reposé en route (missionFatigueNote).
+    state:c=>missionChoiceState(c,offer)});
+  missionChoiceHeading(offer?offer.campName+" de "+offer.fields.lieu:"Mission Test",offer?.difficulty,
+    offer?"Départ demain matin · "+missionChoiceDays(offer.distance)+" de marche":"","L’escouade");
+  renderMissionChoice(available,{missionTag:missionTagOf(offer),
+    error:available.length<game.missionSelect.min?"Personne n’est en état de partir.":""});
 }
 
 function openBodyguardSelection(offer){
   const c=game.campaign,rules=campaignRules();
-  game.missionSelect={bodyguard:offer,contract:null,min:offer.count,max:offer.count};
-  $("mission-select-eyebrow").textContent="Garde du corps · "+offer.client;
-  $("mission-select-title").textContent="Choisir "+(offer.count>1?"les "+offer.count+" gardes":"le garde");
+  game.missionSelect={bodyguard:offer,contract:null,min:offer.count,max:offer.count,order:[],tag:null,search:"",detailId:"bodyguard:"+offer.id,
+    // Pas de combat : prêt ou fatigué, sans plus.
+    state:m=>m.recovery?.kind==="fatigued"?{kind:"tired",label:missionFem(m,"Fatigué")}:{kind:"ready",label:missionFem(m,"Prêt")}};
+  missionChoiceHeading(offer.client,offer.level,"Départ demain matin · absents "+missionChoiceDays(offer.days),offer.count>1?"Les gardes":"Le garde");
+  // Ceux qui n'ont pas la réputation demandée, ou qui ne peuvent pas partir, ne sont pas dans la galerie.
   const members=c.company.roster.filter(m=>m.id!==c.company.captainId&&m.id!==c.company.intendantId&&(c.company.medicId==null||m.id!==c.company.medicId)
-    &&!MercenairesCampPosts.postOf(c,m)&&!rules.expeditionOf(c,m.id)&&!(rules.studyBusy&&rules.studyBusy(c,m)));
-  $("mission-select-list").innerHTML=members.map(m=>{
-    const allowed=rules.canGuard(c,m,offer);
-    return `<label class="mission-pick${allowed.ok?"":" unavailable"}">
-      <input type="checkbox" value="${m.id}" ${allowed.ok?"":"disabled"}>
-      ${renderAvatar(m,{variant:"compact",kind:"portrait"})}
-      <span><strong>${esc(m.name)}</strong><small>${allowed.ok?"Salaire "+fmt(Number(m.contract?.dailySalary)||0)+" PO/j · prime "+fmt(Number(m.contract?.missionBonus)||0)+" PO":esc(allowed.reason)}</small></span>
-      <em>${renderReputationStars(m)}</em>
-    </label>`;
-  }).join("");
-  const ready=members.filter(m=>rules.canGuard(c,m,offer).ok).length;
-  $("mission-select-error").textContent=ready<offer.count?"Pas assez de mercenaires disponibles de ce niveau de réputation.":"";
-  updateMissionSelectionCount();
-  $("mission-select-dialog").showModal();
+    &&!MercenairesCampPosts.postOf(c,m)&&!rules.expeditionOf(c,m.id)&&!(rules.studyBusy&&rules.studyBusy(c,m))&&rules.canGuard(c,m,offer).ok);
+  renderMissionChoice(members,{missionTag:missionTagOf(offer),
+    error:members.length<offer.count?"Pas assez de mercenaires de cette réputation pour cette garde.":""});
 }
 
-function updateMissionSelectionCount(){
-  const {min,max,contract,bodyguard}=game.missionSelect||{min:3,max:3,contract:null};
-  const checked=[...document.querySelectorAll("#mission-select-list input:checked")];
-  if(checked.length>max) checked[checked.length-1].checked=false;
-  const ids=[...document.querySelectorAll("#mission-select-list input:checked")].map(x=>Number(x.value));
-  $("mission-select-count").textContent=ids.length+"/"+max;
-  $("start-mission-btn").disabled=ids.length<min||ids.length>max;
-  // Primes de mission versées au retour (doc 09 §6) : le joueur pèse ce que coûte une grosse escouade.
-  const bonus=ids.map(id=>allCharacters().find(c=>c.id===id)).reduce((sum,c)=>sum+(Number(c?.contract?.missionBonus)||0),0);
-  if(bodyguard){
-    $("mission-select-cost").textContent="Paiement d’avance : "+fmt(bodyguard.payment)+" PO · primes au retour : "+fmt(bonus)+" PO · départ demain matin, absents "+bodyguard.days+" jours ; pas de combat.";
-    return;
+const missionFem=(c,word)=>word+(String(c?.sex||"").toLowerCase().startsWith("f")?"e":"");
+// L'état sous le portrait : prêt ; fatigué, encore au combat (−20 %) ; ou reposé en route.
+function missionChoiceState(c,offer){
+  if(c.recovery?.kind!=="fatigued") return {kind:"ready",label:missionFem(c,"Prêt")};
+  const note=missionFatigueNote(c,offer);
+  if(note&&!note.startsWith("−")) return {kind:"rested",label:missionFem(c,"Reposé")+" à l’arrivée"};
+  return {kind:"tired",label:missionFem(c,"Fatigué")+" −"+missionFatiguePercent()+" %"};
+}
+
+// La mission en grand : son nom et ses étoiles, la route dessous ; au-dessus, « L'escouade » (ou les gardes).
+function missionChoiceHeading(name,level,route,eyebrow){
+  const stars=level&&typeof levelStars==="function"?levelStars(level,"Difficulté"):"";
+  $("mission-select-eyebrow").textContent=eyebrow;
+  $("mission-select-title").innerHTML=`<span>${esc(name)}</span>${stars}`;
+  $("mission-select-route").textContent=route;
+  $("mission-squad-title").textContent=game.missionSelect.bodyguard?(game.missionSelect.max>1?"Gardes":"Garde"):"Escouade";
+  $("mission-squad-subtitle").textContent=game.missionSelect.bodyguard?"Gardes du corps choisis":"Mercenaires sélectionnés";
+}
+const missionChoiceDays=n=>typeof missionDays==="function"?missionDays(n):n+" jour"+(n>1?"s":"");
+
+// Le tag de la mission (doc 20) : son camp ou sa chasse sous Mission, ou Garde du corps.
+function missionTagOf(offer){
+  const rules=typeof tagRules==="function"?tagRules():null;
+  if(!rules||!offer) return null;
+  if(offer.kind==="bodyguard") return rules.has("occupation/garde-du-corps")?"occupation/garde-du-corps":null;
+  return rules.childNamed("occupation/mission/camps",offer.faction)||rules.childNamed("occupation/mission/chasses",offer.faction)||null;
+}
+// Les rôles en onglets (la maquette de Chatty) ; les autres dans « Autres rôles ».
+const MISSION_CHOICE_MAIN_ROLES=["role/degats","role/soutien","role/protection","role/magie"];
+const missionSearchKey=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+
+// La galerie, les tags et l'escouade.
+function renderMissionChoice(list,{missionTag=null,error=""}={}){
+  const sel=game.missionSelect,rules=typeof tagRules==="function"?tagRules():null;
+  const tagsOf=c=>rules?rules.litIds(c):[];
+  $("mission-select-list").innerHTML=list.map(c=>{
+    const state=sel.state(c);
+    return `<label class="mission-pick" data-tags="${esc(tagsOf(c).join(" "))}" data-name="${esc(missionSearchKey(c.name))}">
+      <input type="checkbox" value="${c.id}" ${sel.order.includes(c.id)?"checked":""}>
+      <span class="mission-pick-portrait">${renderAvatar(c,{variant:"compact",kind:"portrait"})}<i class="mission-pick-add" aria-hidden="true"></i></span>
+      <button type="button" class="mission-pick-name" data-sheet-open="${c.id}" title="Voir la fiche">${esc(c.name)}</button>
+      ${renderReputationStars(c)}
+      <span class="mission-pick-state mission-pick-state--${state.kind}">${esc(state.label)}</span>
+    </label>`;
+  }).join("")+`<p class="mission-roster-empty" hidden>Personne ne correspond.</p>`;
+  // Les tags : « Tous » (le filtre éteint, à l'ouverture), le tag de la mission, les rôles que porte au moins l'un d'eux.
+  const lit=new Set(list.flatMap(tagsOf));
+  const roles=rules?(rules.columns.find(col=>col.code==="role")?.tags||[]).map(t=>t.id).filter(id=>lit.has(id)):[];
+  const main=roles.filter(id=>MISSION_CHOICE_MAIN_ROLES.includes(id)),others=roles.filter(id=>!MISSION_CHOICE_MAIN_ROLES.includes(id));
+  const tab=(id,label,extra="")=>`<button type="button" class="mission-tab${extra}" data-tag-filter="${esc(id)}" aria-pressed="${id===""}">${esc(label)}</button>`;
+  $("mission-select-tags").innerHTML=!rules?"":tab("","Tous")
+    +(missionTag?tab(missionTag,rules.node(missionTag)?.nom||missionTag," mission-tab--mission"):"")
+    +main.map(id=>tab(id,rules.node(id)?.nom||id)).join("")
+    +(others.length?`<span class="mission-tabs-more"><button type="button" class="mission-tab mission-tab--more" aria-expanded="false" aria-haspopup="true">Autres rôles</button>
+      <span class="mission-tabs-menu" hidden>${others.map(id=>tab(id,rules.node(id)?.nom||id)).join("")}</span></span>`:"");
+  $("mission-select-search").value="";
+  $("mission-select-error").textContent=error;
+  $("cancel-mission-select-btn").textContent=sel.detailId?"‹ Retour à l’annonce":"‹ Retour";
+  $("start-mission-btn").textContent=sel.contract||sel.bodyguard?"Partir demain":"Lancer la mission";
+  // Au jour J, on organise J+1 (doc 16) : jusqu'au matin, « Annuler le départ » sur l'annonce.
+  $("mission-squad-note").textContent=sel.contract||sel.bodyguard?"D’ici demain matin, le départ peut encore être annulé.":"";
+  updateMissionSelectionCount();
+  $("mission-select-dialog").showModal();
+  game.missionSelect.page=0;
+  layoutMissionRoster();
+  layoutMissionSquad();
+}
+
+// La fiche complète (Idan : « les persos sont cliquables et ça ouvre la fiche complète ? » → « clic sur le nom ») : par-
+// dessus ; le portrait, lui, ajoute à l'escouade. Fermée, on retrouve l'escouade.
+function openMissionChoiceSheet(event){
+  const name=event.target.closest("[data-sheet-open]");
+  if(!name) return;
+  event.preventDefault();
+  const c=allCharacters().find(m=>String(m.id)===name.dataset.sheetOpen);
+  if(c&&typeof showCharacter==="function") showCharacter(c);
+}
+
+// Un tag à la fois (« Tous » l'éteint) et la recherche par nom, ensemble.
+function filterMissionChoice(event){
+  const more=event.target.closest(".mission-tab--more");
+  const menu=document.querySelector("#mission-select-tags .mission-tabs-menu");
+  if(more){ menu.hidden=!menu.hidden; more.setAttribute("aria-expanded",String(!menu.hidden)); return; }
+  const button=event.target.closest("[data-tag-filter]");
+  if(!button||!game.missionSelect) return;
+  game.missionSelect.tag=button.dataset.tagFilter||null;
+  if(menu){ menu.hidden=true; document.querySelector("#mission-select-tags .mission-tab--more")?.setAttribute("aria-expanded","false"); }
+  applyMissionChoiceFilter();
+}
+function searchMissionChoice(){
+  if(!game.missionSelect) return;
+  game.missionSelect.search=missionSearchKey($("mission-select-search").value.trim());
+  applyMissionChoiceFilter();
+}
+function applyMissionChoiceFilter(){
+  const {tag=null}=game.missionSelect||{};
+  document.querySelectorAll("#mission-select-tags [data-tag-filter]").forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.tagFilter||null)===tag)));
+  // « Autres rôles » : le rôle choisi dans le menu prend sa place.
+  const more=document.querySelector("#mission-select-tags .mission-tab--more");
+  const picked=tag&&document.querySelector(`#mission-select-tags .mission-tabs-menu [data-tag-filter="${CSS.escape(tag)}"]`);
+  if(more){ more.textContent=picked?picked.textContent:"Autres rôles"; more.classList.toggle("is-active",Boolean(picked)); }
+  if(game.missionSelect) game.missionSelect.page=0;
+  refreshMissionRoster();
+}
+// Qui est dans la galerie : ceux du tag et de la recherche, sauf ceux déjà dans l'escouade (Idan, 2026-11-15 : « au lieu
+// de les avoir sélectionnés à gauche, on les retire à gauche. Ça permet de mieux voir ») ; retiré de l'escouade, il
+// revient à sa place. La page reste la même (la carte suivante prend la place de celle qui part).
+function refreshMissionRoster(){
+  const sel=game.missionSelect;
+  if(!sel) return;
+  const {tag=null,search=""}=sel,order=sel.order||[];
+  let shown=0;
+  document.querySelectorAll("#mission-select-list .mission-pick").forEach(card=>{
+    const input=card.querySelector("input");
+    card.hidden=order.includes(Number(input?.value))||Boolean(tag)&&!card.dataset.tags.split(" ").includes(tag)||Boolean(search)&&!card.dataset.name.includes(search);
+    if(!card.hidden) shown++;
+  });
+  const empty=document.querySelector("#mission-select-list .mission-roster-empty");
+  if(empty){ empty.hidden=shown>0; empty.textContent=tag||search?"Personne ne correspond.":"Tout le monde est dans l’escouade."; }
+  showMissionRosterPage(sel.page||0);
+}
+
+// Des pages, pas de défilement (Idan, 2026-11-15 : « je veux pas des flèches de défilement. Ce sont des flèches de
+// clic » ; « on a 12 mercenaires visibles. On clique, on en voit 12 autres. Je trouve que le défilement ne fait pas très
+// jeux » ; « avec des clics, on ne devrait jamais avoir des portraits coupés »). Une page, c'est autant de cartes entières
+// que la place en tient : on essaie chaque grille (rangées × colonnes) et on garde celle qui en montre le plus, sans que
+// le portrait descende sous un côté confortable (120 px ; 80 px si rien ne tient, sur un petit écran) ni dépasse maxSide ;
+// à nombre égal, le plus grand portrait. extra : la hauteur sous le portrait (nom, étoiles, état). Logique pure, sans
+// page web (tests, portage).
+function missionChoiceGrid({width,height,extra,gapX=14,gapY=18,minSides=[120,80],maxSide=200}){
+  for(const minSide of minSides){
+    let best=null;
+    for(let rows=1;rows<=8;rows++) for(let cols=1;cols<=12;cols++){
+      const side=Math.floor(Math.min(maxSide,(height-(rows-1)*gapY)/rows-extra,(width-(cols-1)*gapX)/cols));
+      if(side<minSide) continue;
+      if(!best||rows*cols>best.size||rows*cols===best.size&&side>best.side) best={cols,rows,side,size:rows*cols};
+    }
+    if(best) return best;
   }
-  $("mission-select-cost").textContent=contract
-    ?"Primes si tous reviennent : "+fmt(bonus)+" PO, versées au retour · départ demain matin, puis "+contract.distance+" jour"+(contract.distance>1?"s":"")+" de marche à l’aller, autant au retour ; le camp continue pendant ce temps."
+  return {cols:1,rows:1,side:Math.max(1,Math.floor(Math.min(maxSide,width,height-extra))),size:1};
+}
+// La page qui contient l'index donné, et le nombre de pages.
+function missionChoicePage(count,size,page){
+  const pages=Math.max(1,Math.ceil(count/Math.max(1,size)));
+  return {page:Math.max(0,Math.min(Number.isFinite(page)?page:pages-1,pages-1)),pages};
+}
+// Les flèches, comme celles du panneau : cachées s'il n'y a qu'une page, grisées au début et à la fin.
+function missionPageArrows(scope,page,pages){
+  for(const [dir,off] of [["up",page<=0],["down",page>=pages-1]]){
+    const arrow=document.querySelector(`${scope} > .mission-scroll--${dir}`);
+    if(!arrow) continue;
+    arrow.hidden=pages<2;
+    arrow.disabled=off;
+  }
+}
+
+// La galerie : la grille d'abord, puis la page. La grille ne dépend ni du filtre ni de l'escouade (elle ne bouge pas quand
+// on choisit) : on la mesure sur toutes les cartes, avec ce qu'il y a sous les portraits.
+function layoutMissionRoster({keep=false}={}){
+  const list=$("mission-select-list"),sel=game.missionSelect;
+  if(!list||!sel||!list.clientHeight) return;
+  const first=keep?(sel.page||0)*(sel.pageSize||1):0;
+  const cards=[...list.querySelectorAll(".mission-pick")];
+  cards.forEach(c=>{ c.hidden=false; c.classList.remove("is-off-page"); });
+  const cs=getComputedStyle(list);
+  const width=list.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const height=list.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const gapX=parseFloat(cs.columnGap)||0,gapY=parseFloat(cs.rowGap)||0;
+  const below=()=>Math.max(0,...cards.map(c=>c.offsetHeight-(c.querySelector(".mission-pick-portrait")?.offsetHeight||0)));
+  let extra=90,grid=null;
+  for(let i=0;i<4;i++){
+    grid=missionChoiceGrid({width,height,extra,gapX,gapY});
+    list.style.setProperty("--card",grid.side+"px");
+    list.style.setProperty("--cols",String(grid.cols));
+    const measured=cards.length?below():extra;
+    if(Math.abs(measured-extra)<1) break;
+    extra=measured;
+  }
+  // Jamais de carte coupée : les rangées qui tiennent vraiment, avec les noms tels qu'ils s'affichent.
+  const rows=Math.max(1,Math.min(grid.rows,Math.floor((height+gapY)/(grid.side+below()+gapY))));
+  sel.pageSize=rows*grid.cols;
+  sel.page=Math.floor(first/sel.pageSize);
+  refreshMissionRoster();
+}
+function showMissionRosterPage(page,dir=0){
+  const list=$("mission-select-list"),sel=game.missionSelect;
+  if(!list||!sel) return;
+  const cards=[...list.querySelectorAll(".mission-pick")].filter(c=>!c.hidden);
+  const size=sel.pageSize||cards.length||1,before=sel.page;
+  const at=missionChoicePage(cards.length,size,page);
+  sel.page=at.page;
+  cards.forEach((c,i)=>c.classList.toggle("is-off-page",Math.floor(i/size)!==at.page));
+  missionPageArrows(".mission-roster-frame",at.page,at.pages);
+  // La nouvelle page arrive du côté de la flèche, comme les annonces du panneau.
+  if(dir&&at.page!==before&&list.animate&&!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)
+    list.animate([{transform:`translateY(${dir*28}px)`,opacity:0},{transform:"none",opacity:1}],{duration:280,easing:"cubic-bezier(.45,0,.25,1)"});
+}
+function turnMissionRosterPage(event){
+  const arrow=event.target.closest("[data-roster-page]");
+  if(!arrow||arrow.disabled||!game.missionSelect) return;
+  const dir=Number(arrow.dataset.rosterPage);
+  showMissionRosterPage((game.missionSelect.page||0)+dir,dir);
+}
+// La molette tourne les pages aussi (Idan, 2026-11-15 : « Oui, la molette tourne les pages aussi », un choix pour tout
+// le jeu, comme les flèches de clic) : un cran, une page ; un même geste (pavé tactile compris) n'en tourne qu'une.
+function pageWheel(turn){
+  let sum=0,until=0;
+  return event=>{
+    event.preventDefault();
+    const now=Date.now();
+    if(now<until){ until=now+220; sum=0; return; } // le même geste continue
+    const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;
+    sum+=event.deltaMode===1?delta*40:delta;
+    if(Math.abs(sum)<40) return;
+    const dir=sum>0?1:-1;
+    sum=0; until=now+350;
+    turn(dir);
+  };
+}
+
+// L'escouade : les portraits choisis, dans l'ordre du choix, avec leur croix ; la garde du corps montre toutes ses
+// places. En 4:3, quand la galerie est en carré (Idan : « Gardons le carré pour la sélection, c'est natif. Le 4:3 plus
+// petit à droite »). Elle tient toujours en entier (Idan, 2026-11-15 : « faisons de la taille de portrait relative au
+// nombre de mercenaires de l'escouade… chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser la place
+// de tout afficher. Comme ça pas de flèche »).
+function renderMissionSquad(){
+  const sel=game.missionSelect,pool=allCharacters();
+  const chosen=sel.order.map(id=>pool.find(c=>c.id===id)).filter(Boolean);
+  const empty=sel.bodyguard?sel.max-chosen.length:0;
+  const box=$("mission-squad-slots");
+  box.innerHTML=chosen.map(c=>`<div class="mission-slot">
+      <span class="mission-slot-portrait" title="${esc(c.name)}">${renderAvatar(c,{variant:"compact",kind:"portrait"})}<button type="button" class="mission-slot-remove" data-squad-remove="${c.id}" aria-label="Retirer ${esc(c.name)}" title="Retirer"></button></span>
+      <button type="button" class="mission-pick-name" data-sheet-open="${c.id}" title="Voir la fiche">${esc(c.name)}</button>
+      ${renderReputationStars(c)}
+    </div>`).join("")
+    +Array.from({length:Math.max(0,empty)},()=>`<div class="mission-slot mission-slot--empty" aria-hidden="true"><span class="mission-slot-portrait"></span></div>`).join("")
+    +(chosen.length||empty?"":`<p class="mission-squad-hint">Cliquez sur un portrait pour l’ajouter.</p>`);
+  layoutMissionSquad();
+}
+// Les plus grands portraits possibles, tous visibles (Idan, 2026-11-15 : « Ils sont trop petits, c'est dommage… ils
+// devraient être à 4 col - 5 lignes. Ça rentre » ; « on veut pas forcément qu'ils soient plus petits que ceux de gauche.
+// Ceux de gauche sont fixes. À droite, ça s'adapte » ; « je préfère que ça soit dynamique. On remplit le panneau en
+// fonction du nombre de mercenaires » : seul, il prend tout le panneau) : on essaie chaque nombre de colonnes et on garde
+// le plus grand portrait (à taille égale, les rangées les plus longues : on remplit de gauche à droite) ; avec le nom
+// quand les portraits sont grands (namedAlways) ou que le nom ne les rend pas beaucoup plus petits (namedRatio), sinon
+// sans (il reste au survol). labelWithName / labelWithoutName : la hauteur sous le portrait (nom, étoiles). Logique
+// pure, sans page web (tests, portage).
+function missionSquadGrid({count,width,height,gapX=10,gapY=10,labelWithName=46,labelWithoutName=16,nameMinWidth=84,maxSide=Infinity,namedRatio=.9,namedAlways=120}){
+  if(count<1) return {cols:1,side:Math.floor(Math.min(maxSide,width)),named:true};
+  const best={true:null,false:null};
+  for(let cols=1;cols<=count;cols++){
+    const rows=Math.ceil(count/cols);
+    for(const named of [true,false]){
+      const side=Math.floor(Math.min(maxSide,(width-(cols-1)*gapX)/cols,((height-(rows-1)*gapY)/rows-(named?labelWithName:labelWithoutName))*4/3));
+      if(side<1||named&&side<nameMinWidth) continue;
+      const b=best[named];
+      if(!b||side>b.side||side===b.side&&cols>b.cols) best[named]={cols,side,named};
+    }
+  }
+  const pick=best.true&&(!best.false||best.true.side>=namedAlways||best.true.side>=namedRatio*best.false.side)?best.true:best.false;
+  return pick?{cols:pick.cols,side:pick.side,named:pick.named}:{cols:count,side:1,named:false};
+}
+function layoutMissionSquad(){
+  const box=$("mission-squad-slots"),frame=box?.parentElement;
+  if(!box||!frame?.clientHeight) return;
+  const slots=[...box.querySelectorAll(".mission-slot")],count=slots.length;
+  const cs=getComputedStyle(box),fs=getComputedStyle(frame);
+  const width=frame.clientWidth-parseFloat(fs.paddingLeft)-parseFloat(fs.paddingRight);
+  const height=frame.clientHeight-parseFloat(fs.paddingTop)-parseFloat(fs.paddingBottom);
+  const gapX=parseFloat(cs.columnGap)||0,gapY=parseFloat(cs.rowGap)||0;
+  const apply=({cols,side,named})=>{
+    box.style.setProperty("--squad-cols",String(cols));
+    box.style.setProperty("--slot",side+"px");
+    box.dataset.named=String(named);
+  };
+  const below=()=>Math.max(0,...slots.map(slot=>slot.offsetHeight-(slot.querySelector(".mission-slot-portrait")?.offsetHeight||0)));
+  // Avec ce qu'il y a vraiment sous les portraits (un nom sur deux lignes, parfois).
+  const labels={labelWithName:46,labelWithoutName:16};
+  let grid=null;
+  for(let i=0;i<4;i++){
+    apply(grid=missionSquadGrid({count,width,height,gapX,gapY,...labels}));
+    if(!count) return;
+    const key=grid.named?"labelWithName":"labelWithoutName",measured=below();
+    if(measured<=labels[key]+0.5) break;
+    labels[key]=measured;
+  }
+  // Jamais rien de coupé : un peu plus petit, s'il le faut encore.
+  while(box.scrollHeight>height+1&&grid.side>12) apply(grid={...grid,side:grid.side-2});
+}
+
+function onMissionSquadClick(event){
+  if(event.target.closest("[data-sheet-open]")) return openMissionChoiceSheet(event);
+  const slot=event.target.closest("[data-squad-remove]");
+  if(!slot||!game.missionSelect) return;
+  const input=[...document.querySelectorAll("#mission-select-list input")].find(x=>x.value===slot.dataset.squadRemove);
+  if(input) input.checked=false;
+  game.missionSelect.order=game.missionSelect.order.filter(id=>String(id)!==slot.dataset.squadRemove);
+  updateMissionSelectionCount();
+}
+
+function updateMissionSelectionCount(event){
+  const sel=game.missionSelect||(game.missionSelect={min:3,max:3,contract:null,state:()=>({kind:"ready",label:"Prêt"})});
+  sel.order=sel.order||[];
+  const input=event?.target?.closest?.("input[type=checkbox]");
+  if(input){
+    const id=Number(input.value);
+    if(!input.checked) sel.order=sel.order.filter(x=>x!==id);
+    else if(sel.order.length>=sel.max) input.checked=false; // l'escouade est complète
+    else if(!sel.order.includes(id)) sel.order.push(id);
+  }
+  const {min,max,contract,bodyguard,order:ids}=sel;
+  $("mission-select-count").textContent=ids.length+" / "+max;
+  $("start-mission-btn").disabled=ids.length<min||ids.length>max;
+  renderMissionSquad();
+  refreshMissionRoster();
+  const chosen=ids.map(id=>allCharacters().find(c=>c.id===id)).filter(Boolean);
+  // Les fatigués de l'escouade : ceux qui le seront encore au combat, ceux qui se reposent en route.
+  const tired=chosen.filter(c=>c.recovery?.kind==="fatigued"),fatigue=$("mission-squad-fatigue");
+  if(tired.length&&!bodyguard){
+    const still=tired.filter(c=>sel.state(c).kind==="tired").length,rested=tired.length-still;
+    fatigue.innerHTML=`${typeof missionIcon==="function"?missionIcon("hourglass"):""}<span><b>${tired.length} mercenaire${tired.length>1?"s":""} fatigué${tired.length>1?"s":""}</b>`
+      +`<small>${[still?still+" encore fatigué"+(still>1?"s":"")+" au combat (−"+missionFatiguePercent()+" %)":"",rested?rested+" reposé"+(rested>1?"s":"")+" à l’arrivée":""].filter(Boolean).join(", ")}</small></span>`;
+    fatigue.hidden=false;
+  }else fatigue.hidden=true;
+  // Primes de mission versées au retour (doc 09 §6) : le joueur pèse ce que coûte une grosse escouade.
+  const bonus=chosen.reduce((sum,c)=>sum+(Number(c?.contract?.missionBonus)||0),0);
+  const amount=typeof goldAmount==="function"?goldAmount(bonus):fmt(bonus);
+  $("mission-select-cost").innerHTML=(contract||bodyguard)&&ids.length
+    ?`<img src="assets/hud/picto-or.webp" alt=""><span><b>${bonus?amount+" PO":"Aucune prime"}</b><small>${bonus?"Primes au retour":"au retour"}</small></span>`
     :"";
 }
 
@@ -4673,6 +4976,7 @@ function stepMissionEnemyTurn(m){
     if(!unit.alive||unit.decoy) continue;
     const unseen=!missionShownToPlayer(unit);
     m.pacedUnit=unit;
+    m.pacedStart={id:unit.id,q:unit.q,r:unit.r,unseen};
     enemyMissionAct(unit);
     // Un ennemi resté caché : pas de pause (on devinerait qu'il bouge).
     if(unseen&&!missionShownToPlayer(unit)){ m.pacedUnit=null; continue; }
@@ -4997,10 +5301,13 @@ function missionStageSize(){
   const stage=$("mission-map").parentElement;
   return {w:Number(stage?.clientWidth)||0,h:Number(stage?.clientHeight)||0};
 }
-function fitMissionView(){
+function missionFitScale(){
   const {width,height}=missionMapSize(),{w,h}=missionStageSize();
-  const scale=Math.min(MISSION_ZOOM.fitMax,w>0?(w-16)/width:1,h>0?(h-16)/height:1);
-  Object.assign(missionView,{scale,x:w>0?(w-width*scale)/2:0,y:h>0?(h-height*scale)/2:0,fitted:true});
+  return Math.min(MISSION_ZOOM.fitMax,w>0?(w-16)/width:1,h>0?(h-16)/height:1);
+}
+function fitMissionView(){
+  const {width,height}=missionMapSize(),{w,h}=missionStageSize(),scale=missionFitScale();
+  Object.assign(missionView,{scale,x:w>0?(w-width*scale)/2:0,y:h>0?(h-height*scale)/2:0,fitted:true,anim:null});
 }
 // La carte ne sort jamais entièrement de l'écran : il en reste toujours une bande visible.
 function clampMissionView(){
@@ -5013,6 +5320,7 @@ function applyMissionView(){
   $("mission-map").style.transform=`translate(${Math.round(missionView.x)}px,${Math.round(missionView.y)}px) scale(${missionView.scale})`;
 }
 function zoomMissionView(factor,cx=null,cy=null){
+  missionView.anim=null;
   const {w,h}=missionStageSize(),s0=missionView.scale;
   const s=Math.min(MISSION_ZOOM.max,Math.max(MISSION_ZOOM.min,s0*factor));
   if(cx===null){ cx=w/2; cy=h/2; }
@@ -5032,6 +5340,46 @@ function centerMissionView(unit,onlyIfHidden=false){
   missionView.y=h/2-p.y*s;
   missionView.fitted=false;
   clampMissionView();
+}
+// La caméra au début de chaque tour (Idan, 2026-11-14 : « quand un joueur ou un ennemi commence son tour, on fait une
+// petite animation de caméra qui se met sur lui, zoom et dézoome un peu en le mettant au centre sauf si après le dézoom
+// on a des bords vides de la carte. Dans ce cas, le personnage n'est plus centré dans la vue, on décale pour voir sur les
+// bords les bords de la carte. ») : la vue glisse sur lui en zoomant un peu (× 1,15), puis revient au zoom du joueur
+// (celui de la carte entière s'il ne l'a pas changé), centrée sur lui ; sur un bord, la vue s'arrête au bord de la carte
+// (une carte plus petite que l'écran reste centrée). Plus courte en mode Accélérer ; rien si le système demande moins de
+// mouvement (la vue va directement à sa place). Le joueur qui zoome ou fait glisser la carte l'interrompt.
+const MISSION_CAMERA={zoom:1.15,duration:700,fastDuration:320,peak:.42};
+// La vue à cette échelle, le point p au centre ; bounded : sans vide au-delà des bords de la carte.
+function missionViewOn(p,scale,bounded){
+  const {width,height}=missionMapSize(),{w,h}=missionStageSize();
+  const axis=(stage,size,want)=>!bounded?want:size<=stage?(stage-size)/2:Math.min(0,Math.max(stage-size,want));
+  return {scale,x:axis(w,width*scale,w/2-p.x*scale),y:axis(h,height*scale,h/2-p.y*scale)};
+}
+function missionReducedMotion(){
+  return typeof window==="undefined"||!window.requestAnimationFrame||Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+}
+function startMissionCamera(unit,from=unit){
+  const {w,h}=missionStageSize();
+  if(!unit||unit.offMap||!from||!(w>0&&h>0)) return;
+  const p=missionHexPixel(from.q,from.r),fitted=missionView.fitted,base=fitted?missionFitScale():missionView.scale;
+  const end={...missionViewOn(p,base,true),fitted};
+  if(missionReducedMotion()){ Object.assign(missionView,end,{anim:null}); applyMissionView(); return; }
+  const start={scale:missionView.scale,x:missionView.x,y:missionView.y};
+  const peak=missionViewOn(p,Math.min(MISSION_ZOOM.max,base*MISSION_CAMERA.zoom),false);
+  const duration=game.missionFast?MISSION_CAMERA.fastDuration:MISSION_CAMERA.duration,anim={unit:unit.id};
+  const ease=k=>k*k*(3-2*k),mix=(a,b,k)=>({scale:a.scale+(b.scale-a.scale)*k,x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k});
+  missionView.anim=anim;
+  let t0=null;
+  const step=now=>{
+    if(missionView.anim!==anim) return;
+    if(t0===null) t0=now;
+    const t=Math.min(1,(now-t0)/duration),k=MISSION_CAMERA.peak;
+    Object.assign(missionView,t<k?mix(start,peak,ease(t/k)):mix(peak,end,ease((t-k)/(1-k))));
+    if(t>=1){ Object.assign(missionView,end,{anim:null}); applyMissionView(); return; }
+    applyMissionView();
+    window.requestAnimationFrame(step);
+  };
+  window.requestAnimationFrame(step);
 }
 // Tiroirs repliables (équipes à gauche, console à droite) : état retenu dans le navigateur.
 const MISSION_DRAWERS_KEY="bw-mission-drawers";
@@ -5156,8 +5504,15 @@ function renderMission(){
     m.fx=[];
     fitMissionView();
   }
-  else if(missionView.fitted) fitMissionView();
-  if(u&&u.id!==missionView.activeId){ missionView.activeId=u.id; if(!missionView.fitted) centerMissionView(u,true); }
+  else if(missionView.fitted&&!missionView.anim) fitMissionView();
+  // L'ennemi a déjà joué quand la carte se redessine : la caméra part de la case où il a commencé son tour.
+  const turnUnit=m.phase==="deploy"||m.over?null:u||m.pacedUnit;
+  if(turnUnit&&turnUnit.id!==missionView.activeId){
+    missionView.activeId=turnUnit.id;
+    const start=m.pacedStart?.id===turnUnit.id?m.pacedStart:null;
+    const from=start?(start.unseen?turnUnit:start):missionView.pos?.[turnUnit.id]||turnUnit;
+    startMissionCamera(turnUnit,from);
+  }
   applyMissionView();
   map.innerHTML=decorTiles+reliefTiles+cells+tokens;
   missionHover.key=null;
@@ -5582,7 +5937,20 @@ function leaveMission(){
 function initializeMissionUi(){
   $("mission-test-btn").addEventListener("click",openMissionSelection);
   $("mission-select-list").addEventListener("change",updateMissionSelectionCount);
-  $("cancel-mission-select-btn").addEventListener("click",()=>$("mission-select-dialog").close());
+  $("mission-select-list").addEventListener("click",openMissionChoiceSheet);
+  $("mission-select-tags").addEventListener("click",filterMissionChoice);
+  $("mission-select-search").addEventListener("input",searchMissionChoice);
+  document.querySelector(".mission-roster-frame")?.addEventListener("click",turnMissionRosterPage);
+  document.querySelector(".mission-roster-frame")?.addEventListener("wheel",pageWheel(dir=>showMissionRosterPage((game.missionSelect?.page||0)+dir,dir)),{passive:false});
+  // Une autre taille de fenêtre : d'autres pages, en gardant les mêmes mercenaires sous les yeux.
+  window.addEventListener("resize",()=>{ if($("mission-select-dialog")?.open){ layoutMissionRoster({keep:true}); layoutMissionSquad(); } });
+  $("mission-squad-slots").addEventListener("click",onMissionSquadClick);
+  // Retour à l'annonce : la fiche de la mission se rouvre.
+  $("cancel-mission-select-btn").addEventListener("click",()=>{
+    const back=game.missionSelect?.detailId;
+    $("mission-select-dialog").close();
+    if(back&&typeof openMissionDetail==="function") openMissionDetail(back);
+  });
   $("start-mission-btn").addEventListener("click",startMissionFromSelection);
 
   $("mission-move-btn").addEventListener("click",()=>setMissionMode("move"));
@@ -5647,7 +6015,7 @@ function initializeMissionMapView(){
   const stage=$("mission-map").parentElement;
   // La place du plateau change (tiroirs, barre de sorts, fenêtre) : une carte encore cadrée se recadre.
   if(typeof ResizeObserver!=="undefined") new ResizeObserver(()=>{
-    if(!game.mission||!missionView.fitted) return;
+    if(!game.mission||!missionView.fitted||missionView.anim) return;
     fitMissionView();
     applyMissionView();
   }).observe(stage);
@@ -5671,6 +6039,7 @@ function initializeMissionMapView(){
   // Glisser pour déplacer la carte ; au-delà de 6 px, le clic qui suit ne compte pas sur une case.
   stage.addEventListener("pointerdown",event=>{
     if(event.button!==0&&event.button!==1) return;
+    missionView.anim=null;
     missionView.drag={x:event.clientX,y:event.clientY,vx:missionView.x,vy:missionView.y};
     missionView.dragged=false;
   });
@@ -5712,6 +6081,7 @@ function initializeMissionMapView(){
     const row=event.target.closest("[data-unit-id]");
     const unit=row&&game.mission?missionUnitById(row.dataset.unitId):null;
     if(!unit||unit.offMap) return;
+    missionView.anim=null;
     centerMissionView(unit);
     applyMissionView();
   };

@@ -945,7 +945,8 @@ function renderEvaluation(c){
   const rules=profileRules();
   const context=evaluationContext(c);
   const result=rules?.evaluate(c,context);
-  const copy=result&&rules.composeTitle?.(c,result,context,{female:isFemale(c)});
+  // Au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »).
+  const copy=result&&rules.composeTitle?.(c,result,context);
   if(!copy) return "";
   const tip=copy.lines.length?`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span>`:"";
   return `<section class="sheet-evaluation" aria-label="Titre"><div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>${tip}</div></section>`;

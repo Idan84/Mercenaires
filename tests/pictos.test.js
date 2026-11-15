@@ -28,13 +28,15 @@ for(const [kind,file,section] of [["people","peoples.json","peoples"],["culture"
 }
 delete global.game;
 
-// Chaque peuple, chaque culture (Idan, 2026-10-22) et chaque ascendance du référentiel a son picto, et aucun
-// picto n'est orphelin.
+// Chaque peuple, chaque culture (Idan, 2026-10-22), chaque ascendance et chaque école de magie (Idan, 2026-11-15)
+// du référentiel a son picto, et aucun picto n'est orphelin.
 assert.equal(pictoPath("culture","Nains esclaves"),"assets/pictos/culture-nains-esclaves.webp");
+assert.equal(pictoPath("school","Télékinésie"),"assets/pictos/ecole-telekinesie.webp");
 const expected=[
   ...names("peoples.json").map(n=>pictoPath("people",n)),
   ...names("cultures.json").map(n=>pictoPath("culture",n)),
-  ...names("ancestries.json").map(n=>pictoPath("ascendance",n))
+  ...names("ancestries.json").map(n=>pictoPath("ascendance",n)),
+  ...[...new Set(JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference","spells.json"),"utf8")).rows.map(r=>r.ecole).filter(Boolean))].map(n=>pictoPath("school",n))
 ];
 const dir=path.join(ROOT,"prototype-web","assets","pictos");
 for(const p of expected) assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",p)),"picto manquant : "+p);

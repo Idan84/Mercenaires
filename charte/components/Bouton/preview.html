@@ -1,0 +1,26 @@
+<!-- @dsCard group="Actions" height=390 subtitle="Le bouton d'Idan dans ses états, et le lien « ‹ Retour »" -->
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Bouton</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&amp;display=swap">
+<style>
+  body{margin:0;background:var(--ink);font-family:var(--font-texte)}
+  .rangee{display:flex;flex-wrap:wrap;justify-content:center;gap:28px 36px;padding:28px 24px 22px}
+  figure{margin:0;display:grid;justify-items:center;gap:12px}
+  figcaption{font:700 11px/1 var(--font-titre);letter-spacing:.12em;text-transform:uppercase;color:var(--or)}
+  .bande-parchemin{display:flex;justify-content:center;align-items:center;gap:44px;padding:18px 24px;background:var(--parchemin)}
+  .bande-parchemin figcaption{color:var(--encre-secondaire)}
+</style></head>
+<body>
+<div class="rangee">
+  <figure><button class="btn" type="button">Continuer <span class="fl">→</span></button><figcaption>Au repos</figcaption></figure>
+  <figure><button class="btn etat-survol" type="button">Continuer <span class="fl">→</span></button><figcaption>Survol</figcaption></figure>
+  <figure><button class="btn etat-appui" type="button">Continuer <span class="fl">→</span></button><figcaption>Appui</figcaption></figure>
+  <figure><button class="btn" type="button" disabled>Continuer <span class="fl">→</span></button><figcaption>Éteint (choix manquant)</figcaption></figure>
+</div>
+<div class="bande-parchemin">
+  <figure><button class="retour" type="button">‹ Retour</button><figcaption>Retour</figcaption></figure>
+  <figure><button class="retour etat-survol" type="button">‹ Retour</button><figcaption>Retour au survol</figcaption></figure>
+</div>
+</body>
+</html>

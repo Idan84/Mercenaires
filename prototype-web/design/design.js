@@ -21,6 +21,7 @@ async function init(){
     const hash=location.hash.slice(1);
     if(hash==="avatars"||hash.startsWith("cov-")){setMode("avatars")}
     else if(hash==="images"||hash.startsWith("img-")){setMode("images")}
+    else if(hash==="charte"||hash.startsWith("charte-")){setMode("charte")}
     else if(hash==="bestiary"||hash.startsWith("best-")){setMode("bestiary")}
     else if(hash==="missions"||hash.startsWith("mis-")){setMode("missions")}
     else if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
@@ -46,6 +47,7 @@ function setMode(mode){
   if(mode==="docs") openDoc(state.docs.documents[0]?.file);
   else if(mode==="avatars") openAvatars();
   else if(mode==="images") openImages();
+  else if(mode==="charte") openLab("charte");
   else if(mode==="bestiary") openLab("bestiary");
   else if(mode==="missions") openLab("missions");
   else openTable(state.tables.tables[0]?.file);
@@ -59,7 +61,7 @@ function renderNav(){
       .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.culture),label:r.culture,
         sub:r.people+" · "+(r.summary.toProduce?r.summary.toProduce+" à produire":"tout vert")})))
     : state.mode==="images"
-    ? (state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"}))
+    ? ImagesLab.catalogueNav(state.images).concat((state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"})))
     : LABS[state.mode]
     ? (state[state.mode]?LABS[state.mode].module().nav(state[state.mode]):[])
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));
@@ -110,8 +112,9 @@ async function openImages(){
   }catch(e){showError(e)}
 }
 // Onglets Bestiaire et Missions (Idan, 2026-11-01) : lecture seule des ennemis et des types de mission
-// (bestiary-lab.js, missions-lab.js). Le Bestiaire a sa recherche (arme, ligne, nom…).
+// (bestiary-lab.js, missions-lab.js) ; onglet Charte (2026-11-15, charte-lab.js). Le Bestiaire a sa recherche (arme, ligne, nom…).
 const LABS={
+  charte:{module:()=>CharteLab,prefix:"charte-",kicker:"Design",title:"Charte graphique"},
   bestiary:{module:()=>BestiaryLab,prefix:"best-",kicker:"Contenu",title:"Bestiaire",search:"Rechercher : arme, ligne, nom…"},
   missions:{module:()=>MissionsLab,prefix:"mis-",kicker:"Contenu",title:"Missions"}
 };

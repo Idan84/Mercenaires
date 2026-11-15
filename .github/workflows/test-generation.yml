@@ -74,6 +74,8 @@ jobs:
       - run: node tests/design-graph-integrity.test.js
       - run: node tests/biography.test.js
       - run: node tests/pictos.test.js
+      - run: node tests/culture-colors.test.js
+      - run: node tests/charte.test.js
       - run: node tests/equipment-art.test.js
       - run: node tests/item-card.test.js
       - run: node tests/item-value.test.js
@@ -226,3 +228,5 @@ jobs:
       - run: node --check prototype-web/design/images-lab.js
       - run: node --check prototype-web/design/bestiary-lab.js
       - run: node --check prototype-web/design/missions-lab.js
+      - run: node --check prototype-web/design/charte-lab.js
+      - run: node --check scripts/build-charte.js

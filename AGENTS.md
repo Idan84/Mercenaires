@@ -37,5 +37,18 @@ Avant toute modification de logique métier :
 - Une valeur de table utilisée par le code doit provenir de `data/reference/` ou d'une donnée dérivée documentée.
 - Le HTML/CSS ne doit pas contenir de règle de gameplay.
 - Interface joueur (Idan, 2026-10-30) : jamais de tier (T1, T2…) ; un objet s'affiche sous son nom public (`item-titles.json`) et son cadre de couleur dit la qualité. Peu de texte : ce qui est évident ne s'écrit pas.
+- Interface joueur (Idan, 2026-11-15, choix global pour tout le jeu) : jamais de défilement ni de barre de défilement. Une liste se lit par pages de contenus entiers (jamais de portrait ni de carte coupés), tournées par des flèches de clic et par la molette (un cran, une page) ; quand tout doit rester visible (l'escouade choisie, par exemple), les éléments rétrécissent pour tenir plutôt que de passer en pages. « Le défilement ne fait pas très jeux. »
+- Design et interface (Idan, 2026-11-15 : « quand on code ou on design, tu aies le réflexe d'aller regarder et proposer des
+  choses sur les bibliothèques CC BY 3.0 ! … il faut que tu passes du temps à chercher ») : avant de dessiner ou de coder
+  un picto, un ornement, une icône ou un élément d'interface, chercher d'abord dans les bibliothèques libres —
+  game-icons.net (4 133 icônes de jeu monochromes, CC BY 3.0, via l'API Iconify `api.iconify.design`, préfixe
+  `game-icons`), puis les autres collections libres d'Iconify (MIT, Apache, CC BY) — et proposer des candidats à Idan.
+  Une icône retenue garde son auteur et sa licence (crédits à afficher dans le jeu). Budget : 0 €, pas de kit payant.
+- Charte graphique (Idan, 2026-11-15 : « tu regardes avant de coder la moindre interface ») : avant de dessiner ou de
+  coder un écran, lire `charte/README.md` et partir de ses jetons (`charte/tokens.json` : palette, polices, styles de
+  texte, ombres, 3 tons par culture), de ses composants (bouton, parchemin, filets, fiche au survol) et de ses images
+  (`charte/assets.json`). Ce qui manque se propose à Idan (après la recherche dans les bibliothèques libres) avant d'être
+  inventé. La page Design System d'Idan (adresse dans `charte/publication.json`) montre la même charte. Après un
+  changement d'une valeur que la charte recopie : `node scripts/build-charte.js`, puis republier la page.
 - Éviter les dépendances externes inutiles.
 - Ne jamais réimporter automatiquement Notion par-dessus Git.

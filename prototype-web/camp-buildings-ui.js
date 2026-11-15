@@ -143,8 +143,22 @@ function renderCampBuildings(){
   renderDormitory();
 }
 
-// Écran Dortoir : le fond de son niveau de qualité, son état, et le choix d'agrandir, d'améliorer ou de construire un
-// quartier du lieutenant.
+// Écran Dortoir, d'après la maquette d'Idan (2026-11-14) : le fond de son niveau de qualité ; à gauche, le parchemin d'Idan
+// (celui de la création du capitaine) : le nom de sa qualité et son niveau, les places (et une barre), les quartiers du
+// lieutenant ; puis quatre lignes : agrandir, améliorer, construire un quartier du lieutenant (le prix et la durée de
+// chacun), et mes mercenaires. Un seul chantier à la fois : pendant un chantier, il s'affiche et les trois lignes se
+// grisent. Les icônes : découpées dans la maquette d'Idan en attendant les siennes (assets/dormitory/icones/).
+const DORMITORY_ICON_DIR="assets/dormitory/icones/";
+const DORMITORY_HOURGLASS='<svg class="dorm-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5.5 2.8h13M5.5 21.2h13" stroke-width="2.2"/><path d="M7.4 2.8c0 4.6 3.6 6.1 3.6 9.2s-3.6 4.6-3.6 9.2M16.6 2.8c0 4.6-3.6 6.1-3.6 9.2s3.6 4.6 3.6 9.2"/><path d="M8.6 20.4c.6-2.4 2-3.4 3.4-4.4 1.4 1 2.8 2 3.4 4.4z" fill="currentColor" stroke="none"/></svg>';
+function dormitoryIcon(name){ return `<img class="dorm-icon dorm-icon--${name}" src="${DORMITORY_ICON_DIR}${name}.webp" alt="" aria-hidden="true">`; }
+function dormitoryRow({attr,icon,title,info="",sub,gold=null,days=null,disabled=false,short=false,tip="",chevron=false}){
+  const cost=gold==null?"":`<span class="dorm-cost${short?" is-short":""}"><img src="assets/hud/picto-or.webp" alt="">${fmt(gold)}<span class="sr-only"> PO</span></span><span class="dorm-days">${DORMITORY_HOURGLASS}${fmt(days)}<span aria-hidden="true"> j</span><span class="sr-only"> jour${days>1?"s":""}</span></span>`;
+  return `<button type="button" class="dorm-row" ${attr}${disabled?" disabled":""}${tip?` title="${esc(tip)}"`:""}>
+        <span class="dorm-row-icon">${dormitoryIcon(icon)}</span>
+        <span class="dorm-row-text"><b>${esc(title)}${info?`<i class="dorm-info" title="${esc(info)}">i</i>`:""}</b><small>${esc(sub)}</small></span>
+        ${cost}${chevron?'<span class="dorm-chevron" aria-hidden="true">›</span>':""}
+      </button>`;
+}
 function renderDormitory(){
   const box=$("dormitory-view"),c=game.campaign;
   if(!box||!c) return;
@@ -152,29 +166,38 @@ function renderDormitory(){
   if(quality.image&&typeof document!=="undefined"){
     document.body.style.setProperty("--dormitory-bg",`url("${new URL(DORMITORY_ART_DIR+quality.image,document.baseURI).href}")`);
   }
-  let actions;
-  if(work){
-    actions=`<p class="building-work">${campWorkText(work,c.day)}</p>`;
-  }else{
-    const gold=c.company.gold,expand=rules.nextDormitoryExpansion(c),upgrade=rules.nextDormitoryQuality(c);
-    const quarter=rules.nextLieutenantQuarter(c),locked=quarter&&quality.niveau<quarter.quality;
-    const short=cost=>gold<cost?" · pas assez d’or":"";
-    actions=`<div class="building-action"><button type="button" class="primary" data-dorm-expand${gold<expand.gold?" disabled":""}>Agrandir : +${fmt(expand.places)} places</button>
-      <span class="building-cost">${fmt(expand.gold)} PO · ${campDays(expand.days)}${short(expand.gold)}</span></div>`
-      +(upgrade
-        ?`<div class="building-action"><button type="button" class="primary" data-dorm-quality${gold<upgrade.gold?" disabled":""}>Améliorer : ${esc(upgrade.name)}</button>
-      <span class="building-cost">${fmt(upgrade.gold)} PO · ${campDays(upgrade.days)} · Renommée +${fmt(upgrade.renown)}, affinité +${fmt(upgrade.affinity)}${upgrade.fatigue?`, fatigue −${fmt(upgrade.fatigue)} %`:""}${short(upgrade.gold)}</span></div>`
-        :`<p class="building-work">Qualité maximale.</p>`)
-      +(quarter
-        ?`<div class="building-action"><button type="button" class="primary" data-dorm-quarter${locked||gold<quarter.gold?" disabled":""}>Construire : quartier du lieutenant n° ${fmt(quarter.number)}</button>
-      <span class="building-cost">${fmt(quarter.gold)} PO · ${campDays(quarter.days)}${locked?` · dortoir de niveau ${fmt(quarter.quality)} requis`:short(quarter.gold)}</span></div>`
-        :`<p class="building-work">Tous les quartiers du lieutenant sont construits.</p>`);
-  }
-  box.innerHTML=`<button type="button" class="secondary dormitory-back" data-open-camp-scene="company" data-destination="Ma Compagnie">← Ma Compagnie</button>
-    <p class="eyebrow">Dortoir</p>
+  const gold=c.company.gold,expand=rules.nextDormitoryExpansion(c),upgrade=rules.nextDormitoryQuality(c);
+  const quarter=rules.nextLieutenantQuarter(c),locked=Boolean(quarter&&quality.niveau<quarter.quality);
+  const used=Number(rules.dormitoryUsed(c))||0,capacity=Number(c.company.camp.dormitoryCapacity)||0,free=Math.max(0,capacity-used);
+  const fill=capacity>0?Math.min(100,Math.round(used/capacity*1000)/10):0,members=c.company.roster.length;
+  const rows=[
+    dormitoryRow({attr:"data-dorm-expand",icon:"agrandir",title:"Agrandir",sub:`+${fmt(expand.places)} places`,gold:expand.gold,days:expand.days,
+      disabled:Boolean(work)||gold<expand.gold,short:gold<expand.gold}),
+    upgrade
+      ?dormitoryRow({attr:"data-dorm-quality",icon:"ameliorer",title:"Améliorer",sub:upgrade.name,gold:upgrade.gold,days:upgrade.days,
+        info:`Renommée +${fmt(upgrade.renown)}, affinité +${fmt(upgrade.affinity)}${upgrade.fatigue?`, fatigue −${fmt(upgrade.fatigue)} %`:""}`,
+        disabled:Boolean(work)||gold<upgrade.gold,short:gold<upgrade.gold})
+      :dormitoryRow({attr:"data-dorm-quality",icon:"ameliorer",title:"Améliorer",sub:"Qualité maximale",disabled:true}),
+    quarter
+      ?dormitoryRow({attr:"data-dorm-quarter",icon:"quartier",title:"Quartier du lieutenant",sub:locked?`Dortoir de niveau ${fmt(quarter.quality)} requis`:"Construire",
+        gold:quarter.gold,days:quarter.days,tip:`Quartier du lieutenant n° ${fmt(quarter.number)}`,
+        disabled:Boolean(work)||locked||gold<quarter.gold,short:!locked&&gold<quarter.gold})
+      :dormitoryRow({attr:"data-dorm-quarter",icon:"quartier",title:"Quartier du lieutenant",sub:"Tous construits",disabled:true}),
+    dormitoryRow({attr:'data-open-camp-scene="mercenaries" data-destination="Mes mercenaires"',icon:"mercenaires",title:"Mes mercenaires",
+      sub:`${fmt(members)} mercenaire${members>1?"s":""}`,chevron:true})
+  ];
+  box.innerHTML=`<div class="dorm-sheet">
+    <p class="dorm-eyebrow">Dortoir</p>
+    <i class="dorm-rule" aria-hidden="true"></i>
     <h2>${esc(quality.nom)}</h2>
-    <p class="dormitory-meta">Niveau ${fmt(quality.niveau)} · ${dormitoryPlacesLine(c)} · ${lieutenantQuartersLine(c)}${Number(quality.fatigue)>0?` · fatigue −${fmt(quality.fatigue)} %`:""}</p>
-    <div class="building-actions">${actions}</div>`;
+    <p class="dorm-level">Niveau ${fmt(quality.niveau)}${Number(quality.fatigue)>0?` · fatigue −${fmt(quality.fatigue)} %`:""}</p>
+    <div class="dorm-places">${dormitoryIcon("lit")}<strong>${dormitoryPlacesText(used)} / ${fmt(capacity)} places</strong><span>${dormitoryPlacesText(free)} place${free>1?"s":""} libre${free>1?"s":""}</span></div>
+    <div class="dorm-bar" role="meter" aria-label="Places occupées" aria-valuemin="0" aria-valuemax="${capacity}" aria-valuenow="${used}"><i style="width:${fill}%"></i></div>
+    <p class="dorm-quarters">${dormitoryIcon("chevrons")}Quartiers du lieutenant : ${fmt(rules.lieutenantQuarters(c))}</p>
+    ${work?`<p class="dorm-work">${DORMITORY_HOURGLASS}${campWorkText(work,c.day)}</p>`:""}
+    <i class="dorm-rule" aria-hidden="true"></i>
+    <div class="dorm-rows">${rows.join("")}</div>
+  </div>`;
 }
 
 function startCampWork(result){

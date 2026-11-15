@@ -3,7 +3,8 @@
 // Pictos des peuples, des cultures et des ascendances (masters d'Idan, assets-src/Picto/, détourés par
 // scripts/build-pictos.sh). Le fichier porte le « slug » du nom de référence :
 // « Sang d’elfe » → assets/pictos/ascendance-sang-d-elfe.webp. Purement visuel.
-const PICTO_KINDS={people:"peuple",culture:"culture",ascendance:"ascendance"};
+// Écoles de magie (Idan, 2026-11-15) : « Feu » → assets/pictos/ecole-feu.webp.
+const PICTO_KINDS={people:"peuple",culture:"culture",ascendance:"ascendance",school:"ecole"};
 
 function pictoSlug(name){
   return String(name??"").normalize("NFD").replace(/[̀-ͯ]/g,"")
@@ -18,7 +19,7 @@ function pictoPath(kind,name){
 
 // Au survol (Idan, 2026-10-25) : le nom et une phrase d'explication (description de captain-creation-copy.json),
 // dans une bulle du jeu plutôt que l'infobulle du navigateur.
-const PICTO_LABELS={people:"Peuple",culture:"Culture",ascendance:"Ascendance"};
+const PICTO_LABELS={people:"Peuple",culture:"Culture",ascendance:"Ascendance",school:"École de magie"};
 const PICTO_COPY={people:"peoples",culture:"cultures",ascendance:"ancestries"};
 function pictoDescription(kind,name){
   const rows=(typeof game!=="undefined"&&game?.referenceData?.captainCreationCopy?.[PICTO_COPY[kind]])||[];

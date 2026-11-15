@@ -37,5 +37,6 @@ Avant toute modification de logique métier :
 - Une valeur de table utilisée par le code doit provenir de `data/reference/` ou d'une donnée dérivée documentée.
 - Le HTML/CSS ne doit pas contenir de règle de gameplay.
 - Interface joueur (Idan, 2026-10-30) : jamais de tier (T1, T2…) ; un objet s'affiche sous son nom public (`item-titles.json`) et son cadre de couleur dit la qualité. Peu de texte : ce qui est évident ne s'écrit pas.
+- Interface joueur (Idan, 2026-11-15, choix global pour tout le jeu) : jamais de défilement ni de barre de défilement. Une liste se lit par pages de contenus entiers (jamais de portrait ni de carte coupés), tournées par des flèches de clic et par la molette (un cran, une page) ; quand tout doit rester visible (l'escouade choisie, par exemple), les éléments rétrécissent pour tenir plutôt que de passer en pages. « Le défilement ne fait pas très jeux. »
 - Éviter les dépendances externes inutiles.
 - Ne jamais réimporter automatiquement Notion par-dessus Git.

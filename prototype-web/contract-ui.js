@@ -409,6 +409,8 @@ function missionBoardOutside(board,event){
   return x<f.left||x>f.right||y<f.top||y>f.bottom;
 }
 function initializeExpeditionUi(){
+  // La molette tourne les annonces aussi (Idan, 2026-11-15 : un choix pour tout le jeu ; pageWheel, mission.js).
+  if(typeof pageWheel==="function") document.querySelector("[data-mission-board]")?.addEventListener("wheel",pageWheel(turnBoardPage),{passive:false});
   // Fenêtre fermée par Échap : les retours suivants s'affichent quand même.
   $("bodyguard-return-dialog")?.addEventListener("close",()=>{
     if(game.bodyguardReturns?.length) showNextBodyguardReturn();

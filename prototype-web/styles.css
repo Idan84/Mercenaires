@@ -2426,7 +2426,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    les flèches de fer de sa marge droite ; jamais de défilement. */
 .mission-roster-frame{position:relative;flex:1 1 auto;min-height:0;display:flex}
 .mission-roster{flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:repeat(var(--cols,5),var(--card,180px));justify-content:center;align-content:start;gap:18px 14px;box-sizing:border-box;padding:10px 52px 12px 6px}
-.mission-pick.is-off-page,.mission-slot.is-off-page{display:none}
+.mission-pick.is-off-page{display:none}
 /* La flèche du haut est celle du bas retournée (comme celles du panneau) : les deux sur le même axe. */
 .mission-scroll{all:unset;position:absolute;right:-22px;z-index:4;width:84px;height:38px;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6));transition:filter .15s,translate .15s}
 .mission-scroll--down{top:calc(50% + 33px);transform:rotate(90deg)}
@@ -2436,11 +2436,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-scroll--down:hover{translate:0 3px}
 .mission-scroll--up:hover{translate:0 -3px}
 .mission-scroll:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(0 3px 3px rgba(0,0,0,.6))}
-/* Celles de l'escouade, plus petites, sur le filet d'or du panneau. */
-.mission-scroll--squad{right:-48px;width:64px;height:29px;filter:brightness(1.45) drop-shadow(0 2px 3px rgba(0,0,0,.85))}
-.mission-scroll--squad:disabled{opacity:.5;filter:grayscale(.7) brightness(.9) drop-shadow(0 2px 3px rgba(0,0,0,.85))}
-.mission-scroll--squad.mission-scroll--up{top:calc(50% - 50px)}
-.mission-scroll--squad.mission-scroll--down{top:calc(50% + 21px)}
 /* Une carte : le portrait (le « + », le cachet quand il est choisi), le nom (la fiche), les étoiles, l'état. */
 .mission-pick{position:relative;cursor:pointer;display:grid;justify-items:center;align-content:start;gap:4px;text-align:center}
 .mission-pick[hidden]{display:none}
@@ -2451,14 +2446,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-choice .avatar-fallback span{font-size:2.2rem}
 .mission-pick:hover .avatar-frame{filter:brightness(1.08)}
 .mission-pick:has(input:focus-visible) .avatar-frame{outline:2px solid var(--bordeaux);outline-offset:3px}
-.mission-pick-portrait::after{content:"";position:absolute;inset:0;z-index:2;border-radius:3px;background:rgba(150,32,26,.32);mix-blend-mode:multiply;opacity:0;transition:opacity .15s;pointer-events:none}
-.mission-pick:has(input:checked) .mission-pick-portrait::after{opacity:1}
-.mission-pick:has(input:checked) .avatar-frame{border-color:var(--bordeaux);box-shadow:0 0 0 2px var(--bordeaux),0 0 14px 2px rgba(122,31,28,.5)}
 .mission-pick-add{position:absolute;top:8px;right:8px;z-index:3;width:26px;height:26px;box-sizing:border-box;border:1px solid rgba(240,211,149,.75);border-radius:3px;background:linear-gradient(var(--or-clair),var(--or-clair)) center/12px 2px no-repeat,linear-gradient(var(--or-clair),var(--or-clair)) center/2px 12px no-repeat,rgba(20,13,8,.72)}
-.mission-pick:has(input:checked) .mission-pick-add{display:none}
-.mission-pick-seal{display:none;position:absolute;right:-9px;bottom:-9px;z-index:3;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#c0392f,#8a201b 58%,#5a110e);box-shadow:0 0 0 2px #c9a461,0 3px 6px rgba(0,0,0,.55)}
-.mission-pick-seal::after{content:"";position:absolute;left:13px;top:8px;width:9px;height:16px;border:solid #fff3e0;border-width:0 3px 3px 0;rotate:42deg}
-.mission-pick:has(input:checked) .mission-pick-seal{display:block}
 /* Le nom ouvre la fiche complète : souligné au survol. */
 .mission-pick-name{all:unset;position:relative;box-sizing:border-box;max-width:100%;cursor:pointer;padding:0 2px 2px;font:700 clamp(15px,calc(var(--card,180px) * .125),20px)/1.12 var(--police-texte);color:var(--encre);text-align:center;text-wrap:balance;transition:color .12s}
 .mission-pick-name::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:1.5px;background:currentColor;opacity:0;transition:opacity .12s}
@@ -2487,25 +2475,22 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-squad-head h3::after{content:"";flex:1;height:1.5px;background:linear-gradient(90deg,var(--or),transparent);opacity:.7}
 .mission-squad-count{font:700 30px/1 var(--police-titre);color:var(--or-clair)}
 .mission-squad-subtitle{grid-column:1 / -1;margin:0;font:italic 500 19px/1.2 var(--police-texte);color:#d8c6a4}
-/* Les places : quatre par rangée, puis cinq, puis six (sans le nom, au survol) quand l'escouade grandit ; des pages (les
-   flèches) si elles ne tiennent pas toutes. */
-.mission-squad-frame{position:relative;flex:1 1 auto;min-height:0;padding:6px 2px}
-.mission-squad-slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-content:start;gap:14px 12px}
-.mission-squad-slots[data-size="m"]{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px 10px}
-.mission-squad-slots[data-size="s"]{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px}
+/* Les places : toutes tiennent, toujours ; plus il y en a, plus elles rétrécissent (--squad-cols, --slot : mission.js),
+   quatre par rangée au moins ; petites, sans le nom (au survol). */
+.mission-squad-frame{flex:1 1 auto;min-height:0;padding:6px 2px;overflow:hidden}
+.mission-squad-slots{display:grid;grid-template-columns:repeat(var(--squad-cols,4),minmax(0,1fr));align-content:start;gap:12px 10px}
 .mission-slot{display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;text-align:center}
 .mission-slot-portrait{position:relative;display:block;width:100%;aspect-ratio:4/3}
 .mission-slot-portrait .avatar-frame{width:100%;height:100%;aspect-ratio:auto;border:1px solid rgba(201,164,97,.55);border-radius:3px;box-shadow:0 5px 9px rgba(0,0,0,.5)}
 .mission-slot--empty .mission-slot-portrait{box-sizing:border-box;border:1.5px dashed rgba(201,164,97,.4);border-radius:3px;background:rgba(0,0,0,.2)}
 .mission-slot-remove{all:unset;position:absolute;top:5px;right:5px;z-index:3;width:24px;height:24px;box-sizing:border-box;cursor:pointer;border:1px solid rgba(240,211,149,.65);border-radius:3px;background:linear-gradient(45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,linear-gradient(-45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,rgba(20,13,8,.8);transition:background-color .12s}
 .mission-slot-remove:hover,.mission-slot-remove:focus-visible{outline:none;background-color:var(--bordeaux)}
-.mission-squad-slots[data-size="s"] .mission-slot-remove{top:3px;right:3px;width:18px;height:18px;background-size:9px 9px,9px 9px,auto}
-.mission-slot .mission-pick-name{font-size:17px;color:var(--ivoire)}
+.mission-squad-slots[data-named="false"] .mission-slot-remove{top:3px;right:3px;width:18px;height:18px;background-size:9px 9px,9px 9px,auto}
+.mission-slot .mission-pick-name{font-size:clamp(14px,calc(var(--slot,108px) * .16),17px);color:var(--ivoire)}
 .mission-slot .mission-pick-name:hover,.mission-slot .mission-pick-name:focus-visible{color:var(--or-clair)}
-.mission-slot .rep-stars{font-size:14px}
-.mission-squad-slots[data-size="m"] .mission-pick-name{font-size:15px}
-.mission-squad-slots[data-size="s"] .mission-pick-name{display:none}
-.mission-squad-slots[data-size="s"] .rep-stars{font-size:11px;letter-spacing:0}
+.mission-slot .rep-stars{font-size:clamp(10px,calc(var(--slot,108px) * .13),14px)}
+.mission-squad-slots[data-named="false"] .mission-pick-name{display:none}
+.mission-squad-slots[data-named="false"] .rep-stars{letter-spacing:0}
 .mission-squad-hint{grid-column:1 / -1;margin:18px 0;font:italic 500 19px/1.3 var(--police-texte);text-align:center;color:#d8c6a4}
 .mission-squad-rule{flex:none;height:1.5px;margin:2px 10%;background:linear-gradient(90deg,transparent,var(--or) 30%,var(--or) 70%,transparent);opacity:.55}
 /* Les fatigués : une bande de parchment ; la règle en clair (encore fatigués au combat, ou reposés en route). */

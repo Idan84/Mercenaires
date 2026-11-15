@@ -271,8 +271,9 @@ assert.equal((choiceDialog.match(/class="mission-corner mission-corner--(tl|tr|b
 assert.match(choiceCss, /\.mission-roster\{[^}]*overflow:hidden[^}]*grid-template-columns:repeat\(var\(--cols,5\),var\(--card,180px\)\)/);
 assert.doesNotMatch(choiceCss, /\.mission-roster\{[^}]*(overflow-y:auto|mask:)/, "ni défilement ni carte à moitié effacée");
 assert.match(choiceCss, /\.mission-squad-frame\{(?![^}]*overflow-y:auto)[^}]*\}/, "l'escouade ne défile pas non plus");
-assert.match(choiceCss, /\.mission-pick\.is-off-page,\.mission-slot\.is-off-page\{display:none\}/);
-assert.match(choiceDialog, /data-roster-page="-1"[\s\S]*data-roster-page="1"[\s\S]*data-squad-page="-1"[\s\S]*data-squad-page="1"/, "des flèches pour la galerie et pour l'escouade");
+assert.match(choiceCss, /\.mission-pick\.is-off-page\{display:none\}/);
+assert.match(choiceDialog, /data-roster-page="-1"[\s\S]*data-roster-page="1"/, "des flèches pour la galerie");
+assert.doesNotMatch(choiceDialog, /data-squad-page/, "« Comme ça pas de flèche » pour l'escouade");
 assert.doesNotMatch(choiceDialog, /data-roster-scroll/);
 assert.match(choiceCss, /\.mission-scroll\{[^}]*fleche-fer\.webp/, "la flèche de fer du panneau");
 // « Un léger problème d'alignement de ces flèches » : celle du haut est celle du bas retournée, sur le même axe.
@@ -306,7 +307,41 @@ assert.doesNotMatch(choice, /scrollBy|scrollTop|updateMissionRosterScroll/, "plu
   assert.deepEqual(pageOf(0, 12, 0), {page: 0, pages: 1});
 }
 assert.match(choice, /function missionPageArrows\(scope,page,pages\)\{[\s\S]*?arrow\.hidden=pages<2;[\s\S]*?arrow\.disabled=off;/, "cachées s'il n'y a qu'une page, grisées au bout");
-assert.match(choice, /sel\.order\.push\(id\); sel\.squadPage=Infinity;/, "on voit arriver le nouveau venu dans l'escouade");
+// « La molette tourne les pages aussi » (un choix global, AGENTS.md), sur la galerie et sur le panneau des annonces.
+assert.match(missionJs, /addEventListener\("wheel",pageWheel\(dir=>showMissionRosterPage\(/);
+assert.match(fs.readFileSync(path.join(root, "prototype-web/contract-ui.js"), "utf8"), /addEventListener\("wheel",pageWheel\(turnBoardPage\),\{passive:false\}\)/);
+assert.match(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8"), /jamais de défilement[\s\S]*flèches de clic et par la molette/, "la règle, pour tout le jeu");
+{
+  const wheel = new Function("Date", choice.slice(choice.indexOf("function pageWheel("), choice.indexOf("// L'escouade : les portraits choisis")) + "\nreturn pageWheel;");
+  let now = 1000; const turns = [];
+  const handler = wheel({now: () => now})(dir => turns.push(dir));
+  const ev = (deltaY) => ({deltaX: 0, deltaY, deltaMode: 0, preventDefault() {}});
+  handler(ev(120)); assert.deepEqual(turns, [1], "un cran de molette : la page suivante");
+  for (let i = 0; i < 10; i++) { now += 16; handler(ev(30)); }
+  assert.deepEqual(turns, [1], "le même geste (pavé tactile) ne tourne qu'une page");
+  now += 400; handler(ev(-120)); assert.deepEqual(turns, [1, -1], "un geste plus tard, vers le haut : la page précédente");
+}
+// « Au lieu de les avoir sélectionnés à gauche, on les retire à gauche » ; retiré de l'escouade, il revient.
+assert.match(choice, /card\.hidden=order\.includes\(Number\(input\?\.value\)\)\|\|/);
+assert.match(choice, /renderMissionSquad\(\);\s*refreshMissionRoster\(\);/);
+assert.doesNotMatch(choice + choiceCss, /mission-pick-seal/, "plus de cachet : le choisi n'est plus à gauche");
+// « La taille de portrait relative au nombre de mercenaires de l'escouade… pas de flèche » : tout tient, toujours.
+{
+  const squadGrid = new Function(choice.slice(choice.indexOf("function missionSquadGrid("), choice.indexOf("function layoutMissionSquad(")) + "\nreturn missionSquadGrid;")();
+  let last = null;
+  for (let count = 1; count <= 20; count++) {
+    const g = squadGrid({count, width: 476, height: 496});
+    const rows = Math.ceil(count / g.cols);
+    assert.ok(rows * (g.side * 3 / 4 + (g.named ? 46 : 16)) + (rows - 1) * 12 <= 496, `${count} : toute l'escouade tient`);
+    assert.ok(g.cols >= 4, "quatre par rangée au moins : plus petits que la galerie");
+    if (last) {
+      assert.ok(g.side <= last.side, `${count} : un de plus ne fait jamais grandir les portraits`);
+      assert.ok(!g.named || last.named, `${count} : ni revenir les noms`);
+    }
+    last = g;
+  }
+  assert.ok(squadGrid({count: 20, width: 460, height: 184}).cols > 4, "petit écran : plus petits, mais tous là");
+}
 // « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
 assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");
 assert.match(choice, /&&rules\.canGuard\(c,m,offer\)\.ok\);/, "garde du corps : seulement ceux qui peuvent la prendre");

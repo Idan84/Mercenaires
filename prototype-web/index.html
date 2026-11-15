@@ -416,6 +416,7 @@
        tag, celui de la mission d'abord ; la galerie des portraits de ceux qui peuvent partir ; les boutons de la création. -->
   <dialog id="mission-select-dialog" class="mission-detail mission-choice" aria-labelledby="mission-select-title">
     <div class="mission-choice-body">
+      <div class="mission-choice-sheet">
       <header class="mission-squad">
         <div class="mission-squad-head">
           <h2 id="mission-select-title">L’escouade</h2>
@@ -425,9 +426,12 @@
         <p id="mission-select-cost" class="mission-squad-cost"></p>
         <span id="mission-select-count" class="mission-squad-count" hidden></span>
       </header>
-      <nav id="mission-select-tags" class="mission-tags" aria-label="Filtrer par tag"></nav>
-      <div id="mission-select-list" class="mission-roster"></div>
-      <p id="mission-select-error" class="mission-choice-error"></p>
+      <section class="mission-recruits" aria-label="Ceux qui peuvent partir">
+        <nav id="mission-select-tags" class="mission-tags" aria-label="Filtrer par tag"></nav>
+        <div id="mission-select-list" class="mission-roster"></div>
+        <p id="mission-select-error" class="mission-choice-error"></p>
+      </section>
+      </div>
       <footer class="mission-detail-actions">
         <button type="button" id="cancel-mission-select-btn" class="mission-retour">‹ Retour</button>
         <button type="button" id="start-mission-btn" class="mission-btn">Partir demain</button>

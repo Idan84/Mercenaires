@@ -2381,6 +2381,8 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-choice{--ivoire:#f4e5c7}
 .mission-choice-body{--u:calc(var(--board-w) * .001);display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;height:100%;box-sizing:border-box;padding:22px 16px 16px}
 .mission-choice-body > *{flex:none;width:min(1240px,100%)}
+.mission-choice-body > .mission-choice-sheet{position:relative;isolation:isolate;flex:1 1 auto;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;gap:14px}
+.mission-recruits{position:relative;isolation:isolate;flex:1 1 auto;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;gap:14px}
 /* L'escouade : le parchemin de la création (coins et filet compris), étiré sans déformer ses coins. */
 .mission-squad{position:relative;isolation:isolate;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr) minmax(0,1fr);align-items:center;column-gap:24px;row-gap:12px;padding:40px 64px 42px;color:var(--encre)}
 .mission-squad::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:drop-shadow(0 20px 28px rgba(0,0,0,.65))}
@@ -2418,7 +2420,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-tag[aria-pressed="true"]{border-color:var(--tag-head);background:var(--tag-2);color:#fff7e4;box-shadow:0 0 10px color-mix(in srgb,var(--tag-head) 45%,transparent)}
 .mission-tag:focus-visible{outline:2px solid var(--or-clair);outline-offset:2px}
 /* La galerie : ceux qui peuvent partir ; un clic ajoute à l'escouade (la case reste pour le clavier). */
-.mission-choice-body > .mission-roster{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));align-content:start;gap:20px 12px;box-sizing:border-box;padding:8px 10px 12px;scrollbar-width:thin;scrollbar-color:rgba(201,164,97,.5) transparent}
+.mission-recruits > .mission-roster{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));align-content:start;gap:20px 12px;box-sizing:border-box;padding:8px 10px 12px;scrollbar-width:thin;scrollbar-color:rgba(201,164,97,.5) transparent}
 .mission-pick{position:relative;cursor:pointer;display:grid;justify-items:center;align-content:start;gap:5px;text-align:center}
 .mission-pick[hidden]{display:none}
 .mission-pick input{position:absolute;opacity:0;pointer-events:none}
@@ -2436,6 +2438,30 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-roster-empty{grid-column:1 / -1;margin:24px 0;font:italic 500 19px/1.3 var(--police-texte);text-align:center;color:var(--ivoire);text-shadow:0 1px 3px #000}
 .mission-choice-error{margin:0;font:italic 500 18px/1.3 var(--police-texte);text-align:center;color:#f0a191;text-shadow:0 1px 3px #000}
 .mission-choice-error:empty{display:none}
+/* Le fond de la galerie (Idan, 2026-11-15 : « il me manque un background pour les mercenaires à choisir »), deux pistes à
+   comparer. « feuille » : l'escouade et la galerie sur un seul grand parchemin de la création, séparées d'un filet. */
+.mission-choice[data-fond="feuille"] .mission-choice-sheet{padding:40px 62px 30px;gap:12px}
+.mission-choice[data-fond="feuille"] .mission-choice-sheet::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:drop-shadow(0 20px 28px rgba(0,0,0,.65))}
+.mission-choice[data-fond="feuille"] .mission-squad{padding:0}
+.mission-choice[data-fond="feuille"] .mission-squad::before{display:none}
+.mission-choice[data-fond="feuille"] .mission-recruits{padding-top:16px}
+.mission-choice[data-fond="feuille"] .mission-recruits::before{content:"";position:absolute;top:0;left:16%;right:16%;height:1.5px;background:linear-gradient(90deg,transparent,var(--encre-secondaire) 30%,var(--encre-secondaire) 70%,transparent);opacity:.55}
+.mission-choice[data-fond="feuille"] .mission-tag{background:rgba(255,248,232,.28);color:var(--tag-1);text-shadow:none;border-color:color-mix(in srgb,var(--tag-2) 70%,transparent)}
+.mission-choice[data-fond="feuille"] .mission-tag:hover{background:rgba(255,248,232,.55)}
+.mission-choice[data-fond="feuille"] .mission-tag[aria-pressed="true"]{background:var(--tag-2);color:#fff7e4;box-shadow:0 2px 5px rgba(40,24,8,.3)}
+.mission-choice[data-fond="feuille"] .mission-pick .avatar-frame{border-color:rgba(100,73,46,.55);box-shadow:0 5px 9px rgba(40,24,8,.4);filter:saturate(.85) brightness(.9)}
+.mission-choice[data-fond="feuille"] .mission-pick:hover .avatar-frame{filter:none}
+.mission-choice[data-fond="feuille"] .mission-pick:has(input:checked) .avatar-frame{filter:none;border-color:var(--bordeaux);box-shadow:0 0 0 2px var(--bordeaux),0 0 12px 2px rgba(122,31,28,.45)}
+.mission-choice[data-fond="feuille"] .mission-pick strong{color:var(--encre);text-shadow:none}
+.mission-choice[data-fond="feuille"] .mission-pick .rep-stars{text-shadow:none}
+.mission-choice[data-fond="feuille"] .mission-pick .rep-stars-empty{color:rgba(100,73,46,.38);opacity:1}
+.mission-choice[data-fond="feuille"] .mission-pick small{color:#8a4416;text-shadow:none}
+.mission-choice[data-fond="feuille"] .mission-roster-empty,.mission-choice[data-fond="feuille"] .mission-choice-error{color:var(--encre-secondaire);text-shadow:none}
+.mission-choice[data-fond="feuille"] .mission-roster{scrollbar-color:rgba(100,73,46,.5) transparent}
+/* « cuir » : l'escouade sur son parchemin ; la galerie dans un écrin de cuir sombre, cousu, aux coins de bronze du menu. */
+.mission-choice[data-fond="cuir"] .mission-recruits{padding:22px 28px 16px;border:1px solid #5d3f25;border-radius:6px;background:radial-gradient(ellipse at 50% 30%,rgba(74,47,28,.5) 0%,rgba(36,23,13,.62) 60%,rgba(18,11,6,.8) 100%),url("assets/taverne/papier-froisse.webp") center/380px,#3a2414;background-blend-mode:normal,soft-light,normal;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),inset 0 0 48px rgba(0,0,0,.75),0 20px 30px rgba(0,0,0,.6)}
+.mission-choice[data-fond="cuir"] .mission-recruits::after{content:"";position:absolute;inset:8px;z-index:2;border:1px dashed rgba(214,176,112,.35);border-radius:4px;pointer-events:none}
+.mission-choice[data-fond="cuir"] .mission-recruits::before{content:"";position:absolute;inset:-5px;z-index:3;pointer-events:none;background:url("assets/ui/menu-corner-tl.webp") top left/86px no-repeat,url("assets/ui/menu-corner-br.webp") bottom right/86px no-repeat;filter:drop-shadow(0 2px 3px rgba(0,0,0,.7))}
 .mission-btn:disabled{cursor:default;color:rgba(240,211,149,.55);transform:none}
 .mission-btn:disabled::before{filter:grayscale(.65) brightness(.62) drop-shadow(0 6px 6px rgba(0,0,0,.55))}
 @media (max-width:700px){
@@ -2443,7 +2469,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
   .mission-squad::before{border-width:56px;border-image-width:56px}
   .mission-squad-slots,.mission-squad-cost{grid-column:1}
   .mission-squad-cost{justify-self:center}
-  .mission-choice-body > .mission-roster{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+  .mission-recruits > .mission-roster{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .mission-pick .avatar-frame{width:88px;height:88px}
   .mission-pick:has(input:checked)::after{top:64px;left:calc(50% + 24px);width:34px;height:34px}
   .mission-choice .mission-detail-actions{gap:18px}

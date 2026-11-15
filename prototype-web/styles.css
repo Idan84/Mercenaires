@@ -2437,7 +2437,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-pick:has(input:checked) .avatar-frame{filter:none;border-color:var(--bordeaux);box-shadow:0 0 0 2px var(--bordeaux),0 0 12px 2px rgba(122,31,28,.45)}
 /* Choisi : le cachet de cire rouge du panneau, sur le coin du portrait. */
 .mission-pick:has(input:checked)::after{content:"";position:absolute;top:68px;left:calc(50% + 28px);width:34px;height:34px;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;rotate:-12deg;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
-.mission-pick strong{max-width:100%;font:600 15px/1.12 var(--police-texte);color:var(--encre);text-wrap:balance}
+/* Le nom ouvre la fiche complète : souligné d'un filet au survol, comme le retour. */
+.mission-pick-name{all:unset;position:relative;box-sizing:border-box;max-width:100%;cursor:pointer;padding:0 2px 2px;font:600 15px/1.12 var(--police-texte);color:var(--encre);text-align:center;text-wrap:balance;transition:color .12s}
+.mission-pick-name::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:1.5px;background:currentColor;opacity:0;-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%;transition:opacity .12s}
+.mission-pick-name:hover,.mission-pick-name:focus-visible{color:var(--bordeaux)}
+.mission-pick-name:hover::after,.mission-pick-name:focus-visible::after{opacity:.7}
+.mission-pick-name:focus-visible{outline:1px solid var(--bordeaux);outline-offset:2px}
 .mission-pick .rep-stars{font-size:13px;text-shadow:none}
 .mission-pick .rep-stars-empty{color:rgba(100,73,46,.38);opacity:1}
 .mission-pick small{font:italic 500 13px/1.15 var(--police-texte);color:#8a4416}

@@ -857,7 +857,7 @@ function renderMissionChoice(list,{note=()=>"",missionTag=null,error=""}={}){
     return `<label class="mission-pick" data-tags="${esc(tagsOf(c).join(" "))}">
       <input type="checkbox" value="${c.id}" ${sel.order.includes(c.id)?"checked":""}>
       ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <strong>${esc(c.name)}</strong>
+      <button type="button" class="mission-pick-name" data-sheet-open="${c.id}" title="Voir la fiche">${esc(c.name)}</button>
       ${renderReputationStars(c)}
       ${extra?`<small>${esc(extra)}</small>`:""}
     </label>`;
@@ -873,6 +873,16 @@ function renderMissionChoice(list,{note=()=>"",missionTag=null,error=""}={}){
   $("start-mission-btn").textContent=sel.contract||sel.bodyguard?"Partir demain":"Lancer la mission";
   updateMissionSelectionCount();
   $("mission-select-dialog").showModal();
+}
+
+// La fiche complète (Idan, 2026-11-15 : « les persos sont cliquables et ça ouvre la fiche complète ? » → « clic sur le
+// nom ») : un clic sur le nom l'ouvre par-dessus ; le portrait, lui, ajoute à l'escouade. Fermée, on retrouve l'escouade.
+function openMissionChoiceSheet(event){
+  const name=event.target.closest("[data-sheet-open]");
+  if(!name) return;
+  event.preventDefault();
+  const c=allCharacters().find(m=>String(m.id)===name.dataset.sheetOpen);
+  if(c&&typeof showCharacter==="function") showCharacter(c);
 }
 
 // Un tag à la fois : un clic l'allume, un second l'éteint. Ceux de l'escouade restent choisis, même cachés.
@@ -5655,6 +5665,7 @@ function leaveMission(){
 function initializeMissionUi(){
   $("mission-test-btn").addEventListener("click",openMissionSelection);
   $("mission-select-list").addEventListener("change",updateMissionSelectionCount);
+  $("mission-select-list").addEventListener("click",openMissionChoiceSheet);
   $("mission-select-tags").addEventListener("click",filterMissionChoice);
   $("mission-squad-slots").addEventListener("click",removeFromMissionSquad);
   // Retour à l'annonce : la fiche de la mission se rouvre.

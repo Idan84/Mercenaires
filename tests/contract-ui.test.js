@@ -287,4 +287,9 @@ assert.match(choice, /\[\.\.\.\(missionTag\?\[missionTag\]:\[\]\),\.\.\.roles\]/
   assert.equal(missionTagOf({kind:"bodyguard", client:"Une veuve fortunée"}), "occupation/garde-du-corps");
   assert.equal(missionTagOf(null), null, "Mission Test : pas de tag de mission");
 }
+// « Les persos sont cliquables et ça ouvre la fiche complète ? » → clic sur le nom : la fiche s'ouvre par-dessus ; le
+// portrait, lui, ajoute à l'escouade.
+assert.match(choice, /<button type="button" class="mission-pick-name" data-sheet-open="\$\{c\.id\}"/);
+assert.match(missionJs, /function openMissionChoiceSheet\(event\)\{[\s\S]*?event\.preventDefault\(\);[\s\S]*?showCharacter\(c\);/);
+assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",openMissionChoiceSheet\);/);
 console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action, choix de l'escouade — OK");

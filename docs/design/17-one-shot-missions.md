@@ -342,8 +342,9 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   celui de la mission ! ») : le camp ou la chasse sous Mission (doc 20), ou Garde du corps, puis les rôles au combat que
   porte au moins l'un d'eux. Puis la galerie, une dizaine de portraits par rangée, qui défile dans la feuille : seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés,
   autres missions…). Les fatigués sont là bien entendu ») ; sous chaque portrait, le nom, les étoiles et la fatigue ; pas
-  de picto de combat (« on va le virer / refaire »). Un clic ajoute à l'escouade (le cachet de cire rouge sur le coin du
-  portrait). En bas, « ‹ Retour à l'annonce » et « Partir demain ».
+  de picto de combat (« on va le virer / refaire »). Un clic sur le portrait l'ajoute à l'escouade (le cachet de cire
+  rouge sur son coin) ; un clic sur le nom ouvre la fiche complète par-dessus (Idan : « les persos sont cliquables et ça
+  ouvre la fiche complète ? »), et on retrouve l'escouade en la fermant. En bas, « ‹ Retour à l'annonce » et « Partir demain ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
   les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,

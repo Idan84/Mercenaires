@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Pictos des peuples, des cultures et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 sur fond blanc)
-# → versions web détourées (prototype-web/assets/pictos/, WebP 128×128 transparent).
+# Pictos des peuples, des cultures et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 ; cultures et
+# ascendances sur fond blanc, peuples déjà détourés) → versions web (prototype-web/assets/pictos/, WebP 128×128 transparent).
 # Le nom de sortie est le « slug » du nom de référence (peoples.json, ancestries.json),
 # calculé de la même façon par prototype-web/picto-ui.js. Nécessite ImageMagick.
 set -euo pipefail
@@ -11,16 +11,6 @@ mkdir -p "$OUT"
 
 # master → nom de sortie
 MAP=(
-  "Peuple/Peuple_Orc.jpg:peuple-orc"
-  "Peuple/Peuple_Homme_Betes.jpg:peuple-homme-bete"
-  "Peuple/Peuple_Reptilien.jpg:peuple-reptilien"
-  "Peuple/Peuple_Humain.jpg:peuple-humain"
-  "Peuple/Peuple_Halfling.jpg:peuple-halfling"
-  "Peuple/Peuple_Elfes.jpg:peuple-elfe"
-  "Peuple/Peuple_Gobelin.jpg:peuple-gobelin"
-  "Peuple/Peuple_Gnome.jpg:peuple-gnome"
-  "Peuple/Peuple_Orgre.jpg:peuple-ogre"
-  "Peuple/Peuple_Nain.jpg:peuple-nain"
   "Ascendance/Asc_Divin.jpg:ascendance-sang-divin"
   "Ascendance/Asc_Dragon.jpg:ascendance-sang-de-dragon"
   "Ascendance/Asc_Djiin.jpg:ascendance-sang-de-djinn"
@@ -78,6 +68,15 @@ for entry in "${MAP[@]}"; do
   src="$SRC/${entry%%:*}"; out="$OUT/${entry##*:}.webp"
   pockets=0; [[ $entry == Culture/* ]] && pockets=1
   cut_picto "$src" "$out" "$pockets"
+  echo "$out"
+done
+
+# Peuples (Idan, 2026-11-15) : masters déjà détourés, décontaminés et à la bonne proportion (PNG transparents 1024 × 1024,
+# assets-src/Picto/Peuple/README.md). « Ce qui compte ici, c'est la taille extérieure du png, pas l'intérieur » : on garde
+# toute la toile, sans recadrer, et on réduit.
+for src in "$SRC"/Peuple/peuple-*.png; do
+  out="$OUT/$(basename "$src" .png).webp"
+  convert "$src" -resize 128x128 -quality 90 "$out"
   echo "$out"
 done
 

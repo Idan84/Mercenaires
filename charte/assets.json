@@ -9,61 +9,61 @@
         {
           "name": "elfe.webp",
           "source": "prototype-web/assets/pictos/peuple-elfe.webp",
-          "size": 5944,
+          "size": 5380,
           "type": "image/webp"
         },
         {
           "name": "gnome.webp",
           "source": "prototype-web/assets/pictos/peuple-gnome.webp",
-          "size": 8246,
+          "size": 4000,
           "type": "image/webp"
         },
         {
           "name": "gobelin.webp",
           "source": "prototype-web/assets/pictos/peuple-gobelin.webp",
-          "size": 5004,
+          "size": 4588,
           "type": "image/webp"
         },
         {
           "name": "halfling.webp",
           "source": "prototype-web/assets/pictos/peuple-halfling.webp",
-          "size": 5484,
+          "size": 5650,
           "type": "image/webp"
         },
         {
           "name": "homme-bete.webp",
           "source": "prototype-web/assets/pictos/peuple-homme-bete.webp",
-          "size": 5358,
+          "size": 5554,
           "type": "image/webp"
         },
         {
           "name": "humain.webp",
           "source": "prototype-web/assets/pictos/peuple-humain.webp",
-          "size": 5288,
+          "size": 4074,
           "type": "image/webp"
         },
         {
           "name": "nain.webp",
           "source": "prototype-web/assets/pictos/peuple-nain.webp",
-          "size": 5268,
+          "size": 4010,
           "type": "image/webp"
         },
         {
           "name": "ogre.webp",
           "source": "prototype-web/assets/pictos/peuple-ogre.webp",
-          "size": 5552,
+          "size": 4040,
           "type": "image/webp"
         },
         {
           "name": "orc.webp",
           "source": "prototype-web/assets/pictos/peuple-orc.webp",
-          "size": 4848,
+          "size": 5228,
           "type": "image/webp"
         },
         {
           "name": "reptilien.webp",
           "source": "prototype-web/assets/pictos/peuple-reptilien.webp",
-          "size": 6354,
+          "size": 6036,
           "type": "image/webp"
         }
       ]

@@ -60,8 +60,10 @@ function mercenaryHoverData(c,{missionTag=null}={}){
 // La texture de sa culture (hud-bars.js) pour le fond du cartouche du nom (Idan, 2026-11-15 : « la texture de la culture
 // uniquement… notre PNG centre de culture mais on coupe en haut et en bas ») : la pièce du milieu de sa barre, réduite à sa
 // bande (de bandTop à bandBottom), rognée encore de 8 % en haut et en bas : chez certaines cultures (chaînes des Orcs noirs,
-// cordes des Tribus de la jungle…) la bande mesurée garde un liseré du cadre. Des rapports sans unité, que le CSS multiplie
-// par la hauteur du cartouche.
+// cordes des Tribus de la jungle…) la bande mesurée garde un liseré du cadre. Les ornements du titre (Idan : « un petit truc
+// joli propre à chaque culture avec notre stock d'ornements ») : le bout droit de sa barre (de la fin de la bande au bord de
+// l'embout droit, là où est le bijou), répété en miroir à gauche. Des rapports sans unité, que le CSS multiplie par la
+// hauteur du cartouche.
 const HOVER_TEXTURE_INSET=.08;
 function hoverCultureFrame(culture){
   const all=typeof HUD_BARS!=="undefined"?HUD_BARS:{};
@@ -70,7 +72,9 @@ function hoverCultureFrame(culture){
   const top=bar.bandTop+inset,band=bar.bandBottom-bar.bandTop-2*inset;
   return {key,
     vars:[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
-      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`].join(";")};
+      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`,
+      `--hc-tip-img:url("assets/hud/barres/${key}/right.webp")`,`--hc-tip:${(bar.bandRight/bar.h).toFixed(4)}`,
+      `--hc-tip-dy:${((bar.h-bar.frameTop-bar.frameBottom)/2/bar.h).toFixed(4)}`].join(";")};
 }
 
 // La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15). Une carte et un avatar aux dimensions fixes,
@@ -97,7 +101,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const tags=d.tags.map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}" style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
-    <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><span>${esc(d.title)}</span></p>`:""}</header>
+    <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
       <div class="hc-emblems">${emblems}</div>
       <i class="hc-rule" aria-hidden="true"></i>
@@ -114,4 +118,22 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   </article>`;
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame};
+// Le nom et le titre dans le cartouche, une fois la fiche dans la page. Le nom : une ligne, sa police baisse tant qu'il
+// dépasse (jusqu'à 60 %). Le titre (il peut dépasser 80 lettres : « Archer éclaireur et soigneur en herbe à l'arc et à la
+// hache de guerre à dos de licorne ») : une ligne jusqu'à 75 % de sa taille ; au-delà, deux lignes, et la police baisse
+// encore tant que le cartouche déborde (jusqu'à 60 %).
+function fitHoverCard(root){
+  const shrink=(el,fits,floor)=>{
+    let size=parseFloat(getComputedStyle(el).fontSize);const min=size*floor;
+    while(!fits()&&size>min){ size-=.5; el.style.fontSize=size+"px"; }
+    return fits();
+  };
+  const name=root.querySelector(".hc-banner h3"),title=root.querySelector(".hc-title span"),banner=root.querySelector(".hc-banner");
+  if(name) shrink(name,()=>name.scrollWidth<=name.clientWidth+1,.6);
+  if(title&&!shrink(title,()=>title.scrollWidth<=title.clientWidth+1,.75)){
+    title.parentElement.classList.add("is-two-lines");
+    shrink(title,()=>title.scrollWidth<=title.clientWidth+1&&banner.scrollHeight<=banner.clientHeight+1,.8);
+  }
+}
+
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,fitHoverCard};

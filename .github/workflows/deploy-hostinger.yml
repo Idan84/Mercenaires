@@ -1,7 +1,8 @@
 name: Mise en ligne Hostinger
 
 # À chaque mise en ligne sur main : assemble le site (scripts/build-site.sh) et l'envoie par FTP
-# sur Hostinger. L'envoi ajoute et remplace des fichiers, il n'en efface jamais : ce qu'Idan
+# sur Hostinger. L'envoi ajoute et remplace des fichiers ; il n'efface que ce qu'il avait lui-même envoyé et qui a quitté
+# le site (scripts/deploy-obsolete.sh, Idan, 2026-11-15) : ce qu'Idan
 # dépose directement sur Hostinger (médias) n'est jamais touché.
 # Seulement ce qui a changé depuis le dernier envoi réussi (Idan, 2026-11-04 ; scripts/deploy-ftp.sh) :
 # un manifeste (.deploy-manifest) reste en ligne ; chaque fichier est remplacé sans être effacé d'abord.
@@ -57,7 +58,7 @@ jobs:
       - name: Installer lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Envoyer sur Hostinger (FTP chiffré, seulement ce qui a changé, sans rien effacer)
+      - name: Envoyer sur Hostinger (FTP chiffré, seulement ce qui a changé ; effacer ce qui a quitté le site)
         env:
           FTP_HOST: ${{ secrets.HOSTINGER_FTP_HOST }}
           FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}

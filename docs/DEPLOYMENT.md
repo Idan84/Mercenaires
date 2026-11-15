@@ -38,7 +38,7 @@ Le workflow `.github/workflows/deploy-hostinger.yml` se lance à chaque mise à 
    (`scripts/deploy-ftp.sh`, Idan, 2026-11-04) ;
 3. vérifie que le site répond.
 
-L'envoi **ajoute et remplace** des fichiers, il **n'en efface jamais**. Un fichier déposé directement sur Hostinger (un média, par exemple) n'est jamais touché ; un fichier supprimé de Git reste sur le serveur jusqu'à ce qu'on l'y supprime à la main.
+L'envoi **ajoute et remplace** des fichiers. Il **n'efface que ce qu'il avait lui-même envoyé** et qui a quitté le site (Idan, 2026-11-15 : « Tu peux virer des dossiers ou des fichiers inutiles ? » — « Go ») : les fichiers du manifeste du dernier envoi absents du site assemblé, et ceux de `scripts/deploy-obsolete.txt` (les restes d'avant ce nettoyage), puis leurs dossiers s'ils sont vides (`scripts/deploy-obsolete.sh`). Un fichier déposé directement sur Hostinger (`media/`, un média, la musique de la Taverne) n'est jamais dans le manifeste : il n'est jamais touché. Un effacement raté est signalé (avertissement dans Actions) sans arrêter l'envoi.
 
 **Seulement ce qui a changé.** Chaque envoi réussi laisse dans le dossier du site un manifeste, `.deploy-manifest` :
 l'empreinte (SHA-1) de chaque fichier envoyé. L'envoi suivant le lit, compare avec le site assemblé
@@ -123,7 +123,7 @@ Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/silhouettes.
 
 ### Musique de la Taverne : `assets/audio/tavern.mp3`
 
-Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/assets/audio/`, à côté des musiques suivies par Git. La mise en ligne automatique (`mirror --reverse`, sans `--delete`) ajoute et remplace des fichiers mais n'efface jamais ceux qui n'existent que sur Hostinger : ce fichier ne risque donc rien. Le jeu la joue en boucle à la Taverne (`prototype-web/music-ui.js`, qui gère aussi la musique du menu et le thème du camp) ; sans fichier, la Taverne reste silencieuse.
+Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/assets/audio/`, à côté des musiques suivies par Git. La mise en ligne automatique n'efface que ce qu'elle avait elle-même envoyé (son manifeste) : ce fichier, qui n'existe que sur Hostinger, ne risque donc rien. Le jeu la joue en boucle à la Taverne (`prototype-web/music-ui.js`, qui gère aussi la musique du menu et le thème du camp) ; sans fichier, la Taverne reste silencieuse.
 
 ## Netlify (abandonné)
 

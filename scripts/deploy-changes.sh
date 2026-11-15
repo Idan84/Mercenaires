@@ -2,7 +2,7 @@
 # Ce qu'il faut envoyer sur Hostinger : seulement les fichiers nouveaux ou modifiés depuis le dernier envoi réussi
 # (Idan, 2026-11-04 : « oui fais le 2 »). Chaque envoi réussi laisse chez Hostinger un manifeste (.deploy-manifest) :
 # l'empreinte SHA-1 de chaque fichier du site. On le compare à celui du site assemblé ; sans manifeste (le premier
-# envoi), tout part. Rien n'est jamais effacé chez Hostinger.
+# envoi), tout part. Ce qui a quitté le site : scripts/deploy-obsolete.sh.
 #
 # Usage : bash scripts/deploy-changes.sh <site> <ancien manifeste (peut manquer)> <dossier des changements> <nouveau manifeste>
 # Écrit dans <dossier des changements> les fichiers à envoyer (mêmes chemins que dans <site>), et le manifeste du site

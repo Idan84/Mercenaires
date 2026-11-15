@@ -57,6 +57,7 @@ jobs:
       - run: node tests/renown.test.js
       - run: node tests/affinity.test.js
       - run: node tests/roster-ui.test.js
+      - run: node tests/rep-stars.test.js
       - run: node tests/quartermaster-ui.test.js
       - run: node tests/day-news-ui.test.js
       - run: node tests/contract-ui.test.js

@@ -5,10 +5,13 @@
 // d'Idan), la création du capitaine, les missions et la fin de partie. Un seul morceau à la fois, en fondu.
 // Les navigateurs interdisent le son avant la première interaction : le morceau du lieu démarre alors au
 // premier clic ou à la première touche. Sans fichier, le lieu reste silencieux.
+// Au camp, deux morceaux à la suite, en boucle (Idan, 2026-11-15 : « On a une musique sur la page d'intro du jeu.. mais
+// en fait, on l'entend presque jamais.. et elle est top ! Tu peux la mettre en suite de la musique de la page du camp ?
+// Faire une boucle avec les deux ») : le thème, puis la musique du menu, puis le thème à nouveau… Chacun à son volume.
 const MUSIC_TRACKS={
-  menu:{src:"assets/audio/intro.mp3",volume:0.65},
-  camp:{src:"assets/audio/blood-and-wages-theme.mp3",volume:0.6},
-  tavern:{src:"assets/audio/tavern.mp3",volume:0.6}
+  menu:[{src:"assets/audio/intro.mp3",volume:0.65}],
+  camp:[{src:"assets/audio/blood-and-wages-theme.mp3",volume:0.6},{src:"assets/audio/intro.mp3",volume:0.65}],
+  tavern:[{src:"assets/audio/tavern.mp3",volume:0.6}]
 };
 const music={place:null,audio:null};
 
@@ -33,7 +36,7 @@ function fadeAudio(audio,target,ms,done){
 // Si l'on a déjà changé de lieu pendant le chargement, le morceau ne repart pas.
 function startMusic(audio){
   audio.play().then(()=>{
-    if(music.audio===audio) fadeAudio(audio,MUSIC_TRACKS[music.place].volume,800);
+    if(music.audio===audio) fadeAudio(audio,audio.targetVolume,800);
     else audio.pause();
   }).catch(()=>{});
 }
@@ -45,11 +48,18 @@ function refreshMusic(){
   const old=music.audio;
   if(old){ music.audio=null; fadeAudio(old,0,500,()=>old.pause()); }
   music.place=place;
-  const track=MUSIC_TRACKS[place];
-  if(!track) return;
+  if(MUSIC_TRACKS[place]) playTrack(0);
+}
+
+// Le morceau n° index du lieu. Seul, il boucle ; à plusieurs, chacun lance le suivant quand il finit, le dernier le premier.
+function playTrack(index){
+  const list=MUSIC_TRACKS[music.place];
+  const track=list[index];
   const audio=new Audio(track.src);
-  audio.loop=true;
+  audio.loop=list.length===1;
   audio.volume=0;
+  audio.targetVolume=track.volume;
+  if(list.length>1) audio.addEventListener("ended",()=>{ if(music.audio===audio) playTrack((index+1)%list.length); });
   music.audio=audio;
   startMusic(audio);
 }

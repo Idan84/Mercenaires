@@ -76,6 +76,7 @@ jobs:
       - run: node tests/pictos.test.js
       - run: node tests/culture-colors.test.js
       - run: node tests/charte.test.js
+      - run: node tests/godmode.test.js
       - run: node tests/equipment-art.test.js
       - run: node tests/item-card.test.js
       - run: node tests/item-value.test.js
@@ -229,4 +230,6 @@ jobs:
       - run: node --check prototype-web/design/bestiary-lab.js
       - run: node --check prototype-web/design/missions-lab.js
       - run: node --check prototype-web/design/charte-lab.js
+      - run: node --check game-core/godmode.js
+      - run: node --check prototype-web/godmode-ui.js
       - run: node --check scripts/build-charte.js

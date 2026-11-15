@@ -2461,10 +2461,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,251,240,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
 .hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6c43 18%,#8a6c43 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
-.hc-emblems{display:flex;flex-wrap:wrap;justify-content:center}
-.hc-emblem{display:inline-flex;align-items:center;gap:8px;padding:2px 14px;font:600 18px/1.1 var(--police-texte);color:var(--encre)}
-.hc-emblem+.hc-emblem{border-left:1px solid rgba(93,68,41,.45)}
-.hc-emblem .picto{width:46px;height:46px;margin:0;filter:drop-shadow(0 2px 2px rgba(60,40,20,.45))}
+.hc-origins{display:grid;justify-items:center;gap:6px}
+/* Zone 2, les origines (Idan, 2026-11-15) : les deux ou trois pictos (peuple, culture, ascendance) centrés, alignés, à la
+   même taille, ombrés ; dessous, une seule phrase (« Nain des montagnes au sang de dragon »), en gras, dans la couleur de
+   la culture (culture-colors.json), avec une légère ombre. */
+.hc-emblems{display:flex;justify-content:center;align-items:center;gap:26px}
+.hc-emblem{display:block;line-height:0}
+.hc-emblem .picto{display:block;width:52px;height:52px;margin:0;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(40,24,10,.55))}
+.hc-origin{margin:0;max-width:100%;text-align:center;text-wrap:balance;font:700 20px/1.15 var(--police-texte);color:var(--hc-culture,var(--encre));text-shadow:0 1px 1.5px rgba(40,24,10,.35)}
 .hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px 16px;padding:0 6px}
 .hc-stat{display:contents}
 .hc-stat>:not(.hc-label){justify-self:start}

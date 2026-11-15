@@ -9,6 +9,35 @@
 // voit qu'un, celui de son capitaine, alors qu'on en a 32 de magnifiques ») : sa barre en haut (son nom dans la bande)
 // et en bas, son anneau au milieu de la barre du bas (le picto de sa culture dedans), la bande de la barre sur les côtés.
 
+// La phrase d'origine, sous les pictos (Idan, 2026-11-15) : le peuple et la culture en une fois, sans répéter le peuple
+// (« Nains / Nains des montagnes devient Nains des montagnes ! » ; « Humain des cités libres », « Humain des montagnes du
+// Nord », « Gobelin des caravanes de ferrailleurs »), puis l'ascendance (« au sang de »). Au singulier, et au féminin pour
+// une mercenaire, comme son titre. Les formes de chaque peuple : masculin, féminin, pluriel (celui des noms de culture).
+const ORIGIN_PEOPLES={
+  "Humain":["Humain","Humaine","Humains"],"Nain":["Nain","Naine","Nains"],"Elfe":["Elfe","Elfe","Elfes"],
+  "Gnome":["Gnome","Gnome","Gnomes"],"Halfling":["Halfling","Halfling","Halflings"],"Ogre":["Ogre","Ogresse","Ogres"],
+  "Orc":["Orc","Orque","Orcs"],"Gobelin":["Gobelin","Gobeline","Gobelins"],"Reptilien":["Reptilien","Reptilienne","Reptiliens"],
+  "Homme-bête":["Homme-bête","Femme-bête","Hommes-bêtes"]
+};
+// Les cultures qui ne commencent ni par leur peuple ni ne se disent « des … ».
+const ORIGIN_CULTURE_WORDS={"Explorateurs":["explorateur","exploratrice"]};
+function originPhrase({people="",culture="",ascendance=""}={},female=false){
+  const lower=text=>text?text[0].toLocaleLowerCase("fr")+text.slice(1):"";
+  const [male,fem,plural]=ORIGIN_PEOPLES[people]||[people,people,people+"s"];
+  const who=female?fem:male;
+  let phrase=who;
+  if(culture&&culture.startsWith(plural+" ")){
+    // « Nains des montagnes » → « Nain des montagnes » ; « Elfes noirs » → « Elfe noir », « Elfe noire ».
+    const rest=culture.slice(plural.length+1);
+    phrase+=" "+(/^(des|du|de) /.test(rest)?rest:rest.split(" ").map(word=>{
+      const one=word.replace(/s$/,"");
+      return female&&!one.endsWith("e")?one+"e":one;
+    }).join(" "));
+  }else if(ORIGIN_CULTURE_WORDS[culture]) phrase+=" "+ORIGIN_CULTURE_WORDS[culture][female?1:0];
+  else if(culture) phrase+=" des "+lower(culture);
+  return (ascendance?`${phrase} au ${lower(ascendance)}`:phrase).trim();
+}
+
 // Ce que la fiche montre, sans HTML (tests, portage).
 function mercenaryHoverData(c,{missionTag=null}={}){
   const reference=game.referenceData||{};
@@ -47,6 +76,7 @@ function mercenaryHoverData(c,{missionTag=null}={}){
   return {
     name:c.name,title,
     people:c.people||"",culture:c.culture||"",ascendance:c.ascendance||"",
+    origin:originPhrase({people:c.people||"",culture:c.culture||"",ascendance:c.ascendance||""},typeof isFemale==="function"&&isFemale(c)),
     bonus:Number(c.contract?.missionBonus??(typeof tavernRules==="function"?tavernRules().missionBonusDemand(c):0))||0,
     affinity:affinity?affinityPresentation(affinity.total,c):null,
     sets:[set(1),set(2)],
@@ -86,10 +116,13 @@ function hoverCultureFrame(culture){
   const bar=all[key],inset=(bar.bandBottom-bar.bandTop)*HOVER_TEXTURE_INSET;
   const top=bar.bandTop+inset,band=bar.bandBottom-bar.bandTop-2*inset;
   const ornament=HOVER_TITLE_ORNAMENTS[key]||"lys";
-  return {key,ornament,
+  // Sa couleur (data/reference/culture-colors.json), pour la phrase d'origine.
+  const colors=typeof game!=="undefined"?game.referenceData?.cultureColors?.rows||[]:[];
+  const color=colors.find(row=>row.nom===culture)?.couleur;
+  return {key,ornament,color,
     vars:[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
       `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`,
-      `--hc-orn:url("assets/fiche/ornements/${ornament}.svg")`].join(";")};
+      `--hc-orn:url("assets/fiche/ornements/${ornament}.svg")`,...(color?[`--hc-culture:${color}`]:[])].join(";")};
 }
 
 // La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15). Une carte et un avatar aux dimensions fixes,
@@ -107,8 +140,9 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il
   // rapetisse d'autant (20 / longueur), et fitHoverCard finit le travail s'il le faut.
   const nameFit=Math.max(.6,Math.min(1,20/d.name.length));
+  // Zone 2, les origines : les deux ou trois pictos (peuple, culture, ascendance), puis la phrase d'origine.
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
-    .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}<span>${esc(d[kind])}</span></span>`).join("");
+    .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}</span>`).join("");
   const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
   const kit=[["Set 1",d.sets[0].join(" + ")||"Mains nues"],["Set 2",d.sets[1].join(" + ")],["Armure",d.armor||"Sans armure"],
     ["Monture",d.mount?d.mount.name+(d.mount.kind?` (${d.mount.kind})`:""):""]]
@@ -120,7 +154,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
-      <div class="hc-emblems">${emblems}</div>
+      <section class="hc-origins" aria-label="Origines"><div class="hc-emblems">${emblems}</div><p class="hc-origin">${esc(d.origin)}</p></section>
       <i class="hc-rule" aria-hidden="true"></i>
       <div class="hc-stats">
         <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
@@ -152,6 +186,12 @@ function fitHoverCard(root){
     return (name?name.offsetHeight:0)+gap+title.parentElement.offsetHeight<=banner.clientHeight-6;
   };
   if(name) shrink(name,()=>name.scrollWidth<=name.clientWidth+1,.6);
+  // La phrase d'origine : une ligne, sa police baisse jusqu'à 82 % s'il le faut ; au-delà, elle passe sur deux lignes.
+  const origin=root.querySelector(".hc-origin");
+  if(origin){
+    origin.style.whiteSpace="nowrap";
+    if(!shrink(origin,()=>origin.scrollWidth<=origin.clientWidth+1,.82)) origin.style.whiteSpace="";
+  }
   if(title&&!shrink(title,()=>title.scrollWidth<=title.clientWidth+1,.75)){
     // Un titre sur deux lignes : le nom, très grand, laisse d'abord un peu de place, puis le titre rapetisse s'il le faut.
     title.parentElement.classList.add("is-two-lines");
@@ -160,4 +200,4 @@ function fitHoverCard(root){
   }
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,fitHoverCard};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,fitHoverCard,originPhrase};

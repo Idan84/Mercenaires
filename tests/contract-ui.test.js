@@ -408,13 +408,23 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
       columns: [{code: "occupation", teinte: "rouge"}, {code: "equipement", teinte: "vert"}, {code: "role", teinte: "bleu"}]}),
     profileRules: () => null, captainAffinity: () => null, tavernRules: () => ({missionBonusDemand: () => 40}), HUD_BARS
   };
-  const api = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData, hoverCultureFrame};")(...Object.values(stubs));
+  const api = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData, hoverCultureFrame, originPhrase};")(...Object.values(stubs));
   const merc = {name: "Yazga", people: "Orc", culture: "Orcs des steppes", contract: {missionBonus: 81},
     spells: [{code: "boule"}, {code: "soin"}, {code: "boule"}],
     items: [{id: 1, category: "Épées à une main"}, {id: 2, category: "Épées à une main"}, {id: 3, category: "Armes de tir"},
       {id: 4, category: "Intermédiaire"}, {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
     equipment: {slots: {weapon_set_1_main: 1, weapon_set_1_off: 2, weapon_set_2_main: 3, armor: 4, mount: 5}}};
   const d = api.mercenaryHoverData(merc, {missionTag: "occupation/garde-du-corps"});
+  // Zone 2 : la phrase d'origine, le peuple et la culture en une fois, puis « au sang de » (Idan, 2026-11-15).
+  assert.equal(d.origin, "Orc des steppes");
+  assert.equal(api.originPhrase({people: "Nain", culture: "Nains des montagnes"}), "Nain des montagnes", "« Nains / Nains des montagnes devient Nains des montagnes ! »");
+  assert.equal(api.originPhrase({people: "Humain", culture: "Cités libres"}), "Humain des cités libres");
+  assert.equal(api.originPhrase({people: "Humain", culture: "Montagnes du Nord"}), "Humain des montagnes du Nord");
+  assert.equal(api.originPhrase({people: "Gobelin", culture: "Caravanes de ferrailleurs"}), "Gobelin des caravanes de ferrailleurs");
+  assert.equal(api.originPhrase({people: "Nain", culture: "Nains des montagnes", ascendance: "Sang de dragon"}), "Nain des montagnes au sang de dragon");
+  assert.equal(api.originPhrase({people: "Elfe", culture: "Elfes noirs", ascendance: "Sang d’orc"}, true), "Elfe noire au sang d’orc");
+  assert.equal(api.originPhrase({people: "Homme-bête", culture: "Tribus nordiques"}, true), "Femme-bête des tribus nordiques");
+  assert.equal(api.originPhrase({people: "Halfling", culture: "Explorateurs"}, true), "Halfling exploratrice");
   assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Haches", "Dégâts"], "seulement les plus précis, celui de la mission d'abord");
   assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "vert", "bleu"]);
   assert.equal(d.tags[0].mission, true);
@@ -451,6 +461,9 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.doesNotMatch(svg, /(?:fill|stroke)="(?!#000"|none")/, file + " : monochrome");
   }
   const css = choiceCss;
+  assert.match(hoverSrc, /<section class="hc-origins" aria-label="Origines"><div class="hc-emblems">\$\{emblems\}<\/div><p class="hc-origin">\$\{esc\(d\.origin\)\}<\/p><\/section>/);
+  assert.match(css, /\.hc-emblem \.picto\{[^}]*filter:drop-shadow/);
+  assert.match(css, /\.hc-origin\{[^}]*font:700 [^}]*color:var\(--hc-culture,var\(--encre\)\);text-shadow:/);
   // Le nom (en gras) et le titre : en réserve du parchemin, remplis de sa texture, une légère ombre portée ; le titre plus grand.
   assert.match(css, /--hc-encre-titre:linear-gradient\([^;]*url\("assets\/creation\/parchemin\.webp"\)[^;]*var\(--hc-parchemin\);/);
   // Le nom en grand : les noms de 20 caractères tiennent ; au-delà, il rapetisse d'autant (20 / longueur).

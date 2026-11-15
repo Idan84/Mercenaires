@@ -38,6 +38,7 @@ jobs:
         with:
           node-version: 22
       - run: node tests/generation.test.js
+      - run: node tests/godmode.test.js
       - run: node tests/combat.test.js
       - run: node tests/combat-styles.test.js
       - run: node tests/tavern.test.js
@@ -184,6 +185,8 @@ jobs:
         run: bash scripts/build-site.sh site && grep -q 'src="ui.js?v=' site/index.html
       - run: node --check prototype-web/mission.js
       - run: node --check prototype-web/ui.js
+      - run: node --check game-core/godmode.js
+      - run: node --check prototype-web/godmode-ui.js
       - run: node --check prototype-web/camp-calendar.js
       - run: node --check prototype-web/tavern-ui.js
       - run: node --check prototype-web/camp-buildings-ui.js

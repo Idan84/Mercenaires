@@ -412,19 +412,26 @@
     </div>
   </dialog>
 
-  <dialog id="mission-select-dialog">
-    <div class="dialog-head">
-      <div><p class="eyebrow" id="mission-select-eyebrow">Mission Test</p><h2 id="mission-select-title">Choisir 3 mercenaires</h2></div>
-      <span id="mission-select-count" class="badge">0/3</span>
-    </div>
-    <div class="mission-select-content">
-      <p id="mission-select-cost" class="mission-select-cost"></p>
-      <div id="mission-select-list" class="mission-select-list"></div>
-      <p id="mission-select-error" class="mission-error"></p>
-      <div class="actions-row">
-        <button id="start-mission-btn" class="primary">Lancer la mission</button>
-        <button id="cancel-mission-select-btn" class="secondary">Annuler</button>
-      </div>
+  <!-- Le choix de l'escouade (Idan, 2026-11-15) : l'escouade en haut, sur le parchemin de la création ; un filtre par
+       tag, celui de la mission d'abord ; la galerie des portraits de ceux qui peuvent partir ; les boutons de la création. -->
+  <dialog id="mission-select-dialog" class="mission-detail mission-choice" aria-labelledby="mission-select-title">
+    <div class="mission-choice-body">
+      <header class="mission-squad">
+        <div class="mission-squad-head">
+          <h2 id="mission-select-title">L’escouade</h2>
+          <p id="mission-select-eyebrow" class="mission-squad-mission"></p>
+        </div>
+        <div id="mission-squad-slots" class="mission-squad-slots"></div>
+        <p id="mission-select-cost" class="mission-squad-cost"></p>
+        <span id="mission-select-count" class="mission-squad-count" hidden></span>
+      </header>
+      <nav id="mission-select-tags" class="mission-tags" aria-label="Filtrer par tag"></nav>
+      <div id="mission-select-list" class="mission-roster"></div>
+      <p id="mission-select-error" class="mission-choice-error"></p>
+      <footer class="mission-detail-actions">
+        <button type="button" id="cancel-mission-select-btn" class="mission-retour">‹ Retour</button>
+        <button type="button" id="start-mission-btn" class="mission-btn">Partir demain</button>
+      </footer>
     </div>
   </dialog>
   <dialog id="tavern-talk-dialog" class="talk-dialog" aria-labelledby="tavern-talk-name">

@@ -246,4 +246,37 @@ for (const file of ["one-shot-missions.json", "bodyguard-missions.json"]) {
   const holder = file === "one-shot-missions.json" ? data.missions[0] : data;
   assert.ok("illustration" in holder, file + " : champ illustration");
 }
-console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action — OK");
+
+// Le choix de l'escouade (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait ») : sur le panneau assombri,
+// l'escouade en haut (« je mettrais l'escouade en haut »), un filtre par tag (« avec comme premier tag, celui de la
+// mission ! »), la galerie de ceux qui peuvent partir, les boutons de la création.
+const missionJs = fs.readFileSync(path.join(root, "prototype-web/mission.js"), "utf8");
+const choiceStart = html.indexOf('<dialog id="mission-select-dialog"');
+const choiceDialog = html.slice(choiceStart, html.indexOf("</dialog>", choiceStart));
+assert.match(choiceDialog, /class="mission-detail mission-choice"/, "sur le panneau assombri, comme le détail");
+const at = id => choiceDialog.indexOf(id);
+assert.ok(at('class="mission-squad"') < at('id="mission-select-tags"') && at('id="mission-select-tags"') < at('id="mission-select-list"'),
+  "l'escouade en haut, puis les tags, puis la galerie");
+assert.match(choiceDialog, /class="mission-retour"[\s\S]*class="mission-btn">Partir demain</, "les boutons de la création");
+const choice = missionJs.slice(missionJs.indexOf("function openMissionSelection("), missionJs.indexOf("function startMissionFromSelection("));
+// « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
+assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");
+assert.match(choice, /&&rules\.canGuard\(c,m,offer\)\.ok\);/, "garde du corps : seulement ceux qui peuvent la prendre");
+assert.match(choice, /"Fatiguée":"Fatigué"/, "les fatigués, avec leur fatigue");
+// « Picto de combat, on va le virer » ; ni grisés, ni PV, ni peuple, ni mots de dev.
+assert.doesNotMatch(choice, /unavailable|"disabled"|profile\?\.type|maxHp|c\.people/);
+assert.match(choice, /\[\.\.\.\(missionTag\?\[missionTag\]:\[\]\),\.\.\.roles\]/, "le tag de la mission d'abord, puis les rôles");
+{
+  const {createTagRules} = require("../game-core/mercenary-tags.js");
+  const source = fs.readFileSync(path.join(root, "prototype-web/reference-data.js"), "utf8");
+  const block = source.slice(source.indexOf("REFERENCE_FILES"), source.indexOf("};", source.indexOf("REFERENCE_FILES")));
+  const files = Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)"/gm)].map(m => [m[1], m[2]]));
+  const reference = Object.fromEntries(Object.entries(files).map(([key, file]) => [key, JSON.parse(fs.readFileSync(path.join(root, "data/reference", file), "utf8"))]));
+  const rules = createTagRules({reference});
+  const missionTagOf = new Function("tagRules", choice.slice(choice.indexOf("function missionTagOf("), choice.indexOf("// La galerie, le filtre")) + "\nreturn missionTagOf;")(() => rules);
+  assert.equal(missionTagOf({faction:"Gobelins", camp:{}}), "occupation/mission/camps/gobelins", "un camp : sa faction sous Mission › Camps");
+  assert.equal(missionTagOf({faction:"Loups", camp:{}}), "occupation/mission/chasses/loups", "une chasse : sa bête sous Mission › Chasses");
+  assert.equal(missionTagOf({kind:"bodyguard", client:"Une veuve fortunée"}), "occupation/garde-du-corps");
+  assert.equal(missionTagOf(null), null, "Mission Test : pas de tag de mission");
+}
+console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action, choix de l'escouade — OK");

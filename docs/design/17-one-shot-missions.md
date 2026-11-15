@@ -332,6 +332,16 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   du corps n'a pas de lettre : l'annonce reste debout. Plus de libellés techniques (« Difficulté », « Commanditaire »,
   description de la règle). Dessous, « ‹ Retour au panneau » et le bouton bordeaux cerclé de laiton de la création
   (« Accepter le contrat », « Choisir le garde ») ; un clic à côté de la feuille ramène aussi au panneau.
+- **Le choix de l'escouade** (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait ») : sur le panneau
+  assombri, comme le détail. En haut, l'escouade (« je mettrais l'escouade en haut »), sur le parchemin de la création :
+  le nom de la mission, ses étoiles, « départ demain matin » et la route ; un portrait par mercenaire choisi (un clic le
+  retire), une place vide tant qu'on peut en ajouter (une garde du corps : toutes ses places) ; à droite, les primes au
+  retour. Dessous, un filtre par tag, un à la fois (« avec comme premier tag, celui de la mission ! ») : le camp ou la
+  chasse sous Mission (doc 20), ou Garde du corps, puis les rôles au combat que porte au moins l'un d'eux. Puis la
+  galerie : seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés,
+  autres missions…). Les fatigués sont là bien entendu ») ; sous chaque portrait, le nom, les étoiles et la fatigue ; pas
+  de picto de combat (« on va le virer / refaire »). Un clic ajoute à l'escouade (le cachet de cire rouge sur le coin du
+  portrait). En bas, « ‹ Retour à l'annonce » et « Partir demain ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
   les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,

@@ -783,15 +783,17 @@ function missionFatiguePercent(){
   return Math.round((Number(row?.valeur)||0.2)*100);
 }
 
-// Mission Test : exactement 3 personnages. Contrat de la Taverne (doc 17) : de 1 à 20 mercenaires, au choix du joueur,
-// avec le coût des primes s'ils reviennent tous.
+// Le choix de l'escouade (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait ») : l'escouade en haut, un
+// filtre par tag (« avec comme premier tag, celui de la mission ! »), puis la galerie des portraits de ceux qui peuvent
+// partir — « tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont
+// là bien entendu ». Sous chaque portrait : le nom, les étoiles, la fatigue ; pas de picto de combat (« on va le virer /
+// refaire »). En bas, les boutons de la création. Un clic sur un portrait l'ajoute à l'escouade, un clic dans l'escouade
+// l'en retire. Mission Test : exactement 3 personnages. Contrat de la Taverne (doc 17) : de 1 à 20 mercenaires, au choix
+// du joueur, avec le coût des primes s'ils reviennent tous.
 function openMissionSelection(contract=null){
   // Garde du corps (Idan, 2026-10-25) : exactement le nombre demandé, du niveau de réputation demandé.
   if(contract&&contract.kind==="bodyguard") return openBodyguardSelection(contract);
-  game.missionSelect=contract&&typeof contract==="object"&&contract.camp?{contract,min:1,max:20}:{contract:null,min:3,max:3};
-  const {min,max}=game.missionSelect;
-  $("mission-select-eyebrow").textContent=game.missionSelect.contract?"Contrat · "+game.missionSelect.contract.name:"Mission Test";
-  $("mission-select-title").textContent=game.missionSelect.contract?"Choisir l’escouade ("+min+" à "+max+")":"Choisir 3 mercenaires";
+  const offer=contract&&typeof contract==="object"&&contract.camp?contract:null;
   // L'intendant ne part plus en mission (Idan, 2026-10-24) ; un mercenaire déjà en expédition non plus (doc 17).
   const away=c=>game.campaign&&campaignRules().expeditionOf(game.campaign,c.id);
   // À l'École (élève ou professeur d'un sort ; Idan, 2026-11-02) : il reste au camp jusqu'à la fin.
@@ -799,63 +801,134 @@ function openMissionSelection(contract=null){
   // Le médecin, le directeur de l'École et les maîtres (camp-posts.js) restent au camp, comme l'intendant.
   const offField=c=>game.campaign&&(c.id===game.campaign.company.intendantId||(game.campaign.company.medicId!=null&&c.id===game.campaign.company.medicId)||Boolean(MercenairesCampPosts.postOf(game.campaign,c)));
   const eligible=allCharacters().filter(c=>!offField(c)&&!away(c)&&!studying(c));
+  // Un blessé ne peut pas partir (10-mission-time §4 à §6) : il n'est pas dans la galerie ; un fatigué, si.
   const available=eligible.filter(c=>!missionWounded(c));
   // Mission Test : les reposés d'abord.
-  const preselected=new Set(game.missionSelect.contract?[]:[...available.filter(c=>!c.recovery),...available.filter(c=>c.recovery)].slice(0,3));
-  const offer=game.missionSelect.contract;
-  $("mission-select-list").innerHTML=eligible.map(c=>`
-    <label class="mission-pick${missionWounded(c)?" unavailable":""}">
-      <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${missionWounded(c)?"disabled":""}>
-      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}${missionFatigueNote(c,offer)?" · "+esc(missionFatigueNote(c,offer)):""}</small></span>
-      <em>${combatEngine().maxHp({character:c,activeSet:1})} PV</em>
-    </label>
-  `).join("");
-
-  $("mission-select-error").textContent=available.length<min
-    ?"Il faut au moins "+min+" personnage"+(min>1?"s":"")+" disponible"+(min>1?"s":"")+". Passe des jours pour soigner les blessés, ou génère quelques candidats de test."
+  const preselected=offer?[]:[...available.filter(c=>!c.recovery),...available.filter(c=>c.recovery)].slice(0,3);
+  game.missionSelect=offer?{contract:offer,min:1,max:20,detailId:"contract:"+offer.id}:{contract:null,min:3,max:3};
+  game.missionSelect.order=preselected.map(c=>c.id);
+  game.missionSelect.tag=null;
+  const fatigue=c=>{
+    if(c.recovery?.kind!=="fatigued") return "";
+    const note=missionFatigueNote(c,offer);
+    return (String(c.sex||"").toLowerCase().startsWith("f")?"Fatiguée":"Fatigué")+(note?" · "+note:"");
+  };
+  $("mission-select-title").textContent=offer?"L’escouade":"Mission Test";
+  $("mission-select-eyebrow").innerHTML=offer
+    ?missionChoiceHeading(offer.campName+" de "+offer.fields.lieu,offer.difficulty,"départ demain matin, "+missionChoiceDays(offer.distance)+" de marche")
     :"";
-  updateMissionSelectionCount();
-  $("mission-select-dialog").showModal();
+  renderMissionChoice(available,{note:fatigue,missionTag:missionTagOf(offer),
+    error:available.length<game.missionSelect.min?"Personne n’est en état de partir.":""});
 }
 
 function openBodyguardSelection(offer){
   const c=game.campaign,rules=campaignRules();
-  game.missionSelect={bodyguard:offer,contract:null,min:offer.count,max:offer.count};
-  $("mission-select-eyebrow").textContent="Garde du corps · "+offer.client;
-  $("mission-select-title").textContent="Choisir "+(offer.count>1?"les "+offer.count+" gardes":"le garde");
+  game.missionSelect={bodyguard:offer,contract:null,min:offer.count,max:offer.count,order:[],tag:null,detailId:"bodyguard:"+offer.id};
+  $("mission-select-title").textContent=offer.count>1?"Les gardes":"Le garde";
+  $("mission-select-eyebrow").innerHTML=missionChoiceHeading(offer.client,offer.level,"départ demain matin, absents "+missionChoiceDays(offer.days));
+  // Ceux qui n'ont pas la réputation demandée, ou qui ne peuvent pas partir, ne sont pas dans la galerie.
   const members=c.company.roster.filter(m=>m.id!==c.company.captainId&&m.id!==c.company.intendantId&&(c.company.medicId==null||m.id!==c.company.medicId)
-    &&!MercenairesCampPosts.postOf(c,m)&&!rules.expeditionOf(c,m.id)&&!(rules.studyBusy&&rules.studyBusy(c,m)));
-  $("mission-select-list").innerHTML=members.map(m=>{
-    const allowed=rules.canGuard(c,m,offer);
-    return `<label class="mission-pick${allowed.ok?"":" unavailable"}">
-      <input type="checkbox" value="${m.id}" ${allowed.ok?"":"disabled"}>
-      ${renderAvatar(m,{variant:"compact",kind:"portrait"})}
-      <span><strong>${esc(m.name)}</strong><small>${allowed.ok?"Salaire "+fmt(Number(m.contract?.dailySalary)||0)+" PO/j · prime "+fmt(Number(m.contract?.missionBonus)||0)+" PO":esc(allowed.reason)}</small></span>
-      <em>${renderReputationStars(m)}</em>
+    &&!MercenairesCampPosts.postOf(c,m)&&!rules.expeditionOf(c,m.id)&&!(rules.studyBusy&&rules.studyBusy(c,m))&&rules.canGuard(c,m,offer).ok);
+  renderMissionChoice(members,{missionTag:missionTagOf(offer),
+    error:members.length<offer.count?"Pas assez de mercenaires de cette réputation pour cette garde.":""});
+}
+
+// Le nom de la mission, ses étoiles et la route, sous le titre de l'escouade.
+function missionChoiceHeading(name,level,route){
+  const stars=typeof levelStars==="function"?levelStars(level,"Difficulté"):"";
+  return `<span class="mission-squad-name">${esc(name)}</span>${stars}<small>${esc(route)}</small>`;
+}
+const missionChoiceDays=n=>typeof missionDays==="function"?missionDays(n):n+" jour"+(n>1?"s":"");
+
+// Le tag de la mission (doc 20) : son camp ou sa chasse sous Mission, ou Garde du corps.
+function missionTagOf(offer){
+  const rules=typeof tagRules==="function"?tagRules():null;
+  if(!rules||!offer) return null;
+  if(offer.kind==="bodyguard") return rules.has("occupation/garde-du-corps")?"occupation/garde-du-corps":null;
+  return rules.childNamed("occupation/mission/camps",offer.faction)||rules.childNamed("occupation/mission/chasses",offer.faction)||null;
+}
+
+// La galerie, le filtre et l'escouade.
+function renderMissionChoice(list,{note=()=>"",missionTag=null,error=""}={}){
+  const sel=game.missionSelect,rules=typeof tagRules==="function"?tagRules():null;
+  const tagsOf=c=>rules?rules.litIds(c):[];
+  $("mission-select-list").innerHTML=list.map(c=>{
+    const extra=note(c);
+    return `<label class="mission-pick" data-tags="${esc(tagsOf(c).join(" "))}">
+      <input type="checkbox" value="${c.id}" ${sel.order.includes(c.id)?"checked":""}>
+      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
+      <strong>${esc(c.name)}</strong>
+      ${renderReputationStars(c)}
+      ${extra?`<small>${esc(extra)}</small>`:""}
     </label>`;
-  }).join("");
-  const ready=members.filter(m=>rules.canGuard(c,m,offer).ok).length;
-  $("mission-select-error").textContent=ready<offer.count?"Pas assez de mercenaires disponibles de ce niveau de réputation.":"";
+  }).join("")+`<p class="mission-roster-empty" hidden>Personne n’a ce tag.</p>`;
+  // Le filtre : le tag de la mission d'abord, puis les rôles au combat que porte au moins l'un d'eux.
+  const lit=new Set(list.flatMap(tagsOf));
+  const roles=rules?(rules.columns.find(col=>col.code==="role")?.tags||[]).map(t=>t.id).filter(id=>lit.has(id)):[];
+  const tone=id=>rules.columns.find(col=>id.startsWith(col.code+"/"))?.teinte||"bleu";
+  $("mission-select-tags").innerHTML=rules?[...(missionTag?[missionTag]:[]),...roles].map(id=>
+    `<button type="button" class="mission-tag mission-tag--${esc(tone(id))}" data-tag-filter="${esc(id)}" aria-pressed="false">${esc(rules.node(id)?.nom||id)}</button>`).join(""):"";
+  $("mission-select-error").textContent=error;
+  $("cancel-mission-select-btn").textContent=sel.detailId?"‹ Retour à l’annonce":"‹ Retour";
+  $("start-mission-btn").textContent=sel.contract||sel.bodyguard?"Partir demain":"Lancer la mission";
   updateMissionSelectionCount();
   $("mission-select-dialog").showModal();
 }
 
-function updateMissionSelectionCount(){
-  const {min,max,contract,bodyguard}=game.missionSelect||{min:3,max:3,contract:null};
-  const checked=[...document.querySelectorAll("#mission-select-list input:checked")];
-  if(checked.length>max) checked[checked.length-1].checked=false;
-  const ids=[...document.querySelectorAll("#mission-select-list input:checked")].map(x=>Number(x.value));
+// Un tag à la fois : un clic l'allume, un second l'éteint. Ceux de l'escouade restent choisis, même cachés.
+function filterMissionChoice(event){
+  const button=event.target.closest("[data-tag-filter]");
+  if(!button||!game.missionSelect) return;
+  const tag=game.missionSelect.tag===button.dataset.tagFilter?null:button.dataset.tagFilter;
+  game.missionSelect.tag=tag;
+  document.querySelectorAll("#mission-select-tags [data-tag-filter]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.tagFilter===tag)));
+  let shown=0;
+  document.querySelectorAll("#mission-select-list .mission-pick").forEach(card=>{
+    card.hidden=Boolean(tag)&&!card.dataset.tags.split(" ").includes(tag);
+    if(!card.hidden) shown++;
+  });
+  const empty=document.querySelector("#mission-select-list .mission-roster-empty");
+  if(empty) empty.hidden=shown>0;
+}
+
+// L'escouade : les portraits choisis, dans l'ordre du choix ; une place vide de plus tant qu'on peut en ajouter (la garde
+// du corps : toutes ses places).
+function renderMissionSquad(){
+  const sel=game.missionSelect,pool=allCharacters();
+  const chosen=sel.order.map(id=>pool.find(c=>c.id===id)).filter(Boolean);
+  const empty=sel.min===sel.max?sel.max-chosen.length:chosen.length<sel.max?1:0;
+  $("mission-squad-slots").innerHTML=chosen.map(c=>`<button type="button" class="mission-slot" data-squad-remove="${c.id}" title="Retirer ${esc(c.name)}">
+      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}<span>${esc(String(c.name).split(" ")[0])}</span></button>`).join("")
+    +Array.from({length:Math.max(0,empty)},()=>`<span class="mission-slot mission-slot--empty" aria-hidden="true"></span>`).join("")
+    +(chosen.length?"":`<p class="mission-squad-hint">Cliquez sur un portrait pour l’ajouter.</p>`);
+}
+function removeFromMissionSquad(event){
+  const slot=event.target.closest("[data-squad-remove]");
+  if(!slot||!game.missionSelect) return;
+  const input=[...document.querySelectorAll("#mission-select-list input")].find(x=>x.value===slot.dataset.squadRemove);
+  if(input) input.checked=false;
+  game.missionSelect.order=game.missionSelect.order.filter(id=>String(id)!==slot.dataset.squadRemove);
+  updateMissionSelectionCount();
+}
+
+function updateMissionSelectionCount(event){
+  const sel=game.missionSelect||(game.missionSelect={min:3,max:3,contract:null});
+  sel.order=sel.order||[];
+  const input=event?.target?.closest?.("input[type=checkbox]");
+  if(input){
+    const id=Number(input.value);
+    if(!input.checked) sel.order=sel.order.filter(x=>x!==id);
+    else if(sel.order.length>=sel.max) input.checked=false; // l'escouade est complète
+    else if(!sel.order.includes(id)) sel.order.push(id);
+  }
+  const {min,max,contract,bodyguard,order:ids}=sel;
   $("mission-select-count").textContent=ids.length+"/"+max;
   $("start-mission-btn").disabled=ids.length<min||ids.length>max;
+  renderMissionSquad();
   // Primes de mission versées au retour (doc 09 §6) : le joueur pèse ce que coûte une grosse escouade.
   const bonus=ids.map(id=>allCharacters().find(c=>c.id===id)).reduce((sum,c)=>sum+(Number(c?.contract?.missionBonus)||0),0);
-  if(bodyguard){
-    $("mission-select-cost").textContent="Paiement d’avance : "+fmt(bodyguard.payment)+" PO · primes au retour : "+fmt(bonus)+" PO · départ demain matin, absents "+bodyguard.days+" jours ; pas de combat.";
-    return;
-  }
-  $("mission-select-cost").textContent=contract
-    ?"Primes si tous reviennent : "+fmt(bonus)+" PO, versées au retour · départ demain matin, puis "+contract.distance+" jour"+(contract.distance>1?"s":"")+" de marche à l’aller, autant au retour ; le camp continue pendant ce temps."
+  $("mission-select-cost").innerHTML=(contract||bodyguard)&&ids.length
+    ?`<img src="assets/hud/picto-or.webp" alt=""><span><b>${bonus?fmt(bonus)+" pièces d’or":"Aucune prime"}</b><small>${bonus?"de primes au retour":"au retour"}</small></span>`
     :"";
 }
 
@@ -5582,7 +5655,14 @@ function leaveMission(){
 function initializeMissionUi(){
   $("mission-test-btn").addEventListener("click",openMissionSelection);
   $("mission-select-list").addEventListener("change",updateMissionSelectionCount);
-  $("cancel-mission-select-btn").addEventListener("click",()=>$("mission-select-dialog").close());
+  $("mission-select-tags").addEventListener("click",filterMissionChoice);
+  $("mission-squad-slots").addEventListener("click",removeFromMissionSquad);
+  // Retour à l'annonce : la fiche de la mission se rouvre.
+  $("cancel-mission-select-btn").addEventListener("click",()=>{
+    const back=game.missionSelect?.detailId;
+    $("mission-select-dialog").close();
+    if(back&&typeof openMissionDetail==="function") openMissionDetail(back);
+  });
   $("start-mission-btn").addEventListener("click",startMissionFromSelection);
 
   $("mission-move-btn").addEventListener("click",()=>setMissionMode("move"));

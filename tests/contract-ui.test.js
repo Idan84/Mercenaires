@@ -453,6 +453,9 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   const css = choiceCss;
   // Le nom (en gras) et le titre : en réserve du parchemin, remplis de sa texture, une légère ombre portée ; le titre plus grand.
   assert.match(css, /--hc-encre-titre:linear-gradient\([^;]*url\("assets\/creation\/parchemin\.webp"\)[^;]*var\(--hc-parchemin\);/);
+  // Le nom en grand : les noms de 20 caractères tiennent ; au-delà, il rapetisse d'autant (20 / longueur).
+  assert.match(css, /\.hc-banner h3\{[^}]*font:700 calc\(var\(--hc-cart-h\) \* \.54 \* var\(--hc-name-fit,1\)\)/);
+  assert.match(hoverSrc, /const nameFit=Math\.max\(\.6,Math\.min\(1,20\/d\.name\.length\)\);/);
   assert.match(css, /\.hc-banner h3\{[^}]*font:700 [^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 2px 1\.5px rgba\(0,0,0,\.7\)\)/);
   assert.match(css, /\.hc-title\{[^}]*font:italic 500 calc\(var\(--hc-cart-h\) \* \.29\)[^}]*color:var\(--hc-parchemin\)/);
   assert.match(css, /\.hc-title span\{[^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 1px 1\.5px rgba\(0,0,0,\.7\)\)/);

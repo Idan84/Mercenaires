@@ -2439,11 +2439,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    la culture seule : la bande de la pièce du milieu de sa barre, à la hauteur du cartouche, coupée en haut et en bas. */
 .hc-banner{position:absolute;left:36.2%;right:1.2%;top:1.5%;height:14.35%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;gap:calc(var(--hc-cart-h) * .04);padding:0 4%;overflow:hidden;
   background:var(--hc-texture) 50% calc(var(--hc-cart-h) * var(--hc-tex-y) * -1)/max(100%,calc(var(--hc-cart-h) * var(--hc-tex-w))) calc(var(--hc-cart-h) * var(--hc-tex-h)) no-repeat,#1d2a22;text-align:center}
-/* Le nom (en gras) et le titre : en réserve du parchemin, avec une légère ombre portée, comme chez Chatty. Les lettres
-   sont remplies de la texture du parchemin d'Idan, éclairée en haut de chaque ligne et un peu assombrie en bas
-   (--hc-encre-titre), pour qu'elles ne soient pas plates ; l'ombre passe donc en filtre (une ombre de texte couvrirait le
-   remplissage). Une seule ligne chacun (fitHoverCard baisse la police s'il le faut). */
-.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:700 calc(var(--hc-cart-h) * .42 * var(--hc-name-fit,1))/1.05 var(--police-texte);letter-spacing:.01em;white-space:nowrap;
+/* Le nom (en gras, assez grand pour que les noms de 20 caractères les plus larges tiennent juste) et le titre : en
+   réserve du parchemin, avec une légère ombre portée, comme chez Chatty. Les lettres sont remplies de la texture du
+   parchemin d'Idan, éclairée en haut de chaque ligne et un peu assombrie en bas (--hc-encre-titre), pour qu'elles ne
+   soient pas plates ; l'ombre passe donc en filtre (une ombre de texte couvrirait le remplissage). Une seule ligne
+   chacun (fitHoverCard baisse la police s'il le faut). */
+.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:700 calc(var(--hc-cart-h) * .54 * var(--hc-name-fit,1))/1.05 var(--police-texte);letter-spacing:.01em;white-space:nowrap;
   color:var(--hc-parchemin);background:var(--hc-encre-titre);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.7))}
 .hc-title{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--hc-cart-h) * .07);margin:0;max-width:100%;font:italic 500 calc(var(--hc-cart-h) * .29)/1.15 var(--police-texte);color:var(--hc-parchemin)}
 .hc-title span{min-width:0;padding:0 .12em;white-space:nowrap;overflow:hidden;

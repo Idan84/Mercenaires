@@ -103,8 +103,10 @@ function hoverHearts(filled){
 function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const d=mercenaryHoverData(c,{missionTag});
   const frame=hoverCultureFrame(d.culture);
-  // Le nom remplit le cartouche ; les noms longs (plus de 17 lettres) rapetissent un peu.
-  const nameFit=Math.max(.6,1-Math.max(0,d.name.length-17)*.032);
+  // Le nom en grand (Idan, 2026-11-15 : « on reste pour que 20 caractères rentrent dans le cartouche. On réduira auto pour
+  // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il
+  // rapetisse d'autant (20 / longueur), et fitHoverCard finit le travail s'il le faut.
+  const nameFit=Math.max(.6,Math.min(1,20/d.name.length));
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}<span>${esc(d[kind])}</span></span>`).join("");
   const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
@@ -144,10 +146,17 @@ function fitHoverCard(root){
     return fits();
   };
   const name=root.querySelector(".hc-banner h3"),title=root.querySelector(".hc-title span"),banner=root.querySelector(".hc-banner");
+  // Le nom et le titre tiennent dans la hauteur du cartouche, avec 3 px de marge en haut et en bas (les jambages).
+  const bannerFits=()=>{
+    const gap=parseFloat(getComputedStyle(banner).rowGap)||0;
+    return (name?name.offsetHeight:0)+gap+title.parentElement.offsetHeight<=banner.clientHeight-6;
+  };
   if(name) shrink(name,()=>name.scrollWidth<=name.clientWidth+1,.6);
   if(title&&!shrink(title,()=>title.scrollWidth<=title.clientWidth+1,.75)){
+    // Un titre sur deux lignes : le nom, très grand, laisse d'abord un peu de place, puis le titre rapetisse s'il le faut.
     title.parentElement.classList.add("is-two-lines");
-    shrink(title,()=>title.scrollWidth<=title.clientWidth+1&&banner.scrollHeight<=banner.clientHeight+1,.8);
+    if(name) shrink(name,bannerFits,.8);
+    shrink(title,()=>title.scrollWidth<=title.clientWidth+1&&bannerFits(),.8);
   }
 }
 

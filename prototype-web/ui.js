@@ -335,8 +335,10 @@ function starRules() {
 function renderStarLevel(info, detail = "") {
   if (!info) return "—";
   const tip = info.label + (detail ? " — " + detail : "");
-  return `<span class="rep-stars rep-stars--${info.metalKey}" title="${esc(tip)}" aria-label="${esc(info.label)}">`
-    + "★".repeat(info.stars) + `<span class="rep-stars-empty">${"★".repeat(5 - info.stars)}</span></span>`;
+  // Les étoiles à facettes en bronze, argent ou or ; les vides en gris transparent (Idan, 2026-11-15 ; images :
+  // assets/ui/etoiles/, styles.css).
+  return `<span class="rep-stars rep-stars--${info.metalKey}" role="img" title="${esc(tip)}" aria-label="${esc(info.label)}">`
+    + `<i class="rep-star"></i>`.repeat(info.stars) + `<i class="rep-star rep-star--empty"></i>`.repeat(5 - info.stars) + `</span>`;
 }
 
 function starDetail(name, value, info) {

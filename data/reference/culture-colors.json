@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "culture-colors",
-  "description": "Couleur des cultures (Idan, 2026-11-15 : « une table couleur par culture. On s'en servira à plein d'endroits », « 1 seule couleur par culture. Un seul code hexa ») : la couleur moyenne de la texture de la barre de chaque culture (la bande du milieu, comme le fond du cartouche du nom de la fiche au survol). Généré par scripts/build-culture-colors.js ; ne pas modifier à la main.",
+  "description": "Couleur des cultures (Idan, 2026-11-15 : « une table couleur par culture. On s'en servira à plein d'endroits », « 1 seule couleur par culture. Un seul code hexa », « il nous faut un ton moyen / clair de la barre ») : un ton moyen de la texture de la barre de chaque culture (sa couleur moyenne, de la bande du milieu, montée à la même luminosité pour toutes, OKLab 0,55, en gardant sa teinte). Généré par scripts/build-culture-colors.js ; ne pas modifier à la main.",
   "columns": [
     {
       "key": "nom",
@@ -13,169 +13,169 @@
     },
     {
       "key": "couleur",
-      "source": "Couleur moyenne de la texture de sa barre (code hexadécimal)"
+      "source": "Ton moyen de la texture de sa barre (code hexadécimal)"
     }
   ],
   "rows": [
     {
       "nom": "Tribus nordiques",
       "cle": "tribus-nordiques",
-      "couleur": "#141618"
+      "couleur": "#6b727a"
     },
     {
       "nom": "Clans des grandes steppes",
       "cle": "clans-des-grandes-steppes",
-      "couleur": "#271a13"
+      "couleur": "#8e6853"
     },
     {
       "nom": "Ogres des cités humaines",
       "cle": "ogres-des-cites-humaines",
-      "couleur": "#260609"
+      "couleur": "#b54952"
     },
     {
       "nom": "Reptiliens des villes",
       "cle": "reptiliens-des-villes",
-      "couleur": "#0e071a"
+      "couleur": "#7e5cb7"
     },
     {
       "nom": "Montagnes du Nord",
       "cle": "montagnes-du-nord",
-      "couleur": "#12171a"
+      "couleur": "#63747f"
     },
     {
       "nom": "Reptiliens des marécages",
       "cle": "reptiliens-des-marecages",
-      "couleur": "#041713"
+      "couleur": "#318172"
     },
     {
       "nom": "Elfes noirs",
       "cle": "elfes-noirs",
-      "couleur": "#101825"
+      "couleur": "#57729e"
     },
     {
       "nom": "Halflings des cités humaines",
       "cle": "halflings-des-cites-humaines",
-      "couleur": "#24050b"
+      "couleur": "#b3485c"
     },
     {
       "nom": "Tribus de la jungle",
       "cle": "tribus-de-la-jungle",
-      "couleur": "#11150e"
+      "couleur": "#68775d"
     },
     {
       "nom": "Cités libres",
       "cle": "cites-libres",
-      "couleur": "#0a090c"
+      "couleur": "#746e7f"
     },
     {
       "nom": "Caravanes de ferrailleurs",
       "cle": "caravanes-de-ferrailleurs",
-      "couleur": "#212121"
+      "couleur": "#717171"
     },
     {
       "nom": "Gnomes des forêts",
       "cle": "gnomes-des-forets",
-      "couleur": "#0f170d"
+      "couleur": "#5e7b56"
     },
     {
       "nom": "Explorateurs",
       "cle": "explorateurs",
-      "couleur": "#241f11"
+      "couleur": "#7f7049"
     },
     {
       "nom": "Steppes désertiques",
       "cle": "steppes-desertiques",
-      "couleur": "#170a05"
+      "couleur": "#9c6045"
     },
     {
       "nom": "Orcs noirs",
       "cle": "orcs-noirs",
-      "couleur": "#181818"
+      "couleur": "#717171"
     },
     {
       "nom": "Elfes des grandes cités",
       "cle": "elfes-des-grandes-cites",
-      "couleur": "#150e0a"
+      "couleur": "#886a59"
     },
     {
       "nom": "Gobelins des cavernes",
       "cle": "gobelins-des-cavernes",
-      "couleur": "#0f1c10"
+      "couleur": "#537e56"
     },
     {
       "nom": "Halflings des villages isolés",
       "cle": "halflings-des-villages-isoles",
-      "couleur": "#16200e"
+      "couleur": "#5e7c46"
     },
     {
       "nom": "Orcs des villes",
       "cle": "orcs-des-villes",
-      "couleur": "#191919"
+      "couleur": "#717171"
     },
     {
       "nom": "Tribus des forêts anciennes",
       "cle": "tribus-des-forets-anciennes",
-      "couleur": "#021206"
+      "couleur": "#2b854b"
     },
     {
       "nom": "Gobelins des villes",
       "cle": "gobelins-des-villes",
-      "couleur": "#111111"
+      "couleur": "#717171"
     },
     {
       "nom": "Royaumes du Soleil Levant",
       "cle": "royaumes-du-soleil-levant",
-      "couleur": "#260408"
+      "couleur": "#b44953"
     },
     {
       "nom": "Orcs des steppes",
       "cle": "orcs-des-steppes",
-      "couleur": "#2c1c15"
+      "couleur": "#926652"
     },
     {
       "nom": "Nains des montagnes",
       "cle": "nains-des-montagnes",
-      "couleur": "#151b20"
+      "couleur": "#617484"
     },
     {
       "nom": "Ogres des montagnes",
       "cle": "ogres-des-montagnes",
-      "couleur": "#131215"
+      "couleur": "#736f7b"
     },
     {
       "nom": "Gnomes des cavernes",
       "cle": "gnomes-des-cavernes",
-      "couleur": "#161618"
+      "couleur": "#717178"
     },
     {
       "nom": "Elfes sylvains",
       "cle": "elfes-sylvains",
-      "couleur": "#091909"
+      "couleur": "#478247"
     },
     {
       "nom": "Nains du chaos",
       "cle": "nains-du-chaos",
-      "couleur": "#0d0d0d"
+      "couleur": "#717171"
     },
     {
       "nom": "Reptiliens des cités-temples",
       "cle": "reptiliens-des-cites-temples",
-      "couleur": "#041516"
+      "couleur": "#347e82"
     },
     {
       "nom": "Nains esclaves",
       "cle": "nains-esclaves",
-      "couleur": "#151515"
+      "couleur": "#717171"
     },
     {
       "nom": "Gnomes des villes",
       "cle": "gnomes-des-villes",
-      "couleur": "#0d0d0d"
+      "couleur": "#717171"
     },
     {
       "nom": "Ogres des steppes",
       "cle": "ogres-des-steppes",
-      "couleur": "#271a14"
+      "couleur": "#8e6856"
     }
   ],
   "row_count": 32

@@ -22,6 +22,10 @@ for (const row of table.rows) {
   assert.equal(HUD_BARS[row.cle]?.culture, row.nom, row.nom + " : dossier de sa barre");
   assert.ok(fs.existsSync(path.join(ROOT, "prototype-web/assets/hud/barres", row.cle, "center.webp")), row.nom);
   assert.match(row.couleur, /^#[0-9a-f]{6}$/, row.nom);
+  // Un ton moyen, pas la couleur sombre de la barre (« il nous faut un ton moyen / clair de la barre ») : ni noir ni blanc.
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(row.couleur.slice(i, i + 2), 16));
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  assert.ok(luma > 90 && luma < 150, `${row.nom} : ${row.couleur}, luminosité ${luma.toFixed(0)}`);
 }
 assert.match(fs.readFileSync(path.join(ROOT, "data/reference/CATALOG.md"), "utf8"), /\| culture-colors\.json \| 32 \| nom, cle, couleur /);
 

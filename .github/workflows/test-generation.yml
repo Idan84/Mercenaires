@@ -228,3 +228,5 @@ jobs:
       - run: node --check prototype-web/design/images-lab.js
       - run: node --check prototype-web/design/bestiary-lab.js
       - run: node --check prototype-web/design/missions-lab.js
+      - run: node --check prototype-web/design/charte-lab.js
+      - run: node --check scripts/build-charte.js

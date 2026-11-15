@@ -73,4 +73,12 @@ for (const name of components) {
 }
 assert.ok(fs.statSync(path.join(CHARTE, "README.md")).size > 0);
 
+// 6. La charte sur le site (onglet Charte de la Design Lab) : scripts/build-site.sh la copie et en tire les aperçus.
+const site = fs.readFileSync(path.join(ROOT, "scripts/build-site.sh"), "utf8");
+assert.match(site, /cp charte\/tokens\.json charte\/assets\.json charte\/README\.md "\$OUT\/charte\/"/);
+assert.match(site, /node scripts\/build-charte\.js --site "\$OUT\/charte\/site"/);
+const lab = fs.readFileSync(path.join(ROOT, "prototype-web/design/index.html"), "utf8");
+assert.match(lab, /data-mode="charte"/);
+assert.match(lab, /<script src="\.\/charte-lab\.js"><\/script>/);
+
 console.log(`Charte : ${names.length} jetons, ${count} images, ${components.length} aperçus — OK`);

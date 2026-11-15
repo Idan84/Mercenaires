@@ -20,6 +20,7 @@
 //
 // Usage : node scripts/build-charte.js                (écrit les fichiers générés de charte/)
 //         node scripts/build-charte.js --check        (vérifie qu'ils sont à jour, pour les tests)
+//         node scripts/build-charte.js --site <dossier> (la charte pour la Design Lab, voir buildSite)
 //         node scripts/build-charte.js --out <dossier> (prépare en plus <dossier>/project/ pour publier la page, images
 //                                                       comprises, et <dossier>/fichiers.json : la liste à publier)
 
@@ -400,6 +401,8 @@ function generatedFiles() {
 function main(argv) {
   const files = generatedFiles();
   const assets = files._assets; delete files._assets;
+  const siteIndex = argv.indexOf("--site");
+  if (siteIndex >= 0) return buildSite(path.resolve(argv[siteIndex + 1]), assets);
   if (argv.includes("--check")) {
     const stale = Object.keys(files).filter(f => !fs.existsSync(path.join(CHARTE, f)) || fs.readFileSync(path.join(CHARTE, f), "utf8") !== files[f]);
     if (stale.length) { console.error(`charte/ pas à jour (node scripts/build-charte.js) : ${stale.join(", ")}`); process.exit(1); }
@@ -412,6 +415,37 @@ function main(argv) {
   console.log(`charte/ : ${Object.keys(files).join(", ")}`);
   const outIndex = argv.indexOf("--out");
   if (outIndex >= 0) assemble(path.resolve(argv[outIndex + 1]), assets);
+}
+
+// La charte sur le site du jeu, pour l'onglet Charte de la Design Lab (Idan, 2026-11-15 : « est-ce qu'il faut pas intégrer
+// cette partie charte avec le design lab ? »). Appelé par scripts/build-site.sh : <dir> = <site>/charte/site/, à côté de
+// <site>/assets/. Écrit tokens.css (les jetons en variables CSS), bundle.css et un aperçu par composant, autonome (ses
+// images lues dans le site : ../../assets/…, et les filets dessinés en data URI copiés dans svg/). N'écrit rien dans charte/.
+function buildSite(dir, assets) {
+  fs.rmSync(dir, {recursive: true, force: true});
+  fs.mkdirSync(path.join(dir, "svg"), {recursive: true});
+  const where = new Map();
+  for (const g of assets) for (const f of g.files) {
+    if (f.dataUri) { fs.writeFileSync(path.join(dir, "svg", f.name), assetBytes(f)); where.set(`${g.name}/${f.name}`, `svg/${f.name}`); }
+    else where.set(`${g.name}/${f.name}`, "../../" + f.source.replace(/^prototype-web\//, "").split("/").map(encodeURIComponent).join("/"));
+  }
+  const resolve = text => text.replace(/\{\{asset:([^}]+)\}\}/g, (_, key) => {
+    if (!where.has(key)) throw new Error(`Image hors de la charte : ${key}`);
+    return where.get(key);
+  });
+  const tokens = buildTokens();
+  const vars = [...tokens.color.tokens, ...tokens.shadow.tokens, ...tokens.dimensions.tokens].map(t => `--${t.name}:${t.value}`)
+    .concat(Object.entries(tokens.type.families).map(([key, stack]) => `--font-${key}:${stack}`));
+  fs.writeFileSync(path.join(dir, "tokens.css"), `/* Charte Blood & Wages — généré par scripts/build-charte.js depuis charte/tokens.json */\n:root{${vars.join(";")}}\n`);
+  fs.writeFileSync(path.join(dir, "bundle.css"), resolve(fs.readFileSync(path.join(CHARTE, "components/bundle.css"), "utf8")));
+  const components = fs.readdirSync(path.join(CHARTE, "components"), {withFileTypes: true}).filter(e => e.isDirectory()).map(e => e.name);
+  for (const name of components) {
+    const preview = fs.readFileSync(path.join(CHARTE, "components", name, "preview.html"), "utf8");
+    const html = preview.replace(/^<!-- @dsCard[^\n]*\n/, "")
+      .replace("<head>", '<head>\n<link rel="stylesheet" href="tokens.css">\n<link rel="stylesheet" href="bundle.css">');
+    fs.writeFileSync(path.join(dir, `${name}.html`), resolve(html));
+  }
+  console.log(`${dir} : tokens.css, bundle.css, ${components.length} aperçus`);
 }
 
 // Prépare <out>/project/ (la page) : les fichiers de charte/ (sauf assets.json et publication.json), les images copiées

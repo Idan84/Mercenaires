@@ -431,11 +431,19 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     const file = pictoPath("school", school);
     assert.ok(fs.existsSync(path.join(root, "prototype-web", file)), school + " : " + file);
   }
-  // Le cadre : la barre et l'anneau de SA culture, pour chacune des 32.
+  // Zone 1, le cartouche du nom : la texture de SA culture seule (la bande de la pièce du milieu, sans le cadre), pour
+  // chacune des 32 ; la carte et l'avatar en dimensions fixes, aux proportions de Chatty ; les anciens cadres retirés.
   for (const bar of Object.values(HUD_BARS)) {
-    const frame = api.hoverCultureFrame(bar.culture, 64);
-    assert.ok(frame.vars.includes(`assets/hud/barres/${frame.key}/center.webp`) && frame.vars.includes(`assets/hud/barres/${frame.key}/ornement.webp`), bar.culture);
+    const frame = api.hoverCultureFrame(bar.culture);
+    const inset = (bar.bandBottom - bar.bandTop) * .08, band = bar.bandBottom - bar.bandTop - 2 * inset;
+    assert.ok(frame.vars.includes(`assets/hud/barres/${frame.key}/center.webp`), bar.culture);
+    assert.ok(frame.vars.includes(`--hc-tex-y:${((bar.bandTop + inset) / band).toFixed(4)}`) && frame.vars.includes(`--hc-tex-h:${(bar.h / band).toFixed(4)}`), bar.culture);
     assert.equal(HUD_BARS[frame.key].culture, bar.culture);
   }
+  const css = choiceCss;
+  assert.match(css, /\.hover-card\{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc\(var\(--hc-h\) \* \.1435\);/);
+  assert.match(css, /\.hc-portrait\{position:absolute;left:1\.2%;top:1\.5%;width:34%;height:97%;/);
+  assert.match(css, /\.hc-banner\{position:absolute;left:36\.2%;right:1\.2%;top:1\.5%;height:14\.35%;/);
+  assert.doesNotMatch(hoverSrc + css, /hc-corner|hover-card-ring|hover-card-bar|hc-side/, "plus de cadres : ils viendront en dernier");
 }
 console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action, choix de l'escouade — OK");

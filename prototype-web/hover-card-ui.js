@@ -57,40 +57,35 @@ function mercenaryHoverData(c,{missionTag=null}={}){
   };
 }
 
-// Les pièces de la barre de sa culture (hud-bars.js), à la hauteur voulue : les embouts coupés au début de la bande, la
-// bande étirée entre les deux.
-const BANNER_H=104; // la hauteur du cartouche du nom
-function hoverCultureFrame(culture,barHeight){
+// La texture de sa culture (hud-bars.js) pour le fond du cartouche du nom (Idan, 2026-11-15 : « la texture de la culture
+// uniquement… notre PNG centre de culture mais on coupe en haut et en bas ») : la pièce du milieu de sa barre, réduite à sa
+// bande (de bandTop à bandBottom), rognée encore de 8 % en haut et en bas : chez certaines cultures (chaînes des Orcs noirs,
+// cordes des Tribus de la jungle…) la bande mesurée garde un liseré du cadre. Des rapports sans unité, que le CSS multiplie
+// par la hauteur du cartouche.
+const HOVER_TEXTURE_INSET=.08;
+function hoverCultureFrame(culture){
   const all=typeof HUD_BARS!=="undefined"?HUD_BARS:{};
   const key=Object.keys(all).find(k=>all[k].culture===culture)||"cites-libres";
-  const bar=all[key],s=barHeight/bar.h,o=bar.ornament;
-  const url=piece=>`url("assets/hud/barres/${key}/${piece}.webp")`;
+  const bar=all[key],inset=(bar.bandBottom-bar.bandTop)*HOVER_TEXTURE_INSET;
+  const top=bar.bandTop+inset,band=bar.bandBottom-bar.bandTop-2*inset;
   return {key,
-    vars:[`--hc-bar-h:${barHeight}px`,`--hc-left:${url("left")}`,`--hc-center:${url("center")}`,`--hc-right:${url("right")}`,
-      `--hc-left-w:${Math.round(bar.left*s)}px`,`--hc-right-w:${Math.round(bar.right*s)}px`,
-      `--hc-cap-l:${Math.round(bar.bandLeft*s)}px`,`--hc-cap-r:${Math.round(bar.bandRight*s)}px`,
-      `--hc-band-top:${Math.round(bar.bandTop*s)}px`,`--hc-band-h:${Math.round((bar.bandBottom-bar.bandTop)*s)}px`,
-      `--hc-rim-top:${Math.round(bar.frameTop*s)}px`,`--hc-rim-h:${Math.round((bar.frameBottom-bar.frameTop)*s)}px`,
-      `--hc-ring:url("assets/hud/barres/${key}/ornement.webp")`,
-      `--hc-banner-bg-h:${(BANNER_H*bar.h/(bar.frameBottom-bar.frameTop)).toFixed(1)}px`,
-      `--hc-banner-bg-y:${(-BANNER_H*bar.frameTop/(bar.frameBottom-bar.frameTop)).toFixed(1)}px`,
-      `--hc-ring-ratio:${o?(o.w/o.h).toFixed(3):2}`,`--hc-hole-x:${o?(o.cx/o.w*100).toFixed(2):50}%`,
-      `--hc-hole-y:${o?(o.cy/o.h*100).toFixed(2):50}%`,`--hc-hole:${o?(o.hole/o.w*100).toFixed(2):30}%`].join(";")};
+    vars:[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
+      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`].join(";")};
 }
 
-// La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15 : « Fais un test avec le A… Part de ce qu'on a,
-// si ça va pas, on refera » ; puis « Essaie de t'approcher au max du travail de Chatty »). Un cadre d'argent aux coins
-// ciselés (ceux du menu, passés à l'argent) ; à gauche le portrait en pied ; à droite le cartouche du nom (la bande de la
-// barre de sa culture) et une page claire : origines, réputation, affinité, prime, tags en plaques, armes, écoles. En bas,
-// la barre de sa culture et son anneau, comme les lianes de Chatty.
+// La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15). Une carte et un avatar aux dimensions fixes,
+// aux proportions de Chatty (styles.css) ; les cadres viendront en dernier, une image par culture posée par-dessus
+// (« On aura simplement 32 PNG qui n'auront plus qu'à se coller dessus »). À gauche le portrait en pied ; à droite le
+// cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
 const HEART='<path d="M12 21.2s-7.6-4.7-10.1-9.3C.1 8.4 1.6 3.4 6.1 2.4 8.6 1.8 10.7 3 12 5c1.3-2 3.4-3.2 5.9-2.6 4.5 1 6 6 4.2 9.5-2.5 4.6-10.1 9.3-10.1 9.3z"/>';
 function hoverHearts(filled){
   return Array.from({length:10},(_,i)=>`<svg class="hc-heart${i<filled?" is-full":""}" viewBox="0 0 24 22" aria-hidden="true">${HEART}</svg>`).join("");
 }
 function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const d=mercenaryHoverData(c,{missionTag});
-  const frame=hoverCultureFrame(d.culture,46);
-  const nameSize=Math.max(22,Math.min(36,36-Math.max(0,d.name.length-17)*1.15));
+  const frame=hoverCultureFrame(d.culture);
+  // Le nom remplit le cartouche ; les noms longs (plus de 17 lettres) rapetissent un peu.
+  const nameFit=Math.max(.6,1-Math.max(0,d.name.length-17)*.032);
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}<span>${esc(d[kind])}</span></span>`).join("");
   const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
@@ -100,28 +95,22 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
   const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
   const tags=d.tags.map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
-  const corner=pos=>`<i class="hc-corner hc-corner--${pos}" aria-hidden="true"></i>`;
-  return `<article class="hover-card" data-culture="${esc(frame.key)}" style='${frame.vars};--hc-name:${nameSize.toFixed(1)}px' aria-label="${esc(d.name)}">
-    ${["tl","tr","bl","br"].map(corner).join("")}
+  return `<article class="hover-card" data-culture="${esc(frame.key)}" style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
-    <div class="hc-side">
-      <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><span>${esc(d.title)}</span></p>`:""}</header>
-      <div class="hc-page">
-        <div class="hc-emblems">${emblems}</div>
-        <i class="hc-rule" aria-hidden="true"></i>
-        <div class="hc-stats">
-          <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
-          ${affinity}
-          <div class="hc-stat hc-stat--bonus"><span class="hc-label">Prime de mission</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
-        </div>
-        ${tags?`<i class="hc-rule" aria-hidden="true"></i><ul class="hc-tags">${tags}</ul>`:""}
-        <i class="hc-rule" aria-hidden="true"></i>
-        <div class="hc-kit">${kit}</div>
-        ${schools?`<i class="hc-rule" aria-hidden="true"></i><div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:""}
+    <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><span>${esc(d.title)}</span></p>`:""}</header>
+    <div class="hc-page">
+      <div class="hc-emblems">${emblems}</div>
+      <i class="hc-rule" aria-hidden="true"></i>
+      <div class="hc-stats">
+        <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
+        ${affinity}
+        <div class="hc-stat hc-stat--bonus"><span class="hc-label">Prime de mission</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
       </div>
+      ${tags?`<i class="hc-rule" aria-hidden="true"></i><ul class="hc-tags">${tags}</ul>`:""}
+      <i class="hc-rule" aria-hidden="true"></i>
+      <div class="hc-kit">${kit}</div>
+      ${schools?`<i class="hc-rule" aria-hidden="true"></i><div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:""}
     </div>
-    <div class="hover-card-bar hover-card-bar--bottom" aria-hidden="true"><i class="hover-card-cap hover-card-cap--l"></i><i class="hover-card-band"></i><i class="hover-card-cap hover-card-cap--r"></i></div>
-    <span class="hover-card-ring" aria-hidden="true">${d.culture?renderPicto("culture",d.culture,{size:"md"}):""}</span>
   </article>`;
 }
 

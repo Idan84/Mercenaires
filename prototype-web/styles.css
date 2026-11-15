@@ -2375,38 +2375,31 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-btn:active{transform:translateY(2px)}
 .mission-btn:active::before{filter:brightness(.84) drop-shadow(0 2px 2px rgba(0,0,0,.55))}
 .mission-btn:focus-visible{outline:2px solid var(--or-clair);outline-offset:4px}
-/* La fiche au survol (hover-card-ui.js), au plus près de « A · Le diptyque » de Chatty, avec nos pièces : un cadre
-   d'argent aux coins ciselés (ceux du menu, passés à l'argent), le portrait en pied à gauche, le cartouche du nom (la
-   bande de la barre de la culture) et une page claire à droite ; en bas, la barre de la culture et son anneau. */
-.hover-card{--or:#c9a461;--or-clair:#f0d395;--encre:#2c1b10;--encre-2:#5d4429;--argent:linear-gradient(135deg,#f5f6f7 0%,#9ba0a5 22%,#e3e5e7 42%,#6f7479 64%,#c8ccd0 82%,#868b90 100%);
+/* La fiche au survol (hover-card-ui.js), d'après « A · Le diptyque » de Chatty. Dimensions fixes, aux proportions de sa
+   maquette (sa carte : 1645 × 1080 pixels) ; chaque zone est placée en pourcentage de la carte, donc de sa largeur et de sa
+   hauteur. Pas de cadre pour l'instant (Idan, 2026-11-15) : ils viendront en dernier, une image par culture posée dessus. */
+.hover-card{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc(var(--hc-h) * .1435);
+  --or:#c9a461;--or-clair:#f0d395;--encre:#2c1b10;--encre-2:#5d4429;
   --police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
-  position:relative;isolation:isolate;box-sizing:border-box;display:grid;grid-template-columns:270px minmax(0,1fr);gap:14px;width:800px;
-  padding:16px 16px 34px;border:6px solid transparent;border-image:var(--argent) 1;
-  background:radial-gradient(ellipse at 50% 0%,rgba(80,62,44,.5),transparent 70%),#15100c;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.8),inset 0 0 30px rgba(0,0,0,.7),0 26px 50px rgba(0,0,0,.75);
-  color:var(--encre);font-family:var(--police-texte);text-align:left}
-.hc-corner{position:absolute;z-index:6;width:74px;height:74px;background:url("assets/ui/menu-corner-tl.webp") center/contain no-repeat;filter:grayscale(1) brightness(1.55) contrast(1.15) drop-shadow(0 2px 3px rgba(0,0,0,.8));pointer-events:none}
-.hc-corner--tl{top:-14px;left:-14px}
-.hc-corner--tr{top:-14px;right:-14px;transform:scaleX(-1)}
-.hc-corner--bl{bottom:-14px;left:-14px;transform:scaleY(-1)}
-.hc-corner--br{bottom:-14px;right:-14px;transform:scale(-1,-1)}
-/* Le portrait : tout en hauteur, cadre d'argent. */
-.hc-portrait{position:relative;min-height:470px;border:4px solid transparent;border-image:var(--argent) 1;background:#0c0806;box-shadow:inset 0 0 18px rgba(0,0,0,.8);overflow:hidden}
+  position:relative;isolation:isolate;box-sizing:border-box;display:block;width:var(--hc-w);height:var(--hc-h);
+  background:#15100c;box-shadow:0 26px 50px rgba(0,0,0,.75);color:var(--encre);font-family:var(--police-texte);text-align:left}
+/* Le portrait en pied, à gauche : 34 % de la largeur, 97 % de la hauteur (Chatty : 560 × 1047). */
+.hc-portrait{position:absolute;left:1.2%;top:1.5%;width:34%;height:97%;background:#0c0806;overflow:hidden}
 .hc-portrait .avatar-frame{position:absolute;inset:0;width:100%;height:100%;margin:0;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none}
 .hc-portrait .avatar-frame img{object-fit:cover;object-position:50% 15%}
 .hover-card .avatar-fallback small{display:none}
 .hover-card .avatar-fallback span{font-size:3.2rem}
-.hc-side{display:grid;grid-template-rows:auto 1fr;min-width:0;border:4px solid transparent;border-image:var(--argent) 1}
-/* Le cartouche : la bande de la barre de la culture, le nom en grand, le titre entre deux filets. */
-.hc-banner{position:relative;display:grid;align-content:center;justify-items:center;gap:4px;height:104px;box-sizing:border-box;padding:6px 18px 8px;background:var(--hc-center) 0 var(--hc-banner-bg-y)/100% var(--hc-banner-bg-h) no-repeat,#1d2a22;border-bottom:3px solid #8f959a;text-align:center}
-.hc-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.28));pointer-events:none}
-.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:600 var(--hc-name)/1.05 var(--police-texte);letter-spacing:.01em;color:#f7eedb;text-shadow:0 2px 3px #000,0 0 12px rgba(0,0,0,.6);white-space:nowrap}
-.hc-title{position:relative;z-index:1;display:flex;align-items:center;gap:10px;margin:0;max-width:100%;font:italic 500 20px/1.15 var(--police-texte);color:#ecc77c;text-shadow:0 1px 2px #000}
+/* Zone 1, le cartouche du nom : 62,6 % de la largeur, 14,35 % de la hauteur (Chatty : 1038 × 155). En fond, la texture de
+   la culture seule : la bande de la pièce du milieu de sa barre, à la hauteur du cartouche, coupée en haut et en bas. */
+.hc-banner{position:absolute;left:36.2%;right:1.2%;top:1.5%;height:14.35%;box-sizing:border-box;display:grid;align-content:center;justify-items:center;gap:calc(var(--hc-cart-h) * .04);padding:0 4%;overflow:hidden;
+  background:var(--hc-texture) 50% calc(var(--hc-cart-h) * var(--hc-tex-y) * -1)/max(100%,calc(var(--hc-cart-h) * var(--hc-tex-w))) calc(var(--hc-cart-h) * var(--hc-tex-h)) no-repeat,#1d2a22;text-align:center}
+.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:600 calc(var(--hc-cart-h) * .42 * var(--hc-name-fit,1))/1.05 var(--police-texte);letter-spacing:.01em;color:#f7eedb;text-shadow:0 2px 3px #000,0 0 12px rgba(0,0,0,.6);white-space:nowrap}
+.hc-title{position:relative;z-index:1;display:flex;align-items:center;gap:10px;margin:0;max-width:100%;font:italic 500 calc(var(--hc-cart-h) * .24)/1.15 var(--police-texte);color:#ecc77c;text-shadow:0 1px 2px #000}
 .hc-title::before,.hc-title::after{content:"";flex:0 0 34px;height:9px;background:linear-gradient(90deg,transparent,#d8b26a) center/100% 1px no-repeat,radial-gradient(circle,#ecc77c 0 2.6px,transparent 3px) right center/9px 9px no-repeat}
 .hc-title::after{transform:scaleX(-1)}
 .hc-title span{min-width:0;text-align:center;text-wrap:balance}
-/* La page. */
-.hc-page{position:relative;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,251,240,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
+/* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
+.hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,251,240,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
 .hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6c43 18%,#8a6c43 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
 .hc-emblems{display:flex;flex-wrap:wrap;justify-content:center}
 .hc-emblem{display:inline-flex;align-items:center;gap:8px;padding:2px 14px;font:600 18px/1.1 var(--police-texte);color:var(--encre)}
@@ -2447,15 +2440,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-school:nth-child(3n+1){border-left:0}
 .hc-school>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
 .hc-school .picto{width:56px;height:56px;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
-/* En bas : la barre de la culture et son anneau, le picto de la culture dedans. */
-.hover-card-bar{position:absolute;left:24px;right:24px;z-index:5;display:flex;height:var(--hc-bar-h);pointer-events:none;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7))}
-.hover-card-bar--bottom{bottom:calc(var(--hc-bar-h) * -.5 - 3px)}
-.hover-card-bar i{display:block;height:100%;background-repeat:no-repeat}
-.hover-card-cap--l{flex:none;width:var(--hc-cap-l);background-image:var(--hc-left);background-size:var(--hc-left-w) 100%;background-position:left center}
-.hover-card-band{flex:1;background-image:var(--hc-center);background-size:100% 100%}
-.hover-card-cap--r{flex:none;width:var(--hc-cap-r);background-image:var(--hc-right);background-size:var(--hc-right-w) 100%;background-position:right center}
-.hover-card-ring{position:absolute;left:50%;bottom:-3px;z-index:7;height:84px;aspect-ratio:var(--hc-ring-ratio);background:var(--hc-ring) center/contain no-repeat;transform:translate(-50%,50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.7))}
-.hover-card-ring .picto{position:absolute;left:var(--hc-hole-x);top:var(--hc-hole-y);width:calc(var(--hc-hole) * .8);height:auto;aspect-ratio:1;margin:0;object-fit:contain;transform:translate(-50%,-50%)}
 
 /* Le choix de l'escouade, d'après la maquette de Chatty (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») :
    sur le panneau des missions assombri, la mission en grand ; à gauche, les mercenaires au camp sur le parchemin de la

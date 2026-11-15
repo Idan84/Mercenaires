@@ -4,7 +4,7 @@ Déposées sur Hostinger dans `media/pictos/Ascendance/` : PNG 1254 × 1254, des
 avec un visuel plus lisible ». Toile entière, sans recadrage (comme les peuples) : le halo animé se pose exactement autour
 de chaque goutte. Réduites par `scripts/build-pictos.sh` en `prototype-web/assets/pictos/` (256 × 256).
 
-Dans le jeu, une ascendance s'affiche en trois calques (`prototype-web/goutte-ui.js`) : le halo animé derrière, la goutte
+Dans le jeu, une ascendance s'affiche en trois calques (`prototype-web/picto-ui.js`) : le halo animé derrière, la goutte
 rubis, puis la goutte à emblème qui apparaît en fondu d'une seconde (Idan : « la goutte arrive toujours par opacité d'une
 seconde sur la goutte rubis puis on fait jouer en boucle le webp derrière pour faire le halo »).
 
@@ -23,7 +23,15 @@ seconde sur la goutte rubis puis on fait jouer en boucle le webp derrière pour 
 | `ascendance-sang-d-humain.png` | Sang d'humain | `Goutte de rubis à emblème humain-11.png` |
 | `goutte-rubis.png` | La goutte sous l'emblème | `Goutte de rubis brillante sur transparence.png` |
 | `goutte-sombre.png` | « Aucune » ascendance (création du capitaine) | `sang_basique.png` |
-| `goutte-halo.webp` | Le halo animé (80 images, 4 s, 512 px ; réduit à 256 px, 10 Mo → 0,8 Mo) | `halo-magique-anime/halo-magique.webp` |
+| `goutte-halo.webp` | Le halo animé (80 images, 4 s, 512 px), mis en place par `scripts/build-halo.js` (voir plus bas) | `halo-magique-anime/halo-magique.webp` |
 
 Les anciens masters JPG sur fond blanc (détourés par le script) sont remplacés ; ils restent dans l'historique git. Le halo
 fixe (`Halo magique cramoisi et blanc.png`) ne sert pas.
+
+## Le halo dans le jeu (Idan, 2026-11-15)
+
+`scripts/build-halo.js` fabrique `prototype-web/assets/pictos/goutte-halo.webp` (256 × 256, la toile de la goutte, 0,9 Mo).
+Les images du master sont décodées par le navigateur : ImageMagick lit mal ce WebP animé et épaississait les volutes.
+Le halo est recentré sur la goutte et agrandi de 22 %, puis viennent les réglages choisis par Idan sur la planche de choix
+(« Le B avec 105% -0,5% -5% 75% 84% ») : le halo et son reflet (deux couches à 93 %), taille 105 %, décalage −0,5 % vers
+la droite et 5 % vers le haut, étirement horizontal 75 % et vertical 84 %. Les réglages sont en tête du script.

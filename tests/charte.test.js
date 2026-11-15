@@ -81,4 +81,19 @@ const lab = fs.readFileSync(path.join(ROOT, "prototype-web/design/index.html"), 
 assert.match(lab, /data-mode="charte"/);
 assert.match(lab, /<script src="\.\/charte-lab\.js"><\/script>/);
 
+// 7. Le catalogue des images (data/reference/images.json, onglet Images de la Design Lab) : chaque famille dit où, pourquoi,
+// quoi déposer, le format du jeu et ses alternates ; ses vignettes existent ; la ligne du CATALOG est juste.
+const images = JSON.parse(fs.readFileSync(path.join(ROOT, "data/reference/images.json"), "utf8"));
+const IMAGE_COLUMNS = ["cle", "famille", "nombre", "ou", "pourquoi", "fichiers", "affichage", "depot", "format_jeu", "alternates", "source", "exemples"];
+assert.deepEqual(images.columns.map(c => c.key), IMAGE_COLUMNS);
+assert.equal(images.row_count, images.rows.length);
+assert.equal(new Set(images.rows.map(r => r.cle)).size, images.rows.length, "familles d'images uniques");
+for (const r of images.rows) {
+  assert.deepEqual(Object.keys(r), IMAGE_COLUMNS, r.cle);
+  for (const key of IMAGE_COLUMNS.slice(3, 11)) assert.ok(String(r[key]).trim(), `${r.cle} : ${key}`);
+  assert.ok(Number.isInteger(r.nombre) && r.nombre > 0, `${r.cle} : nombre`);
+  for (const src of r.exemples) if (!src.startsWith("media/")) assert.ok(fs.existsSync(path.join(ROOT, "prototype-web", src)), `${r.cle} : ${src}`);
+}
+assert.match(fs.readFileSync(path.join(ROOT, "data/reference/CATALOG.md"), "utf8"), new RegExp(`\\| images\\.json \\| ${images.rows.length} \\| ${IMAGE_COLUMNS.join(", ")} `));
+
 console.log(`Charte : ${names.length} jetons, ${count} images, ${components.length} aperçus — OK`);

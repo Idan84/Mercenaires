@@ -64,28 +64,28 @@ function mercenaryHoverData(c,{missionTag=null}={}){
 // par la hauteur du cartouche.
 const HOVER_TEXTURE_INSET=.08;
 // L'ornement du titre, un par culture (Idan, 2026-11-15 : « je voudrais qu'on les fasse court, mais 1 par culture en
-// monochrome… plus fin et plus petit ») : un motif pris dans ses planches d'ornements (Ornements.zip), où entre un filet
-// effilé, comme chez Chatty. Les SVG : assets/fiche/ornements/<motif>.svg (scripts/build-title-ornaments.py). Le choix du
-// motif de chaque culture est une proposition, à valider par Idan.
+// monochrome… plus fin et plus petit »), revus culture par culture avec lui : un motif pris dans ses planches d'ornements
+// (Ornements.zip) ou une forme simple dessinée, avec ou sans filet effilé, comme chez Chatty. Les SVG :
+// assets/fiche/ornements/<motif>.svg (scripts/build-title-ornaments.py).
 const HOVER_TITLE_ORNAMENTS={
-  "tribus-nordiques":"corbeau","clans-des-grandes-steppes":"loup","tribus-des-forets-anciennes":"totem",
+  "tribus-nordiques":"corbeau","clans-des-grandes-steppes":"corne","tribus-des-forets-anciennes":"totem",
   "ogres-des-cites-humaines":"chope","ogres-des-montagnes":"ours","ogres-des-steppes":"crane-pique",
-  "orcs-noirs":"poing","orcs-des-villes":"fleuron-chaine","orcs-des-steppes":"pointe",
-  "gobelins-des-cavernes":"gobelin","gobelins-des-villes":"bouffon","caravanes-de-ferrailleurs":"cadenas",
-  "nains-des-montagnes":"couronne","nains-du-chaos":"crane-flamme","nains-esclaves":"chaine",
-  "gnomes-des-forets":"vague","gnomes-des-cavernes":"bougie","gnomes-des-villes":"cle-ailee",
-  "halflings-des-cites-humaines":"couronne-croix","halflings-des-villages-isoles":"cochon-volant","explorateurs":"tentacule-sabre",
-  "elfes-noirs":"croissant","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"volute-corbeau",
-  "cites-libres":"fleur-de-lys","montagnes-du-nord":"eclair","tribus-de-la-jungle":"trident",
-  "steppes-desertiques":"phenix","royaumes-du-soleil-levant":"dragon",
-  "reptiliens-des-villes":"aile-dragon","reptiliens-des-marecages":"crapaud","reptiliens-des-cites-temples":"crane-dragon"
+  "orcs-noirs":"poing","orcs-des-villes":"fleuron-chaine","orcs-des-steppes":"patte",
+  "gobelins-des-cavernes":"champignon","gobelins-des-villes":"dague","caravanes-de-ferrailleurs":"cadenas",
+  "nains-des-montagnes":"marteau","nains-du-chaos":"crane-flamme","nains-esclaves":"chaine",
+  "gnomes-des-forets":"gland","gnomes-des-cavernes":"bougie","gnomes-des-villes":"cle-ailee",
+  "halflings-des-cites-humaines":"couronne-croix","halflings-des-villages-isoles":"epi","explorateurs":"tentacule-sabre",
+  "elfes-noirs":"croissant","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"branche",
+  "cites-libres":"lys","montagnes-du-nord":"flocon","tribus-de-la-jungle":"fleur",
+  "steppes-desertiques":"croissant-haut","royaumes-du-soleil-levant":"dragon",
+  "reptiliens-des-villes":"oeil","reptiliens-des-marecages":"crapaud","reptiliens-des-cites-temples":"triangle"
 };
 function hoverCultureFrame(culture){
   const all=typeof HUD_BARS!=="undefined"?HUD_BARS:{};
   const key=Object.keys(all).find(k=>all[k].culture===culture)||"cites-libres";
   const bar=all[key],inset=(bar.bandBottom-bar.bandTop)*HOVER_TEXTURE_INSET;
   const top=bar.bandTop+inset,band=bar.bandBottom-bar.bandTop-2*inset;
-  const ornament=HOVER_TITLE_ORNAMENTS[key]||"fleur-de-lys";
+  const ornament=HOVER_TITLE_ORNAMENTS[key]||"lys";
   return {key,ornament,
     vars:[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
       `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`,

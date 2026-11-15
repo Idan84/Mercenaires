@@ -448,7 +448,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   for (const file of fs.readdirSync(path.join(root, "prototype-web/assets/fiche/ornements"))) {
     const svg = fs.readFileSync(path.join(root, "prototype-web/assets/fiche/ornements", file), "utf8");
     assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 104 24">/, file + " : court, toujours la même boîte");
-    assert.doesNotMatch(svg, /fill="#(?!000")|stroke="(?!none")/, file + " : monochrome");
+    assert.doesNotMatch(svg, /(?:fill|stroke)="(?!#000"|none")/, file + " : monochrome");
   }
   const css = choiceCss;
   // Le nom (en gras) et le titre : en réserve du parchemin, remplis de sa texture, une légère ombre portée ; le titre plus grand.

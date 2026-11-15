@@ -247,33 +247,50 @@ for (const file of ["one-shot-missions.json", "bodyguard-missions.json"]) {
   assert.ok("illustration" in holder, file + " : champ illustration");
 }
 
-// Le choix de l'escouade (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait ») : sur le panneau assombri,
-// l'escouade en haut (« je mettrais l'escouade en haut »), un filtre par tag (« avec comme premier tag, celui de la
-// mission ! »), la galerie de ceux qui peuvent partir, les boutons de la création.
+// Le choix de l'escouade (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait » ; puis « Oui, vas-y avec la
+// maquette de Chatty ») : la mission en grand ; à gauche, les mercenaires au camp (recherche, tags, galerie et flèches) ;
+// à droite, l'escouade ; le retour en bas à gauche.
 const missionJs = fs.readFileSync(path.join(root, "prototype-web/mission.js"), "utf8");
+const choiceCss = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
 const choiceStart = html.indexOf('<dialog id="mission-select-dialog"');
 const choiceDialog = html.slice(choiceStart, html.indexOf("</dialog>", choiceStart));
 assert.match(choiceDialog, /class="mission-detail mission-choice"/, "sur le panneau assombri, comme le détail");
 const at = id => choiceDialog.indexOf(id);
-assert.ok(at('class="mission-squad"') < at('id="mission-select-tags"') && at('id="mission-select-tags"') < at('id="mission-select-list"'),
-  "l'escouade en haut, puis les tags, puis la galerie");
-assert.match(choiceDialog, /class="mission-retour"[\s\S]*class="mission-btn">Partir demain</, "les boutons de la création");
-// « La feuille unique » : un seul parchemin porte l'escouade et la galerie ; « 20 pour la mission… + en dortoirs » : dix
-// places par rangée, la galerie défile dans la feuille.
-const choiceCss = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
-assert.ok(at('class="mission-choice-sheet"') < at('class="mission-squad"') && at('id="mission-select-list"') < choiceDialog.indexOf("</section>"), "une feuille pour l'escouade et la galerie");
-assert.match(choiceCss, /\.mission-choice-sheet::before\{[^}]*parchemin\.webp/, "le parchemin de la création");
-assert.match(choiceCss, /\.mission-squad\{[^}]*grid-template-columns:minmax\(0,1fr\) 612px minmax\(0,1fr\)/, "dix places de 54 px par rangée");
-assert.match(choiceCss, /\.mission-recruits > \.mission-roster\{[^}]*overflow:auto/, "la galerie défile");
-assert.doesNotMatch(choiceCss, /data-fond/, "une seule piste gardée");
+assert.ok(at('id="mission-select-title"') < at('class="mission-recruits"') && at('class="mission-recruits"') < at('class="mission-squad"'),
+  "la mission en haut, les mercenaires au camp à gauche, l'escouade à droite");
+assert.ok(at('id="mission-select-search"') < at('id="mission-select-tags"') && at('id="mission-select-tags"') < at('id="mission-select-list"'),
+  "la recherche, les tags, puis la galerie");
+assert.match(choiceDialog, /<aside class="mission-squad"[\s\S]*id="mission-select-count"[\s\S]*id="mission-squad-slots"[\s\S]*id="mission-squad-fatigue"[\s\S]*id="mission-select-cost"[\s\S]*class="mission-btn">Partir demain</,
+  "l'escouade : le compte, les places, les fatigués, les primes, le départ");
+assert.match(choiceDialog, /<footer class="mission-choice-foot">\s*<button type="button" id="cancel-mission-select-btn" class="mission-retour">/, "le retour en bas à gauche");
+assert.match(choiceCss, /\.mission-recruits::before\{[^}]*parchemin\.webp/, "les mercenaires au camp sur le parchemin de la création");
+assert.equal((choiceDialog.match(/class="mission-corner mission-corner--(tl|tr|bl|br)"/g) || []).length, 4, "les coins de bronze du panneau");
+// « La scroll bar : je ferais bien un bouton js pour descendre » : pas de barre, deux flèches de fer.
+assert.match(choiceCss, /\.mission-roster\{[^}]*overflow-y:auto[^}]*scrollbar-width:none/);
+assert.match(choiceCss, /\.mission-roster::-webkit-scrollbar\{display:none\}/);
+assert.match(choiceDialog, /data-roster-scroll="-1"[\s\S]*data-roster-scroll="1"/);
+assert.match(choiceCss, /\.mission-scroll\{[^}]*fleche-fer\.webp/, "la flèche de fer du panneau");
 const choice = missionJs.slice(missionJs.indexOf("function openMissionSelection("), missionJs.indexOf("function startMissionFromSelection("));
+assert.match(choice, /function updateMissionRosterScroll\(\)\{[\s\S]*?up\.hidden=list\.scrollTop<=2;[\s\S]*?down\.hidden=list\.scrollTop\+list\.clientHeight>=list\.scrollHeight-2;/);
+assert.match(choice, /list\.scrollBy\(\{top:Number\(button\.dataset\.rosterScroll\)\*/);
 // « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
 assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");
 assert.match(choice, /&&rules\.canGuard\(c,m,offer\)\.ok\);/, "garde du corps : seulement ceux qui peuvent la prendre");
-assert.match(choice, /"Fatiguée":"Fatigué"/, "les fatigués, avec leur fatigue");
+// L'état sous le portrait : prêt, fatigué −20 % (encore fatigué au combat) ou reposé à l'arrivée.
+assert.match(choice, /kind:"ready",label:missionFem\(c,"Prêt"\)/);
+assert.match(choice, /kind:"rested",label:missionFem\(c,"Reposé"\)\+" à l’arrivée"/);
+assert.match(choice, /kind:"tired",label:missionFem\(c,"Fatigué"\)\+" −"\+missionFatiguePercent\(\)\+" %"/);
 // « Picto de combat, on va le virer » ; ni grisés, ni PV, ni peuple, ni mots de dev.
 assert.doesNotMatch(choice, /unavailable|"disabled"|profile\?\.type|maxHp|c\.people/);
-assert.match(choice, /\[\.\.\.\(missionTag\?\[missionTag\]:\[\]\),\.\.\.roles\]/, "le tag de la mission d'abord, puis les rôles");
+// Les tags : « Tous » (éteint à l'ouverture), le tag de la mission, les rôles, « Autres rôles ».
+assert.match(choice, /tab\("","Tous"\)\s*\+\(missionTag\?tab\(missionTag,/, "Tous, puis le tag de la mission");
+assert.match(choice, /const MISSION_CHOICE_MAIN_ROLES=\["role\/degats","role\/soutien","role\/protection","role\/magie"\];/);
+assert.match(choice, /Autres rôles/);
+// L'escouade : x / 20, la croix, et la règle de la fatigue en clair.
+assert.match(choice, /\$\("mission-select-count"\)\.textContent=ids\.length\+" \/ "\+max;/);
+assert.match(choice, /class="mission-slot-remove" data-squad-remove=/);
+assert.match(choice, /" encore fatigué"\+\(still>1\?"s":""\)\+" au combat \(−"/);
+assert.match(choice, /min:1,max:20/, "un contrat : de 1 à 20");
 {
   const {createTagRules} = require("../game-core/mercenary-tags.js");
   const source = fs.readFileSync(path.join(root, "prototype-web/reference-data.js"), "utf8");
@@ -281,7 +298,7 @@ assert.match(choice, /\[\.\.\.\(missionTag\?\[missionTag\]:\[\]\),\.\.\.roles\]/
   const files = Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)"/gm)].map(m => [m[1], m[2]]));
   const reference = Object.fromEntries(Object.entries(files).map(([key, file]) => [key, JSON.parse(fs.readFileSync(path.join(root, "data/reference", file), "utf8"))]));
   const rules = createTagRules({reference});
-  const missionTagOf = new Function("tagRules", choice.slice(choice.indexOf("function missionTagOf("), choice.indexOf("// La galerie, le filtre")) + "\nreturn missionTagOf;")(() => rules);
+  const missionTagOf = new Function("tagRules", choice.slice(choice.indexOf("function missionTagOf("), choice.indexOf("// Les rôles en onglets")) + "\nreturn missionTagOf;")(() => rules);
   assert.equal(missionTagOf({faction:"Gobelins", camp:{}}), "occupation/mission/camps/gobelins", "un camp : sa faction sous Mission › Camps");
   assert.equal(missionTagOf({faction:"Loups", camp:{}}), "occupation/mission/chasses/loups", "une chasse : sa bête sous Mission › Chasses");
   assert.equal(missionTagOf({kind:"bodyguard", client:"Une veuve fortunée"}), "occupation/garde-du-corps");

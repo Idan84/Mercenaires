@@ -332,19 +332,24 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   du corps n'a pas de lettre : l'annonce reste debout. Plus de libellés techniques (« Difficulté », « Commanditaire »,
   description de la règle). Dessous, « ‹ Retour au panneau » et le bouton bordeaux cerclé de laiton de la création
   (« Accepter le contrat », « Choisir le garde ») ; un clic à côté de la feuille ramène aussi au panneau.
-- **Le choix de l'escouade** (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait ») : sur le panneau
-  assombri, comme le détail. Une seule feuille (Idan : « la feuille unique », plutôt qu'un écrin de cuir sous
-  l'escouade), le parchemin de la création, pensée pour beaucoup de monde (« 20 pour la mission… + en dortoirs »). En
-  haut, l'escouade (« je mettrais l'escouade en haut ») : le nom de la mission, ses étoiles, « départ demain matin » et
-  la route ; un petit portrait par mercenaire choisi (son nom au survol, un clic le retire), dix par rangée, deux
-  rangées pour vingt, une place vide tant qu'on peut en ajouter (une garde du corps : toutes ses places) ; à droite, les
-  primes au retour. Sous un filet, un filtre par tag, éteint à l'ouverture, un à la fois (« avec comme premier tag,
-  celui de la mission ! ») : le camp ou la chasse sous Mission (doc 20), ou Garde du corps, puis les rôles au combat que
-  porte au moins l'un d'eux. Puis la galerie, une dizaine de portraits par rangée, qui défile dans la feuille : seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés,
-  autres missions…). Les fatigués sont là bien entendu ») ; sous chaque portrait, le nom, les étoiles et la fatigue ; pas
-  de picto de combat (« on va le virer / refaire »). Un clic sur le portrait l'ajoute à l'escouade (le cachet de cire
-  rouge sur son coin) ; un clic sur le nom ouvre la fiche complète par-dessus (Idan : « les persos sont cliquables et ça
-  ouvre la fiche complète ? »), et on retrouve l'escouade en la fermant. En bas, « ‹ Retour à l'annonce » et « Partir demain ».
+- **Le choix de l'escouade** (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait » ; puis, sur la maquette
+  de Chatty : « Oui, vas-y avec la maquette de Chatty ») : sur le panneau des missions assombri. En haut, la mission en
+  grand (« L'escouade », ou « Les gardes », son nom, ses étoiles, « Départ demain matin · 1 jour de marche »). À gauche,
+  les **mercenaires au camp**, sur le parchemin de la création : une recherche par nom ; les tags en onglets — « Tous »
+  (le filtre éteint, à l'ouverture), puis « comme premier tag, celui de la mission ! » (le camp ou la chasse sous
+  Mission, doc 20, ou Garde du corps), Dégâts, Soutien, Protection, Magie, et les autres rôles dans « Autres rôles » (ceux
+  que porte au moins l'un d'eux) ; puis la galerie, seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir
+  en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là bien entendu »). Une carte : le portrait
+  (un « + » ; choisi, teinté de rouge, un cachet coché), le nom (un clic ouvre la fiche complète par-dessus : « les persos
+  sont cliquables et ça ouvre la fiche complète ? »), les étoiles, l'état — Prêt, Fatigué −20 % (encore fatigué au
+  combat) ou Reposé à l'arrivée (une garde du corps, sans combat : Prêt ou Fatigué) ; pas de picto de combat (« on va le
+  virer / refaire »). Pas de barre de défilement (« je ferais bien un bouton js pour descendre ») : deux flèches de fer
+  dans la marge, l'une pour descendre d'une page, l'autre pour remonter. À droite, l'**escouade**, dans un panneau de
+  cuir sombre aux coins de bronze : le compte (« 6 / 20 » ; une garde : toutes ses places), les portraits choisis avec
+  leur croix (trois par rangée, puis quatre, puis six sans le nom quand elle grandit : « 20 pour la mission… + en
+  dortoirs »), les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
+  l'arrivée »), les primes au retour, « Partir demain » et « D'ici demain matin, le départ peut encore être annulé ». En
+  bas à gauche, « ‹ Retour à l'annonce ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
   les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,

@@ -2375,80 +2375,148 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-btn:active{transform:translateY(2px)}
 .mission-btn:active::before{filter:brightness(.84) drop-shadow(0 2px 2px rgba(0,0,0,.55))}
 .mission-btn:focus-visible{outline:2px solid var(--or-clair);outline-offset:4px}
-/* Le choix de l'escouade (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait » ; « je mettrais l'escouade en
-   haut » ; « un filtre par tag avec comme premier tag, celui de la mission ! ») : sur le panneau assombri, comme le
-   détail de l'annonce. Une seule feuille (« la feuille unique », plutôt que l'écrin de cuir) : le parchemin de la
-   création porte l'escouade en haut, puis, sous un filet, les tags et la galerie. Pensée pour beaucoup de monde (« 20
-   pour la mission… + en dortoirs ») : deux rangées de dix places, une galerie serrée qui défile dans la feuille. */
+/* Le choix de l'escouade, d'après la maquette de Chatty (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») :
+   sur le panneau des missions assombri, la mission en grand ; à gauche, les mercenaires au camp sur le parchemin de la
+   création ; à droite, l'escouade dans un panneau de cuir sombre aux coins de bronze ; le retour en bas à gauche. Pensé
+   pour beaucoup de monde (« 20 pour la mission… + en dortoirs ») : la galerie défile avec des flèches de fer (« la
+   scroll bar : je ferais bien un bouton js pour descendre »), l'escouade rapetisse ses portraits quand elle grandit. */
 .mission-choice{--ivoire:#f4e5c7}
-.mission-choice-body{--u:calc(var(--board-w) * .001);display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;height:100%;box-sizing:border-box;padding:22px 16px 16px}
-.mission-choice-body > *{flex:none;width:min(1240px,100%)}
-.mission-choice-body > .mission-choice-sheet{position:relative;isolation:isolate;flex:1 1 auto;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;padding:40px 62px 30px;color:var(--encre)}
-.mission-choice-sheet::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:drop-shadow(0 20px 28px rgba(0,0,0,.65))}
-/* L'escouade : le titre entre deux filets, la mission, les places, les primes à droite. */
-.mission-squad{flex:none;display:grid;grid-template-columns:minmax(0,1fr) 612px minmax(0,1fr);align-items:center;column-gap:24px;row-gap:12px}
-.mission-squad-head{grid-column:1 / -1;display:grid;justify-items:center;gap:6px;text-align:center}
-.mission-squad-head h2{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;margin:0;white-space:nowrap;font:700 15px/1 var(--police-titre);letter-spacing:.18em;text-transform:uppercase;color:var(--encre-secondaire)}
-.mission-squad-head h2::before,.mission-squad-head h2::after{content:"";flex:1 1 0;max-width:90px;height:2px;background:var(--encre-secondaire);-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%}
-.mission-squad-head h2::after{transform:scaleX(-1)}
-.mission-squad-mission{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 12px;margin:0;font:500 18px/1.2 var(--police-texte)}
-.mission-squad-name{font:700 19px/1.2 var(--police-titre);color:var(--bordeaux)}
-.mission-squad-mission .rep-stars{font-size:17px;text-shadow:none}
-.mission-squad-mission .rep-stars-empty{color:rgba(100,73,46,.38);opacity:1}
-.mission-squad-mission small{font:italic 500 17px/1.2 var(--police-texte);color:var(--encre-secondaire)}
-.mission-squad-mission:empty{display:none}
-/* Les places : un portrait par mercenaire choisi (un clic le retire ; son nom au survol), une place vide tant qu'on peut
-   en ajouter ; dix par rangée, deux rangées pour une escouade de vingt. */
-.mission-squad-slots{grid-column:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;min-height:54px}
-.mission-slot{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:54px;height:54px}
-.mission-slot .avatar-frame{width:54px;height:54px;aspect-ratio:auto;border:1px solid rgba(100,73,46,.55);border-radius:3px;box-shadow:0 3px 6px rgba(40,24,8,.35)}
-.mission-slot .avatar-fallback span{font-size:1.5rem}
-.mission-slot:hover .avatar-frame,.mission-slot:focus-visible .avatar-frame{filter:grayscale(.6) brightness(.8);box-shadow:0 0 0 2px var(--bordeaux)}
-.mission-slot:focus-visible{outline:none}
-.mission-slot--empty{cursor:default;border:1.5px dashed rgba(100,73,46,.5);border-radius:3px;background:rgba(100,73,46,.06)}
-.mission-squad-hint{margin:0 0 0 6px;font:italic 500 18px/1.3 var(--police-texte);color:var(--encre-secondaire)}
-.mission-squad-cost{grid-column:3;justify-self:end;display:flex;align-items:center;gap:10px;margin:0;font-family:var(--police-texte)}
-.mission-squad-cost:empty{display:none}
-.mission-squad-cost img{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(40,24,8,.35))}
-.mission-squad-cost span{display:grid;line-height:1.15}
-.mission-squad-cost b{font:700 19px/1.15 var(--police-texte);color:var(--encre)}
-.mission-squad-cost small{font:italic 500 16px/1.15 var(--police-texte);color:var(--encre-secondaire)}
-/* Sous un filet, ceux qui peuvent partir. */
-.mission-recruits{position:relative;flex:1 1 auto;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;padding-top:14px}
-.mission-recruits::before{content:"";position:absolute;top:0;left:16%;right:16%;height:1.5px;background:linear-gradient(90deg,transparent,var(--encre-secondaire) 30%,var(--encre-secondaire) 70%,transparent);opacity:.55}
-/* Le filtre : les tags dans les couleurs de la fiche (rouge : occupations ; bleu : rôles au combat), un seul à la fois. */
-.mission-tags{flex:none;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.mission-tags:empty{display:none}
-.mission-tag{all:unset;box-sizing:border-box;cursor:pointer;padding:6px 14px 7px;border:1px solid color-mix(in srgb,var(--tag-2) 70%,transparent);border-radius:3px;background:rgba(255,248,232,.28);font:600 16px/1 var(--police-texte);color:var(--tag-1);transition:background .12s,color .12s}
-.mission-tag:hover{background:rgba(255,248,232,.55)}
-.mission-tag[aria-pressed="true"]{background:var(--tag-2);color:#fff7e4;box-shadow:0 2px 5px rgba(40,24,8,.3)}
-.mission-tag:focus-visible{outline:2px solid var(--bordeaux);outline-offset:2px}
-/* La galerie : serrée (une dizaine par rangée), elle défile dans la feuille et s'efface sous son bord. Un clic ajoute à
-   l'escouade (la case reste pour le clavier). */
-.mission-recruits > .mission-roster{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));align-content:start;gap:16px 8px;box-sizing:border-box;padding:6px 8px 30px;scrollbar-width:thin;scrollbar-color:rgba(100,73,46,.5) transparent;-webkit-mask:linear-gradient(#000 calc(100% - 26px),transparent);mask:linear-gradient(#000 calc(100% - 26px),transparent)}
-.mission-pick{position:relative;cursor:pointer;display:grid;justify-items:center;align-content:start;gap:3px;text-align:center}
+.mission-choice-body{--u:calc(var(--board-w) * .001);display:grid;grid-template-rows:auto minmax(0,1fr) auto;justify-items:center;row-gap:14px;width:100%;height:100%;box-sizing:border-box;padding:16px 28px 12px}
+/* La mission en grand. */
+.mission-choice-head{display:grid;justify-items:center;gap:5px;text-align:center;text-shadow:0 2px 6px #000}
+.mission-choice-eyebrow{display:flex;align-items:center;gap:16px;margin:0;font:700 14px/1 var(--police-titre);letter-spacing:.26em;text-transform:uppercase;color:var(--or-clair)}
+.mission-choice-eyebrow::before,.mission-choice-eyebrow::after{content:"";width:80px;height:1.5px;background:linear-gradient(90deg,transparent,var(--or))}
+.mission-choice-eyebrow::after{transform:scaleX(-1)}
+.mission-choice-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 24px;margin:0;font:700 44px/1.1 var(--police-titre);color:#f3e6cc}
+.mission-choice-title .rep-stars{font-size:30px;letter-spacing:.14em}
+.mission-choice-title .rep-stars-empty{color:rgba(240,220,180,.4);opacity:1}
+.mission-choice-route{margin:0;font:italic 500 21px/1.2 var(--police-texte);color:#e3d2b2}
+.mission-choice-route:empty{display:none}
+.mission-choice-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(400px,540px);gap:26px;width:min(1720px,100%);height:100%;min-height:0}
+/* À gauche : les mercenaires au camp, sur le parchemin de la création. */
+.mission-recruits{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:0;box-sizing:border-box;padding:38px 48px 26px;color:var(--encre)}
+.mission-recruits::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:drop-shadow(0 20px 28px rgba(0,0,0,.65))}
+.mission-recruits-title{display:flex;align-items:center;gap:18px;margin:0;font:700 30px/1 var(--police-titre);letter-spacing:.05em;text-transform:uppercase;color:var(--bordeaux)}
+.mission-recruits-title::after{content:"";flex:1;height:1.5px;background:linear-gradient(90deg,var(--encre-secondaire),transparent);opacity:.6}
+.mission-choice-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:16px 0 12px}
+.mission-search{display:flex;align-items:center;gap:9px;width:290px;box-sizing:border-box;padding:7px 12px;border:1px solid rgba(100,73,46,.6);border-radius:3px;background:rgba(255,250,238,.45);box-shadow:inset 0 1px 3px rgba(40,24,8,.18);cursor:text}
+.mission-search svg{flex:none;width:20px;height:20px;fill:none;stroke:var(--encre-secondaire);stroke-width:1.9;stroke-linecap:round}
+.mission-search input{all:unset;flex:1;min-width:0;font:italic 500 18px/1.2 var(--police-texte);color:var(--encre)}
+.mission-search input::placeholder{color:var(--encre-secondaire);opacity:.85}
+.mission-search:focus-within{border-color:var(--bordeaux)}
+/* Les tags en onglets : « Tous » (le filtre éteint), le tag de la mission, les rôles ; les autres dans « Autres rôles ». */
+.mission-tags{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px}
+.mission-tab{all:unset;position:relative;box-sizing:border-box;cursor:pointer;padding:6px 10px 9px;font:600 19px/1 var(--police-texte);color:var(--encre);transition:color .12s}
+.mission-tab::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:2px;background:var(--bordeaux);opacity:0;transition:opacity .12s}
+.mission-tab:hover,.mission-tab[aria-pressed="true"]{color:var(--bordeaux)}
+.mission-tab[aria-pressed="true"]::after{opacity:1}
+.mission-tab:focus-visible{outline:1px solid var(--bordeaux);outline-offset:1px}
+.mission-tab--mission{color:#8e2b22;font-style:italic}
+.mission-tabs-more{position:relative;display:inline-flex;margin-left:8px;padding-left:16px;border-left:1px solid rgba(100,73,46,.45)}
+.mission-tab--more{padding:6px 32px 7px 12px;border:1px solid rgba(100,73,46,.6);border-radius:3px;background:rgba(255,250,238,.4);font-size:18px}
+.mission-tab--more::after{left:auto;right:13px;bottom:auto;top:calc(50% - 6px);width:7px;height:7px;background:none;border:solid currentColor;border-width:0 1.5px 1.5px 0;rotate:45deg;opacity:.8}
+.mission-tab--more[aria-expanded="true"]::after{top:calc(50% - 2px);rotate:225deg}
+.mission-tab--more.is-active{border-color:var(--bordeaux);color:var(--bordeaux)}
+.mission-tabs-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:6;display:grid;min-width:210px;padding:6px;border:1px solid rgba(100,73,46,.55);border-radius:3px;background:#f1e1c0;box-shadow:0 10px 24px rgba(30,18,8,.45)}
+.mission-tabs-menu[hidden]{display:none}
+.mission-tabs-menu .mission-tab{padding:9px 12px;text-align:left;font-size:18px}
+.mission-tabs-menu .mission-tab::after{display:none}
+.mission-tabs-menu .mission-tab:hover,.mission-tabs-menu .mission-tab[aria-pressed="true"]{background:rgba(122,31,28,.09)}
+/* La galerie : elle défile avec les flèches de fer de sa marge droite (sans barre), et s'efface sous son bord. */
+.mission-roster-frame{position:relative;flex:1 1 auto;min-height:0;display:flex}
+.mission-roster{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));align-content:start;gap:18px 14px;box-sizing:border-box;padding:10px 52px 54px 6px;scrollbar-width:none;-webkit-mask:linear-gradient(#000 calc(100% - 46px),transparent);mask:linear-gradient(#000 calc(100% - 46px),transparent)}
+.mission-roster::-webkit-scrollbar{display:none}
+.mission-scroll{all:unset;position:absolute;right:-22px;z-index:4;width:84px;height:38px;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6));transition:filter .15s,translate .15s}
+.mission-scroll--down{bottom:30px;transform:rotate(90deg)}
+.mission-scroll--up{top:30px;transform:rotate(-90deg)}
+.mission-scroll[hidden]{display:none}
+.mission-scroll:hover,.mission-scroll:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 5px rgba(240,211,149,.55)) drop-shadow(0 3px 3px rgba(0,0,0,.6))}
+.mission-scroll--down:hover{translate:0 3px}
+.mission-scroll--up:hover{translate:0 -3px}
+/* Une carte : le portrait (le « + », le cachet quand il est choisi), le nom (la fiche), les étoiles, l'état. */
+.mission-pick{position:relative;cursor:pointer;display:grid;justify-items:center;align-content:start;gap:4px;text-align:center}
 .mission-pick[hidden]{display:none}
 .mission-pick input{position:absolute;opacity:0;pointer-events:none}
-.mission-pick .avatar-frame{width:92px;height:92px;aspect-ratio:auto;border:1px solid rgba(100,73,46,.55);border-radius:3px;box-shadow:0 5px 9px rgba(40,24,8,.4);filter:saturate(.85) brightness(.9);transition:filter .15s,box-shadow .15s}
+.mission-pick-portrait{position:relative;display:block;width:100%;aspect-ratio:4/3}
+.mission-pick-portrait .avatar-frame{width:100%;height:100%;aspect-ratio:auto;border:1px solid rgba(60,40,22,.65);border-radius:3px;box-shadow:0 6px 10px rgba(40,24,8,.45);transition:box-shadow .15s,filter .15s}
 .mission-choice .avatar-fallback small{display:none}
-.mission-choice .avatar-fallback span{font-size:2rem}
-.mission-pick:hover .avatar-frame{filter:none}
+.mission-choice .avatar-fallback span{font-size:2.2rem}
+.mission-pick:hover .avatar-frame{filter:brightness(1.08)}
 .mission-pick:has(input:focus-visible) .avatar-frame{outline:2px solid var(--bordeaux);outline-offset:3px}
-.mission-pick:has(input:checked) .avatar-frame{filter:none;border-color:var(--bordeaux);box-shadow:0 0 0 2px var(--bordeaux),0 0 12px 2px rgba(122,31,28,.45)}
-/* Choisi : le cachet de cire rouge du panneau, sur le coin du portrait. */
-.mission-pick:has(input:checked)::after{content:"";position:absolute;top:68px;left:calc(50% + 28px);width:34px;height:34px;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;rotate:-12deg;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
-/* Le nom ouvre la fiche complète : souligné d'un filet au survol, comme le retour. */
-.mission-pick-name{all:unset;position:relative;box-sizing:border-box;max-width:100%;cursor:pointer;padding:0 2px 2px;font:600 15px/1.12 var(--police-texte);color:var(--encre);text-align:center;text-wrap:balance;transition:color .12s}
-.mission-pick-name::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:1.5px;background:currentColor;opacity:0;-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%;transition:opacity .12s}
+.mission-pick-portrait::after{content:"";position:absolute;inset:0;z-index:2;border-radius:3px;background:rgba(150,32,26,.32);mix-blend-mode:multiply;opacity:0;transition:opacity .15s;pointer-events:none}
+.mission-pick:has(input:checked) .mission-pick-portrait::after{opacity:1}
+.mission-pick:has(input:checked) .avatar-frame{border-color:var(--bordeaux);box-shadow:0 0 0 2px var(--bordeaux),0 0 14px 2px rgba(122,31,28,.5)}
+.mission-pick-add{position:absolute;top:8px;right:8px;z-index:3;width:26px;height:26px;box-sizing:border-box;border:1px solid rgba(240,211,149,.75);border-radius:3px;background:linear-gradient(var(--or-clair),var(--or-clair)) center/12px 2px no-repeat,linear-gradient(var(--or-clair),var(--or-clair)) center/2px 12px no-repeat,rgba(20,13,8,.72)}
+.mission-pick:has(input:checked) .mission-pick-add{display:none}
+.mission-pick-seal{display:none;position:absolute;right:-9px;bottom:-9px;z-index:3;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#c0392f,#8a201b 58%,#5a110e);box-shadow:0 0 0 2px #c9a461,0 3px 6px rgba(0,0,0,.55)}
+.mission-pick-seal::after{content:"";position:absolute;left:13px;top:8px;width:9px;height:16px;border:solid #fff3e0;border-width:0 3px 3px 0;rotate:42deg}
+.mission-pick:has(input:checked) .mission-pick-seal{display:block}
+/* Le nom ouvre la fiche complète : souligné au survol. */
+.mission-pick-name{all:unset;position:relative;box-sizing:border-box;max-width:100%;cursor:pointer;padding:0 2px 2px;font:700 20px/1.12 var(--police-texte);color:var(--encre);text-align:center;text-wrap:balance;transition:color .12s}
+.mission-pick-name::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:1.5px;background:currentColor;opacity:0;transition:opacity .12s}
 .mission-pick-name:hover,.mission-pick-name:focus-visible{color:var(--bordeaux)}
 .mission-pick-name:hover::after,.mission-pick-name:focus-visible::after{opacity:.7}
 .mission-pick-name:focus-visible{outline:1px solid var(--bordeaux);outline-offset:2px}
-.mission-pick .rep-stars{font-size:13px;text-shadow:none}
+.mission-pick .rep-stars{font-size:16px;text-shadow:none}
 .mission-pick .rep-stars-empty{color:rgba(100,73,46,.38);opacity:1}
-.mission-pick small{font:italic 500 13px/1.15 var(--police-texte);color:#8a4416}
+.mission-pick-state{padding:3px 12px 4px;border:1px solid rgba(100,73,46,.22);border-radius:3px;background:rgba(255,248,230,.55);font:600 16px/1.1 var(--police-texte)}
+.mission-pick-state--ready{color:#41602a}
+.mission-pick-state--tired{color:#9a2a20;font-style:italic}
+.mission-pick-state--rested{color:#55602c;font-style:italic;font-weight:500}
 .mission-roster-empty{grid-column:1 / -1;margin:24px 0;font:italic 500 19px/1.3 var(--police-texte);text-align:center;color:var(--encre-secondaire)}
-.mission-choice-error{flex:none;margin:0;font:italic 500 18px/1.3 var(--police-texte);text-align:center;color:var(--bordeaux)}
+.mission-choice-error{margin:6px 0 0;font:italic 500 18px/1.3 var(--police-texte);text-align:center;color:var(--bordeaux)}
 .mission-choice-error:empty{display:none}
+/* À droite : l'escouade, dans un panneau de cuir sombre, filet d'or et coins de bronze (ceux du menu). */
+.mission-squad{position:relative;isolation:isolate;display:flex;flex-direction:column;gap:12px;min-height:0;box-sizing:border-box;padding:30px 32px 20px;border:1px solid #6b4a2b;border-radius:6px;color:var(--ivoire);background:radial-gradient(ellipse at 50% 25%,rgba(74,47,28,.45) 0%,rgba(36,23,13,.6) 60%,rgba(16,10,5,.82) 100%),url("assets/taverne/papier-froisse.webp") center/380px,#33200f;background-blend-mode:normal,soft-light,normal;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),inset 0 0 50px rgba(0,0,0,.7),0 20px 30px rgba(0,0,0,.6)}
+.mission-squad::after{content:"";position:absolute;inset:9px;z-index:-1;border:1px solid rgba(201,164,97,.38);border-radius:4px;pointer-events:none}
+.mission-corner{position:absolute;z-index:3;width:70px;height:70px;background:url("assets/ui/menu-corner-tl.webp") center/contain no-repeat;filter:drop-shadow(0 2px 3px rgba(0,0,0,.7));pointer-events:none}
+.mission-corner--tl{top:-5px;left:-5px}
+.mission-corner--tr{top:-5px;right:-5px;transform:scaleX(-1)}
+.mission-corner--bl{bottom:-5px;left:-5px;transform:scaleY(-1)}
+.mission-corner--br{bottom:-5px;right:-5px;transform:scale(-1,-1)}
+.mission-squad-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:16px;row-gap:4px}
+.mission-squad-head h3{display:flex;align-items:center;gap:16px;margin:0;font:700 30px/1 var(--police-titre);letter-spacing:.06em;text-transform:uppercase;color:#f3e6cc}
+.mission-squad-head h3::after{content:"";flex:1;height:1.5px;background:linear-gradient(90deg,var(--or),transparent);opacity:.7}
+.mission-squad-count{font:700 30px/1 var(--police-titre);color:var(--or-clair)}
+.mission-squad-subtitle{grid-column:1 / -1;margin:0;font:italic 500 19px/1.2 var(--police-texte);color:#d8c6a4}
+/* Les places : trois par rangée, puis quatre, puis six (sans le nom, au survol) quand l'escouade grandit. */
+.mission-squad-frame{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 2px;scrollbar-width:thin;scrollbar-color:rgba(201,164,97,.45) transparent}
+.mission-squad-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:14px 12px}
+.mission-squad-slots[data-size="m"]{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 10px}
+.mission-squad-slots[data-size="s"]{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px}
+.mission-slot{display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;text-align:center}
+.mission-slot-portrait{position:relative;display:block;width:100%;aspect-ratio:6/5}
+.mission-slot-portrait .avatar-frame{width:100%;height:100%;aspect-ratio:auto;border:1px solid rgba(201,164,97,.55);border-radius:3px;box-shadow:0 5px 9px rgba(0,0,0,.5)}
+.mission-slot--empty .mission-slot-portrait{box-sizing:border-box;border:1.5px dashed rgba(201,164,97,.4);border-radius:3px;background:rgba(0,0,0,.2)}
+.mission-slot-remove{all:unset;position:absolute;top:5px;right:5px;z-index:3;width:24px;height:24px;box-sizing:border-box;cursor:pointer;border:1px solid rgba(240,211,149,.65);border-radius:3px;background:linear-gradient(45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,linear-gradient(-45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,rgba(20,13,8,.8);transition:background-color .12s}
+.mission-slot-remove:hover,.mission-slot-remove:focus-visible{outline:none;background-color:var(--bordeaux)}
+.mission-squad-slots[data-size="s"] .mission-slot-remove{top:3px;right:3px;width:18px;height:18px;background-size:9px 9px,9px 9px,auto}
+.mission-slot .mission-pick-name{font-size:18px;color:var(--ivoire)}
+.mission-slot .mission-pick-name:hover,.mission-slot .mission-pick-name:focus-visible{color:var(--or-clair)}
+.mission-slot .rep-stars{font-size:14px}
+.mission-squad-slots[data-size="m"] .mission-pick-name{font-size:16px}
+.mission-squad-slots[data-size="s"] .mission-pick-name{display:none}
+.mission-squad-slots[data-size="s"] .rep-stars{font-size:11px;letter-spacing:0}
+.mission-squad-hint{grid-column:1 / -1;margin:18px 0;font:italic 500 19px/1.3 var(--police-texte);text-align:center;color:#d8c6a4}
+.mission-squad-rule{flex:none;height:1.5px;margin:2px 10%;background:linear-gradient(90deg,transparent,var(--or) 30%,var(--or) 70%,transparent);opacity:.55}
+/* Les fatigués : une bande de parchment ; la règle en clair (encore fatigués au combat, ou reposés en route). */
+.mission-squad-fatigue{flex:none;display:flex;align-items:center;gap:14px;margin:0;padding:9px 16px;border:1px solid #a0805a;border-radius:3px;background:linear-gradient(#efdcb6,#e2c89b);box-shadow:0 4px 10px rgba(0,0,0,.45);color:var(--encre)}
+.mission-squad-fatigue[hidden]{display:none}
+.mission-squad-fatigue .mission-svg{flex:none;width:32px;height:32px;color:var(--encre-secondaire)}
+.mission-squad-fatigue span{display:grid;line-height:1.2}
+.mission-squad-fatigue b{font:700 19px/1.2 var(--police-texte);color:var(--bordeaux)}
+.mission-squad-fatigue small{font:italic 500 17px/1.2 var(--police-texte);color:var(--encre)}
+/* Les primes et le départ. */
+.mission-squad-cost{flex:none;display:flex;align-items:center;justify-content:center;gap:18px;margin:0}
+.mission-squad-cost:empty{display:none}
+.mission-squad-cost img{width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
+.mission-squad-cost span{display:grid;padding-left:18px;border-left:1px solid rgba(201,164,97,.45);line-height:1.15}
+.mission-squad-cost b{font:700 32px/1.1 var(--police-titre);color:#f3e6cc}
+.mission-squad-cost small{font:italic 500 18px/1.15 var(--police-texte);color:#d8c6a4}
+.mission-squad .mission-btn{flex:none;align-self:stretch;height:74px;font-size:20px}
+.mission-squad-note{flex:none;margin:-4px 0 0;font:italic 500 16px/1.2 var(--police-texte);text-align:center;color:#cdb994}
+.mission-squad-note:empty{display:none}
+.mission-choice-foot{display:flex;width:min(1720px,100%)}
 .mission-btn:disabled{cursor:default;color:rgba(240,211,149,.55);transform:none}
 .mission-btn:disabled::before{filter:grayscale(.65) brightness(.62) drop-shadow(0 6px 6px rgba(0,0,0,.55))}
 .mission-contract-result{display:grid;gap:4px;margin:0 0 8px;padding:0;list-style:none}

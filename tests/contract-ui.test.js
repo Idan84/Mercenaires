@@ -258,6 +258,14 @@ const at = id => choiceDialog.indexOf(id);
 assert.ok(at('class="mission-squad"') < at('id="mission-select-tags"') && at('id="mission-select-tags"') < at('id="mission-select-list"'),
   "l'escouade en haut, puis les tags, puis la galerie");
 assert.match(choiceDialog, /class="mission-retour"[\s\S]*class="mission-btn">Partir demain</, "les boutons de la création");
+// « La feuille unique » : un seul parchemin porte l'escouade et la galerie ; « 20 pour la mission… + en dortoirs » : dix
+// places par rangée, la galerie défile dans la feuille.
+const choiceCss = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
+assert.ok(at('class="mission-choice-sheet"') < at('class="mission-squad"') && at('id="mission-select-list"') < choiceDialog.indexOf("</section>"), "une feuille pour l'escouade et la galerie");
+assert.match(choiceCss, /\.mission-choice-sheet::before\{[^}]*parchemin\.webp/, "le parchemin de la création");
+assert.match(choiceCss, /\.mission-squad\{[^}]*grid-template-columns:minmax\(0,1fr\) 612px minmax\(0,1fr\)/, "dix places de 54 px par rangée");
+assert.match(choiceCss, /\.mission-recruits > \.mission-roster\{[^}]*overflow:auto/, "la galerie défile");
+assert.doesNotMatch(choiceCss, /data-fond/, "une seule piste gardée");
 const choice = missionJs.slice(missionJs.indexOf("function openMissionSelection("), missionJs.indexOf("function startMissionFromSelection("));
 // « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
 assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");

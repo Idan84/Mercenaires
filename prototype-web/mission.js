@@ -891,14 +891,14 @@ function filterMissionChoice(event){
   if(empty) empty.hidden=shown>0;
 }
 
-// L'escouade : les portraits choisis, dans l'ordre du choix ; une place vide de plus tant qu'on peut en ajouter (la garde
-// du corps : toutes ses places).
+// L'escouade : les portraits choisis, dans l'ordre du choix (le nom au survol) ; une place vide de plus tant qu'on peut en
+// ajouter (la garde du corps : toutes ses places).
 function renderMissionSquad(){
   const sel=game.missionSelect,pool=allCharacters();
   const chosen=sel.order.map(id=>pool.find(c=>c.id===id)).filter(Boolean);
   const empty=sel.min===sel.max?sel.max-chosen.length:chosen.length<sel.max?1:0;
-  $("mission-squad-slots").innerHTML=chosen.map(c=>`<button type="button" class="mission-slot" data-squad-remove="${c.id}" title="Retirer ${esc(c.name)}">
-      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}<span>${esc(String(c.name).split(" ")[0])}</span></button>`).join("")
+  $("mission-squad-slots").innerHTML=chosen.map(c=>`<button type="button" class="mission-slot" data-squad-remove="${c.id}" title="${esc(c.name)} (retirer)" aria-label="Retirer ${esc(c.name)}">
+      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}</button>`).join("")
     +Array.from({length:Math.max(0,empty)},()=>`<span class="mission-slot mission-slot--empty" aria-hidden="true"></span>`).join("")
     +(chosen.length?"":`<p class="mission-squad-hint">Cliquez sur un portrait pour l’ajouter.</p>`);
 }

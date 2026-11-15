@@ -42,10 +42,11 @@ assert.deepEqual(Object.keys(win.captainCreationBridge).sort(),["data","exit","f
 const data=ui.captainCreationData();
 assert.equal(data.peoples.length,10);
 for(const p of data.peoples){
-  assert.ok(fs.existsSync(path.join(WEB,p.img)),"médaillon "+p.img);
+  // Les médaillons de la création sont les pictos du jeu (picto-ui.js) : plus de chemin d'image dans les données.
+  assert.ok(!("img" in p)&&fs.existsSync(path.join(WEB,"assets/pictos/peuple-"+pictoSlug(p.nom)+".webp")),"picto "+p.nom);
   assert.ok(p.copy.d&&p.cultures.length,p.nom);
   for(const c of p.cultures){
-    assert.ok(fs.existsSync(path.join(WEB,c.img)),"médaillon "+c.img);
+    assert.ok(!("img" in c)&&fs.existsSync(path.join(WEB,"assets/pictos/culture-"+pictoSlug(c.nom)+".webp")),"picto "+c.nom);
     assert.ok(c.origins.length,c.nom);
     assert.ok(reference.alignments.rows.some(a=>a.nom===c.alignment),"alignement usuel de "+c.nom);
   }

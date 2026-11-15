@@ -273,67 +273,67 @@
         {
           "name": "sang-d-elfe.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-d-elfe.webp",
-          "size": 9242,
+          "size": 6358,
           "type": "image/webp"
         },
         {
           "name": "sang-d-humain.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-d-humain.webp",
-          "size": 7100,
+          "size": 5966,
           "type": "image/webp"
         },
         {
           "name": "sang-d-orc.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-d-orc.webp",
-          "size": 8444,
+          "size": 5942,
           "type": "image/webp"
         },
         {
           "name": "sang-de-demon.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-demon.webp",
-          "size": 9080,
+          "size": 5716,
           "type": "image/webp"
         },
         {
           "name": "sang-de-djinn.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-djinn.webp",
-          "size": 8954,
+          "size": 6212,
           "type": "image/webp"
         },
         {
           "name": "sang-de-dragon.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-dragon.webp",
-          "size": 10354,
+          "size": 5744,
           "type": "image/webp"
         },
         {
           "name": "sang-de-dryade.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-dryade.webp",
-          "size": 7684,
+          "size": 5942,
           "type": "image/webp"
         },
         {
           "name": "sang-de-sirene.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-sirene.webp",
-          "size": 9714,
+          "size": 6100,
           "type": "image/webp"
         },
         {
           "name": "sang-de-troll.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-troll.webp",
-          "size": 8360,
+          "size": 6608,
           "type": "image/webp"
         },
         {
           "name": "sang-divin.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-divin.webp",
-          "size": 8278,
+          "size": 5598,
           "type": "image/webp"
         },
         {
           "name": "sang-feerique.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-feerique.webp",
-          "size": 7924,
+          "size": 5864,
           "type": "image/webp"
         }
       ]

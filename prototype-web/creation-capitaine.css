@@ -150,17 +150,15 @@ body.entree .cachet{animation:sceller .55s var(--r3) cubic-bezier(.3,.6,.3,1) bo
 .medailles{position:relative;display:grid;grid-template-columns:repeat(var(--c,5),var(--w,150px));gap:14px 10px;justify-content:center;isolation:isolate}
 .medailles::before{content:"";position:absolute;inset:-26px -70px;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(10,7,5,.62),rgba(7,5,4,.35) 60%,transparent)}
 .medaille{all:unset;cursor:pointer;display:grid;justify-items:center;align-content:start;gap:8px}
-.medaille img,.medaille .aucune{display:block;width:var(--p,140px);height:var(--p,140px);filter:saturate(.75) brightness(.84) drop-shadow(0 8px 9px rgba(0,0,0,.65));transition:filter .2s}
-.medaille .aucune{display:grid;place-items:center}
-.medaille .aucune::before{content:"";width:62px;height:62px;box-sizing:border-box;border-radius:50%;border:2px solid rgba(201,164,97,.55);background:radial-gradient(circle,rgba(30,22,16,.85),rgba(7,5,4,.94));box-shadow:inset 0 0 14px rgba(0,0,0,.85)}
-.medaille .aucune i{display:none}
-.medaille .aucune{position:relative}
+/* Le médaillon : le picto du jeu (picto-ui.js, pictos.css), une goutte animée pour les ascendances, la goutte sombre pour
+   « Aucune » (Idan, 2026-11-15). */
+.medaille .picto{display:block;width:var(--p,140px);height:var(--p,140px);filter:saturate(.75) brightness(.84) drop-shadow(0 8px 9px rgba(0,0,0,.65));transition:filter .2s}
 .medaille .nom{display:flex;align-items:flex-start;justify-content:center;height:calc(var(--lignes,1) * 1.12em);max-width:100%;text-align:center;text-wrap:balance;
   font:600 19px/1.12 var(--police-texte);color:var(--texte-inactif);text-shadow:0 2px 5px #000;transition:color .2s,text-shadow .2s}
-.medaille:hover img,.medaille:focus-visible img,.medaille:hover .aucune,.medaille:focus-visible .aucune{filter:saturate(1) brightness(1) drop-shadow(0 0 6px rgba(240,211,149,.35)) drop-shadow(0 8px 9px rgba(0,0,0,.65))}
+.medaille:hover .picto,.medaille:focus-visible .picto{filter:saturate(1) brightness(1) drop-shadow(0 0 6px rgba(240,211,149,.35)) drop-shadow(0 8px 9px rgba(0,0,0,.65))}
 .medaille:hover .nom,.medaille:focus-visible .nom{color:var(--ivoire)}
 .medaille:focus-visible{outline:none}
-.medaille[aria-pressed="true"] img,.medaille[aria-pressed="true"] .aucune{filter:saturate(1.05) brightness(1.08) drop-shadow(0 0 4px #ffe1ac) drop-shadow(0 0 14px rgba(240,211,149,.75)) drop-shadow(0 0 30px rgba(240,192,80,.4))}
+.medaille[aria-pressed="true"] .picto{filter:saturate(1.05) brightness(1.08) drop-shadow(0 0 4px #ffe1ac) drop-shadow(0 0 14px rgba(240,211,149,.75)) drop-shadow(0 0 30px rgba(240,192,80,.4))}
 .medaille[aria-pressed="true"] .nom{color:#f4e5c7;text-shadow:0 0 8px rgba(240,211,149,.85),0 0 18px rgba(240,211,149,.45),0 1px 3px #000}
 body.entree .medaille{animation:monte .55s calc(var(--r2) + var(--i) * 45ms) cubic-bezier(.2,.7,.2,1) both}
 
@@ -305,7 +303,7 @@ body.entree .carre{animation:monte .5s calc(var(--r2) + var(--i) * 35ms) cubic-b
 .r-titre{margin:0 0 10px;font:700 12.5px/1 var(--police-titre);letter-spacing:.16em;text-transform:uppercase;color:var(--encre-secondaire)}
 .r-pictos{display:flex;gap:18px;margin:0 0 30px}
 .r-pictos figure{margin:0;display:grid;justify-items:center;gap:5px;width:96px}
-.r-pictos img,.r-pictos .aucune{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(40,22,8,.45))}
+.r-pictos .picto{display:block;width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(40,22,8,.45))}
 .r-pictos figcaption{font:600 15px/1.15 var(--police-texte);color:var(--encre);text-align:center;text-wrap:balance}
 .registre2 dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:baseline}
 .registre2 dt{font:700 11.5px/1.3 var(--police-titre);letter-spacing:.12em;text-transform:uppercase;color:var(--encre-secondaire)}

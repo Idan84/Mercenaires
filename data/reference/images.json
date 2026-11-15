@@ -1,0 +1,481 @@
+{
+  "schema_version": 1,
+  "name": "images",
+  "description": "Le catalogue des images du jeu (Idan, 2026-11-15 : « dire pourquoi et où on les utilise », « donner les contraintes techniques de chaque image », les alternates) : une ligne par famille d'images. Inventaire du 2026-11-15 ; les tailles affichées sont mesurées sur un écran de 1920 px.",
+  "conventions": [
+    "Taille à déposer : au moins deux fois la plus grande taille affichée (écrans haute densité) ; JC3 réduit pour le jeu.",
+    "Transparence : PNG transparent, ou un fond uni (blanc, ou une couleur vive) que JC3 retire ; sinon JPEG.",
+    "Format du jeu : WebP (qualité 95 pour les décors), sauf avatars, silhouettes et décors lus directement sur Hostinger.",
+    "Le CDN de Hostinger sert les images de plus de 1600 px de large réduites à 1600 px, tant que son optimisation n'est pas coupée dans hPanel.",
+    "Alternates : quand une image a plusieurs versions, le jeu en prend une au hasard. Aujourd'hui : taverne, panneau et gravures des missions, avatars ; à généraliser à toutes les familles (étape 2)."
+  ],
+  "columns": [
+    {
+      "key": "cle",
+      "source": "Identifiant de la famille"
+    },
+    {
+      "key": "famille",
+      "source": "Nom"
+    },
+    {
+      "key": "nombre",
+      "source": "Nombre de fichiers"
+    },
+    {
+      "key": "ou",
+      "source": "Où elle s'affiche"
+    },
+    {
+      "key": "pourquoi",
+      "source": "À quoi elle sert"
+    },
+    {
+      "key": "fichiers",
+      "source": "Fichiers du jeu"
+    },
+    {
+      "key": "affichage",
+      "source": "Taille affichée"
+    },
+    {
+      "key": "depot",
+      "source": "Ce qu'il faut déposer"
+    },
+    {
+      "key": "format_jeu",
+      "source": "Format des fichiers du jeu"
+    },
+    {
+      "key": "alternates",
+      "source": "Versions et tirage"
+    },
+    {
+      "key": "source",
+      "source": "Master et traitement"
+    },
+    {
+      "key": "exemples",
+      "source": "Quelques fichiers, pour les vignettes"
+    }
+  ],
+  "row_count": 24,
+  "rows": [
+    {
+      "cle": "fond-camp",
+      "famille": "Fond du camp",
+      "nombre": 1,
+      "ou": "Menu principal et accueil du camp (fond de page, flouté sur l'accueil).",
+      "pourquoi": "Le château, quartier général de la compagnie.",
+      "fichiers": "assets/camp-home-background.jpg",
+      "affichage": "Plein écran (cover).",
+      "depot": "JPEG 16:9 sans transparence ; 1920 × 1080 conseillé (l'actuel : 1376 × 768).",
+      "format_jeu": "JPEG 1376 × 768.",
+      "alternates": "Une seule image.",
+      "source": "assets-src/fonds/Home.jpg ; copié tel quel.",
+      "exemples": [
+        "assets/camp-home-background.jpg"
+      ]
+    },
+    {
+      "cle": "logo",
+      "famille": "Logo",
+      "nombre": 1,
+      "ou": "Écran d'accueil, puis en-tête des autres écrans.",
+      "pourquoi": "Le titre du jeu.",
+      "fichiers": "assets/blood-wages-logo.webp",
+      "affichage": "Jusqu'à 620 px de large sur l'accueil, 180 à 250 px ailleurs.",
+      "depot": "PNG transparent, 1240 px de large au moins.",
+      "format_jeu": "WebP transparent 1200 × 806.",
+      "alternates": "Une seule image.",
+      "source": "assets-src/logo/logoBW.png → scripts/build-logo.sh.",
+      "exemples": [
+        "assets/blood-wages-logo.webp"
+      ]
+    },
+    {
+      "cle": "intro",
+      "famille": "Intro",
+      "nombre": 1,
+      "ou": "Écran d'introduction : le capitaine mourant.",
+      "pourquoi": "Lancer l'histoire d'une nouvelle partie.",
+      "fichiers": "assets/intro/capitaine-mourant.jpg",
+      "affichage": "Plein écran (cover, cadré à 70 %).",
+      "depot": "JPEG 16:9 sans transparence ; 1920 × 1080 conseillé.",
+      "format_jeu": "JPEG 1376 × 768.",
+      "alternates": "Une seule image.",
+      "source": "assets-src/fonds/intro-capitaine-mourant.jpg ; copié tel quel.",
+      "exemples": [
+        "assets/intro/capitaine-mourant.jpg"
+      ]
+    },
+    {
+      "cle": "dortoirs",
+      "famille": "Fonds des dortoirs",
+      "nombre": 11,
+      "ou": "Dortoir du camp : un fond par niveau de qualité (0 à 10).",
+      "pourquoi": "Montrer le confort du dortoir, qui monte avec son niveau.",
+      "fichiers": "assets/dormitory/dortoir-<niveau>.jpg (dormitory-quality.json, colonne image)",
+      "affichage": "Plein écran (cover).",
+      "depot": "JPEG 16:9 sans transparence ; 1920 × 1080 conseillé ; un fichier par niveau.",
+      "format_jeu": "JPEG 1376 × 768.",
+      "alternates": "Non : un fichier par niveau, ce ne sont pas des alternates.",
+      "source": "assets-src/fonds/Dortoirs/ (Jean-Mimi) → scripts/build-dormitory.sh.",
+      "exemples": [
+        "assets/dormitory/dortoir-0.jpg",
+        "assets/dormitory/dortoir-5.jpg",
+        "assets/dormitory/dortoir-10.jpg"
+      ]
+    },
+    {
+      "cle": "icones-dortoir",
+      "famille": "Icônes du dortoir",
+      "nombre": 6,
+      "ou": "Parchemin du dortoir : agrandir, améliorer, quartier, mercenaires, lit, chevrons.",
+      "pourquoi": "Les actions et les repères du dortoir.",
+      "fichiers": "assets/dormitory/icones/<nom>.webp",
+      "affichage": "76 px de large au plus ; lit 42 px, chevrons 24 px.",
+      "depot": "PNG transparent, deux fois la taille affichée (160 px de large).",
+      "format_jeu": "WebP transparent, 28 à 125 px de large.",
+      "alternates": "Une seule image.",
+      "source": "Recadrés dans la maquette d'Idan (assets-src/ui/dortoir-maquette/), provisoires.",
+      "exemples": [
+        "assets/dormitory/icones/agrandir.webp",
+        "assets/dormitory/icones/ameliorer.webp",
+        "assets/dormitory/icones/lit.webp"
+      ]
+    },
+    {
+      "cle": "ornements-menu",
+      "famille": "Ornements de menu",
+      "nombre": 3,
+      "ou": "Boutons du menu principal (coins et filet) ; coins des lettres de mission.",
+      "pourquoi": "Encadrer les boutons du menu.",
+      "fichiers": "assets/ui/menu-corner-tl.webp, menu-corner-br.webp, menu-line.webp",
+      "affichage": "Coins 32 × 32 px (70 × 70 sur les lettres de mission), filet 3 px.",
+      "depot": "PNG transparent ; coins 192 px.",
+      "format_jeu": "WebP transparent.",
+      "alternates": "Une seule image.",
+      "source": "assets-src/ui/menu-ornements.jpg → scripts/build-ui-ornaments.sh.",
+      "exemples": [
+        "assets/ui/menu-corner-tl.webp",
+        "assets/ui/menu-line.webp"
+      ]
+    },
+    {
+      "cle": "interface-creation",
+      "famille": "Interface de la charte : parchemin, bouton, cachet, fond de Cruxor",
+      "nombre": 4,
+      "ou": "Création du capitaine ; aussi le dortoir, les recrues de mission, la fiche au survol (texture des lettres).",
+      "pourquoi": "Les pièces d'Idan de la charte : le parchemin où tout se lit, le bouton qui fait avancer, le cachet qui signe.",
+      "fichiers": "assets/creation/parchemin.webp, bouton.webp, cachet.webp, fond-cruxor.webp",
+      "affichage": "Parchemin en bordure étirable (tranche de 180 px, bords de 80 à 100 px) ; bouton 240 × 81 ; cachet 78 à 92 px de large ; fond plein écran.",
+      "depot": "PNG transparent (parchemin, bouton, cachet ; mêmes proportions) ; JPEG 16:9 pour le fond.",
+      "format_jeu": "WebP : parchemin 1000 × 992, bouton 760 × 257, cachet 199 × 300 (transparents), fond 1800 × 1005.",
+      "alternates": "Une seule image.",
+      "source": "Idan ; pas de master dans assets-src.",
+      "exemples": [
+        "assets/creation/bouton.webp",
+        "assets/creation/cachet.webp",
+        "assets/creation/parchemin.webp"
+      ]
+    },
+    {
+      "cle": "medaillons",
+      "famille": "Médaillons de la création",
+      "nombre": 53,
+      "ou": "Création du capitaine : choix du peuple, de la culture et de l'ascendance, puis le récapitulatif.",
+      "pourquoi": "Choisir ses origines par une image.",
+      "fichiers": "assets/creation/medaillons/<peuple|culture|ascendance>-<nom>.webp",
+      "affichage": "134 à 140 px sur la scène sombre ; 64 px au récapitulatif.",
+      "depot": "PNG transparent carré, 512 px conseillé.",
+      "format_jeu": "WebP transparent 260 × 260.",
+      "alternates": "Une seule image.",
+      "source": "Pas de master ni de script.",
+      "exemples": [
+        "assets/creation/medaillons/peuple-nain.webp",
+        "assets/creation/medaillons/culture-elfes-noirs.webp",
+        "assets/creation/medaillons/ascendance-sang-de-dragon.webp"
+      ]
+    },
+    {
+      "cle": "blasons",
+      "famille": "Blasons de la compagnie",
+      "nombre": 120,
+      "ou": "Création du capitaine : le ruban de choix, le blason choisi, le registre.",
+      "pourquoi": "L'emblème de la compagnie.",
+      "fichiers": "assets/creation/blasons/bNN.webp (220 px) et blasons-hd/bNN.webp (640 px) : 60 blasons en deux tailles",
+      "affichage": "92 px dans le ruban ; 300 px choisi ; 220 px au registre.",
+      "depot": "PNG transparent carré, 640 px au moins.",
+      "format_jeu": "WebP transparent 220 × 220 et 640 × 640.",
+      "alternates": "Non. Le blason par défaut est tiré au hasard parmi les 60.",
+      "source": "Pas de master ni de script.",
+      "exemples": [
+        "assets/creation/blasons-hd/b01.webp",
+        "assets/creation/blasons-hd/b12.webp",
+        "assets/creation/blasons-hd/b30.webp"
+      ]
+    },
+    {
+      "cle": "svg-charte",
+      "famille": "Ornements de la charte (SVG)",
+      "nombre": 3,
+      "ou": "Filets de la création, de la fiche et des menus : pointe de lance, couronne, fleur de lys.",
+      "pourquoi": "Les petits motifs où entrent les filets.",
+      "fichiers": "assets/creation/svg/lance.svg, couronne.svg, fleur-de-lys.svg",
+      "affichage": "Masques de 12 à 52 px de large, colorés par la charte.",
+      "depot": "SVG noir, une seule encre (ou PNG noir sur blanc à vectoriser).",
+      "format_jeu": "SVG.",
+      "alternates": "Une seule image.",
+      "source": "Ornements d'Idan.",
+      "exemples": [
+        "assets/creation/svg/lance.svg",
+        "assets/creation/svg/couronne.svg",
+        "assets/creation/svg/fleur-de-lys.svg"
+      ]
+    },
+    {
+      "cle": "pictos",
+      "famille": "Pictos : peuples, cultures, ascendances, écoles",
+      "nombre": 62,
+      "ou": "Recrues de la taverne, liste des mercenaires, fiche du mercenaire, fiche au survol (zone 2).",
+      "pourquoi": "Reconnaître d'un coup d'œil le peuple, la culture, l'ascendance ou l'école de magie.",
+      "fichiers": "assets/pictos/<peuple|culture|ascendance|ecole>-<nom>.webp",
+      "affichage": "20 px (taverne), 32 px (liste), 52 à 66 px (fiches).",
+      "depot": "Carré, 1024 px : JPEG sur fond blanc (JC3 détoure) ou PNG transparent.",
+      "format_jeu": "WebP transparent 128 × 128.",
+      "alternates": "Non. Les pictos des écoles ne s'affichent encore que dans la fiche au survol, pas encore branchée au jeu.",
+      "source": "assets-src/Picto/ et Hostinger media/pictos/ → scripts/build-pictos.sh.",
+      "exemples": [
+        "assets/pictos/peuple-orc.webp",
+        "assets/pictos/culture-cites-libres.webp",
+        "assets/pictos/ascendance-sang-divin.webp",
+        "assets/pictos/ecole-feu.webp"
+      ]
+    },
+    {
+      "cle": "barres-camp",
+      "famille": "Barres du camp (haut et bas), par culture",
+      "nombre": 128,
+      "ou": "Barre du haut (pièce du milieu répétée, embout droit) et barre du bas (milieu, anneau du jour suivant), selon la culture du capitaine ; la pièce du milieu est aussi le fond du cartouche de la fiche au survol.",
+      "pourquoi": "Habiller le camp aux couleurs de la culture du capitaine.",
+      "fichiers": "assets/hud/barres/<culture>/left|center|right|ornement.webp",
+      "affichage": "Hauteur de la bande sombre : environ 82 px sur un écran de 1920 px ; anneau environ 335 px de large.",
+      "depot": "PNG transparent, pièces séparées comme le pack d'Idan (left, center, right, ornement_central).",
+      "format_jeu": "WebP transparent ; milieu environ 900 px de large.",
+      "alternates": "Versions v1, v2, v3 sur Hostinger ; une seule retenue par culture (scripts/hud-bars-reglages.json). Les 32 left.webp ne sont pas affichés.",
+      "source": "Hostinger media/hud-pack/<Peuple>/<culture>/ → scripts/build-hud-bars.js (écrit aussi hud-bars.js).",
+      "exemples": [
+        "assets/hud/barres/elfes-noirs/center.webp",
+        "assets/hud/barres/nains-du-chaos/ornement.webp",
+        "assets/hud/barres/cites-libres/right.webp"
+      ]
+    },
+    {
+      "cle": "pictos-camp",
+      "famille": "Pictos du camp",
+      "nombre": 14,
+      "ou": "Barre du haut (or, salaires, mercenaires) ; bouton du jour suivant ; 10 boutons de la barre du bas ; l'or aussi au dortoir, sur les missions et la fiche au survol.",
+      "pourquoi": "Les chiffres et les lieux du camp.",
+      "fichiers": "assets/hud/picto-*.webp, next.webp, pictos-bas/<lieu>.webp",
+      "affichage": "Environ 25 px de haut dans la barre du haut ; jour suivant environ 141 px ; boutons du bas environ 69 px.",
+      "depot": "PNG transparent ; boutons du bas 200 × 200 ; jour suivant 320 × 320.",
+      "format_jeu": "WebP transparent.",
+      "alternates": "Non. Le lieu actuel est grisé par le jeu.",
+      "source": "Hostinger media/hud-pack/ → scripts/build-hud-bars.js (next et boutons du bas) ; pas de master pour l'or, les salaires et les mercenaires.",
+      "exemples": [
+        "assets/hud/picto-or.webp",
+        "assets/hud/next.webp",
+        "assets/hud/pictos-bas/taverne.webp",
+        "assets/hud/pictos-bas/combat.webp"
+      ]
+    },
+    {
+      "cle": "rangs-ennemis",
+      "famille": "Anneaux de rang des ennemis",
+      "nombre": 4,
+      "ou": "Combat : anneau posé sur le portrait des ennemis (novice, normal, vétéran, élite).",
+      "pourquoi": "Lire la force d'un ennemi à son anneau.",
+      "fichiers": "assets/enemy-ranks/<rang>.webp",
+      "affichage": "Pions de 38 à 60 px.",
+      "depot": "PNG transparent carré, 256 px au moins.",
+      "format_jeu": "WebP transparent 256 × 256.",
+      "alternates": "Une seule image.",
+      "source": "Chatty ; pas de master ni de script.",
+      "exemples": [
+        "assets/enemy-ranks/novice.webp",
+        "assets/enemy-ranks/elite.webp"
+      ]
+    },
+    {
+      "cle": "objets",
+      "famille": "Objets (armes, armures, accessoires) par tier",
+      "nombre": 624,
+      "ou": "Équipement des fiches, marchand, échanges, carte d'objet au survol.",
+      "pourquoi": "Reconnaître l'objet et son tier.",
+      "fichiers": "assets/equipment/<type>/<objet>-<tier>.webp (256 px) et equipment-large/ (512 px) : 312 images en deux tailles",
+      "affichage": "40 à 88 px dans les cases ; 210 px de haut dans la carte d'objet.",
+      "depot": "JPEG carré 1024 px sur fond noir, nommé <Nom>_T<tier>.jpg.",
+      "format_jeu": "WebP sans transparence, 256 et 512 px.",
+      "alternates": "Non : les tiers T1 à T4 sont quatre objets, pas des alternates.",
+      "source": "assets-src/Equipements/<Type>/ → scripts/build-equipment.js.",
+      "exemples": [
+        "assets/equipment-large/armes/arbalete-2.webp",
+        "assets/equipment-large/armures/armure-d-ecailles-2.webp"
+      ]
+    },
+    {
+      "cle": "cadres-tier",
+      "famille": "Cadres de tier des objets",
+      "nombre": 4,
+      "ou": "Par-dessus l'image de l'objet, le noir disparaît (mode écran).",
+      "pourquoi": "La couleur du cadre dit la qualité de l'objet.",
+      "fichiers": "assets/equipment/frames/frame-<tier>.webp",
+      "affichage": "La taille de la case de l'objet.",
+      "depot": "JPEG carré sur fond noir.",
+      "format_jeu": "WebP 256 × 256.",
+      "alternates": "Une seule image.",
+      "source": "assets-src/Equipements/Frames/ → scripts/build-equipment.js.",
+      "exemples": [
+        "assets/equipment/frames/frame-1.webp",
+        "assets/equipment/frames/frame-4.webp"
+      ]
+    },
+    {
+      "cle": "sorts",
+      "famille": "Icônes de sorts et cadres d'école",
+      "nombre": 95,
+      "ou": "Grimoire, fiche, combat ; les manuels de sort chez le marchand.",
+      "pourquoi": "Reconnaître un sort ; le cadre dit son école.",
+      "fichiers": "assets/spells/<école>/<code>.webp et cadre.webp (spells.json : icone, cadre)",
+      "affichage": "36 à 52 px ; sans icône, le cadre s'affiche seul (44 sorts sur 90 n'ont pas encore d'icône).",
+      "depot": "JPEG carré 1024 px (icône) ; cadre JPEG à centre vide (JC3 le rend transparent).",
+      "format_jeu": "WebP 256 × 256 ; cadre transparent au centre.",
+      "alternates": "Non. Les 40 versions -large (1024 px) ne sont pas encore affichées.",
+      "source": "assets-src/Sorts/<École>/ → scripts/build-spells.sh.",
+      "exemples": [
+        "assets/spells/feu/fiery_breath.webp",
+        "assets/spells/feu/cadre.webp",
+        "assets/spells/eau/cadre.webp"
+      ]
+    },
+    {
+      "cle": "taverne",
+      "famille": "Taverne en calques",
+      "nombre": 39,
+      "ou": "La taverne : le fond, puis l'annonce, le menu, les tables, la trappe, le tavernier, le premier plan, chacun cliquable.",
+      "pourquoi": "Un décor vivant où chaque élément s'allume au survol et mène à une action.",
+      "fichiers": "assets/taverne/fond.webp et un fichier par calque ; variantes dans taverniers/, table1/, table2/",
+      "affichage": "Scène de 1376 × 768 étirée en plein écran (environ ×1,4 sur 1920 px).",
+      "depot": "PNG transparent à l'échelle de la scène (ou sur un fond de couleur vive uni, que JC3 retire).",
+      "format_jeu": "WebP qualité 95 ; calques transparents.",
+      "alternates": "Oui : tavernier (28 versions), table 1 (2), table 2 (1) ; une au hasard à chaque entrée dans la taverne.",
+      "source": "Hostinger media/background/Taverne/ (dossiers « alternate ») → scripts/build-tavern.js (écrit tavern-layers.js).",
+      "exemples": [
+        "assets/taverne/fond.webp",
+        "assets/taverne/tavernier.webp",
+        "assets/taverne/table1.webp"
+      ]
+    },
+    {
+      "cle": "panneau-missions",
+      "famille": "Panneau des missions",
+      "nombre": 39,
+      "ou": "« Trouver une mission » : le panneau de bois, les feuilles d'annonce, leurs attaches (clous, punaises, cire, dagues), lambeaux, flèche.",
+      "pourquoi": "Un vrai panneau d'affichage de taverne, avec ses annonces usées.",
+      "fichiers": "assets/taverne/panneau-missions.webp, feuille-N(-large).webp, estompe-N.webp, clou-N, punaise-N, cire-*, dague-*, lambeau-N, fleche-fer.webp",
+      "affichage": "Panneau plein écran ; une feuille environ 350 × 560 px sur 1920 × 1080 ; attaches de 12 à 100 unités du panneau.",
+      "depot": "Planches sur fond vert uni (JC3 détoure) ; panneau JPEG large (2000 px).",
+      "format_jeu": "WebP ; transparents sauf le panneau et le papier froissé.",
+      "alternates": "Oui : feuille et usure, attache (clou 50 %, punaise 30 %, cire 20 %), tête et couleur de cire tirées au hasard pour chaque annonce.",
+      "source": "Hostinger media/background/Taverne/Missions/ → scripts/key-green-sheet.js, make-landscape-sheets.js, make-fade-masks.js ; papier froissé : ambientCG Paper003 (CC0).",
+      "exemples": [
+        "assets/taverne/feuille-1.webp",
+        "assets/taverne/clou-1.webp",
+        "assets/taverne/cire-rouge.webp"
+      ]
+    },
+    {
+      "cle": "gravures-missions",
+      "famille": "Gravures des missions",
+      "nombre": 24,
+      "ou": "Sur chaque annonce de mission (en mode produit, avec un masque d'estompe).",
+      "pourquoi": "Illustrer la mission : le camp ennemi, la bête, le client.",
+      "fichiers": "assets/missions/<nom>.webp (one-shot-missions.json, bodyguard-missions.json : illustrations)",
+      "affichage": "56 % de la largeur de l'annonce (42 % dans le détail).",
+      "depot": "Gravure sur fond blanc, 1000 px de large au moins.",
+      "format_jeu": "WebP sans transparence, 1000 px de large.",
+      "alternates": "Oui pour certaines (camp-voleurs-1/2, chasse-licorne-1/2) : une tirée par annonce, toujours la même pour une même annonce.",
+      "source": "Hostinger media/background/Taverne/Missions/ → scripts/build-mission-art.js.",
+      "exemples": [
+        "assets/missions/camp-orc-1.webp",
+        "assets/missions/camp-gobelin.webp"
+      ]
+    },
+    {
+      "cle": "ornements-titre",
+      "famille": "Ornements du titre (fiche au survol)",
+      "nombre": 32,
+      "ou": "Fiche au survol : de part et d'autre du titre, un par culture.",
+      "pourquoi": "Signer la culture dans le cartouche du nom.",
+      "fichiers": "assets/fiche/ornements/<motif>.svg",
+      "affichage": "Environ 52 × 12 px, couleur du parchemin.",
+      "depot": "SVG noir dans une boîte 104 × 24 (ou un motif noir sur blanc à vectoriser).",
+      "format_jeu": "SVG.",
+      "alternates": "Non. La fiche au survol n'est pas encore branchée au jeu.",
+      "source": "scripts/build-title-ornaments.py, depuis les planches d'Idan (media/Ornements.zip) et des formes simples.",
+      "exemples": [
+        "assets/fiche/ornements/corbeau.svg",
+        "assets/fiche/ornements/marteau.svg",
+        "assets/fiche/ornements/lys.svg"
+      ]
+    },
+    {
+      "cle": "avatars",
+      "famille": "Avatars des mercenaires",
+      "nombre": 2608,
+      "ou": "Partout où un mercenaire apparaît : fiche, cartes, combat, discussions, recrues, création du capitaine.",
+      "pourquoi": "Le visage de chaque mercenaire.",
+      "fichiers": "Hostinger media/avatars/<Peuple>/ (lus par le jeu, sans copie)",
+      "affichage": "42 px (compact) à 400 × 440 px (discussions) ; en pied ou carré.",
+      "depot": "JPEG sans transparence : en pied 768 × 1376 et carré 1024 × 1024 (_square), mots-clés dans le nom.",
+      "format_jeu": "Tels que déposés.",
+      "alternates": "Oui : beaucoup par peuple ; le jeu choisit par les mots-clés, avec du hasard.",
+      "source": "Hostinger media/avatars/ → api/avatars.php ; remplacer un fichier change le jeu aussitôt.",
+      "exemples": [
+        "media/avatars/Elfes/Elf_001.jpg",
+        "media/avatars/Elfes/Elf_001_square.jpg"
+      ]
+    },
+    {
+      "cle": "silhouettes",
+      "famille": "Silhouettes d'équipement",
+      "nombre": 20,
+      "ou": "Onglet Équipement de la fiche : le mannequin sur le parchemin.",
+      "pourquoi": "Placer les objets sur le corps.",
+      "fichiers": "Hostinger media/Avatars_Equipements/ (lus par le jeu, sans copie)",
+      "affichage": "Hauteur d'un panneau carré, en mode produit sur le parchemin.",
+      "depot": "JPEG carré 1024 px, fond clair ; une par peuple et par sexe.",
+      "format_jeu": "Tels que déposés.",
+      "alternates": "Une seule image.",
+      "source": "Hostinger media/Avatars_Equipements/ → api/silhouettes.php.",
+      "exemples": []
+    },
+    {
+      "cle": "decors-hostinger",
+      "famille": "Décors lus sur Hostinger",
+      "nombre": 2,
+      "ou": "Fond de l'Intendance ; portrait rond du tavernier (72 px).",
+      "pourquoi": "Les décors des lieux qui n'ont pas encore leur version de jeu.",
+      "fichiers": "Hostinger /media/background/Quatermaster.jpg, /media/video/Img_Tavern.jpg",
+      "affichage": "Plein écran (Intendance) ; 72 px (portrait).",
+      "depot": "JPEG 16:9, 1920 × 1080 conseillé.",
+      "format_jeu": "Tels que déposés (le CDN les sert à 1600 px de large au plus).",
+      "alternates": "Une seule image.",
+      "source": "Hostinger, sans traitement.",
+      "exemples": [
+        "media/background/Quatermaster.jpg"
+      ]
+    }
+  ]
+}

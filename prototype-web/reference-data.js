@@ -85,7 +85,8 @@ const REFERENCE_FILES = {
   spells: "spells.json",
   domains: "domains.json",
   itemTitles: "item-titles.json",
-  renamedNames: "renamed-names.json"
+  renamedNames: "renamed-names.json",
+  cultureColors: "culture-colors.json"
 };
 
 async function loadReferenceData(base = "/data/") {

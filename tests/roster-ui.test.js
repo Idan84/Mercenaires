@@ -100,6 +100,6 @@ assert.equal(elements["initial-squad"].innerHTML,"<item>2</item><item>1</item><i
 assert.match(html,/id="roster-sort"/);
 assert.match(html,/value="affinity"/);
 assert.match(html,/id="roster-sort-direction"/);
-assert.match(css,/\.roster-count\{[^}]*color:#f2dbb8/);
+assert.match(css,/\.roster-count\{[^}]*color:#eadcbc/);
 assert.match(css,/#initial-squad\{grid-template-columns:1fr\}/);
 console.log("Roster cards, capacity and sorting: OK");

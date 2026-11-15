@@ -156,7 +156,7 @@ assert.match(css,/\.tag-pill\.lvl-1\{--tag-mix:38%/,"pâle");
 assert.match(css,/\.tag-pill\.lvl-2\{--tag-mix:68%\}/,"moyen");
 assert.match(css,/\.tag-pill\.is-steward::after\{content:""/,"le point de l'intendant");
 assert.ok(html.indexOf('src="/core/mercenary-tags.js"')>0&&html.indexOf('src="/core/mercenary-tags.js"')<html.indexOf('src="ui.js"'));
-for(const [tone,hue] of [["rouge",/--tag-1:#8e2b22/],["vert",/--tag-1:#2c6235/],["bleu",/--tag-1:#284980/]]) assert.match(css,new RegExp("\\.tags-col--"+tone+"\\{"+hue.source),"tons "+tone+"s");
+for(const [tone,hue] of [["rouge",/--tag-1:#9a2a20/],["vert",/--tag-1:#315d36/],["bleu",/--tag-1:#284980/]]) assert.match(css,new RegExp("\\.tags-col--"+tone+"\\{"+hue.source),"tons "+tone+"s");
 assert.match(css,/\.sheet-tags\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,"trois colonnes");
 assert.match(css,/@media\(max-width:900px\)\{\.sheet-tags\{grid-template-columns:1fr\}\}/,"une colonne sur téléphone");
 console.log("Tags de la fiche : 3 colonnes, listes tirées des données, 3 niveaux, tags de l'intendant — OK");

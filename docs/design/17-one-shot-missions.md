@@ -286,13 +286,92 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 - **La matière** (Idan, 2026-11-14 : « Continue à essayer de faire un peu mieux, sois créatif ») : le papier froissé,
   éclairé par la droite comme le panneau (`assets/taverne/papier-froisse.webp`, tiré de la texture libre de droits CC0
   « Paper003 » d'ambientCG), plié en trois ; l'ombre gagne vers la gauche. Chaque annonce a son allure, toujours la même
-  pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune, parfois
-  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : un clou forgé, deux punaises de laiton ou un
-  cachet de cire rouge, noir ou bleu (Jean-Mi : `assets/taverne/cire-*.webp`, détourés par `scripts/key-wax-seals.js`). En attendant les illustrations, une vignette gravée (hachures qui s'épaississent vers les bords).
-  Sur le panneau, des restes d'annonces arrachées sont encore cloués ; la lumière d'une bougie vacille en haut à droite,
-  avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
+  pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune (jamais rouge : Idan, 2026-11-14 ; environ une sur
+  quatre est un vieux papier, désaturé, avec deux traces de crasse et les bords salis), parfois
+  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : une tête de clou forgé, deux punaises de laiton
+  ou un cachet de cire rouge, noir ou bleu (trois têtes de chaque sorte, `data-head`). En attendant les illustrations, une
+  vignette gravée (hachures qui s'épaississent vers les bords).
+  Sur le panneau, trois restes d'annonces arrachées dépassent derrière, encore sous leur clou ; la lumière d'une bougie
+  vacille en haut à droite, avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
+  Les trois annonces d'une page ne se ressemblent pas (Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts…
+  plis à des endroits différents, taches, orientations, forme du parchemin ») : chacune est une des huit feuilles
+  vierges de Jean-Mi (`assets/taverne/feuille-1…8.webp`, détourées par `scripts/key-green-sheet.js`, la 7 retournée et
+  la 8 tournée d'un demi-tour pour que les coins arrachés ne tombent pas tous au même endroit), étirée à la taille de
+  l'annonce ; la matière par-dessus et la gravure sont découpées à la forme de la feuille. Les feuilles au coin du haut
+  arraché ne prennent pas de punaises. Les feuilles sont classées de la plus abîmée à la plus propre (2, 6, 5, 1, 7, 8,
+  4, 3) et suivent le niveau de la mission (Idan, 2026-11-14 : « les plus abîmés pour les missions avec le moins
+  d'étoiles et les plus propres pour les missions plus hautes… sans être rigide totalement ») : le niveau 1 à 15 donne
+  un rang dans ce classement, à un rang et demi près de chaque côté. En plus : une taille un peu différente, plus ou moins de travers (jusqu'à 3°),
+  un ou deux plis en travers à des hauteurs différentes et parfois un pli en long, le froissé décalé, et selon
+  l'annonce une tache de graisse, une coulure depuis le haut, un bord qui a pris l'humidité, des chiures de mouche
+  (dans les marges, pour ne pas passer pour des fautes d'impression).
+  Les missions d'argent (niveaux 6 à 10) et d'or (11 à 15) se reconnaissent d'un coup d'œil (Idan, 2026-11-14 :
+  « 1 et 3 ») : le titre à la feuille de métal (étain ou or, gravé d'un filet sombre) et des étoiles plus grandes qui
+  brillent, et une dague plantée dans le haut du papier, la lame entrant juste au-dessus de la gravure et la poignée
+  dépassant vers le haut (Idan : « le bas de la dague devrait arriver en haut de l'image » ; « elles étaient à la bonne
+  taille sur la v1 » : l'annonce à dague descend un peu et raccourcit un peu pour que la poignée reste sous la barre du
+  haut), à la place du clou, des punaises ou du cachet : acier pour
+  l'argent, garde dorée pour l'or, deux de chaque (`assets/taverne/dague-argent|or-1|2.webp`, Jean-Mi, détourées avec
+  `--slit` : une fente sombre dans le papier là où la lame entre).
+  Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la
+  flèche avance un peu ; sur la première ou la dernière page, elle reste sombre.
+  Toute cette matière vient de Jean-Mi, sur fond vert, détourée par `scripts/key-green-sheet.js` (`assets/taverne/` :
+  `feuille-*`, `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
+  `scripts/build-mission-art.js`.
+- **Le détail de l'annonce** (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif dans le
+  jeu et pas ce qu'un dev doit savoir, limite à l'utile et l'essentiel », « les boutons de la création de capitaine »,
+  « pense icônes et pictos ») : au clic, l'annonce en grand sur le panneau assombri (la même feuille, la même gravure,
+  la même attache, le même titre et les mêmes étoiles) et l'essentiel en pictos, une ligne chacun : la paie (le picto
+  or ; « et le butin », ou « payées d'avance »), la route (la botte : jours de marche, aller-retour), l'ennemi (les
+  épées croisées : qui, combien), les gardes demandés (le picto des mercenaires), la durée d'une garde (le sablier,
+  « sans combat »), l'échéance (la chandelle : « Jusqu'au … »). Une seule feuille par mission (Idan, 2026-11-14 :
+  « deux feuilles différentes de papier pour la même mission… c'est ce qui me gêne le plus ») : pour un contrat, la
+  feuille de l'annonce couchée à l'horizontale (`feuille-N-large.webp`, `scripts/make-landscape-sheets.js`, le coin
+  arraché en haut à gauche sous la gravure), l'annonce à gauche du pli, à droite la lettre du commanditaire : l'en-tête
+  en capitales bordeaux, une lettrine, la signature, le cachet de cire au lion de la création dans le coin. Une garde
+  du corps n'a pas de lettre : l'annonce reste debout. Plus de libellés techniques (« Difficulté », « Commanditaire »,
+  description de la règle). Dessous, « ‹ Retour au panneau » et le bouton bordeaux cerclé de laiton de la création
+  (« Accepter le contrat », « Choisir le garde ») ; un clic à côté de la feuille ramène aussi au panneau.
+- **Le choix de l'escouade** (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait » ; puis, sur la maquette
+  de Chatty : « Oui, vas-y avec la maquette de Chatty ») : sur le panneau des missions assombri. En haut, la mission en
+  grand (« L'escouade », ou « Les gardes », son nom, ses étoiles, « Départ demain matin · 1 jour de marche »). À gauche,
+  les **mercenaires au camp**, sur le parchemin de la création : une recherche par nom ; les tags en onglets — « Tous »
+  (le filtre éteint, à l'ouverture), puis « comme premier tag, celui de la mission ! » (le camp ou la chasse sous
+  Mission, doc 20, ou Garde du corps), Dégâts, Soutien, Protection, Magie, et les autres rôles dans « Autres rôles » (ceux
+  que porte au moins l'un d'eux) ; puis la galerie, seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir
+  en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là bien entendu ») ; un mercenaire choisi
+  quitte la galerie (« au lieu de les avoir sélectionnés à gauche, on les retire à gauche. Ça permet de mieux voir »), et
+  y revient à sa place s'il est retiré de l'escouade. Une carte : le portrait carré (« Gardons le carré pour la
+  sélection, c'est natif » ; un « + »), le nom (un clic ouvre la fiche complète par-dessus : « les persos
+  sont cliquables et ça ouvre la fiche complète ? »), les étoiles, l'état — Prêt, Fatigué −20 % (encore fatigué au
+  combat) ou Reposé à l'arrivée (une garde du corps, sans combat : Prêt ou Fatigué) ; pas de picto de combat (« on va le
+  virer / refaire »). Des pages, jamais de défilement (Idan, 2026-11-15 : « je veux pas des flèches de défilement. Ce
+  sont des flèches de clic. Je trouve ça mieux (globalement, sur l'ensemble du jeu) », « on a 12 mercenaires visibles. On
+  clique, on en voit 12 autres. Je trouve que le défilement ne fait pas très jeux », « avec des clics, on ne devrait
+  jamais avoir des portraits coupés ») : une page montre autant de cartes entières que la place en tient (en 1920 × 1080,
+  trois rangées de sept), le portrait jamais sous 120 px (80 px sur un petit écran) ; deux flèches de fer l'une sur
+  l'autre au milieu de la marge (« les mettre au milieu »), sur le même axe, pour la page précédente et la suivante,
+  cachées s'il n'y a qu'une page, grisées au début et à la fin, comme celles du panneau ; la molette tourne les pages
+  aussi (« Oui, la molette tourne les pages aussi », un choix pour tout le jeu, comme sur le panneau des annonces). À
+  droite, l'**escouade**, dans un panneau de cuir sombre aux coins de bronze : le compte (« 6 / 20 » ; une garde : toutes
+  ses places), les portraits choisis en 4:3 (« Le 4:3… à droite »), avec leur croix ; elle tient toujours en entier,
+  sans flèches (« chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser la place de tout afficher »),
+  avec les plus grands portraits possibles (« Ils sont trop petits… ils devraient être à 4 col - 5 lignes. Ça rentre » ;
+  « on veut pas forcément qu'ils soient plus petits que ceux de gauche. Ceux de gauche sont fixes. À droite, ça
+  s'adapte » ; « je préfère que ça soit dynamique. On remplit le panneau en fonction du nombre de mercenaires. On
+  rétrécit à chaque fois qu'on en ajoute ») : seul, un mercenaire prend toute la largeur du panneau ; en 1920 × 1080, 2
+  l'un sur l'autre, 4 en deux par deux, 6 en trois par deux, 9 en trois par trois, puis 12, 16 et 20 (4 colonnes, 5
+  rangées) ; le nom quand les portraits sont grands, puis seulement au survol (« 20 pour la mission… + en dortoirs ») ;
+  les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
+  l'arrivée »), les primes au retour, « Partir demain » et « D'ici demain matin, le départ peut encore être annulé ». En
+  bas à gauche, « ‹ Retour à l'annonce ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
-  le papier (le blanc disparaît, l'encre semble imprimée). Par camp (`one-shot-missions.json`, `camps[].illustrations`),
+  le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
+  les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,
+  la gravure prend toute la largeur du parchemin et la moitié de sa hauteur, et s'estompe vers les bords, plus loin par
+  endroits, avec le grain d'une encre usée ; l'intérieur pâlit un peu par plaques. Quatre masques
+  (`assets/taverne/estompe-1…4.webp`, `scripts/make-fade-masks.js`), un par annonce d'après son identifiant. Le détail
+  de la mission garde son cadre. Par camp (`one-shot-missions.json`, `camps[].illustrations`),
   sinon celles de la mission (`missions[].illustrations` : les bêtes des chasses), sinon son illustration. Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal
   d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
   la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,

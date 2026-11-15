@@ -44,7 +44,8 @@ const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack});
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,missionChargeIfClear,missionRangeCells,missionSpellAreaCells,missionMeleeApproach,missionSpellPreviewRows,"
-  +"missionAttackPreview,renderMissionHoverCard,runMissionEnemyTurn,missionFxEstimate,missionCells,missionKey,missionMagic,renderMission";
+  +"missionAttackPreview,renderMissionHoverCard,runMissionEnemyTurn,missionFxEstimate,missionCells,missionKey,missionMagic,renderMission,"
+  +"missionViewOn,startMissionCamera,missionView,missionMapSize,missionHexPixel,MISSION_CAMERA";
 // Le jeu sans page (les tests habituels) ; et avec une page factice, pour le rythme du tour ennemi.
 const load=(window,document,setTimeout)=>new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression",
   "MercenairesMissionEnd","MercenairesMagic","window","document","setTimeout",source+"\nreturn {"+EXPOSED+"};")
@@ -220,6 +221,56 @@ assert.equal(m.turn,2);
 assert.equal(m.pacedUnit,null);
 assert.ok(living>=2);
 delete game.missionFast;
+
+// La caméra au début de chaque tour (Idan, 2026-11-14 : « une petite animation de caméra qui se met sur lui, zoom et
+// dézoome un peu en le mettant au centre sauf si après le dézoom on a des bords vides de la carte »).
+{
+  const frames=[];
+  const win=reduce=>({innerWidth:1600,addEventListener(){},requestAnimationFrame:fn=>frames.push(fn),matchMedia:()=>({matches:reduce})});
+  const cam=load(win(false),{querySelector:()=>null,querySelectorAll:()=>[]},setTimeout);
+  $("mission-map").parentElement={clientWidth:1000,clientHeight:600};
+  const {width,height}=cam.missionMapSize();
+  assert.ok(width*2>1000&&height*2>600,"à × 2, la carte dépasse l'écran");
+  // Sur un bord : la vue s'arrête au bord de la carte (pas de vide), le combattant n'est plus au centre.
+  assert.deepEqual(cam.missionViewOn(cam.missionHexPixel(0,0),2,true),{scale:2,x:0,y:0});
+  // Au milieu : centré.
+  const middle=cam.missionViewOn({x:width/2,y:height/2},2,true);
+  assert.equal(middle.x,500-width);
+  assert.equal(middle.y,300-height);
+  // Une carte plus petite que l'écran reste centrée.
+  const small=cam.missionViewOn(cam.missionHexPixel(0,0),0.2,true);
+  assert.equal(small.x,(1000-width*0.2)/2);
+  assert.equal(small.y,(600-height*0.2)/2);
+  // L'animation : elle zoome un peu sur lui (× 1,15), puis revient au zoom du joueur, à sa place sans vide.
+  Object.assign(cam.missionView,{scale:1,x:-40,y:-30,fitted:false,anim:null});
+  const unit={id:"u-cam",q:6,r:4};
+  cam.startMissionCamera(unit);
+  const end=cam.missionViewOn(cam.missionHexPixel(6,4),1,true);
+  frames.shift()(1000);
+  const peakTime=1000+cam.MISSION_CAMERA.duration*cam.MISSION_CAMERA.peak;
+  frames.shift()(peakTime);
+  assert.ok(Math.abs(cam.missionView.scale-1.15)<1e-9,"le zoom au milieu de l'animation");
+  frames.shift()(1000+cam.MISSION_CAMERA.duration);
+  assert.equal(frames.length,0);
+  assert.deepEqual({scale:cam.missionView.scale,x:cam.missionView.x,y:cam.missionView.y},end);
+  assert.equal(cam.missionView.anim,null);
+  assert.equal(cam.missionView.fitted,false);
+  // Le joueur qui zoome ou fait glisser la carte l'interrompt.
+  cam.startMissionCamera(unit);
+  cam.missionView.anim=null;
+  frames.shift()(0);
+  assert.equal(frames.length,0,"interrompue : plus d'image");
+  // Moins de mouvement demandé par le système : la vue va directement à sa place.
+  const still=load(win(true),{querySelector:()=>null,querySelectorAll:()=>[]},setTimeout);
+  Object.assign(still.missionView,{scale:1,x:0,y:0,fitted:false,anim:null});
+  still.startMissionCamera(unit);
+  assert.equal(frames.length,0);
+  assert.deepEqual({scale:still.missionView.scale,x:still.missionView.x,y:still.missionView.y},end);
+  // Elle part sur le nôtre qui commence son tour, et sur l'ennemi qu'on voit jouer, depuis sa case de départ (s'il était visible).
+  assert.match(source,/const turnUnit=m\.phase==="deploy"\|\|m\.over\?null:u\|\|m\.pacedUnit;/);
+  assert.match(source,/m\.pacedStart=\{id:unit\.id,q:unit\.q,r:unit\.r,unseen\};/);
+  $("mission-map").parentElement={clientWidth:900};
+}
 
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<button id="mission-speed-btn" class="secondary hidden"[^>]*>Accélérer<\/button>/);

@@ -80,3 +80,12 @@ for entry in "${MAP[@]}"; do
   cut_picto "$src" "$out" "$pockets"
   echo "$out"
 done
+
+# Écoles de magie (Idan, 2026-11-15) : masters déjà détourés (PNG transparents, assets-src/Picto/Magie/README.md),
+# nommés d'après le slug de l'école : on recadre sur la partie nettement opaque et on réduit, comme les autres.
+for src in "$SRC"/Magie/ecole-*.png; do
+  out="$OUT/$(basename "$src" .png).webp"
+  box=$(convert "$src" -alpha extract -threshold 35% -format %@ info:)
+  convert "$src" -crop "$box" +repage -resize 128x128 -gravity center -background none -extent 128x128 -quality 90 "$out"
+  echo "$out"
+done

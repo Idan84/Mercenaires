@@ -412,19 +412,48 @@
     </div>
   </dialog>
 
-  <dialog id="mission-select-dialog">
-    <div class="dialog-head">
-      <div><p class="eyebrow" id="mission-select-eyebrow">Mission Test</p><h2 id="mission-select-title">Choisir 3 mercenaires</h2></div>
-      <span id="mission-select-count" class="badge">0/3</span>
-    </div>
-    <div class="mission-select-content">
-      <p id="mission-select-cost" class="mission-select-cost"></p>
-      <div id="mission-select-list" class="mission-select-list"></div>
-      <p id="mission-select-error" class="mission-error"></p>
-      <div class="actions-row">
-        <button id="start-mission-btn" class="primary">Lancer la mission</button>
-        <button id="cancel-mission-select-btn" class="secondary">Annuler</button>
+  <!-- Le choix de l'escouade (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») : la mission en grand ; à
+       gauche, les mercenaires au camp sur le parchemin de la création (recherche, tags, galerie, flèches pour défiler) ;
+       à droite, l'escouade dans un panneau sombre aux coins de bronze ; le retour à l'annonce en bas à gauche. -->
+  <dialog id="mission-select-dialog" class="mission-detail mission-choice" aria-labelledby="mission-select-title">
+    <div class="mission-choice-body">
+      <header class="mission-choice-head">
+        <p id="mission-select-eyebrow" class="mission-choice-eyebrow">L’escouade</p>
+        <h2 id="mission-select-title" class="mission-choice-title"></h2>
+        <p id="mission-select-route" class="mission-choice-route"></p>
+      </header>
+      <div class="mission-choice-main">
+        <section class="mission-recruits" aria-labelledby="mission-recruits-title">
+          <h3 id="mission-recruits-title" class="mission-recruits-title">Mercenaires au camp</h3>
+          <div class="mission-choice-tools">
+            <label class="mission-search"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input id="mission-select-search" type="search" placeholder="Rechercher un mercenaire…" autocomplete="off" aria-label="Rechercher un mercenaire"></label>
+            <nav id="mission-select-tags" class="mission-tags" aria-label="Filtrer par tag"></nav>
+          </div>
+          <div class="mission-roster-frame">
+            <div id="mission-select-list" class="mission-roster"></div>
+            <button type="button" class="mission-scroll mission-scroll--up" data-roster-page="-1" aria-label="Mercenaires précédents" hidden></button>
+            <button type="button" class="mission-scroll mission-scroll--down" data-roster-page="1" aria-label="Mercenaires suivants" hidden></button>
+          </div>
+          <p id="mission-select-error" class="mission-choice-error"></p>
+        </section>
+        <aside class="mission-squad" aria-labelledby="mission-squad-title">
+          <span class="mission-corner mission-corner--tl" aria-hidden="true"></span><span class="mission-corner mission-corner--tr" aria-hidden="true"></span><span class="mission-corner mission-corner--bl" aria-hidden="true"></span><span class="mission-corner mission-corner--br" aria-hidden="true"></span>
+          <div class="mission-squad-head">
+            <h3 id="mission-squad-title">Escouade</h3>
+            <span id="mission-select-count" class="mission-squad-count"></span>
+            <p id="mission-squad-subtitle" class="mission-squad-subtitle">Mercenaires sélectionnés</p>
+          </div>
+          <div class="mission-squad-frame"><div id="mission-squad-slots" class="mission-squad-slots"></div></div>
+          <span class="mission-squad-rule" aria-hidden="true"></span>
+          <p id="mission-squad-fatigue" class="mission-squad-fatigue" hidden></p>
+          <p id="mission-select-cost" class="mission-squad-cost"></p>
+          <button type="button" id="start-mission-btn" class="mission-btn">Partir demain</button>
+          <p id="mission-squad-note" class="mission-squad-note"></p>
+        </aside>
       </div>
+      <footer class="mission-choice-foot">
+        <button type="button" id="cancel-mission-select-btn" class="mission-retour">‹ Retour à l’annonce</button>
+      </footer>
     </div>
   </dialog>
   <dialog id="tavern-talk-dialog" class="talk-dialog" aria-labelledby="tavern-talk-name">
@@ -632,6 +661,7 @@
   <script src="tavern-scene-ui.js"></script>
   <script src="day-news-ui.js"></script>
   <script src="contract-ui.js"></script>
+  <script src="hover-card-ui.js"></script>
   <script src="camp-buildings-ui.js"></script>
   <script src="quartermaster-ui.js"></script>
   <script src="persuasion-ui.js"></script>

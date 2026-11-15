@@ -1,0 +1,8 @@
+{
+  "description": "La page Design System de la charte (Idan) : son adresse, et la date de sa création (gardée d’une publication à l’autre). Les images sont publiées avec la page (scripts/build-charte.js --out).",
+  "url": "https://claude.ai/artifact/AxhmGpni2gitjC9gSmVRWG",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-15T15:07:14Z"
+  }
+}

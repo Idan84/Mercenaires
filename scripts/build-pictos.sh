@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # Pictos des peuples, des cultures et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 ; cultures et
-# ascendances sur fond blanc, peuples déjà détourés) → versions web (prototype-web/assets/pictos/, WebP 128×128 transparent).
+# ascendances sur fond blanc, peuples déjà détourés) → versions web (prototype-web/assets/pictos/, WebP 256×256 transparent).
+# Une seule série pour tout le jeu (Idan, 2026-11-15 : « Ca devrait être la même chose... Je pense qu'on utilise les mêmes
+# images deux fois ») : les pictos (20 à 66 px) et les médaillons de la création du capitaine (140 px) ; 256 px reste net
+# sur un écran haute définition.
 # Le nom de sortie est le « slug » du nom de référence (peoples.json, ancestries.json),
 # calculé de la même façon par prototype-web/picto-ui.js. Nécessite ImageMagick.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC=assets-src/Picto
 OUT=prototype-web/assets/pictos
+SIZE=256
 mkdir -p "$OUT"
 
 # master → nom de sortie
@@ -60,7 +64,7 @@ cut_picto(){
   convert "$tmp/region.png" -negate \( "$tmp/a.png" -level 6%,100% \) -compose lighten -composite "$tmp/alpha.png"
   box=$(convert "$tmp/alpha.png" -threshold 35% -format %@ info:)
   convert "$tmp/color.png" "$tmp/alpha.png" -alpha off -compose copy_opacity -composite -compose over \
-    -crop "$box" +repage -resize 128x128 -gravity center -background none -extent 128x128 \
+    -crop "$box" +repage -resize ${SIZE}x${SIZE} -gravity center -background none -extent ${SIZE}x${SIZE} \
     -quality 90 "$out"
 }
 
@@ -76,7 +80,7 @@ done
 # toute la toile, sans recadrer, et on réduit.
 for src in "$SRC"/Peuple/peuple-*.png; do
   out="$OUT/$(basename "$src" .png).webp"
-  convert "$src" -resize 128x128 -quality 90 "$out"
+  convert "$src" -resize ${SIZE}x${SIZE} -quality 90 "$out"
   echo "$out"
 done
 
@@ -85,6 +89,6 @@ done
 for src in "$SRC"/Magie/ecole-*.png; do
   out="$OUT/$(basename "$src" .png).webp"
   box=$(convert "$src" -alpha extract -threshold 35% -format %@ info:)
-  convert "$src" -crop "$box" +repage -resize 128x128 -gravity center -background none -extent 128x128 -quality 90 "$out"
+  convert "$src" -crop "$box" +repage -resize ${SIZE}x${SIZE} -gravity center -background none -extent ${SIZE}x${SIZE} -quality 90 "$out"
   echo "$out"
 done

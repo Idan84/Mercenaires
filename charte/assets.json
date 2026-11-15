@@ -9,61 +9,61 @@
         {
           "name": "elfe.webp",
           "source": "prototype-web/assets/pictos/peuple-elfe.webp",
-          "size": 5380,
+          "size": 16546,
           "type": "image/webp"
         },
         {
           "name": "gnome.webp",
           "source": "prototype-web/assets/pictos/peuple-gnome.webp",
-          "size": 4000,
+          "size": 13078,
           "type": "image/webp"
         },
         {
           "name": "gobelin.webp",
           "source": "prototype-web/assets/pictos/peuple-gobelin.webp",
-          "size": 4588,
+          "size": 14230,
           "type": "image/webp"
         },
         {
           "name": "halfling.webp",
           "source": "prototype-web/assets/pictos/peuple-halfling.webp",
-          "size": 5650,
+          "size": 17428,
           "type": "image/webp"
         },
         {
           "name": "homme-bete.webp",
           "source": "prototype-web/assets/pictos/peuple-homme-bete.webp",
-          "size": 5554,
+          "size": 17840,
           "type": "image/webp"
         },
         {
           "name": "humain.webp",
           "source": "prototype-web/assets/pictos/peuple-humain.webp",
-          "size": 4074,
+          "size": 12548,
           "type": "image/webp"
         },
         {
           "name": "nain.webp",
           "source": "prototype-web/assets/pictos/peuple-nain.webp",
-          "size": 4010,
+          "size": 12830,
           "type": "image/webp"
         },
         {
           "name": "ogre.webp",
           "source": "prototype-web/assets/pictos/peuple-ogre.webp",
-          "size": 4040,
+          "size": 12830,
           "type": "image/webp"
         },
         {
           "name": "orc.webp",
           "source": "prototype-web/assets/pictos/peuple-orc.webp",
-          "size": 5228,
+          "size": 15800,
           "type": "image/webp"
         },
         {
           "name": "reptilien.webp",
           "source": "prototype-web/assets/pictos/peuple-reptilien.webp",
-          "size": 6036,
+          "size": 18400,
           "type": "image/webp"
         }
       ]
@@ -75,193 +75,193 @@
         {
           "name": "caravanes-de-ferrailleurs.webp",
           "source": "prototype-web/assets/pictos/culture-caravanes-de-ferrailleurs.webp",
-          "size": 6954,
+          "size": 20818,
           "type": "image/webp"
         },
         {
           "name": "cites-libres.webp",
           "source": "prototype-web/assets/pictos/culture-cites-libres.webp",
-          "size": 6740,
+          "size": 19690,
           "type": "image/webp"
         },
         {
           "name": "clans-des-grandes-steppes.webp",
           "source": "prototype-web/assets/pictos/culture-clans-des-grandes-steppes.webp",
-          "size": 9098,
+          "size": 26786,
           "type": "image/webp"
         },
         {
           "name": "elfes-des-grandes-cites.webp",
           "source": "prototype-web/assets/pictos/culture-elfes-des-grandes-cites.webp",
-          "size": 7180,
+          "size": 21840,
           "type": "image/webp"
         },
         {
           "name": "elfes-noirs.webp",
           "source": "prototype-web/assets/pictos/culture-elfes-noirs.webp",
-          "size": 6618,
+          "size": 18622,
           "type": "image/webp"
         },
         {
           "name": "elfes-sylvains.webp",
           "source": "prototype-web/assets/pictos/culture-elfes-sylvains.webp",
-          "size": 6704,
+          "size": 20654,
           "type": "image/webp"
         },
         {
           "name": "explorateurs.webp",
           "source": "prototype-web/assets/pictos/culture-explorateurs.webp",
-          "size": 7878,
+          "size": 23794,
           "type": "image/webp"
         },
         {
           "name": "gnomes-des-cavernes.webp",
           "source": "prototype-web/assets/pictos/culture-gnomes-des-cavernes.webp",
-          "size": 4434,
+          "size": 13174,
           "type": "image/webp"
         },
         {
           "name": "gnomes-des-forets.webp",
           "source": "prototype-web/assets/pictos/culture-gnomes-des-forets.webp",
-          "size": 6066,
+          "size": 19668,
           "type": "image/webp"
         },
         {
           "name": "gnomes-des-villes.webp",
           "source": "prototype-web/assets/pictos/culture-gnomes-des-villes.webp",
-          "size": 4526,
+          "size": 13588,
           "type": "image/webp"
         },
         {
           "name": "gobelins-des-cavernes.webp",
           "source": "prototype-web/assets/pictos/culture-gobelins-des-cavernes.webp",
-          "size": 5824,
+          "size": 18068,
           "type": "image/webp"
         },
         {
           "name": "gobelins-des-villes.webp",
           "source": "prototype-web/assets/pictos/culture-gobelins-des-villes.webp",
-          "size": 7048,
+          "size": 20588,
           "type": "image/webp"
         },
         {
           "name": "halflings-des-cites-humaines.webp",
           "source": "prototype-web/assets/pictos/culture-halflings-des-cites-humaines.webp",
-          "size": 6884,
+          "size": 19926,
           "type": "image/webp"
         },
         {
           "name": "halflings-des-villages-isoles.webp",
           "source": "prototype-web/assets/pictos/culture-halflings-des-villages-isoles.webp",
-          "size": 8280,
+          "size": 25144,
           "type": "image/webp"
         },
         {
           "name": "montagnes-du-nord.webp",
           "source": "prototype-web/assets/pictos/culture-montagnes-du-nord.webp",
-          "size": 6406,
+          "size": 19440,
           "type": "image/webp"
         },
         {
           "name": "nains-des-montagnes.webp",
           "source": "prototype-web/assets/pictos/culture-nains-des-montagnes.webp",
-          "size": 5354,
+          "size": 16178,
           "type": "image/webp"
         },
         {
           "name": "nains-du-chaos.webp",
           "source": "prototype-web/assets/pictos/culture-nains-du-chaos.webp",
-          "size": 5358,
+          "size": 15920,
           "type": "image/webp"
         },
         {
           "name": "nains-esclaves.webp",
           "source": "prototype-web/assets/pictos/culture-nains-esclaves.webp",
-          "size": 4262,
+          "size": 12370,
           "type": "image/webp"
         },
         {
           "name": "ogres-des-cites-humaines.webp",
           "source": "prototype-web/assets/pictos/culture-ogres-des-cites-humaines.webp",
-          "size": 6024,
+          "size": 18440,
           "type": "image/webp"
         },
         {
           "name": "ogres-des-montagnes.webp",
           "source": "prototype-web/assets/pictos/culture-ogres-des-montagnes.webp",
-          "size": 6792,
+          "size": 20964,
           "type": "image/webp"
         },
         {
           "name": "ogres-des-steppes.webp",
           "source": "prototype-web/assets/pictos/culture-ogres-des-steppes.webp",
-          "size": 8602,
+          "size": 24762,
           "type": "image/webp"
         },
         {
           "name": "orcs-des-steppes.webp",
           "source": "prototype-web/assets/pictos/culture-orcs-des-steppes.webp",
-          "size": 11142,
+          "size": 32648,
           "type": "image/webp"
         },
         {
           "name": "orcs-des-villes.webp",
           "source": "prototype-web/assets/pictos/culture-orcs-des-villes.webp",
-          "size": 10300,
+          "size": 31976,
           "type": "image/webp"
         },
         {
           "name": "orcs-noirs.webp",
           "source": "prototype-web/assets/pictos/culture-orcs-noirs.webp",
-          "size": 8476,
+          "size": 24114,
           "type": "image/webp"
         },
         {
           "name": "reptiliens-des-cites-temples.webp",
           "source": "prototype-web/assets/pictos/culture-reptiliens-des-cites-temples.webp",
-          "size": 4400,
+          "size": 12406,
           "type": "image/webp"
         },
         {
           "name": "reptiliens-des-marecages.webp",
           "source": "prototype-web/assets/pictos/culture-reptiliens-des-marecages.webp",
-          "size": 5976,
+          "size": 18116,
           "type": "image/webp"
         },
         {
           "name": "reptiliens-des-villes.webp",
           "source": "prototype-web/assets/pictos/culture-reptiliens-des-villes.webp",
-          "size": 5870,
+          "size": 17362,
           "type": "image/webp"
         },
         {
           "name": "royaumes-du-soleil-levant.webp",
           "source": "prototype-web/assets/pictos/culture-royaumes-du-soleil-levant.webp",
-          "size": 4858,
+          "size": 15194,
           "type": "image/webp"
         },
         {
           "name": "steppes-desertiques.webp",
           "source": "prototype-web/assets/pictos/culture-steppes-desertiques.webp",
-          "size": 5814,
+          "size": 18372,
           "type": "image/webp"
         },
         {
           "name": "tribus-de-la-jungle.webp",
           "source": "prototype-web/assets/pictos/culture-tribus-de-la-jungle.webp",
-          "size": 5488,
+          "size": 16694,
           "type": "image/webp"
         },
         {
           "name": "tribus-des-forets-anciennes.webp",
           "source": "prototype-web/assets/pictos/culture-tribus-des-forets-anciennes.webp",
-          "size": 6030,
+          "size": 18686,
           "type": "image/webp"
         },
         {
           "name": "tribus-nordiques.webp",
           "source": "prototype-web/assets/pictos/culture-tribus-nordiques.webp",
-          "size": 7450,
+          "size": 22722,
           "type": "image/webp"
         }
       ]
@@ -273,67 +273,67 @@
         {
           "name": "sang-d-elfe.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-d-elfe.webp",
-          "size": 3758,
+          "size": 9242,
           "type": "image/webp"
         },
         {
           "name": "sang-d-humain.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-d-humain.webp",
-          "size": 3070,
+          "size": 7100,
           "type": "image/webp"
         },
         {
           "name": "sang-d-orc.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-d-orc.webp",
-          "size": 3416,
+          "size": 8444,
           "type": "image/webp"
         },
         {
           "name": "sang-de-demon.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-demon.webp",
-          "size": 3708,
+          "size": 9080,
           "type": "image/webp"
         },
         {
           "name": "sang-de-djinn.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-djinn.webp",
-          "size": 3710,
+          "size": 8954,
           "type": "image/webp"
         },
         {
           "name": "sang-de-dragon.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-dragon.webp",
-          "size": 4046,
+          "size": 10354,
           "type": "image/webp"
         },
         {
           "name": "sang-de-dryade.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-dryade.webp",
-          "size": 3218,
+          "size": 7684,
           "type": "image/webp"
         },
         {
           "name": "sang-de-sirene.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-sirene.webp",
-          "size": 3788,
+          "size": 9714,
           "type": "image/webp"
         },
         {
           "name": "sang-de-troll.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-de-troll.webp",
-          "size": 3316,
+          "size": 8360,
           "type": "image/webp"
         },
         {
           "name": "sang-divin.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-divin.webp",
-          "size": 3372,
+          "size": 8278,
           "type": "image/webp"
         },
         {
           "name": "sang-feerique.webp",
           "source": "prototype-web/assets/pictos/ascendance-sang-feerique.webp",
-          "size": 3198,
+          "size": 7924,
           "type": "image/webp"
         }
       ]
@@ -345,55 +345,55 @@
         {
           "name": "eau.webp",
           "source": "prototype-web/assets/pictos/ecole-eau.webp",
-          "size": 4918,
+          "size": 12746,
           "type": "image/webp"
         },
         {
           "name": "feu.webp",
           "source": "prototype-web/assets/pictos/ecole-feu.webp",
-          "size": 4534,
+          "size": 11124,
           "type": "image/webp"
         },
         {
           "name": "foudre.webp",
           "source": "prototype-web/assets/pictos/ecole-foudre.webp",
-          "size": 4664,
+          "size": 11742,
           "type": "image/webp"
         },
         {
           "name": "illusion.webp",
           "source": "prototype-web/assets/pictos/ecole-illusion.webp",
-          "size": 7796,
+          "size": 19428,
           "type": "image/webp"
         },
         {
           "name": "invocation.webp",
           "source": "prototype-web/assets/pictos/ecole-invocation.webp",
-          "size": 6628,
+          "size": 18554,
           "type": "image/webp"
         },
         {
           "name": "necromancie.webp",
           "source": "prototype-web/assets/pictos/ecole-necromancie.webp",
-          "size": 5358,
+          "size": 13490,
           "type": "image/webp"
         },
         {
           "name": "telekinesie.webp",
           "source": "prototype-web/assets/pictos/ecole-telekinesie.webp",
-          "size": 7490,
+          "size": 20332,
           "type": "image/webp"
         },
         {
           "name": "transmutation.webp",
           "source": "prototype-web/assets/pictos/ecole-transmutation.webp",
-          "size": 4522,
+          "size": 11514,
           "type": "image/webp"
         },
         {
           "name": "vie.webp",
           "source": "prototype-web/assets/pictos/ecole-vie.webp",
-          "size": 5350,
+          "size": 14068,
           "type": "image/webp"
         }
       ]

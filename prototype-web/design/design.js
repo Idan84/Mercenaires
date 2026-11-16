@@ -107,6 +107,7 @@ async function openImages(){
     $("content-meta").textContent=ImagesLab.meta(data);
     $("viewer").innerHTML=ImagesLab.render(data);
     $("viewer").querySelectorAll("[data-img]").forEach(a=>a.onclick=e=>{e.preventDefault();scrollToPeople(a.dataset.img)});
+    ImagesLab.wire($("viewer"),data);
     renderNav();
     if(location.hash.startsWith("#img-")) scrollToPeople(location.hash.slice(1));
   }catch(e){showError(e)}

@@ -45,7 +45,7 @@ const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,missionChargeIfClear,missionRangeCells,missionSpellAreaCells,missionMeleeApproach,missionSpellPreviewRows,"
   +"missionAttackPreview,renderMissionHoverCard,runMissionEnemyTurn,missionFxEstimate,missionCells,missionKey,missionMagic,renderMission,"
-  +"missionViewOn,startMissionCamera,missionView,missionMapSize,missionHexPixel,MISSION_CAMERA";
+  +"missionViewOn,startMissionCamera,missionView,missionMapSize,missionHexPixel,MISSION_CAMERA,fitMissionView";
 // Le jeu sans page (les tests habituels) ; et avec une page factice, pour le rythme du tour ennemi.
 const load=(window,document,setTimeout)=>new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression",
   "MercenairesMissionEnd","MercenairesMagic","window","document","setTimeout",source+"\nreturn {"+EXPOSED+"};")
@@ -222,8 +222,8 @@ assert.equal(m.pacedUnit,null);
 assert.ok(living>=2);
 delete game.missionFast;
 
-// La caméra au début de chaque tour (Idan, 2026-11-14 : « une petite animation de caméra qui se met sur lui, zoom et
-// dézoome un peu en le mettant au centre sauf si après le dézoom on a des bords vides de la carte »).
+// La caméra au début de chaque tour (Idan, 2026-11-14 : « une petite animation de caméra qui se met sur lui […] sauf si
+// après le dézoom on a des bords vides de la carte » ; 2026-11-16 : « Zoomer et rester »).
 {
   const frames=[];
   const win=reduce=>({innerWidth:1600,addEventListener(){},requestAnimationFrame:fn=>frames.push(fn),matchMedia:()=>({matches:reduce})});
@@ -241,20 +241,35 @@ delete game.missionFast;
   const small=cam.missionViewOn(cam.missionHexPixel(0,0),0.2,true);
   assert.equal(small.x,(1000-width*0.2)/2);
   assert.equal(small.y,(600-height*0.2)/2);
-  // L'animation : elle zoome un peu sur lui (× 1,15), puis revient au zoom du joueur, à sa place sans vide.
-  Object.assign(cam.missionView,{scale:1,x:-40,y:-30,fitted:false,anim:null});
+  // « Zoomer et rester » (Idan, 2026-11-16 : « ça zoom pas, ça fait juste un mouvement de caméra inutile ») : la carte
+  // entière à l'écran, la caméra zoome vraiment (deux fois la carte entière) sur lui et reste là.
   const unit={id:"u-cam",q:6,r:4};
+  Object.assign(cam.missionView,{fitted:true,anim:null});
+  cam.fitMissionView();
+  const fit=cam.missionView.scale,zoomed=Math.min(2.4,fit*2);
+  assert.equal(cam.MISSION_CAMERA.zoom,2);
+  cam.startMissionCamera(unit);
+  frames.shift()(1000);
+  frames.shift()(1000+cam.MISSION_CAMERA.duration/2);
+  assert.ok(cam.missionView.scale>fit&&cam.missionView.scale<zoomed,"elle zoome en glissant");
+  frames.shift()(1000+cam.MISSION_CAMERA.duration);
+  assert.equal(frames.length,0);
+  assert.deepEqual({scale:cam.missionView.scale,x:cam.missionView.x,y:cam.missionView.y},cam.missionViewOn(cam.missionHexPixel(6,4),zoomed,true),
+    "zoomée sur lui, sans vide au-delà des bords");
+  assert.equal(cam.missionView.fitted,false,"elle reste zoomée");
+  // Le zoom choisi par le joueur : la caméra glisse sur le suivant à ce zoom, sans à-coup.
+  Object.assign(cam.missionView,{scale:1,x:-40,y:-30,fitted:false,anim:null});
   cam.startMissionCamera(unit);
   const end=cam.missionViewOn(cam.missionHexPixel(6,4),1,true);
   frames.shift()(1000);
-  const peakTime=1000+cam.MISSION_CAMERA.duration*cam.MISSION_CAMERA.peak;
-  frames.shift()(peakTime);
-  assert.ok(Math.abs(cam.missionView.scale-1.15)<1e-9,"le zoom au milieu de l'animation");
+  frames.shift()(1000+cam.MISSION_CAMERA.duration/2);
+  assert.equal(cam.missionView.scale,1,"au zoom du joueur tout du long");
   frames.shift()(1000+cam.MISSION_CAMERA.duration);
   assert.equal(frames.length,0);
   assert.deepEqual({scale:cam.missionView.scale,x:cam.missionView.x,y:cam.missionView.y},end);
   assert.equal(cam.missionView.anim,null);
   assert.equal(cam.missionView.fitted,false);
+  assert.doesNotMatch(source,/MISSION_CAMERA\.peak/,"plus d'aller-retour de zoom");
   // Le joueur qui zoome ou fait glisser la carte l'interrompt.
   cam.startMissionCamera(unit);
   cam.missionView.anim=null;

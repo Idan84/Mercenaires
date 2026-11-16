@@ -507,9 +507,9 @@
     },
     {
       "cle": "kits-culture",
-      "famille": "Kits graphiques des cultures (cadre de la fiche)",
-      "nombre": 13,
-      "ou": "Fiche au survol des cultures refaites avec leur kit (Elfes noirs) : coins sobres, bordures, séparation et raccords en T, ornements de coin, couronne, chaînes, cuir derrière le nom.",
+      "famille": "Kits graphiques des cultures (cadre de la fiche, barres du camp)",
+      "nombre": 16,
+      "ou": "Fiche au survol des cultures refaites avec leur kit (Elfes noirs) : coins sobres, bordures, séparation et raccords en T, ornements de coin, couronne, chaînes, cuir derrière le nom. Barres du camp de leur capitaine : cuir, sangles, emblème au bout de la barre du haut, rond central et bouton Jour suivant.",
       "pourquoi": "Le kit graphique de chaque culture (Chatty, Idan) : un cadre de base cohérent (même épaisseur, même pas de clous), puis des ornements posés dessus.",
       "fichiers": "assets/fiche/kits/<culture>/<pièce>.webp",
       "affichage": "Cadre de 16 px autour de la fiche (860 × 565) ; ornements de coin 158 à 176 px ; couronne 220 px ; chaîne 178 px ; cuir en tuile de 640 px.",

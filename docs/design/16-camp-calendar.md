@@ -35,6 +35,15 @@ lisibles ») :
   réglages sont dans `scripts/hud-bars-reglages.json`.
 - **Une culture peut avoir une autre version de sa barre** (Idan, 14 novembre : « un v2 pour toute la barre ») : les
   Steppes désertiques ont la v2.
+- **Une culture refaite avec son kit graphique** (Chatty, Idan ; les **Elfes noirs**, planche des barres d'Idan du
+  16 novembre : « Et voilà chef ! ») : ses deux barres sont faites des pièces du kit à la place de la barre du pack. En
+  haut, une bande de cuir violet entre deux sangles à gros clous, **ferrée à gauche** comme la barre des packs (elle part
+  du bord gauche de l'écran ; Idan : « la ferrer à gauche et qu'elle ne fasse pas forcément 100 % de la largeur »), à
+  40 px du haut, 1850 px de large et 50 px de haut sur un écran de 1920 px, l'emblème au bout, une chaîne suspendue
+  dessous à gauche ; les textes y sont déplacés. En bas, la bande de cuir sous une sangle à gros clous, le rond central
+  du kit autour de son bouton Jour suivant (98 px), les pictos écartés de 50 px, une couronne posée à droite. Réglages
+  dans `data/reference/culture-kits.json` (« barres »), posés par `prototype-web/hud-kit-ui.js` ; comme pour les packs,
+  tout garde les proportions de l'écran de 1920 px, en bandes B.
 - **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
   (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
   `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.

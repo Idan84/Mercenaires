@@ -37,6 +37,13 @@ trimmed "$SRC/ornement-chaine-torsadee.png" "$tmp/t.png"; webp "$tmp/t.png" -res
 # Le cuir violet du cartouche : une tuile de 640 px (répétée à sa taille, « grain 250 % » dans la planche d'Idan).
 webp "$SRC/texture.png" -resize 640x640 -quality 85 "$OUT/texture.webp"
 
+# Les barres du camp (planche d'Idan du 2026-11-16) : le rond central recadré sur son dessin (son trou, où se loge le
+# bouton, en (50,02 % ; 50,80 %) de l'image, 23,64 % de sa largeur), le bouton Jour suivant, l'emblème du bout de la
+# barre du haut recadré sur son dessin.
+webp "$SRC/rond-central.png" -crop 2724x1446+14+34 +repage -resize 1200x -quality 90 "$OUT/rond-central.webp"
+webp "$SRC/bouton-jour-suivant.png" -resize 320x320 -quality 92 "$OUT/bouton-jour-suivant.webp"
+webp "$SRC/embleme-fin-de-barre.png" -crop 1309x1109+47+0 +repage -resize 480x -quality 90 "$OUT/embleme-fin-de-barre.webp"
+
 # L'ornement du titre : la pointe de lance au bout de l'ornement d'Idan (le reste, fouet et chaînes, est illisible à
 # cette taille), seule forme gardée ; dans la boîte commune des ornements du titre (104 × 24, motif côté titre, à droite,
 # noir : le CSS s'en sert comme masque).

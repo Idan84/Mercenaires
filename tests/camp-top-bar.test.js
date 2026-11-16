@@ -44,7 +44,7 @@ assert.match(css,/\.game-top-bar\{--hb-k:calc\(var\(--ht-B\) \/ var\(--hb-band,9
 assert.match(css,/\.hud-bar-art\{position:absolute;left:0;right:calc\(var\(--ht-B\) \* \.12\);top:calc\(var\(--ht-B\) \* var\(--ht-haut\)\);/,"la barre part du bord gauche");
 assert.match(css,/\.hud-bar-right\{right:0;width:calc\(var\(--hb-k\) \* var\(--hb-rw,0\) \* var\(--ht-embout\)\)\}/,"l'embout droit resserré en largeur (--ht-embout)");
 assert.match(css,/\.hud-bar-center\{left:0;right:calc\(var\(--hb-k\) \* var\(--hb-rw,0\) \* var\(--ht-embout\) - 1px\);background-repeat:repeat-x;/,"le milieu se répète jusqu'à l'embout droit");
-assert.match(css,/\.hud-top-content\{[^}]*left:calc\(var\(--ht-B\) \* \.5\);right:calc\(var\(--ht-B\) \* var\(--ht-marge\) \+ var\(--hb-k\) \* var\(--hb-ri,0\) \* var\(--ht-embout\)\);/,"de l'air à droite du bouton menu (--ht-marge)");
+assert.match(css,/\.hud-top-content\{[^}]*left:calc\(var\(--ht-B\) \* var\(--ht-gauche,\.5\)\);right:calc\(var\(--ht-B\) \* var\(--ht-marge\) \+ var\(--hb-k\) \* var\(--hb-ri,0\) \* var\(--ht-embout\)\);/,"de l'air à droite du bouton menu (--ht-marge)");
 assert.match(css,/--ht-u:calc\(var\(--ht-B\) \* var\(--ht-s\)\);/,"la taille du contenu (--ht-s)");
 assert.match(css,/\.game-top-bar \.hud-company\{flex:0 1 auto;flex-direction:row;/,"les étoiles sur la ligne du nom");
 assert.match(css,/\.game-top-bar \.hud-stat\{box-sizing:border-box;height:calc\(var\(--ht-B\) \* var\(--ht-fonds\)\);[^}]*border:0;/,"des fonds sombres sans contour, de la hauteur réglée");

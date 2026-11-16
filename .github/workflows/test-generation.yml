@@ -204,6 +204,7 @@ jobs:
       - run: node --check prototype-web/equipment-art.js
       - run: node --check prototype-web/item-card-ui.js
       - run: node --check prototype-web/screen-ui.js
+      - run: node --check prototype-web/hud-kit-ui.js
       - run: node --check prototype-web/music-ui.js
       - run: node --check prototype-web/intro-ui.js
       - run: node --check prototype-web/save-ui.js

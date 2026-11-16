@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
   "name": "culture-kits",
-  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol fait de pièces posées par prototype-web/hover-card-ui.js. « geometrie » : les mesures des pièces dans leurs masters (assets-src/Kits/<cle>/README.md), pour que coins, bordures et raccords aient la même épaisseur et le même pas de clous (Idan, 2026-11-16 : « avec les coins sobres et les T une bordure cohérente en taille et en répétition de motif. Ensuite, on peut ajouter du fun, des ornements ») ; « fiche » : les réglages choisis par Idan dans sa planche (positions en pixels de la fiche, 860 × 565).",
+  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol fait de pièces posées par prototype-web/hover-card-ui.js. « geometrie » : les mesures des pièces dans leurs masters (assets-src/Kits/<cle>/README.md), pour que coins, bordures et raccords aient la même épaisseur et le même pas de clous (Idan, 2026-11-16 : « avec les coins sobres et les T une bordure cohérente en taille et en répétition de motif. Ensuite, on peut ajouter du fun, des ornements ») ; « fiche » : les réglages choisis par Idan dans sa planche (positions en pixels de la fiche, 860 × 565) ; « barres » : ses réglages des deux barres du camp (planche du 2026-11-16, en pixels d'un écran de 1920 × 1080, où la bande B des barres mesure 81,6 px ; posées par prototype-web/hud-kit-ui.js).",
   "columns": [
     {"key": "cle", "source": "Culture : dossier de sa barre (hud-bars.js) et de son kit"},
     {"key": "culture", "source": "Nom de la culture (cultures.json)"},
     {"key": "dossier", "source": "Pièces du jeu (scripts/build-culture-kit.sh)"},
     {"key": "geometrie", "source": "Mesures des pièces dans les masters (pixels des originaux)"},
-    {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche du 2026-11-16)"}
+    {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche du 2026-11-16)"},
+    {"key": "barres", "source": "Réglages d'Idan pour les barres du camp (planche du 2026-11-16)"}
   ],
   "rows": [
     {
@@ -26,7 +27,10 @@
         "chaine": {"f": "chaine.webp", "w": 640, "h": 214, "attache": 0.12},
         "chaineTorsadee": {"f": "chaine-torsadee.webp", "w": 120, "h": 249},
         "texture": "texture.webp",
-        "ornementTitre": {"largeur": 35.44}
+        "ornementTitre": {"largeur": 35.44},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 637, "cx": 0.50018, "cy": 0.50795, "trou": 0.23642},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 407}
       },
       "fiche": {
         "cadre": {"ep": 16, "style": "gros", "sobres": true},
@@ -50,6 +54,30 @@
         "chaineTorsadee": {"place": "separation", "taille": 29.5, "longueur": 61, "espacement": 0, "dx": 0, "dy": 0},
         "titre": {"hauteur": 20, "ecart": 2},
         "cuir": {"grain": 250, "sombre": 30}
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 60, "grain": 250},
+          "sangleHaut": {"style": "gros", "ep": 12, "dy": -3},
+          "sangleBas": {"style": "gros", "ep": 12, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 180, "dx": 78, "dy": -39},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -58}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 60, "grain": 250},
+          "sangleHaut": {"style": "gros", "ep": 16, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 370, "dx": 0, "dy": 6.5},
+          "bouton": {"taille": 98, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "couronne": {"place": "sur-bas-droite", "taille": 220, "dx": 400, "dy": -5.5, "retournee": false},
+          "chaine": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
+          "chaineTorsadee": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        }
       }
     }
   ],

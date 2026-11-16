@@ -106,12 +106,14 @@ function hudGoldDelta(gold){
 // hud-bars.js), réglée par culture dans l'Atelier des barres (Idan, 2026-11-14). Les mesures de l'image (en pixels) vont
 // dans des variables CSS de chaque barre, qui placent ses morceaux ; les réglages des deux barres (en bandes B), sur la
 // page (:root), car les lieux du camp s'arrêtent sous la barre du haut et au-dessus de celle du bas. Sans pack pour cette
-// culture, un cadre provisoire ; sans anneau, le bouton Jour suivant seul.
+// culture, un cadre provisoire ; sans anneau, le bouton Jour suivant seul. Une culture dont le kit graphique a ses barres
+// (hud-kit-ui.js ; les Elfes noirs, planche d'Idan du 2026-11-16) : les pièces du kit à la place de la barre du pack, son
+// bouton Jour suivant, et les textes, le bouton et les pictos déplacés comme dans la planche.
 const HUD_BAR_PIECES=["center","right"];
 const HUD_BAR_VARS={h:"--hb-h",right:"--hb-rw",bandTop:"--hb-bt",band:"--hb-band",bandRight:"--hb-ri"};
-const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge"};
+const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge",gauche:"--ht-gauche"};
 const HUD_BOTTOM_VARS={artBas:"--bb-art-bas",artHaut:"--bb-art-haut",centre:"--bb-centre",bouton:"--bb-bouton",anneau:"--bb-anneau",
-  picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosGauche:"--bb-pictos-gauche",pictosY:"--bb-pictos-y",hauteur:"--bb-h"};
+  picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosGauche:"--bb-pictos-gauche",pictosY:"--bb-pictos-y",hauteur:"--bb-h",boutonDx:"--bb-bouton-dx"};
 let hudBarShown=null;
 function hudBarFor(culture){
   return culture&&typeof HUD_BARS==="object"&&HUD_BARS[culture]?HUD_BARS[culture]:null;
@@ -128,20 +130,33 @@ function setHudVars(style,names,values){
 function applyHudBar(culture){
   const topBar=hudFind(".game-top-bar"),bottomBar=hudFind(".game-bottom-bar");
   const data=hudBarFor(culture);
-  const key=data?culture:"";
+  const kit=data&&typeof hudKitFor==="function"?hudKitFor(culture):null;
+  const key=data?culture+(kit?":kit":""):"";
   if((!topBar&&!bottomBar)||hudBarShown===key) return;
   hudBarShown=key;
-  const bottom=data?.ornament&&data.bas?data:null;
-  paintHudBar(topBar,culture,data);
+  const layout=kit?hudKitBars(kit,data):null;
+  const bottom=!kit&&data?.ornament&&data.bas?data:null;
+  paintHudBar(topBar,culture,kit?null:data);
   paintHudBar(bottomBar,culture,bottom);
   const root=document.documentElement?.style;
-  setHudVars(root,HUD_TOP_VARS,data?.haut);
-  setHudVars(root,HUD_BOTTOM_VARS,bottom?.bas);
+  setHudVars(root,HUD_TOP_VARS,layout?layout.haut:data?.haut);
+  setHudVars(root,HUD_BOTTOM_VARS,layout?layout.bas:bottom?.bas);
   bottomBar?.classList.toggle("has-ornament",Boolean(bottom));
+  paintHudKit(topBar,layout?.piecesHaut);
+  paintHudKit(bottomBar,layout?.piecesBas);
+  const play=hudFind(".hud-play-img");
+  if(play) play.setAttribute("src",layout?layout.bouton:"assets/hud/next.webp");
   const ring=hudFind(".hud-ornament");
   if(!ring) return;
   if(bottom) ring.setAttribute("src",`assets/hud/barres/${culture}/ornement.webp`);
   ring.hidden=!bottom;
+}
+// Les pièces du kit dans la barre (sa couche .hud-kit), ou rien.
+function paintHudKit(bar,pieces){
+  if(!bar) return;
+  bar.classList.toggle("has-kit",Boolean(pieces));
+  const layer=bar.querySelector(".hud-kit");
+  if(layer) layer.innerHTML=pieces||"";
 }
 function paintHudBar(bar,culture,data){
   if(!bar) return;

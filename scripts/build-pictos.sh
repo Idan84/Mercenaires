@@ -19,7 +19,9 @@ MAP=(
 
 # Cultures (Idan, 2026-10-22) : un master par culture, déjà nommé d'après le slug de cultures.json
 # (assets-src/Picto/Culture/README.md donne le fichier déposé sur Hostinger d'origine).
+# Une culture refaite avec son kit graphique prend le logo du kit (plus bas) à la place de ce master.
 for src in "$SRC"/Culture/*.jpg; do
+  [[ -f assets-src/Kits/$(basename "$src" .jpg)/logo.png ]] && continue
   MAP+=("Culture/$(basename "$src"):culture-$(basename "$src" .jpg)")
 done
 
@@ -61,6 +63,18 @@ for entry in "${MAP[@]}"; do
   src="$SRC/${entry%%:*}"; out="$OUT/${entry##*:}.webp"
   pockets=0; [[ $entry == Culture/* ]] && pockets=1
   cut_picto "$src" "$out" "$pockets"
+  echo "$out"
+done
+
+# Cultures refaites avec leur kit graphique (Idan, 2026-11-16, Elfes noirs : « Le logo, c'est bien ce qui remplace le
+# picto actuel ») : le logo du kit (assets-src/Kits/<culture>/logo.png), déjà détouré ; cadré sur sa partie nettement
+# opaque, comme les autres emblèmes de culture, puis centré dans le carré.
+for src in assets-src/Kits/*/logo.png; do
+  [[ -f $src ]] || continue
+  out="$OUT/culture-$(basename "$(dirname "$src")").webp"
+  box=$(convert "$src" -alpha extract -threshold 35% -format %@ info:)
+  convert "$src" -crop "$box" +repage -resize ${SIZE}x${SIZE} -gravity center -background none -extent ${SIZE}x${SIZE} \
+    -quality 90 "$out"
   echo "$out"
 done
 

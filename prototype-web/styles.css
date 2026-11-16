@@ -2460,6 +2460,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-orn{flex:none;width:calc(var(--hc-cart-h) * .64);height:calc(var(--hc-cart-h) * .148);translate:0 .085em;background:var(--hc-parchemin);filter:drop-shadow(1px 1px 1.5px rgba(0,0,0,.65));
   -webkit-mask:var(--hc-orn) center/contain no-repeat;mask:var(--hc-orn) center/contain no-repeat}
 .hc-orn--r{transform:scaleX(-1)}
+/* Les cultures à kit graphique (data/reference/culture-kits.json, hover-card-ui.js) : le cuir du kit derrière le nom,
+   en tuile, assombri ; l'ornement du titre à la hauteur choisie par Idan (sa boîte commune, la partie vide vers
+   l'extérieur rattrapée par une marge négative) ; le cadre posé par-dessus la carte, ses ornements peuvent déborder. */
+.hover-card[data-kit] .hc-banner{background:linear-gradient(rgba(12,2,16,var(--hc-kit-sombre)),rgba(12,2,16,var(--hc-kit-sombre))),var(--hc-texture) 50% 50%/var(--hc-kit-grain) repeat,#1d1220}
+.hover-card[data-kit] .hc-orn{width:var(--hc-orn-w);height:var(--hc-orn-h)}
+.hover-card[data-kit] .hc-orn--l{margin:0 var(--hc-orn-ecart) 0 calc(var(--hc-orn-vide) * -1)}
+.hover-card[data-kit] .hc-orn--r{margin:0 calc(var(--hc-orn-vide) * -1) 0 var(--hc-orn-ecart)}
+.hc-cadre{position:absolute;inset:0;z-index:2;pointer-events:none}
+.hc-cadre>*,.hc-cadre span>img{position:absolute;display:block;max-width:none}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
 .hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6a40 18%,#8a6a40 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}

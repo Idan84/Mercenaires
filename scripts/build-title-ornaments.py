@@ -30,7 +30,8 @@ LEVE = 0  # un décalage commun aux motifs sans filet (aucun : tous sur la même
 # sur la ligne médiane), dy (décalage vertical), rot (degrés, sens horaire), miroir_h, miroir_v.
 PLANCHES = {
  "rinceau":        (("vector-silhouette-ornament-divid", 20, 280, 480, 205, False), dict(filet=False, taille=.82, miroir_v=True)),
- "croissant":      (("wolf-head-in-crescent-moon", 55, 50, 915, 920, "seul"), dict(filet=30, taille=.82, rot=15)),
+ # « croissant » (tête de loup dans un croissant) : l'ornement des Elfes noirs jusqu'au 2026-11-16, remplacé par la pointe de
+ # lance de leur kit graphique (scripts/build-culture-kit.sh).
  "bougie":         (("candle-with-flaming-skull-silhou", 150, 20, 470, 1330, False), dict(filet=False, taille=.8, rot=90)),
  "cle-ailee":      (("winged-key-wrapped-in-chains", 0, 0, 768, 1376, False), dict(filet=False, rot=90)),
  "cadenas":        (("chain-link-strand-with-padlock", 560, 250, 220, 260, True), dict(filet=False, taille=.8)),

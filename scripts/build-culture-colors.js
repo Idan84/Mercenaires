@@ -21,6 +21,9 @@ const HUD_BARS = new Function(fs.readFileSync(path.join(ROOT, "prototype-web/hud
 const TEXTURE_INSET = 0.08; // comme HOVER_TEXTURE_INSET (prototype-web/hover-card-ui.js)
 const TONE_L = 0.55;        // la luminosité du ton moyen (OKLab, de 0 noir à 1 blanc)
 const TONE_MAX_C = 0.14;    // la chroma la plus forte, pour ne pas criarder
+// Les couleurs choisies par Idan, qui priment sur le calcul : celles des cultures refaites avec leur kit graphique
+// (Idan, 2026-11-16, Elfes noirs : « on peut changer leurs couleurs », puis l'aubergine dans sa planche de la fiche).
+const CHOICES = {"elfes-noirs": "#5b2463"};
 
 // OKLab (Björn Ottosson) : sRGB ↔ L (luminosité), C (chroma), h (teinte).
 const toLinear = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
@@ -66,23 +69,23 @@ function textureColor(key, bar) {
 }
 
 // Aussi utilisé par scripts/build-charte.js (les trois tons de chaque culture de la charte).
-if (require.main !== module) { module.exports = {HUD_BARS, textureColor, midTone, hexToOklch, oklchToHex}; return; }
+if (require.main !== module) { module.exports = {HUD_BARS, CHOICES, textureColor, midTone, hexToOklch, oklchToHex}; return; }
 
 const cultures = JSON.parse(fs.readFileSync(path.join(ROOT, "data/reference/cultures.json"), "utf8")).rows.map(row => row.nom);
 const rows = cultures.map(nom => {
   const key = Object.keys(HUD_BARS).find(k => HUD_BARS[k].culture === nom);
   if (!key) throw new Error("pas de barre pour la culture " + nom);
-  return {nom, cle: key, couleur: midTone(textureColor(key, HUD_BARS[key]))};
+  return {nom, cle: key, couleur: CHOICES[key] || midTone(textureColor(key, HUD_BARS[key]))};
 });
 
 const table = {
   schema_version: 1,
   name: "culture-colors",
-  description: "Couleur des cultures (Idan, 2026-11-15 : « une table couleur par culture. On s'en servira à plein d'endroits », « 1 seule couleur par culture. Un seul code hexa », « il nous faut un ton moyen / clair de la barre ») : un ton moyen de la texture de la barre de chaque culture (sa couleur moyenne, de la bande du milieu, montée à la même luminosité pour toutes, OKLab 0,55, en gardant sa teinte). Généré par scripts/build-culture-colors.js ; ne pas modifier à la main.",
+  description: "Couleur des cultures (Idan, 2026-11-15 : « une table couleur par culture. On s'en servira à plein d'endroits », « 1 seule couleur par culture. Un seul code hexa », « il nous faut un ton moyen / clair de la barre ») : un ton moyen de la texture de la barre de chaque culture (sa couleur moyenne, de la bande du milieu, montée à la même luminosité pour toutes, OKLab 0,55, en gardant sa teinte) ; sauf les couleurs choisies par Idan pour les cultures refaites avec leur kit graphique (Elfes noirs). Généré par scripts/build-culture-colors.js ; ne pas modifier à la main.",
   columns: [
     {key: "nom", source: "Culture (cultures.json)"},
     {key: "cle", source: "Dossier de sa barre : prototype-web/assets/hud/barres/<cle>/"},
-    {key: "couleur", source: "Ton moyen de la texture de sa barre (code hexadécimal)"}
+    {key: "couleur", source: "Ton moyen de la texture de sa barre, ou la couleur choisie par Idan (code hexadécimal)"}
   ],
   rows,
   row_count: rows.length

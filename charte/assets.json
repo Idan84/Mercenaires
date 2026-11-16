@@ -99,7 +99,7 @@
         {
           "name": "elfes-noirs.webp",
           "source": "prototype-web/assets/pictos/culture-elfes-noirs.webp",
-          "size": 18622,
+          "size": 13816,
           "type": "image/webp"
         },
         {
@@ -529,15 +529,6 @@
           ]
         },
         {
-          "name": "croissant.svg",
-          "source": "prototype-web/assets/fiche/ornements/croissant.svg",
-          "size": 7797,
-          "type": "image/svg+xml",
-          "cultures": [
-            "elfes-noirs"
-          ]
-        },
-        {
           "name": "dague.svg",
           "source": "prototype-web/assets/fiche/ornements/dague.svg",
           "size": 324,
@@ -652,6 +643,15 @@
           "type": "image/svg+xml",
           "cultures": [
             "orcs-noirs"
+          ]
+        },
+        {
+          "name": "pointe-epines.svg",
+          "source": "prototype-web/assets/fiche/ornements/pointe-epines.svg",
+          "size": 2272,
+          "type": "image/svg+xml",
+          "cultures": [
+            "elfes-noirs"
           ]
         },
         {

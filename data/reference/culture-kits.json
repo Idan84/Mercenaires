@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "name": "culture-kits",
+  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol fait de pièces posées par prototype-web/hover-card-ui.js. « geometrie » : les mesures des pièces dans leurs masters (assets-src/Kits/<cle>/README.md), pour que coins, bordures et raccords aient la même épaisseur et le même pas de clous (Idan, 2026-11-16 : « avec les coins sobres et les T une bordure cohérente en taille et en répétition de motif. Ensuite, on peut ajouter du fun, des ornements ») ; « fiche » : les réglages choisis par Idan dans sa planche (positions en pixels de la fiche, 860 × 565).",
+  "columns": [
+    {"key": "cle", "source": "Culture : dossier de sa barre (hud-bars.js) et de son kit"},
+    {"key": "culture", "source": "Nom de la culture (cultures.json)"},
+    {"key": "dossier", "source": "Pièces du jeu (scripts/build-culture-kit.sh)"},
+    {"key": "geometrie", "source": "Mesures des pièces dans les masters (pixels des originaux)"},
+    {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche du 2026-11-16)"}
+  ],
+  "rows": [
+    {
+      "cle": "elfes-noirs",
+      "culture": "Elfes noirs",
+      "dossier": "assets/fiche/kits/elfes-noirs",
+      "geometrie": {
+        "sangles": {
+          "gros": {"h": "cellule-gros.webp", "v": "cellule-gros-v.webp", "coeur": 238, "bord": 12, "pas": 267},
+          "fine": {"h": "cellule-fine.webp", "v": "cellule-fine-v.webp", "coeur": 93, "bord": 4, "pas": 95}
+        },
+        "coinSobre": {"f": "coin-sobre.webp", "n": 1254, "ax": 106, "ay": 105, "coupeX": 1135, "coupeY": 1137, "clouX": 1020, "clouY": 968, "coeur": 238, "coeurV": 226, "pasX": 267, "pasV": 253},
+        "raccordT": {"f": "raccord-t.webp", "w": 540, "h": 454, "haut": 4, "coeur": 93, "cx": 270},
+        "ornementsCoin": {"leger": "coin-orne-leger.webp", "riche": "coin-orne-riche.webp", "pointes": "coin-orne-pointes.webp"},
+        "couronne": {"f": "couronne.webp", "w": 640, "h": 237, "base": 0.22},
+        "chaine": {"f": "chaine.webp", "w": 640, "h": 214, "attache": 0.12},
+        "chaineTorsadee": {"f": "chaine-torsadee.webp", "w": 120, "h": 249},
+        "texture": "texture.webp",
+        "ornementTitre": {"largeur": 35.44}
+      },
+      "fiche": {
+        "cadre": {"ep": 16, "style": "gros", "sobres": true},
+        "cotes": {"haut": -7.5, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0.5},
+          "bd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "separation": {"style": "fine", "ep": 16, "dx": 0, "raccords": "dessous", "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "sousNom": {"style": "fine", "dy": 4.5},
+        "ornementsCoin": {
+          "hg": {"modele": "riche", "taille": 176, "sens": "miroir", "dx": -20, "dy": -29.5},
+          "hd": {"modele": "leger", "taille": 158, "sens": "rotation", "dx": 29, "dy": -21.5},
+          "bd": {"modele": "leger", "taille": 176, "sens": "rotation", "dx": 20, "dy": 29.5},
+          "bg": {"modele": "leger", "taille": 176, "sens": "miroir", "dx": -20, "dy": 29.5}
+        },
+        "couronne": {"place": "bas-centre", "taille": 220, "dx": 151.5, "dy": -6, "retournee": false},
+        "chaine": {"place": "haut-portrait", "taille": 178, "dx": 80.5, "dy": -4},
+        "chaineTorsadee": {"place": "separation", "taille": 29.5, "longueur": 61, "espacement": 0, "dx": 0, "dy": 0},
+        "titre": {"hauteur": 20, "ecart": 2},
+        "cuir": {"grain": 250, "sombre": 30}
+      }
+    }
+  ],
+  "row_count": 1
+}

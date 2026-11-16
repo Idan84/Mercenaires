@@ -67,7 +67,7 @@
       "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
-  "row_count": 23,
+  "row_count": 24,
   "rows": [
     {
       "cle": "fond-camp",
@@ -502,6 +502,28 @@
       ],
       "motifs": [
         "assets/fiche/ornements/*.svg"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "kits-culture",
+      "famille": "Kits graphiques des cultures (cadre de la fiche)",
+      "nombre": 13,
+      "ou": "Fiche au survol des cultures refaites avec leur kit (Elfes noirs) : coins sobres, bordures, séparation et raccords en T, ornements de coin, couronne, chaînes, cuir derrière le nom.",
+      "pourquoi": "Le kit graphique de chaque culture (Chatty, Idan) : un cadre de base cohérent (même épaisseur, même pas de clous), puis des ornements posés dessus.",
+      "fichiers": "assets/fiche/kits/<culture>/<pièce>.webp",
+      "affichage": "Cadre de 16 px autour de la fiche (860 × 565) ; ornements de coin 158 à 176 px ; couronne 220 px ; chaîne 178 px ; cuir en tuile de 640 px.",
+      "depot": "Le kit complet en PNG transparents (voir « Blood & Wages — Kit graphique par culture ») ; la bordure et les coins sobres à la même échelle.",
+      "format_jeu": "WebP : coin sobre toile entière 512 px, cellules de bordure d'un clou (128 px), ornements recadrés (400 à 640 px), cuir 640 px.",
+      "alternates": "Non. Une pièce par rôle ; la place et la taille de chacune se règlent dans data/reference/culture-kits.json.",
+      "source": "assets-src/Kits/<culture>/ (masters et mesures), scripts/build-culture-kit.sh.",
+      "exemples": [
+        "assets/fiche/kits/elfes-noirs/coin-sobre.webp",
+        "assets/fiche/kits/elfes-noirs/couronne.webp",
+        "assets/fiche/kits/elfes-noirs/texture.webp"
+      ],
+      "motifs": [
+        "assets/fiche/kits/**/*.webp"
       ],
       "variantes": false
     },

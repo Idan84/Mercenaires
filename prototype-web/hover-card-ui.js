@@ -47,6 +47,14 @@ function hoverTagPlates(tags,max=HOVER_TAG_MAX){
     return {...plate,col:1+(3-inRow)+2*pos};
   });
 }
+// Deux tags au même nom (« De zone » en Dégâts et en Soin ; « Brûlant » en Dégâts et en Dégâts élémentaires) : chacun
+// prend le nom de son parent devant (Idan, 2026-11-16 : « oui » à « Dégâts de zone », « Soin de zone »), l'adjectif
+// accordé au pluriel après un parent au pluriel (« Dégâts brûlants »).
+function hoverTagFullName(parent,name){
+  const low=name?name[0].toLocaleLowerCase("fr")+name.slice(1):"";
+  const plural=/s$/.test(parent)&&!/\s/.test(low)&&!/[sx]$/.test(low)&&!/^(de|du|des|d’|d')/.test(low);
+  return `${parent} ${low}${plural?"s":""}`;
+}
 // Ce que la fiche montre, sans HTML (tests, portage).
 function mercenaryHoverData(c,{missionTag=null}={}){
   const reference=game.referenceData||{};
@@ -61,6 +69,12 @@ function mercenaryHoverData(c,{missionTag=null}={}){
   const shown=rules&&typeof rules.view==="function"?rules.view(c):{};
   const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id),level:shown[id]?.level||3}))
     .sort((a,b)=>Number(b.mission)-Number(a.mission));
+  for(const tag of tags){
+    if(tags.filter(other=>other.name===tag.name).length<2) continue;
+    const parent=rules?.node(tag.id.split("/").slice(0,-1).join("/"))?.nom;
+    if(parent) tag.fullName=hoverTagFullName(parent,tag.name);
+  }
+  for(const tag of tags) if(tag.fullName){ tag.name=tag.fullName; delete tag.fullName; }
   // Les objets portés.
   const slots=c.equipment?.slots||{},items=c.items||[];
   const itemIn=slot=>slots[slot]==null?null:items.find(item=>String(item.id)===String(slots[slot]))||null;
@@ -354,4 +368,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverTagPlates,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};

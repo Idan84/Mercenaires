@@ -538,6 +538,15 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(css, /\.hc-tag\.is-n1::after,\.hc-tag\.is-n2::after\{[^}]*clip-path:polygon\(evenodd,/);
     assert.match(css, /\.hc-tag\.is-n1::before\{opacity:0\}\n\.hc-tag\.is-n2::before\{opacity:\.5\}/);
     assert.equal(eight[4].level, 1, "la plaque « N autres rôles » : le contour seul");
+    // Deux tags au même nom : le nom du parent devant, l'adjectif accordé (Idan, 2026-11-16 : « oui »).
+    const {hoverTagFullName} = require(path.join(root, "prototype-web/hover-card-ui.js"));
+    assert.deepEqual([hoverTagFullName("Dégâts", "De zone"), hoverTagFullName("Soin", "De zone"), hoverTagFullName("Dégâts", "Brûlant"),
+      hoverTagFullName("Dégâts élémentaires", "Glaçant")], ["Dégâts de zone", "Soin de zone", "Dégâts brûlants", "Dégâts élémentaires glaçants"]);
+    const dupNames = {"role/degats": "Dégâts", "role/soin": "Soin", "role/degats/de-zone": "De zone", "role/soin/de-zone": "De zone", "role/protection": "Protection"};
+    const dupApi = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData};")(...Object.values({...stubs,
+      tagRules: () => ({litIds: () => ["role/degats", "role/degats/de-zone", "role/soin", "role/soin/de-zone", "role/protection"], node: id => ({nom: dupNames[id] || id}),
+        columns: [{code: "role", teinte: "bleu"}]})}));
+    assert.deepEqual(dupApi.mercenaryHoverData(merc).tags.map(t => t.name), ["Dégâts de zone", "Soin de zone", "Protection"], "le parent seulement en cas de doublon");
     assert.match(css, /\.hc-tags\{display:grid;grid-template-columns:repeat\(6,minmax\(0,1fr\)\);/);
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan

@@ -864,10 +864,12 @@ const missionSearchKey=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").
 // La galerie, les tags et l'escouade.
 function renderMissionChoice(list,{missionTag=null,error=""}={}){
   const sel=game.missionSelect,rules=typeof tagRules==="function"?tagRules():null;
+  // La fiche au survol met le tag de la mission en premier.
+  sel.missionTag=missionTag;
   const tagsOf=c=>rules?rules.litIds(c):[];
   $("mission-select-list").innerHTML=list.map(c=>{
     const state=sel.state(c);
-    return `<label class="mission-pick" data-tags="${esc(tagsOf(c).join(" "))}" data-name="${esc(missionSearchKey(c.name))}">
+    return `<label class="mission-pick" data-hover-card="${c.id}" data-tags="${esc(tagsOf(c).join(" "))}" data-name="${esc(missionSearchKey(c.name))}">
       <input type="checkbox" value="${c.id}" ${sel.order.includes(c.id)?"checked":""}>
       <span class="mission-pick-portrait">${renderAvatar(c,{variant:"compact",kind:"portrait"})}<i class="mission-pick-add" aria-hidden="true"></i></span>
       <button type="button" class="mission-pick-name" data-sheet-open="${c.id}" title="Voir la fiche">${esc(c.name)}</button>
@@ -1021,6 +1023,7 @@ function showMissionRosterPage(page,dir=0){
   const size=sel.pageSize||cards.length||1,before=sel.page;
   const at=missionChoicePage(cards.length,size,page);
   sel.page=at.page;
+  if(at.page!==before) hideMissionChoiceHover();
   cards.forEach((c,i)=>c.classList.toggle("is-off-page",Math.floor(i/size)!==at.page));
   missionPageArrows(".mission-roster-frame",at.page,at.pages);
   // La nouvelle page arrive du côté de la flèche, comme les annonces du panneau.
@@ -1050,6 +1053,46 @@ function pageWheel(turn){
   };
 }
 
+// La fiche au survol (hover-card-ui.js ; Idan, 2026-11-15 : « Au survol, on doit voir rapidement s'il convient ou non
+// pour la mission » ; 2026-11-16 : « On devait le brancher dans les missions ») : un mercenaire de la galerie ou de
+// l'escouade survolé à la souris, sa fiche s'ouvre à côté, au cadre de sa culture, le tag de la mission en premier. Un
+// court délai, pour qu'elles ne clignotent pas quand la souris traverse la galerie ; elle se ferme quand la souris s'en
+// va, au clic, quand la page tourne et quand la fenêtre se ferme.
+const MISSION_HOVER_DELAY=200;
+const missionChoiceHover={id:null,timer:0};
+function onMissionChoiceHover(event){
+  if(event.pointerType&&event.pointerType!=="mouse") return;
+  const anchor=event.target.closest("[data-hover-card]");
+  if(!anchor||anchor.dataset.hoverCard===missionChoiceHover.id) return;
+  hideMissionChoiceHover();
+  missionChoiceHover.id=anchor.dataset.hoverCard;
+  missionChoiceHover.timer=setTimeout(()=>showMissionChoiceHover(anchor),MISSION_HOVER_DELAY);
+}
+function onMissionChoiceHoverOut(event){
+  const anchor=event.target.closest("[data-hover-card]");
+  if(anchor&&!anchor.contains(event.relatedTarget)) hideMissionChoiceHover();
+}
+function showMissionChoiceHover(anchor){
+  const box=$("mission-choice-hover"),sel=game.missionSelect;
+  const c=allCharacters().find(m=>String(m.id)===anchor.dataset.hoverCard);
+  if(!box||!sel||!c||!anchor.isConnected||typeof renderMercenaryHoverCard!=="function") return;
+  box.innerHTML=renderMercenaryHoverCard(c,{missionTag:sel.missionTag||null});
+  box.hidden=false;
+  const card=box.querySelector(".hover-card");
+  if(typeof fitHoverCard==="function") fitHoverCard(card);
+  const r=anchor.getBoundingClientRect();
+  const at=hoverCardPlacement({anchor:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},view:{w:window.innerWidth,h:window.innerHeight},card:{w:card.offsetWidth,h:card.offsetHeight}});
+  box.style.left=at.x+"px";
+  box.style.top=at.y+"px";
+  box.style.setProperty("--hc-scale",String(at.scale));
+}
+function hideMissionChoiceHover(){
+  clearTimeout(missionChoiceHover.timer);
+  missionChoiceHover.id=null;
+  const box=$("mission-choice-hover");
+  if(box&&!box.hidden){ box.hidden=true; box.innerHTML=""; }
+}
+
 // L'escouade : les portraits choisis, dans l'ordre du choix, avec leur croix ; la garde du corps montre toutes ses
 // places. En 4:3, quand la galerie est en carré (Idan : « Gardons le carré pour la sélection, c'est natif. Le 4:3 plus
 // petit à droite »). Elle tient toujours en entier (Idan, 2026-11-15 : « faisons de la taille de portrait relative au
@@ -1060,7 +1103,8 @@ function renderMissionSquad(){
   const chosen=sel.order.map(id=>pool.find(c=>c.id===id)).filter(Boolean);
   const empty=sel.bodyguard?sel.max-chosen.length:0;
   const box=$("mission-squad-slots");
-  box.innerHTML=chosen.map(c=>`<div class="mission-slot">
+  hideMissionChoiceHover();
+  box.innerHTML=chosen.map(c=>`<div class="mission-slot" data-hover-card="${c.id}">
       <span class="mission-slot-portrait" title="${esc(c.name)}">${renderAvatar(c,{variant:"compact",kind:"portrait"})}<button type="button" class="mission-slot-remove" data-squad-remove="${c.id}" aria-label="Retirer ${esc(c.name)}" title="Retirer"></button></span>
       <button type="button" class="mission-pick-name" data-sheet-open="${c.id}" title="Voir la fiche">${esc(c.name)}</button>
       ${renderReputationStars(c)}
@@ -5943,8 +5987,15 @@ function initializeMissionUi(){
   document.querySelector(".mission-roster-frame")?.addEventListener("click",turnMissionRosterPage);
   document.querySelector(".mission-roster-frame")?.addEventListener("wheel",pageWheel(dir=>showMissionRosterPage((game.missionSelect?.page||0)+dir,dir)),{passive:false});
   // Une autre taille de fenêtre : d'autres pages, en gardant les mêmes mercenaires sous les yeux.
-  window.addEventListener("resize",()=>{ if($("mission-select-dialog")?.open){ layoutMissionRoster({keep:true}); layoutMissionSquad(); } });
+  window.addEventListener("resize",()=>{ if($("mission-select-dialog")?.open){ hideMissionChoiceHover(); layoutMissionRoster({keep:true}); layoutMissionSquad(); } });
   $("mission-squad-slots").addEventListener("click",onMissionSquadClick);
+  // La fiche au survol : la galerie et l'escouade ; un clic, la fermeture de la fenêtre la retirent.
+  for(const id of ["mission-select-list","mission-squad-slots"]){
+    $(id).addEventListener("pointerover",onMissionChoiceHover);
+    $(id).addEventListener("pointerout",onMissionChoiceHoverOut);
+  }
+  $("mission-select-dialog").addEventListener("click",hideMissionChoiceHover,true);
+  $("mission-select-dialog").addEventListener("close",hideMissionChoiceHover);
   // Retour à l'annonce : la fiche de la mission se rouvre.
   $("cancel-mission-select-btn").addEventListener("click",()=>{
     const back=game.missionSelect?.detailId;

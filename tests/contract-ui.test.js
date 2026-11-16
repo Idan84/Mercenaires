@@ -394,9 +394,30 @@ assert.match(choice, /min:1,max:20/, "un contrat : de 1 à 20");
 assert.match(choice, /<button type="button" class="mission-pick-name" data-sheet-open="\$\{c\.id\}"/);
 assert.match(missionJs, /function openMissionChoiceSheet\(event\)\{[\s\S]*?event\.preventDefault\(\);[\s\S]*?showCharacter\(c\);/);
 assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",openMissionChoiceSheet\);/);
-// La fiche au survol (Idan, 2026-11-15) : maquette, pas encore branchée. Le contenu d'Idan ; le cadre de SA culture.
+// La fiche au survol (Idan, 2026-11-15) : le contenu d'Idan ; le cadre de SA culture. Branchée dans le choix de
+// l'escouade (Idan, 2026-11-16 : « On devait le brancher dans les missions ») : la galerie et l'escouade, au survol.
 {
   const hoverSrc = fs.readFileSync(path.join(root, "prototype-web/hover-card-ui.js"), "utf8");
+  // Où la poser : à droite du portrait s'il y a la place, sinon à gauche, sinon du côté le plus large en rapetissant ;
+  // jamais hors de l'écran, avec la marge des ornements qui débordent.
+  const {hoverCardPlacement} = require(path.join(root, "prototype-web/hover-card-ui.js"));
+  const view = {w: 1920, h: 1080}, card = {w: 860, h: 565};
+  assert.deepEqual(hoverCardPlacement({anchor: {left: 300, top: 400, right: 450, bottom: 620}, view, card}), {x: 462, y: 228, scale: 1, side: "right"});
+  assert.deepEqual(hoverCardPlacement({anchor: {left: 1500, top: 100, right: 1650, bottom: 300}, view, card}), {x: 628, y: 30, scale: 1, side: "left"}, "l'escouade, à droite : à gauche du portrait, sous le haut de l'écran");
+  const small = hoverCardPlacement({anchor: {left: 500, top: 600, right: 620, bottom: 760}, view: {w: 1366, h: 768}, card});
+  assert.equal(small.side, "right");
+  assert.ok(small.scale < 1 && small.scale >= .6 && small.x >= 632 && small.x + 860 * small.scale <= 1366 - 30 + .5, JSON.stringify(small));
+  assert.ok(small.y + 565 * small.scale <= 768 - 30 + .5, "dans l'écran");
+  assert.ok(hoverCardPlacement({anchor: {left: 10, top: 10, right: 50, bottom: 50}, view: {w: 800, h: 450}, card}).scale <= (450 - 60) / 565 + .001, "un petit écran : plus petite");
+  assert.match(choice, /<label class="mission-pick" data-hover-card="\$\{c\.id\}"/, "la galerie");
+  assert.match(missionJs, /<div class="mission-slot" data-hover-card="\$\{c\.id\}">/, "l'escouade");
+  assert.match(choice, /sel\.missionTag=missionTag;/);
+  assert.match(missionJs, /box\.innerHTML=renderMercenaryHoverCard\(c,\{missionTag:sel\.missionTag\|\|null\}\);[\s\S]*?fitHoverCard\(card\);[\s\S]*?hoverCardPlacement\(/);
+  assert.match(missionJs, /for\(const id of \["mission-select-list","mission-squad-slots"\]\)\{\s*\$\(id\)\.addEventListener\("pointerover",onMissionChoiceHover\);\s*\$\(id\)\.addEventListener\("pointerout",onMissionChoiceHoverOut\);/);
+  assert.match(missionJs, /\$\("mission-select-dialog"\)\.addEventListener\("close",hideMissionChoiceHover\);/);
+  assert.match(missionJs, /if\(event\.pointerType&&event\.pointerType!=="mouse"\) return;/, "à la souris seulement");
+  assert.match(html, /<div id="mission-choice-hover" class="mission-choice-hover" aria-hidden="true" hidden><\/div>\s*<\/dialog>/, "dans la fenêtre du choix (au premier plan)");
+  assert.match(choiceCss, /\.mission-choice-hover\{position:fixed;[^}]*pointer-events:none;transform:scale\(var\(--hc-scale,1\)\);transform-origin:0 0\}/);
   assert.match(html, /<script src="contract-ui\.js"><\/script>\s*<script src="hover-card-ui\.js"><\/script>/);
   const HUD_BARS = new Function(fs.readFileSync(path.join(root, "prototype-web/hud-bars.js"), "utf8") + "\nreturn HUD_BARS;")();
   const tagIds = ["occupation/mission", "occupation/mission/camps", "occupation/mission/camps/culte-des-morts", "occupation/garde-du-corps",

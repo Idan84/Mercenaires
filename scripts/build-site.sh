@@ -25,6 +25,8 @@ cp -R game-core/. "$OUT/core/"
 mkdir -p "$OUT/charte"
 cp charte/tokens.json charte/assets.json charte/README.md "$OUT/charte/"
 node scripts/build-charte.js --site "$OUT/charte/site" >/dev/null
+# L'inventaire des images, fichier par fichier, pour l'onglet Images de la Design Lab (scripts/build-images-index.js).
+node scripts/build-images-index.js "$OUT/data/images-fichiers.json" >/dev/null
 
 VERSION=$(git rev-parse --short HEAD 2>/dev/null || date -u +%Y%m%d%H%M%S)
 find "$OUT" -name "*.html" -print0 | xargs -0 perl -pi -e \

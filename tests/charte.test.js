@@ -84,7 +84,7 @@ assert.match(lab, /<script src="\.\/charte-lab\.js"><\/script>/);
 // 7. Le catalogue des images (data/reference/images.json, onglet Images de la Design Lab) : chaque famille dit où, pourquoi,
 // quoi déposer, le format du jeu et ses alternates ; ses vignettes existent ; la ligne du CATALOG est juste.
 const images = JSON.parse(fs.readFileSync(path.join(ROOT, "data/reference/images.json"), "utf8"));
-const IMAGE_COLUMNS = ["cle", "famille", "nombre", "ou", "pourquoi", "fichiers", "affichage", "depot", "format_jeu", "alternates", "source", "exemples"];
+const IMAGE_COLUMNS = ["cle", "famille", "nombre", "ou", "pourquoi", "fichiers", "affichage", "depot", "format_jeu", "alternates", "source", "exemples", "motifs"];
 assert.deepEqual(images.columns.map(c => c.key), IMAGE_COLUMNS);
 assert.equal(images.row_count, images.rows.length);
 assert.equal(new Set(images.rows.map(r => r.cle)).size, images.rows.length, "familles d'images uniques");

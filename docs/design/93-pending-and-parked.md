@@ -4,7 +4,7 @@ Page de suivi pour Idan, tenue par JC3 et relue par Chatty. Elle rassemble ce qu
 
 À chaque décision d'Idan, la règle part dans son document et la ligne quitte cette page. Les décisions récentes sont dans `docs/TEAM.md`.
 
-**Dernière mise à jour : 2026-11-06.**
+**Dernière mise à jour : 2026-11-16.**
 
 ## 0 — Feuille de route (Idan, 2026-11-06)
 
@@ -38,7 +38,17 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
     Nécromancie ([doc 11 §9](/design/#doc=11-camp-and-ruined-castle.md)).
 16. **Traumatismes physiques et psychologiques après une mission** (Idan, 2026-11-06) ; ils reprennent les séquelles
     permanentes des blessures, reportées le 2026-10-03 ([doc 10](/design/#doc=10-mission-time-and-unavailability.md)).
+    Exemple d'Idan (2026-11-16) : blessé par des gobelins, il peut garder le trait « Phobie des gobelins », −30 en
+    Courage face aux gobelins. La fiche complète leur réserve déjà une place (« il faut déjà un espace pour organiser
+    tout ça »).
 17. **Marchands** : leurs portraits (aucun pour l'instant) et la négociation du capitaine ([doc 18](/design/#doc=18-merchants.md)).
+18. **Rompre le contrat d'un mercenaire** (Idan, 2026-11-16) : plusieurs moyens, avec des conséquences diverses, dont
+    le licenciement définitif, la nuit, pendant son sommeil (« C'est ce qu'on appelle être un vrai cost killer ! »).
+    Rien n'est encore défini : ni les moyens, ni leurs conséquences. Aujourd'hui, le jeu ne permet pas de renvoyer un
+    mercenaire.
+19. **Refonte de « Mes mercenaires »** (Idan, 2026-11-16) : filtres et tri. Pas de score de combat global (déjà
+    écarté le 2026-10-31, [doc 19](/design/#doc=19-mercenary-profile.md)) ; piste de JC3 : trier par rôle avec les
+    étoiles cachées du titre, sans les afficher.
 
 ## 1 — Attend ta décision
 

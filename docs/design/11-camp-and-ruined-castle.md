@@ -499,7 +499,7 @@ augmente les gains » ; « Parfait » ; « vas-y pour le Palais ») — même ba
 Le château peut accueillir des structures spécialisées selon les espèces :
 
 - écuries ;
-- porcherie ;
+- souille (les bêtes à cornes ; d'abord « porcherie ») ;
 - salle / antre pour dragon ;
 - autres bâtiments spécifiques à définir.
 
@@ -517,7 +517,7 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
 - **Le Pégase** (Idan, 2026-11-09 : « remplissons l'écurie avec le Pégase ! ») : aux Écuries, comme les chevaux ; **40 PO
   d'entretien**, rang d'échange 4, neutre bon, entêtement (Intelligence 80 + Volonté 70) ÷ 2 = **75** (un cran d'écart :
   25 % par jour ; trois : 1,6 %) ; titre « à dos de pégase » ; vendu par Aymeric Belcomptoir (doc 18) ; il vole et charge
-  par les airs (doc 04).
+  par les airs (doc 04) ; il se capture à la Chasse au pégase, dès 3★ bronze (Idan, 2026-11-16 ; doc 17 §23).
 - **Au Chenil, le cerbère et le molosse** (Idan, 2026-11-09) : le **cerbère** (35 PO d'entretien, rang d'échange 4, loyal
   mauvais, entêtement (20 + 60) ÷ 2 = 40, « à dos de cerbère », vendu par Bruga Roc-Fendu, des Ogres des montagnes ; 1 place)
   et le **molosse de guerre** (5 PO, rang 1, neutre mauvais, entêtement 25, vendu par Kippa Ressortdor, des Gnomes des villes ;
@@ -530,6 +530,16 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   pas), **papillon vénéneux** (4 PO, chaotique neutre, vendu par Jasper Bonnebourse, des Halflings des cités humaines ; il
   se capture à la Chasse aux papillons), **papillon géant** (10 PO, neutre bon, « à dos de papillon » pour un petit qui le
   monte, vendu par Dottie Mielbruyère, des Halflings des villages isolés ; seulement vendu). Les fiches : doc 04.
+- **La Souille** (`trainer_wallow` ; Idan, 2026-11-16 : « Logé à la porcherie ! Nouvelle salle » ; « Comme le Chenil » ;
+  puis, avec le rhinocéros, le mammouth et le tricératops en vue : « On change la compétence en bêtes à cornes. On change
+  la salle en Souille ») : la quatrième aile de la Grange, comme le Chenil (2 places par niveau ; on s'y entraîne avec sa
+  bête : **Bêtes à cornes**, compétence de Compagnon animal, ex-« Sangliers de combat », et Compagnon animal). Le **sanglier de combat** : 15 PO
+  d'entretien, rang d'échange 3 (celui du destrier et du loup), chaotique neutre, « à dos de sanglier », 1 place ; il se
+  capture à la Chasse au sanglier (doc 17 §23) et il est vendu par Draz Crinsauvage, des Orcs des steppes (Idan,
+  2026-11-16 : « Marchand, Orc des steppes »). La fiche : doc 04.
+  Le **mammouth de guerre** (Idan, 2026-11-16) : 50 PO d'entretien (15 000 PO de valeur), rang d'échange 4, neutre,
+  « à dos de mammouth », **2 places** ; il se capture à la Chasse au mammouth (doc 17 §23) et il est vendu par Hroska
+  Crocs-de-Neige, des Tribus nordiques (« Marchand Homme bête »). La fiche : doc 04.
 - **Entretien** : chaque matin, **10 PO par destrier** (`mounts.json`, `entretien`), avec les salaires (le journal et la notification du jour le disent). Si la caisse ne suffit pas (Idan, 2026-11-10) : l'entretien d'une monture est dû à son cavalier ; celui d'une monture sans propriétaire ou de celle du capitaine, au Dresseur ; sans Dresseur, elle est relâchée (les dettes, doc 09).
 - **Écran** : sous la Grange, dans Ma Compagnie, la liste des montures (d'où elles viennent, le jour de leur capture, leur entretien), places prises / places, **Relâcher** pour libérer une place (sans propriétaire), **Apprivoiser** (à un mercenaire, sa chance du jour au survol). Apprivoisée et équipée, il part à cheval (doc 04, « Combat à cheval »).
 - **Une monture est un objet** (Idan, 2026-11-07 : « On peut donc acheter et vendre des chevaux comme les autres biens ») : type `mount`, sans tier ni qualité ; sans propriétaire, à l'**Intendance** (onglet **Montures**) ; où qu'elle soit, elle loge aux Écuries (sa place, son entretien). Achat et vente chez les marchands : doc 18 §12 bis.

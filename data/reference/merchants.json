@@ -304,6 +304,10 @@
         {
           "type": "manual",
           "ecole": "Eau"
+        },
+        {
+          "type": "mount",
+          "objet": "Mammouth de guerre"
         }
       ],
       "repliques": {
@@ -1269,6 +1273,10 @@
         {
           "type": "manual",
           "ecole": "Transmutation"
+        },
+        {
+          "type": "mount",
+          "objet": "Sanglier de combat"
         }
       ],
       "repliques": {

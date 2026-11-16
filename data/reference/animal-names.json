@@ -12,7 +12,7 @@
       "key": "noms"
     }
   ],
-  "row_count": 9,
+  "row_count": 11,
   "rows": [
     {
       "code": "destrier",
@@ -49,6 +49,14 @@
     {
       "code": "papillon_geant",
       "noms": ["Grand-Voile", "Zéphyrine", "Envergure", "Plume-de-Lune", "Monarque", "Paon-de-Nuit", "Machaon", "Vanesse", "Morpho", "Atlas", "Sphinx", "Satyre", "Citron", "Apollon", "Amiral", "Flambé", "Grand-Mars", "Aurore-Boréale", "Ailes-d'Or", "Brise", "Planeur", "Voilier", "Céleste-Bleu", "Grand-Paon"]
+    },
+    {
+      "code": "sanglier",
+      "noms": ["Groin-de-Fer", "Brise-Haie", "Hure", "Ragot", "Solitaire", "Boutoir", "Truffe-Noire", "Laboureur", "Gros-Grain", "Soie-Rêche", "Bourbier", "Grogne", "Tonneau", "Rocaille", "Fouilleterre", "Glandée", "Châtaigne", "Cuirasse", "Saindoux", "Trompe-la-Mort", "Fend-Clôture", "Grand-Mâle", "Souille", "Vieux-Solitaire"]
+    },
+    {
+      "code": "mammouth",
+      "noms": ["Ivoire", "Glacier", "Avalanche", "Banquise", "Frimas", "Toison", "Laineux", "Colline", "Montagne", "Pesant", "Pas-Lourd", "Tremble-Terre", "Tonnerre-Lent", "Vieux-Givre", "Brise-Glace", "Grand-Laine", "Grosse-Patte", "Barrique", "Ronfleur", "Blizzard", "Placide", "Trouillard", "Ancêtre", "Toundra"]
     }
   ]
 }

@@ -1288,7 +1288,7 @@ function departContractSquad(chosen){
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition,days=e.offer.distance;
-  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" partira demain matin pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+", à "+days+" jour"+(days>1?"s":"")+" de marche. D’ici là, vous pouvez encore l’équiper.","turn");
+  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" partira demain matin pour "+(e.offer.place?.le||"le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu)+", à "+days+" jour"+(days>1?"s":"")+" de marche. D’ici là, vous pouvez encore l’équiper.","turn");
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function") renderContractBoard();
@@ -1322,7 +1322,7 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   $("expedition-dialog")?.close?.();
   $("game-panel").classList.add("hidden");
   $("mission-panel").classList.remove("hidden");
-  missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
+  missionLog(offer.name+" : "+(offer.place?.le||"le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu)+". Votre équipe a l’initiative.","turn");
   // Une chasse (Idan, 2026-11-07) : les bêtes, en nombre.
   const beast=offer.camp?.beast;
   // Le nom des bêtes : celui de la chasse (les chiens sauvages), sinon celui de leur fiche (mounts.json).
@@ -5386,13 +5386,20 @@ function centerMissionView(unit,onlyIfHidden=false){
   clampMissionView();
 }
 // La caméra au début de chaque tour (Idan, 2026-11-14 : « quand un joueur ou un ennemi commence son tour, on fait une
-// petite animation de caméra qui se met sur lui, zoom et dézoome un peu en le mettant au centre sauf si après le dézoom
-// on a des bords vides de la carte. Dans ce cas, le personnage n'est plus centré dans la vue, on décale pour voir sur les
-// bords les bords de la carte. ») : la vue glisse sur lui en zoomant un peu (× 1,15), puis revient au zoom du joueur
-// (celui de la carte entière s'il ne l'a pas changé), centrée sur lui ; sur un bord, la vue s'arrête au bord de la carte
-// (une carte plus petite que l'écran reste centrée). Plus courte en mode Accélérer ; rien si le système demande moins de
-// mouvement (la vue va directement à sa place). Le joueur qui zoome ou fait glisser la carte l'interrompt.
-const MISSION_CAMERA={zoom:1.15,duration:700,fastDuration:320,peak:.42};
+// petite animation de caméra qui se met sur lui […] sauf si après le dézoom on a des bords vides de la carte. Dans ce
+// cas, le personnage n'est plus centré dans la vue, on décale pour voir sur les bords les bords de la carte. ») ; puis
+// (Idan, 2026-11-16 : « ça zoom pas, ça fait juste un mouvement de caméra inutile au début de chaque tour » ; choix :
+// « Zoomer et rester ») : la vue glisse sur celui qui commence son tour, nos combattants comme les ennemis, et zoome
+// vraiment — deux fois la carte entière tant que le joueur n'a pas choisi son zoom, sinon le sien — et reste là pendant
+// son tour ; au tour suivant, elle glisse au même zoom vers le suivant. Sur un bord, la vue s'arrête au bord de la carte
+// (une carte plus petite que l'écran reste centrée). La molette, les boutons et « carte entière » restent pour reculer ;
+// après « carte entière », le tour suivant zoome à nouveau. Plus courte en mode Accélérer ; rien d'animé si le système
+// demande moins de mouvement (la vue va directement à sa place). Le joueur qui zoome ou fait glisser la carte l'interrompt.
+const MISSION_CAMERA={zoom:2,duration:700,fastDuration:320};
+// Le zoom de la caméra : deux fois la carte entière (fitted : le joueur n'a pas choisi), ou celui du joueur (own).
+function missionCameraScale(fitted,own){
+  return fitted?Math.min(MISSION_ZOOM.max,missionFitScale()*MISSION_CAMERA.zoom):own;
+}
 // La vue à cette échelle, le point p au centre ; bounded : sans vide au-delà des bords de la carte.
 function missionViewOn(p,scale,bounded){
   const {width,height}=missionMapSize(),{w,h}=missionStageSize();
@@ -5405,11 +5412,11 @@ function missionReducedMotion(){
 function startMissionCamera(unit,from=unit){
   const {w,h}=missionStageSize();
   if(!unit||unit.offMap||!from||!(w>0&&h>0)) return;
-  const p=missionHexPixel(from.q,from.r),fitted=missionView.fitted,base=fitted?missionFitScale():missionView.scale;
-  const end={...missionViewOn(p,base,true),fitted};
-  if(missionReducedMotion()){ Object.assign(missionView,end,{anim:null}); applyMissionView(); return; }
+  const p=missionHexPixel(from.q,from.r),fitted=missionView.fitted,own=missionView.scale;
+  // La vue d'arrivée, recalculée à chaque image : au premier tour, l'écran de combat prend encore sa taille.
+  const target=()=>({...missionViewOn(p,missionCameraScale(fitted,own),true),fitted:false});
+  if(missionReducedMotion()){ Object.assign(missionView,target(),{anim:null}); applyMissionView(); return; }
   const start={scale:missionView.scale,x:missionView.x,y:missionView.y};
-  const peak=missionViewOn(p,Math.min(MISSION_ZOOM.max,base*MISSION_CAMERA.zoom),false);
   const duration=game.missionFast?MISSION_CAMERA.fastDuration:MISSION_CAMERA.duration,anim={unit:unit.id};
   const ease=k=>k*k*(3-2*k),mix=(a,b,k)=>({scale:a.scale+(b.scale-a.scale)*k,x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k});
   missionView.anim=anim;
@@ -5417,8 +5424,8 @@ function startMissionCamera(unit,from=unit){
   const step=now=>{
     if(missionView.anim!==anim) return;
     if(t0===null) t0=now;
-    const t=Math.min(1,(now-t0)/duration),k=MISSION_CAMERA.peak;
-    Object.assign(missionView,t<k?mix(start,peak,ease(t/k)):mix(peak,end,ease((t-k)/(1-k))));
+    const t=Math.min(1,(now-t0)/duration),end=target();
+    Object.assign(missionView,mix(start,end,ease(t)));
     if(t>=1){ Object.assign(missionView,end,{anim:null}); applyMissionView(); return; }
     applyMissionView();
     window.requestAnimationFrame(step);
@@ -5587,7 +5594,7 @@ function renderMission(){
     twoHandsBtn.disabled=!availability.twoHands;
     twoHandsBtn.classList.toggle("selected",m.mode==="melee"&&Boolean(m.twoHands));
   }
-  // « Viser le cheval » : seulement face à un cavalier.
+  // « Viser la monture » (ex-« Viser le cheval », Idan, 2026-11-16) : seulement face à un cavalier.
   const aimBtn=$("mission-aim-mount-btn");
   if(aimBtn){
     const riders=Boolean(u)&&missionUnits().some(o=>o.alive&&!o.offMap&&e.mountOf?.(o));

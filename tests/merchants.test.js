@@ -380,9 +380,10 @@ const cover=coverage();
 assert.deepEqual(cover.unknown,[]);
 // Les montures (Idan, 2026-11-07) : un marchand chacune (Amar le destrier, Ysolwen la licorne, Fizzi le loup ; Aymeric le
 // pégase, Idan, 2026-11-09 : « Il est vendu par le marchand humain des cités libres » ; Bruga le cerbère, « vendu par les ogres
-// des montagnes » ; Kippa le molosse, « vendu par les gnomes des villes »).
+// des montagnes » ; Kippa le molosse, « vendu par les gnomes des villes » ; Draz le sanglier de combat, 2026-11-16 :
+// « Marchand, Orc des steppes » ; Hroska le mammouth, « Marchand Homme bête »).
 assert.deepEqual(cover.items.filter(i=>i.sellers.length<targetOf(i)).map(i=>i.name),[],"chaque objet chez au moins deux marchands");
-assert.deepEqual(cover.items.filter(i=>i.type==="mount").map(i=>[i.name,i.sellers]),[["Cerbère",["Bruga"]],["Destrier",["Amar"]],["Licorne",["Ysolwen"]],["Loup",["Fizzi"]],["Molosse",["Kippa"]],["Papillon géant",["Dottie"]],["Papillon télépathe",["Callie"]],["Papillon vénéneux",["Jasper"]],["Pégase",["Aymeric"]]]);
+assert.deepEqual(cover.items.filter(i=>i.type==="mount").map(i=>[i.name,i.sellers]),[["Cerbère",["Bruga"]],["Destrier",["Amar"]],["Licorne",["Ysolwen"]],["Loup",["Fizzi"]],["Mammouth de guerre",["Hroska"]],["Molosse",["Kippa"]],["Papillon géant",["Dottie"]],["Papillon télépathe",["Callie"]],["Papillon vénéneux",["Jasper"]],["Pégase",["Aymeric"]],["Sanglier de combat",["Draz"]]]);
 // Ses plates sont « ses armes » à la revente ; il hait les nains du chaos et en est haï (doc 02).
 const plates=generator.createItemByName("armor","Armure de plates",3);
 twoProbe.market.visit={merchantId:"durgan-battefer",day:twoProbe.day,stock:[],sold:{},traded:false};

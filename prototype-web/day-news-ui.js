@@ -32,10 +32,11 @@ function dayDigest(report){
   const c=game.campaign,entries=[];
   if(!c||!report) return entries;
   const member=id=>c.company.roster.find(m=>m.id===id)||null;
-  const place=e=>e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu;
+  // Le lieu avec son article (game-core, missions.js : placePhrases) ; une offre sans : l'ancienne formule.
+  const place=(e,form)=>e.offer.place?.[form]||{le:"le ",au:"au ",du:"du "}[form]+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu;
   const ex=report.expeditions||{};
   // L'urgent.
-  for(const e of ex.arrived||[]) entries.push({tone:"alert",icon:"swords",text:"Escouade arrivée au "+place(e),detail:"Le combat vous attend",faces:e.memberIds.map(member)});
+  for(const e of ex.arrived||[]) entries.push({tone:"alert",icon:"swords",text:"Escouade arrivée "+place(e,"au"),detail:"Le combat vous attend",faces:e.memberIds.map(member)});
   // Désertion (Idan, 2026-11-04 ; desertion-ui.js) : celui qui a filé, celui que la Vigie a repéré.
   if(typeof desertionNews==="function") entries.push(...desertionNews(report.desertion));
   // La mutinerie (Idan, 2026-11-10 ; mutiny-ui.js) : des mutins attendent le capitaine.
@@ -52,13 +53,13 @@ function dayDigest(report){
   // Retours et départs.
   for(const r of ex.returned||[]){
     const e=r.expedition;
-    entries.push({tone:r.gold?"good":"",icon:"back",text:e.memberIds.length?"Retour du "+place(e):"Personne ne revient du "+place(e),
+    entries.push({tone:r.gold?"good":"",icon:"back",text:e.memberIds.length?"Retour "+place(e,"du"):"Personne ne revient "+place(e,"du"),
       detail:[r.gold?"+"+fmt(r.gold)+" PO":"",r.items?r.items+" "+dayPlural(r.items,"objet","objets")+" à l’Intendance":""].filter(Boolean).join(" · "),
       faces:e.memberIds.map(member)});
   }
   for(const e of ex.departed||[]){
     const bodyguard=e.kind==="bodyguard",days=bodyguard?e.offer.days:e.offer.distance;
-    entries.push({icon:"march",text:bodyguard?"Départ en garde du corps : "+e.offer.client.toLocaleLowerCase("fr"):"Départ pour le "+place(e),
+    entries.push({icon:"march",text:bodyguard?"Départ en garde du corps : "+e.offer.client.toLocaleLowerCase("fr"):"Départ pour "+place(e,"le"),
       detail:(bodyguard?"Retour dans ":"Arrivée dans ")+days+" "+dayPlural(days,"jour","jours"),faces:e.memberIds.map(member)});
   }
   // La compagnie.

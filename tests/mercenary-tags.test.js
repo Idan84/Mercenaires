@@ -40,7 +40,7 @@ assert.deepEqual(names(occupation),["Mission","Garde du corps","Job","Entraînem
 assert.deepEqual(names(find(occupation,"Mission").enfants),["Camps","Chasses"]);
 assert.deepEqual(names(find(occupation,"Mission","Camps").enfants),
   ["Gobelins","Orcs","Hommes-bêtes","Voleurs","Ogres","Culte des morts","Cour de sang"],"un camp par faction, tiré des ordres de mission");
-assert.deepEqual(names(find(occupation,"Mission","Chasses").enfants),["Loups","Licornes","Cerbères","Chiens sauvages","Papillons"]);
+assert.deepEqual(names(find(occupation,"Mission","Chasses").enfants),["Loups","Licornes","Cerbères","Chiens sauvages","Papillons","Sangliers","Pégases","Mammouths"]);
 assert.equal(find(occupation,"Garde du corps").enfants.length,0,"la garde du corps, sans sous-tags");
 assert.deepEqual(names(find(occupation,"Job").enfants),["Bûcheron","Mines","Palais des plaisirs"],"pas la Cave : on n'y décide rien");
 const training=find(occupation,"Entraînement");
@@ -87,7 +87,7 @@ assert.deepEqual(names(find(role,"Protection","Protection élémentaire").enfant
 assert.deepEqual(names(find(role,"Entrave").enfants),["Immobilisation","Affaiblissement","Démoralisateur","Anti-magie","Anti-soins"]);
 assert.deepEqual(names(find(role,"Magie").enfants),["Feu","Eau","Foudre","Vie","Nécromancie","Illusion","Invocation","Transmutation","Télékinésie"]);
 assert.ok(find(role,"Magie").enfants.every(n=>n.enfants.length===0));
-assert.deepEqual(names(find(role,"Animal").enfants),["Équidés","Canidés","Papillons"]);
+assert.deepEqual(names(find(role,"Animal").enfants),["Équidés","Canidés","Papillons","Bêtes à cornes"]);
 assert.deepEqual(names(find(role,"Animal","Canidés").enfants),["Loup","Molosse","Cerbère"]);
 
 // Identifiants : le chemin, unique.

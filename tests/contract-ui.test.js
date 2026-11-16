@@ -432,8 +432,9 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   const api = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData, hoverCultureFrame, originPhrase};")(...Object.values(stubs));
   const merc = {name: "Yazga", people: "Orc", culture: "Orcs des steppes", contract: {missionBonus: 81},
     spells: [{code: "boule"}, {code: "soin"}, {code: "boule"}],
-    items: [{id: 1, category: "Épées à une main"}, {id: 2, category: "Épées à une main"}, {id: 3, category: "Armes de tir"},
-      {id: 4, category: "Intermédiaire"}, {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
+    items: [{id: 1, name: "Épée longue", category: "Lames longues"}, {id: 2, name: "Épée courte", category: "Lames courtes"},
+      {id: 3, name: "Arc", category: "Armes de tir"}, {id: 4, name: "Armure de cuir", category: "Légère"},
+      {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
     equipment: {slots: {weapon_set_1_main: 1, weapon_set_1_off: 2, weapon_set_2_main: 3, armor: 4, mount: 5}}};
   const d = api.mercenaryHoverData(merc, {missionTag: "occupation/garde-du-corps"});
   // Zone 2 : la phrase d'origine, le peuple et la culture en une fois, puis « au sang de » (Idan, 2026-11-15).
@@ -453,8 +454,15 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Dégâts"], "seulement les plus précis, missions et rôle au combat, celui de la mission d'abord");
   assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "bleu"]);
   assert.equal(d.tags[0].mission, true);
-  assert.deepEqual(d.sets, [["Épées à une main", "Épées à une main"], ["Armes de tir"]], "« deux épées, c'est pas épée et bouclier »");
-  assert.equal(d.armor, "Armure intermédiaire");
+  // Le nom de chaque arme et de l'armure (Idan, 2026-11-16 : « épée longue et écu », « Arc », « Armure de cuir »), les deux
+  // mains (« deux épées, c'est pas épée et bouclier »).
+  assert.deepEqual(d.sets, [["Épée longue", "Épée courte"], ["Arc"]], "« deux épées, c'est pas épée et bouclier »");
+  assert.equal(d.armor, "Armure de cuir");
+  const {hoverWeapons} = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {hoverWeapons};")(...Object.values(stubs));
+  assert.equal(hoverWeapons(["Épée longue", "Écu"]), "Épée longue et écu");
+  assert.equal(hoverWeapons(["Arc"]), "Arc");
+  assert.equal(hoverWeapons([]), "");
+  assert.equal(api.mercenaryHoverData({...merc, items: [{id: 4, category: "Intermédiaire"}]}).armor, "Armure intermédiaire", "sans nom : son type");
   assert.deepEqual(d.schools, ["Feu", "Vie"], "les écoles où il a au moins un sort");
   assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat"}, "« Ah oui » : sa monture");
   assert.equal(d.bonus, 81);
@@ -551,7 +559,11 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.
-  assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-rule" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
+  assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
+  // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
+  assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:0 2px\}/);
+  assert.match(hoverSrc, /const kit=\[\["Set 1",hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues"\],\["Set 2",hoverWeapons\(d\.sets\[1\]\)\|\|"—"\],\["Armure",d\.armor\|\|"Sans armure"\]\]\.map\(kitItem\)/);
+  assert.match(css, /\.hc-kit\{display:grid;grid-auto-columns:minmax\(0,1fr\);grid-auto-flow:column\}/);
   assert.match(css, /\.hc-sep\{[^}]*height:34px;margin:8px 0 5px;/, "la couronne descendue sous la tête, de l\'air dessous");
   assert.match(css, /\.hc-sep\{[^}]*background:var\(--hc-culture,var\(--encre\)\);[^}]*mask:url\("assets\/fiche\/separateurs\/couronne\.svg"\) center\/contain no-repeat;/);
   const sep = fs.readFileSync(path.join(root, "prototype-web/assets/fiche/separateurs/couronne.svg"), "utf8");

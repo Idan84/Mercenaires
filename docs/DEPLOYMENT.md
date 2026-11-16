@@ -129,8 +129,8 @@ Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/ass
 
 Un thème par culture et par sexe du capitaine (64 à terme ; Idan, 2026-11-16), déposé au même endroit que `tavern.mp3`. Au camp, ils jouent au hasard avec le thème et la musique du menu ; celui de la culture et du sexe du capitaine passe en premier. Chaque thème est déclaré dans `MUSIC_TRACKS.camp` (`prototype-web/music-ui.js`) avec sa culture et son sexe. Un fichier manquant (pas encore déposé, nom différent) est sauté : le jeu passe au morceau suivant.
 
-- Elfes noirs, capitaine homme : `elfe-noir-m.mp3`
-- Elfes noirs, capitaine femme : `elfe-noir-f.mp3`
+- Elfes noirs, capitaine homme : `Filthy Velvet Theme Elfe Noir M.mp3`
+- Elfes noirs, capitaine femme : `Double Wages - Theme Elfe Noir F.mp3`
 
 ## Netlify (abandonné)
 

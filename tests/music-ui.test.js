@@ -39,7 +39,7 @@ const api=new Function("Audio","document","currentScreen","game","Math",source.r
 const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
 const current=()=>api.music.audio?.src||null;
 const THEME="assets/audio/blood-and-wages-theme.mp3",INTRO="assets/audio/intro.mp3";
-const ELFE_M="assets/audio/elfe-noir-m.mp3",ELFE_F="assets/audio/elfe-noir-f.mp3";
+const ELFE_M="assets/audio/Filthy Velvet Theme Elfe Noir M.mp3",ELFE_F="assets/audio/Double Wages - Theme Elfe Noir F.mp3";
 assert.deepEqual(api.MUSIC_TRACKS.camp.map(t=>t.src),[THEME,INTRO,ELFE_M,ELFE_F],"au camp : le thème, l'intro, les deux thèmes des Elfes noirs");
 assert.deepEqual(api.MUSIC_TRACKS.camp.filter(t=>t.culture).map(t=>[t.culture,t.sexe]),[["Elfes noirs","M"],["Elfes noirs","F"]]);
 

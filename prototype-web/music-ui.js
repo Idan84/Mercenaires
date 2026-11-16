@@ -14,8 +14,8 @@
 const MUSIC_TRACKS={
   menu:[{src:"assets/audio/intro.mp3",volume:0.65}],
   camp:[{src:"assets/audio/blood-and-wages-theme.mp3",volume:0.6},{src:"assets/audio/intro.mp3",volume:0.65},
-    {src:"assets/audio/elfe-noir-m.mp3",volume:0.6,culture:"Elfes noirs",sexe:"M"},
-    {src:"assets/audio/elfe-noir-f.mp3",volume:0.6,culture:"Elfes noirs",sexe:"F"}],
+    {src:"assets/audio/Filthy Velvet Theme Elfe Noir M.mp3",volume:0.6,culture:"Elfes noirs",sexe:"M"},
+    {src:"assets/audio/Double Wages - Theme Elfe Noir F.mp3",volume:0.6,culture:"Elfes noirs",sexe:"F"}],
   tavern:[{src:"assets/audio/tavern.mp3",volume:0.6}]
 };
 const MUSIC_SHUFFLED=new Set(["camp"]);

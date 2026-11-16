@@ -44,7 +44,7 @@ const pale = reference.terrainDecors.rows.find(d => d.code === "palissade");
 assert.deepEqual([pale.nom, pale.cout_mouvement, pale.bloque_vue, pale.couverture], ["Palissade", null, false, "partielle"]);
 assert.equal(lands.enceinte.decor, "palissade");
 assert.deepEqual([lands.enceinte.distance, lands.enceinte.ouvertures, lands.enceinte.largeur], [2, [2, 3], 2]);
-assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes", "Loups", "Licornes", "Cerbères", "Chiens sauvages", "Papillons", "Sangliers"], "la forêt suffit ; les bêtes n’ont pas de camp");
+assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes", "Loups", "Licornes", "Cerbères", "Chiens sauvages", "Papillons", "Sangliers", "Pégases"], "la forêt suffit ; les bêtes n’ont pas de camp");
 // Le cimetière du Culte des morts (Idan, 2026-11-06) : des tombes, entouré de murets.
 assert.equal(land("Culte des morts").nom, "Cimetière");
 assert.equal(land("Culte des morts").enceinte_decor, "muret");
@@ -157,6 +157,9 @@ assert.match(mission, /filter\(row=>row\.code!==wall&&row\.code!==CELLAR_DECOR\)
 assert.match(read("index.html"), /<script src="\/core\/mission-terrain\.js"><\/script>/);
 
 // 4. Les combats automatiques finissent, sur chaque paysage : 30 par faction, carte de contrat 36 × 25, le camp au centre.
+// Le capitaine non plus ne dépend pas du nombre de paysages vérifiés plus haut (2026-11-16 : les Hauts plateaux changeaient
+// le capitaine, donc tous les mercenaires des combats) : la graine qu'il avait jusqu'ici.
+seed = 1116735952;
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
 const captain = generator.createCaptain({id: 1});
 const element = () => ({textContent: "", innerHTML: "", disabled: false, title: "", style: {}, parentElement: {clientWidth: 900},

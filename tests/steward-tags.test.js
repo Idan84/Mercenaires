@@ -58,7 +58,10 @@ assert.equal(placeAmong([],3),0);
 const types=steward.missionTypes({},3);
 const traitsOf=faction=>types.find(t=>t.faction===faction)?.traits.map(t=>t.code)||[];
 assert.ok(traitsOf("Culte des morts").includes("mort_vivant"),"le Culte des morts : des morts-vivants");
-assert.ok(traitsOf("Cour de sang").includes("vol"),"la Cour de sang : des chauves-souris qui volent");
+// Le vol (Idan, 2026-11-16, avec les pégases : « Accepter ») : papillons et pégases volent tous ; la Cour de sang, une fiche
+// sur sept (les chauves-souris), passe sous la moyenne des missions : l'intendant ne la signale plus.
+assert.ok(["Papillons","Pégases"].every(f=>traitsOf(f).includes("vol")),"papillons et pégases : des bêtes qui volent");
+assert.ok(!traitsOf("Cour de sang").includes("vol"),"la Cour de sang : trop peu de chauves-souris");
 assert.ok(traitsOf("Voleurs").includes("monture"),"les Voleurs : des cavaliers");
 assert.deepEqual(traitsOf("Orcs"),[],"un camp sans trait distinctif n'est pas tagué");
 

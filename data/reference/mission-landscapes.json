@@ -22,7 +22,7 @@
     {"source": "Enceinte", "key": "enceinte"},
     {"source": "Décor de l'enceinte (sinon la palissade)", "key": "enceinte_decor"}
   ],
-  "row_count": 13,
+  "row_count": 14,
   "rows": [
     {
       "faction": "Gobelins",
@@ -191,6 +191,19 @@
       "decors": {"foret": 7, "buissons": 3, "ble_haut": 2, "marais": 1, "gros_rocher": 1},
       "collines": [0, 2],
       "hauteur_collines": 1,
+      "camp_hauteur": 0,
+      "rampes": [0, 0],
+      "zone_libre": 4
+    },
+    {
+      "faction": "Pégases",
+      "enceinte": false,
+      "nom": "Hauts plateaux",
+      "groupes": [16, 24],
+      "taille": [2, 5],
+      "decors": {"gros_rocher": 4, "buissons": 3, "eboulis": 2, "foret": 1, "gouffre": 1, "eau_peu_profonde": 1},
+      "collines": [1, 3],
+      "hauteur_collines": 2,
       "camp_hauteur": 0,
       "rampes": [0, 0],
       "zone_libre": 4

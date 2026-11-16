@@ -749,6 +749,57 @@
       "defaite": {
         "multiplicateur_mort": 2
       }
+    },
+    {
+      "code": "hunt_pegasus",
+      "nom": "Chasse au pégase",
+      "description": "Un troupeau de pégases : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
+      "illustration": "",
+      "illustrations": [],
+      "niveau": {
+        "ecart": [
+          -4,
+          1
+        ],
+        "min": 3
+      },
+      "max_ennemis": 100,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 36,
+        "lignes": 25
+      },
+      "bete": {
+        "code": "pegase",
+        "pluriel": "pégases",
+        "des": 1,
+        "faces": 4,
+        "faction": "Pégases",
+        "lieux": [
+          "Pics des nuées",
+          "Plateau des vents",
+          "Aire des pégases"
+        ]
+      },
+      "marche": {
+        "facteur": [
+          0.25,
+          1
+        ]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
     }
   ],
   "ordres": [
@@ -1300,6 +1351,38 @@
         "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Les sangliers sont sortis du bois. Ils ont mangé les glands, puis les raves, puis la palissade.",
         "Le porcher dit qu'ils sont {estimation}. Le porcher dit aussi que le gros mâle le regarde d'une drôle de façon.",
         "Le village a réuni {récompense} pièces d'or. Venez vite : ils commencent à regarder nos cochons avec un air de famille."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "pegasus_noble",
+      "mission": "hunt_pegasus",
+      "faction": "Pégases",
+      "commanditaire": "Noble",
+      "titre": "Un destrier qui vole",
+      "texte": [
+        "À la compagnie de mercenaires la plus discrète,",
+        "Je suis {commanditaire}, de {lieu}, à {jours} de marche de votre camp. Le tournoi de printemps approche, et mon cousin y viendra sur un pégase. Je n'y viendrai pas sur un cheval.",
+        "Des pégases nichent sur les hauteurs, au-dessus de mes terres. Mes fauconniers en ont compté {estimation}. Mes fauconniers comptent mieux les faucons.",
+        "Ils ruent, ils mordent et ils frappent d'en haut. Trois palefreniers l'ont appris ; un seul peut encore le raconter.",
+        "Je vous offre {récompense} pièces d'or pour vider le ciel au-dessus de mes terres. Si je ne peux pas en avoir, mon cousin n'en aura pas. Ceux que vous attraperez vivants, gardez-les : je n'ai pas d'écurie assez haute."
+      ],
+      "signature": "{commanditaire}, de {lieu}, le {date}",
+      "noms_commanditaire": "nobles"
+    },
+    {
+      "code": "pegasus_village",
+      "mission": "hunt_pegasus",
+      "faction": "Pégases",
+      "commanditaire": "Chef de village",
+      "titre": "Le foin des greniers",
+      "texte": [
+        "À toute compagnie de mercenaires qui sait viser en l'air,",
+        "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Chez nous, on rentre le foin dans les greniers, sous les toits. Les pégases l'ont compris avant nous.",
+        "Chaque nuit, ils se posent sur les toits, défoncent les greniers et mangent la récolte. Le meunier a perdu son toit, le forgeron sa grange, et le curé ne monte plus au clocher.",
+        "Les bergers en ont vu {estimation}. Ils regardaient en l'air au lieu de leurs moutons : nous avons aussi perdu des moutons.",
+        "Le village a réuni {récompense} pièces d'or. Faites-les redescendre, de gré ou de force."
       ],
       "signature": "{commanditaire}, chef de {lieu}, le {date}",
       "noms_commanditaire": "chefs_de_village"

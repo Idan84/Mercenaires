@@ -524,7 +524,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-rule" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
-  assert.match(css, /\.hc-sep\{[^}]*height:34px;margin-top:8px;/, "la couronne descendue sous la tête");
+  assert.match(css, /\.hc-sep\{[^}]*height:34px;margin:8px 0 5px;/, "la couronne descendue sous la tête, de l\'air dessous");
   assert.match(css, /\.hc-sep\{[^}]*background:var\(--hc-culture,var\(--encre\)\);[^}]*mask:url\("assets\/fiche\/separateurs\/couronne\.svg"\) center\/contain no-repeat;/);
   const sep = fs.readFileSync(path.join(root, "prototype-web/assets/fiche/separateurs/couronne.svg"), "utf8");
   assert.match(sep, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 1278\.0+ 298\.0+">/);

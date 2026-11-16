@@ -61,6 +61,10 @@
     {
       "key": "motifs",
       "source": "Fichiers de la famille dans prototype-web/ (* un nom, ** des dossiers, {a,b} des variantes) ; vide pour les images lues sur Hostinger. L'inventaire fichier par fichier en est tiré par scripts/build-images-index.js."
+    },
+    {
+      "key": "variantes",
+      "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
   "row_count": 23,
@@ -82,7 +86,8 @@
       ],
       "motifs": [
         "assets/camp-home-background.jpg"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "logo",
@@ -101,7 +106,8 @@
       ],
       "motifs": [
         "assets/blood-wages-logo.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "intro",
@@ -120,7 +126,8 @@
       ],
       "motifs": [
         "assets/intro/*.jpg"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "dortoirs",
@@ -141,7 +148,8 @@
       ],
       "motifs": [
         "assets/dormitory/dortoir-*.jpg"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "icones-dortoir",
@@ -162,7 +170,8 @@
       ],
       "motifs": [
         "assets/dormitory/icones/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "ornements-menu",
@@ -182,7 +191,8 @@
       ],
       "motifs": [
         "assets/ui/menu-*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "interface-creation",
@@ -203,7 +213,8 @@
       ],
       "motifs": [
         "assets/creation/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "blasons",
@@ -225,7 +236,8 @@
       "motifs": [
         "assets/creation/blasons/*.webp",
         "assets/creation/blasons-hd/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "svg-charte",
@@ -246,7 +258,8 @@
       ],
       "motifs": [
         "assets/creation/svg/*.svg"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "pictos",
@@ -268,7 +281,8 @@
       ],
       "motifs": [
         "assets/pictos/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "barres-camp",
@@ -289,7 +303,8 @@
       ],
       "motifs": [
         "assets/hud/barres/**/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "pictos-camp",
@@ -312,7 +327,8 @@
       "motifs": [
         "assets/hud/*.webp",
         "assets/hud/pictos-bas/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "rangs-ennemis",
@@ -332,7 +348,8 @@
       ],
       "motifs": [
         "assets/enemy-ranks/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "objets",
@@ -353,7 +370,8 @@
       "motifs": [
         "assets/equipment/{amulettes,armes,armures,bagues,bottes,capes,casques,ceintures,culottes,gants}/*.webp",
         "assets/equipment-large/{amulettes,armes,armures,bagues,bottes,capes,casques,ceintures,culottes,gants}/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "cadres-tier",
@@ -373,7 +391,8 @@
       ],
       "motifs": [
         "assets/equipment/frames/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "sorts",
@@ -394,7 +413,8 @@
       ],
       "motifs": [
         "assets/spells/**/*.webp"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "taverne",
@@ -416,7 +436,8 @@
       "motifs": [
         "assets/taverne/{fond,premier-plan,tavernier,table1,table2,trappe,menu,annonce}.webp",
         "assets/taverne/{table1,table2,taverniers}/*.webp"
-      ]
+      ],
+      "variantes": true
     },
     {
       "cle": "panneau-missions",
@@ -438,7 +459,8 @@
       "motifs": [
         "assets/taverne/{panneau-missions,papier-froisse,fleche-fer}.webp",
         "assets/taverne/{feuille,estompe,clou,punaise,cire,dague,lambeau}-*.webp"
-      ]
+      ],
+      "variantes": true
     },
     {
       "cle": "gravures-missions",
@@ -458,7 +480,8 @@
       ],
       "motifs": [
         "assets/missions/*.webp"
-      ]
+      ],
+      "variantes": true
     },
     {
       "cle": "ornements-titre",
@@ -479,7 +502,8 @@
       ],
       "motifs": [
         "assets/fiche/ornements/*.svg"
-      ]
+      ],
+      "variantes": false
     },
     {
       "cle": "avatars",
@@ -497,7 +521,8 @@
         "media/avatars/Elfes/Elf_001.jpg",
         "media/avatars/Elfes/Elf_001_square.jpg"
       ],
-      "motifs": []
+      "motifs": [],
+      "variantes": false
     },
     {
       "cle": "silhouettes",
@@ -512,7 +537,8 @@
       "alternates": "Une seule image.",
       "source": "Hostinger media/Avatars_Equipements/ → api/silhouettes.php.",
       "exemples": [],
-      "motifs": []
+      "motifs": [],
+      "variantes": false
     },
     {
       "cle": "decors-hostinger",
@@ -529,7 +555,8 @@
       "exemples": [
         "media/background/Quatermaster.jpg"
       ],
-      "motifs": []
+      "motifs": [],
+      "variantes": false
     }
   ]
 }

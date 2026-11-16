@@ -32,6 +32,9 @@ assert.deepEqual([c.Force, c.Constitution, c.Vitesse, c.Courage], [85, 80, 70, 7
 assert.ok(c.Esquive < loup.caracteristiques.Esquive && c.Esquive < destrier.caracteristiques.Esquive, "esquive faible");
 assert.ok(reference.skills.rows.some(s => s.nom === "Sangliers de combat"), "la compétence existait déjà (Compagnon animal)");
 assert.equal(reference.animalNames.rows.find(r => r.code === "sanglier")?.noms.length, 24, "24 noms");
+// Son marchand (Idan, 2026-11-16 : « Marchand, Orc des steppes ») : Draz Crinsauvage.
+const draz = reference.merchants.rows.find(m => m.nom === "Draz Crinsauvage");
+assert.deepEqual([draz.culture, draz.vend.some(v => v.type === "mount" && v.objet === "Sanglier de combat")], ["Orcs des steppes", true]);
 
 // 2. La Porcherie : une aile de la Grange, comme le Chenil.
 const pigsty = reference.campBuildings.rows.find(r => r.code === "trainer_pigsty"), kennel = reference.campBuildings.rows.find(r => r.code === "trainer_kennel");

@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 99 objets ; **99** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 100 objets ; **100** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -170,7 +170,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Gasha Poing-de-Marché | Orcs des villes | Épée courte, Arbalète, Épée double, Pavois, Culotte d’Intimidation, Ceinture de courage, Manuels de Transmutation | 7 |
 | Cairn Racinesombre | Tribus des forêts anciennes | Lance, Massue, Arme d’hast double, Armure de cuir, Chapeau du dresseur, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion, Loup | 8 |
-| Draz Crinsauvage | Orcs des steppes | Lance, Bague de la transmutation, Hachette, Bottes de vitesse, Cuir renforcé, Ceinture d’endurance, Manuels de Transmutation | 7 |
+| Draz Crinsauvage | Orcs des steppes | Lance, Bague de la transmutation, Hachette, Bottes de vitesse, Cuir renforcé, Ceinture d’endurance, Manuels de Transmutation, Sanglier de combat | 8 |
 | Bruga Roc-Fendu | Ogres des montagnes | Massue, Marteau de guerre, Pavois, Armure d'écailles, Casque de constitution, Ceinture d’endurance, Cerbère | 7 |
 | Bimble Lampeterne | Gnomes des cavernes | Pic de guerre, Fronde, Gants de pièges, Chapeau d’intelligence, Potion de mana, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Azhiss Kaal'Thesh | Reptiliens des cités-temples | Trident, Bâton long, Gambison, Amulette de puissance magique, Ceinture de mana, Bague de l’invocation, Manuels d’Invocation | 7 |
@@ -269,6 +269,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Montures | Papillon télépathe | Callie | 1 |
 | Montures | Papillon vénéneux | Jasper | 1 |
 | Montures | Pégase | Aymeric | 1 |
+| Montures | Sanglier de combat | Draz | 1 |
 | Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
 | Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
 | Manuels | Manuels d’Eau | Hroska, Isska, Ilyra | 3 |
@@ -294,6 +295,8 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 - Les papillons (Idan, 2026-11-09) : **Callie Loincompas** (Explorateurs) le **papillon télépathe** (900 PO de valeur, 3 PO
   d'entretien), **Jasper Bonnebourse** (Halflings des cités humaines) le **papillon vénéneux** (1 200 PO, 4 PO), **Dottie
   Mielbruyère** (Halflings des villages isolés) le **papillon géant** (3 000 PO, 10 PO) ; ils logent à la Serre.
+- **Draz Crinsauvage** (Orcs des steppes) vend des **sangliers de combat** (Idan, 2026-11-16 : « Marchand, Orc des steppes ») :
+  4 500 PO de valeur (15 PO d'entretien) ; ils logent à la Porcherie.
 - **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
 - **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.

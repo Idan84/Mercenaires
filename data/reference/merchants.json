@@ -1269,6 +1269,10 @@
         {
           "type": "manual",
           "ecole": "Transmutation"
+        },
+        {
+          "type": "mount",
+          "objet": "Sanglier de combat"
         }
       ],
       "repliques": {

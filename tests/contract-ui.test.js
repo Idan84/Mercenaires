@@ -563,7 +563,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   // tracée en SVG noir, servi de masque.
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
   // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
-  assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:0 2px\}/);
+  assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:6px 2px\}/, "de la marge avant et après le bloc armes");
   assert.match(hoverSrc, /const kit=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
   // Entre les colonnes de l'équipement et entre les écoles, la fente du parchemin (Idan : « Oui »).
   assert.match(css, /\.hc-kit-item\+\.hc-kit-item::before,\.hc-school\+\.hc-school::before\{content:"";position:absolute;[^}]*width:3px;background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);

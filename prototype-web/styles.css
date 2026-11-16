@@ -2496,8 +2496,9 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    dans l'axe de la couronne dessous (« il faut que la fente… soit centrée »). */
 .hc-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:12px}
 .hc-fente{display:block;align-self:stretch;width:3px;margin:2px 0;background:#8a6a40;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
-/* La même fente, couchée, sous les tags (Idan, 2026-11-16 : « séparateur horizontal (parchemin fendu) »). */
-.hc-fente--h{align-self:auto;width:auto;height:3px;margin:0 2px}
+/* La même fente, couchée, sous les tags et sous l'équipement (Idan, 2026-11-16 : « séparateur horizontal (parchemin
+   fendu) ») ; de l'air au-dessus et au-dessous (« Il faut de la marge avant et après le bloc armes »). */
+.hc-fente--h{align-self:auto;width:auto;height:3px;margin:6px 2px}
 .hc-origins{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:6px}
 /* Zone 2, les origines (Idan, 2026-11-15) : les deux ou trois pictos (peuple, culture, ascendance) centrés, alignés, à la
    même taille, ombrés ; dessous, une seule phrase (« Nain des montagnes au sang de dragon »), en gras, dans la couleur de

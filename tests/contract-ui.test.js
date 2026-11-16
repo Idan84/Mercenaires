@@ -531,7 +531,13 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     const six = hoverTagPlates(t(6)), eight = hoverTagPlates(t(8));
     assert.deepEqual(six.map(p => p.name), ["T1", "T2", "T3", "T4", "2 autres rôles"]);
     assert.deepEqual([eight.length, eight[4].name, eight[4].more, eight[4].hidden], [5, "4 autres rôles", true, ["T5", "T6", "T7", "T8"]]);
-    assert.match(hoverSrc, /hoverTagPlates\(d\.tags\)\.map\(tag=>`<li class="hc-tag[^`]*style="grid-column:\$\{tag\.col\}\/span 2"/);
+    assert.match(hoverSrc, /hoverTagPlates\(d\.tags\)\.map\(tag=>`<li class="hc-tag[\s\S]*?style="grid-column:\$\{tag\.col\}\/span 2"/);
+    // Le niveau de chaque tag sur sa plaque (Idan, 2026-11-16) : contour seul (1), fond à 50 % (2), plein (3).
+    assert.match(hoverSrc, /\$\{tag\.level<3\?` is-n\$\{tag\.level\}`:""\}/);
+    assert.match(hoverSrc, /level:shown\[id\]\?\.level\|\|3/);
+    assert.match(css, /\.hc-tag\.is-n1::after,\.hc-tag\.is-n2::after\{[^}]*clip-path:polygon\(evenodd,/);
+    assert.match(css, /\.hc-tag\.is-n1::before\{opacity:0\}\n\.hc-tag\.is-n2::before\{opacity:\.5\}/);
+    assert.equal(eight[4].level, 1, "la plaque « N autres rôles » : le contour seul");
     assert.match(css, /\.hc-tags\{display:grid;grid-template-columns:repeat\(6,minmax\(0,1fr\)\);/);
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan

@@ -2532,6 +2532,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-tag--vert{--t1:#2f6b3b;--t2:#1b3a21}
 .hc-tag--bleu{--t1:#38598c;--t2:#1b2f52}
 .hc-tag.is-mission{--t1:#64492e;--t2:#3b2a1b;background:linear-gradient(#fff3cf,#e0a95a 40%,#8a6120 62%,#f0c77f);color:#ffe1ac}
+/* Le niveau du tag (Idan, 2026-11-16 : « les tags ont 3 niveaux. Le premier niveau : contour de couleur et fond transparent.
+   Au second niveau, fond à 50 %. Niveau 3, c'est plein ») : la plaque pleine ci-dessus est le niveau 3 ; aux niveaux 1 et 2,
+   un contour de 2 px dans la couleur du tag (en or pour la mission) autour du parchemin, rempli à 50 % au niveau 2, le
+   texte dans la couleur foncée du tag. La plaque « N autres rôles » a le contour seul. */
+.hc-tag.is-n1,.hc-tag.is-n2{background:none;color:var(--t2);text-shadow:0 1px 0 rgba(255,250,236,.55)}
+.hc-tag.is-n1::after,.hc-tag.is-n2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
+.hc-tag.is-mission.is-n1::after,.hc-tag.is-mission.is-n2::after{background:linear-gradient(#e0a95a,#8a6120 62%,#c9973f)}
+.hc-tag.is-n1::before{opacity:0}
+.hc-tag.is-n2::before{opacity:.5}
 /* Les armes, l'armure et la monture : une case chacune, le nom au-dessus, entre de fins filets. */
 .hc-kit{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column}
 .hc-kit-item{display:grid;align-content:start;gap:2px;padding:0 8px;text-align:center}

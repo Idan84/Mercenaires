@@ -93,7 +93,7 @@ assert.match(html, /couronne\.webp" alt="" style="left:[\d.]+px;top:[\d.]+px;wid
 // La sangle sous le nom passe sous la séparation verticale (Idan, 2026-11-16) : posée avant elle.
 assert.ok(html.indexOf("cellule-fine.webp") < html.indexOf("cellule-fine-v.webp"), "la sangle sous le nom sous la séparation");
 assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-banner\{padding-bottom:14px\}\n\.hover-card\[data-kit\] \.hc-title\{margin-top:-5px\}/, "de l'air sous le titre, le nom en place");
-assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-page\{padding-top:22px\}/, "de l'air entre la sangle sous le nom et les pictos");
+assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-page\{padding-top:27px\}/, "de l'air entre la sangle sous le nom et les pictos");
 assert.match(read("prototype-web/hover-card-ui.js"), /\$\{hoverKitFrame\(frame\.kit\)\}\n {2}<\/article>/, "le cadre par-dessus la carte");
 assert.match(read("prototype-web/hover-card-ui.js"), /data-kit="\$\{esc\(frame\.kit\.cle\)\}"/);
 

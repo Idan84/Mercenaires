@@ -2479,7 +2479,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hover-card[data-kit] .hc-title{margin-top:-5px}
 /* La sangle sous le nom mord sur le haut de la page : plus d'air au-dessus des pictos (Idan, 2026-11-16 : « espacer un
    peu au-dessus des pictos et la barre à clous »). */
-.hover-card[data-kit] .hc-page{padding-top:22px}
+.hover-card[data-kit] .hc-page{padding-top:27px}
 .hover-card[data-kit] .hc-orn{width:var(--hc-orn-w);height:var(--hc-orn-h)}
 .hover-card[data-kit] .hc-orn--l{margin:0 var(--hc-orn-ecart) 0 calc(var(--hc-orn-vide) * -1)}
 .hover-card[data-kit] .hc-orn--r{margin:0 calc(var(--hc-orn-vide) * -1) 0 var(--hc-orn-ecart)}

@@ -177,6 +177,9 @@ function hoverKitFrame(kit){
   const mi={haut:B.y0+e/2,bas:B.y1-e/2,gauche:B.x0+eV/2,droite:B.x1-eV/2};
   const S=F.separation,sx=HOVER_CARD.sepX+S.dx,se=S.ep,T=G.raccordT,Tk=se/T.coeur;
   const raccords=[];
+  // La sangle sous le nom passe sous la séparation verticale (Idan, 2026-11-16 : « la barre en cuir cloutée horizontale
+  // sous la barre cuir clouée verticale qui est à gauche ») : posée avant elle.
+  if(F.sousNom.style!=="aucune") out.push(hoverKitStrap(dir,G.sangles[F.sousNom.style],"x",sx,B.x1-e/2,HOVER_CARD.sepNomY+F.sousNom.dy,se));
   if(S.style!=="aucune"){
     out.push(hoverKitStrap(dir,G.sangles[S.style],"y",B.y0,B.y1,sx,se));
     if(S.raccords!=="aucun"){
@@ -184,7 +187,6 @@ function hoverKitFrame(kit){
       raccords.push(pose(S.tHaut,B.y0+(e-se)/2-T.haut*Tk,false),pose(S.tBas,B.y1-(e-se)/2-(T.h-T.haut)*Tk,true));
     }
   }
-  if(F.sousNom.style!=="aucune") out.push(hoverKitStrap(dir,G.sangles[F.sousNom.style],"x",sx,B.x1-e/2,HOVER_CARD.sepNomY+F.sousNom.dy,se));
   if(S.raccords==="dessous") out.push(...raccords);
   if(F.cadre.style!=="aucune"){
     // Chaque côté part du bout des bras (un demi-pixel sous le coin, pour ne laisser aucun jour).
@@ -242,9 +244,10 @@ function hoverKitFrame(kit){
 // aux proportions de Chatty (styles.css) ; le cadre vient du kit graphique de la culture, posé par-dessus
 // (hoverKitFrame ; les cultures sans kit n'en ont pas encore). À gauche le portrait en pied ; à droite le
 // cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
-const HEART='<path d="M12 21.2s-7.6-4.7-10.1-9.3C.1 8.4 1.6 3.4 6.1 2.4 8.6 1.8 10.7 3 12 5c1.3-2 3.4-3.2 5.9-2.6 4.5 1 6 6 4.2 9.5-2.5 4.6-10.1 9.3-10.1 9.3z"/>';
+// Les cœurs de l'affinité : à facettes, comme les étoiles de la réputation (Idan, 2026-11-16 : « des coeurs assortis aux
+// étoiles… avoir un style commun, c'est important » ; images : assets/ui/coeurs/, styles.css).
 function hoverHearts(filled){
-  return Array.from({length:10},(_,i)=>`<svg class="hc-heart${i<filled?" is-full":""}" viewBox="0 0 24 22" aria-hidden="true">${HEART}</svg>`).join("");
+  return Array.from({length:10},(_,i)=>`<i class="hc-heart${i<filled?" is-full":""}"></i>`).join("");
 }
 function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const d=mercenaryHoverData(c,{missionTag});
@@ -267,12 +270,14 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
-      <section class="hc-origins" aria-label="Origines"><div class="hc-emblems">${emblems}</div><p class="hc-origin">${esc(d.origin)}</p></section>
-      <i class="hc-rule" aria-hidden="true"></i>
-      <div class="hc-stats">
-        <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
-        ${affinity}
-        <div class="hc-stat hc-stat--bonus"><span class="hc-label">Prime de mission</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
+      <div class="hc-head">
+        <section class="hc-origins" aria-label="Origines"><div class="hc-emblems">${emblems}</div><p class="hc-origin">${esc(d.origin)}</p></section>
+        <i class="hc-fente" aria-hidden="true"></i>
+        <div class="hc-stats">
+          <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
+          ${affinity}
+          <div class="hc-stat hc-stat--bonus"><span class="hc-label" title="Prime de mission">Prime</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
+        </div>
       </div>
       ${tags?`<i class="hc-rule" aria-hidden="true"></i><ul class="hc-tags">${tags}</ul>`:""}
       <i class="hc-rule" aria-hidden="true"></i>
@@ -294,10 +299,11 @@ function fitHoverCard(root){
     return fits();
   };
   const name=root.querySelector(".hc-banner h3"),title=root.querySelector(".hc-title span"),banner=root.querySelector(".hc-banner");
-  // Le nom et le titre tiennent dans la hauteur du cartouche, avec 3 px de marge en haut et en bas (les jambages).
+  // Le nom et le titre tiennent dans la hauteur du cartouche (sans le bas réservé des fiches au kit), avec 3 px de marge en
+  // haut et en bas (les jambages).
   const bannerFits=()=>{
-    const gap=parseFloat(getComputedStyle(banner).rowGap)||0;
-    return (name?name.offsetHeight:0)+gap+title.parentElement.offsetHeight<=banner.clientHeight-6;
+    const cs=getComputedStyle(banner),gap=parseFloat(cs.rowGap)||0,room=banner.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0);
+    return (name?name.offsetHeight:0)+gap+title.parentElement.offsetHeight<=room-6;
   };
   if(name) shrink(name,()=>name.scrollWidth<=name.clientWidth+1,.6);
   // La phrase d'origine : une ligne, sa police baisse jusqu'à 82 % s'il le faut ; au-delà, elle passe sur deux lignes.

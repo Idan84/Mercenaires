@@ -166,8 +166,8 @@ const DIMENSIONS = [
   dim("parchemin-bord", CC, ".parch::before", "border-width:100px", "100px", "Épaisseur des bords du parchemin d'Idan (ses coins ne sont jamais déformés)."),
   dim("fiche-largeur", ST, ".hover-card", "--hc-w:860px", "860px", "Largeur de la fiche au survol."),
   dim("fiche-hauteur", ST, ".hover-card", "--hc-h:565px", "565px", "Hauteur de la fiche au survol."),
-  dim("picto-origine", ST, ".hc-emblem .picto", "width:52px;height:52px", "52px", "Taille des pictos peuple, culture, ascendance de la fiche au survol."),
-  dim("ecart-pictos-origine", ST, ".hc-emblems", "gap:26px", "26px", "Écart entre les pictos peuple, culture, ascendance de la fiche au survol."),
+  dim("picto-origine", ST, ".hc-emblem .picto", "width:48px;height:48px", "48px", "Taille des pictos peuple, culture, ascendance de la fiche au survol."),
+  dim("ecart-pictos-origine", ST, ".hc-emblems", "gap:12px", "12px", "Écart entre les pictos peuple, culture, ascendance de la fiche au survol."),
 ];
 
 function families() {

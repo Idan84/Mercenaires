@@ -2472,6 +2472,11 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    en tuile, assombri ; l'ornement du titre à la hauteur choisie par Idan (sa boîte commune, la partie vide vers
    l'extérieur rattrapée par une marge négative) ; le cadre posé par-dessus la carte, ses ornements peuvent déborder. */
 .hover-card[data-kit] .hc-banner{background:linear-gradient(rgba(12,2,16,var(--hc-kit-sombre)),rgba(12,2,16,var(--hc-kit-sombre))),var(--hc-texture) 50% 50%/var(--hc-kit-grain) repeat,#1d1220}
+/* Plus d'air sous le titre, au-dessus de la sangle sous le nom (Idan, 2026-11-16 : « 4-5 px de plus de marge sous le titre »,
+   puis « sous le titre, pas sous le nom… encore 4-5 px de plus ») : le bas réservé remonte le nom et le titre (centrés) de
+   sa moitié, puis le titre seul remonte de 5 px vers le nom, le nom restant en place. */
+.hover-card[data-kit] .hc-banner{padding-bottom:14px}
+.hover-card[data-kit] .hc-title{margin-top:-5px}
 .hover-card[data-kit] .hc-orn{width:var(--hc-orn-w);height:var(--hc-orn-h)}
 .hover-card[data-kit] .hc-orn--l{margin:0 var(--hc-orn-ecart) 0 calc(var(--hc-orn-vide) * -1)}
 .hover-card[data-kit] .hc-orn--r{margin:0 calc(var(--hc-orn-vide) * -1) 0 var(--hc-orn-ecart)}
@@ -2483,26 +2488,33 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
 .hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6a40 18%,#8a6a40 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
-.hc-origins{display:grid;justify-items:center;gap:6px}
+/* Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, à droite la réputation, l'affinité et la
+   prime de mission (« Prime » : « ça va nous permettre de gagner de la place à gauche ») ; entre les deux, une fente dans
+   le parchemin, plus épaisse au milieu qu'aux extrémités, fine. */
+.hc-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.2fr);align-items:center;column-gap:14px}
+.hc-fente{display:block;align-self:stretch;width:3px;margin:2px 0;background:linear-gradient(90deg,#3a2614 0 62%,rgba(255,250,236,.85) 62%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.hc-origins{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:6px}
 /* Zone 2, les origines (Idan, 2026-11-15) : les deux ou trois pictos (peuple, culture, ascendance) centrés, alignés, à la
    même taille, ombrés ; dessous, une seule phrase (« Nain des montagnes au sang de dragon »), en gras, dans la couleur de
    la culture (culture-colors.json), avec une légère ombre. */
-.hc-emblems{display:flex;justify-content:center;align-items:center;gap:26px}
+.hc-emblems{display:flex;justify-content:center;align-items:center;gap:12px}
 .hc-emblem{display:block;line-height:0}
-.hc-emblem .picto{display:block;width:52px;height:52px;margin:0;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(36,24,12,.55))}
+.hc-emblem .picto{display:block;width:48px;height:48px;margin:0;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(36,24,12,.55))}
 .hc-origin{margin:0;max-width:100%;text-align:center;text-wrap:balance;font:700 20px/1.15 var(--police-texte);color:var(--hc-culture,var(--encre));text-shadow:0 1px 1.5px rgba(40,22,8,.3)}
-.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px 16px;padding:0 6px}
+.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:9px 12px}
 .hc-stat{display:contents}
 .hc-stat>:not(.hc-label){justify-self:start}
-.hc-bonus{display:inline-flex;align-items:center;gap:8px}
-.hc-label{font:600 17px/1 var(--police-texte);color:#3b2a1b}
+.hc-bonus{display:inline-flex;align-items:center;gap:6px}
+.hc-label{font:600 16px/1 var(--police-texte);color:#3b2a1b}
 .hc-stats .rep-stars{font-size:20px;gap:0}
 .hc-stats .rep-star:not(.rep-star--empty){filter:drop-shadow(0 1px 0 rgba(70,42,18,.55)) drop-shadow(0 0 1px rgba(0,0,0,.55))}
-.hc-hearts{display:inline-flex;gap:2px}
-.hc-heart{width:14px;height:13px;fill:#a69578;stroke:rgba(60,40,20,.45);stroke-width:1.2}
-.hc-heart.is-full{fill:#c4241a;stroke:#6e1712;filter:drop-shadow(0 1px 0 rgba(255,255,255,.35))}
-.hc-bonus img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
-.hc-bonus b{font:700 23px/1 var(--police-texte);color:var(--encre)}
+/* Les cœurs de l'affinité, à facettes comme les étoiles (Idan, 2026-11-16 : « un style commun ») : pleins en rubis,
+   vides en gris transparent ; la même ombre que les étoiles. */
+.hc-hearts{display:inline-flex;gap:1px}
+.hc-heart{display:block;flex:none;width:15px;height:15px;background:url("assets/ui/coeurs/vide.svg") center/contain no-repeat}
+.hc-heart.is-full{background-image:url("assets/ui/coeurs/plein.svg");filter:drop-shadow(0 1px 0 rgba(70,42,18,.55)) drop-shadow(0 0 1px rgba(0,0,0,.55))}
+.hc-bonus img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
+.hc-bonus b{font:700 18px/1 var(--police-texte);color:var(--encre)}
 /* Les tags : plaques biseautées, bord d'argent ; celle de la mission, bord d'or. Trois par rangée. */
 .hc-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 6px;margin:0;padding:0;list-style:none}
 .hc-tag{--hex:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:32px;box-sizing:border-box;padding:4px 14px 5px;clip-path:var(--hex);background:linear-gradient(#f4f1ec,#9da2a7 40%,#5d6267 60%,#b9bdc1);text-align:center;font:600 15px/1.08 var(--police-texte);color:#f4f1ec;text-shadow:0 1px 1px rgba(0,0,0,.65)}

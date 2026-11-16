@@ -503,5 +503,23 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(css, /\.hc-portrait\{position:absolute;left:1\.2%;top:1\.5%;width:34%;height:97%;/);
   assert.match(css, /\.hc-banner\{position:absolute;left:36\.2%;right:1\.2%;top:1\.5%;height:14\.35%;/);
   assert.doesNotMatch(hoverSrc + css, /hc-corner|hover-card-ring|hover-card-bar|hc-side/, "plus de cadres : ils viendront en dernier");
+  // Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, une fente dans le parchemin (plus épaisse
+  // au milieu qu'aux extrémités, « beaucoup plus fine »), à droite la réputation, l'affinité et la prime ; les cœurs à
+  // facettes, comme les étoiles de la réputation (« un style commun »).
+  const head = hoverSrc.slice(hoverSrc.indexOf('<div class="hc-head">'), hoverSrc.indexOf("${tags?"));
+  const at2 = needle => head.indexOf(needle);
+  assert.ok(at2('<section class="hc-origins"') > 0 && at2('<section class="hc-origins"') < at2('<i class="hc-fente" aria-hidden="true"></i>')
+    && at2('<i class="hc-fente"') < at2('<div class="hc-stats">') && at2("Réputation") < at2("${affinity}") && at2("${affinity}") < at2('<span class="hc-label" title="Prime de mission">Prime</span>'), "origines | fente | réputation, affinité, prime");
+  assert.match(css, /\.hc-head\{display:grid;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1\.2fr\);/);
+  assert.match(css, /\.hc-fente\{[^}]*width:3px;[^}]*clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
+  assert.match(css, /\.hc-origins\{display:grid;grid-template-columns:minmax\(0,1fr\);/, "la phrase passe sur deux lignes dans sa colonne");
+  assert.match(hoverSrc, /`<i class="hc-heart\$\{i<filled\?" is-full":""\}"><\/i>`/);
+  assert.match(css, /\.hc-heart\{[^}]*background:url\("assets\/ui\/coeurs\/vide\.svg"\)/);
+  assert.match(css, /\.hc-heart\.is-full\{background-image:url\("assets\/ui\/coeurs\/plein\.svg"\)/);
+  for (const f of ["plein", "vide"]) assert.match(fs.readFileSync(path.join(root, "prototype-web/assets/ui/coeurs", f + ".svg"), "utf8"), /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 100 100"><!-- Blood & Wages : cœur [^>]*à facettes/);
+  assert.match(css, /\.hc-bonus img\{width:24px;height:24px;/, "des pièces d'or plus petites");
+  assert.match(css, /\.hc-bonus b\{font:700 18px\/1 /);
+  // Le nom et le titre tiennent dans le cartouche sans son bas réservé (fiches au kit : plus d'air sous le titre).
+  assert.match(hoverSrc, /room=banner\.clientHeight-\(parseFloat\(cs\.paddingTop\)\|\|0\)-\(parseFloat\(cs\.paddingBottom\)\|\|0\)/);
 }
 console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action, choix de l'escouade — OK");

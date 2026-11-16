@@ -432,8 +432,9 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   const api = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData, hoverCultureFrame, originPhrase};")(...Object.values(stubs));
   const merc = {name: "Yazga", people: "Orc", culture: "Orcs des steppes", contract: {missionBonus: 81},
     spells: [{code: "boule"}, {code: "soin"}, {code: "boule"}],
-    items: [{id: 1, category: "Épées à une main"}, {id: 2, category: "Épées à une main"}, {id: 3, category: "Armes de tir"},
-      {id: 4, category: "Intermédiaire"}, {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
+    items: [{id: 1, name: "Épée longue", category: "Lames longues"}, {id: 2, name: "Épée courte", category: "Lames courtes"},
+      {id: 3, name: "Arc", category: "Armes de tir"}, {id: 4, name: "Armure de cuir", category: "Légère"},
+      {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
     equipment: {slots: {weapon_set_1_main: 1, weapon_set_1_off: 2, weapon_set_2_main: 3, armor: 4, mount: 5}}};
   const d = api.mercenaryHoverData(merc, {missionTag: "occupation/garde-du-corps"});
   // Zone 2 : la phrase d'origine, le peuple et la culture en une fois, puis « au sang de » (Idan, 2026-11-15).
@@ -448,13 +449,24 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.equal(api.originPhrase({people: "Halfling", culture: "Explorateurs"}), "Halfling explorateur");
   // Au masculin pour tous, la phrase comme le titre (« Humain (pour un homme et une femme) »).
   assert.doesNotMatch(hoverSrc, /isFemale|female/);
-  assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Haches", "Dégâts"], "seulement les plus précis, celui de la mission d'abord");
-  assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "vert", "bleu"]);
+  // « On met que la catégorie la plus basse. On met uniquement les tags missions et rôle au combat » (Idan, 2026-11-16) :
+  // ni l'équipement (Haches), ni les autres occupations.
+  assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Dégâts"], "seulement les plus précis, missions et rôle au combat, celui de la mission d'abord");
+  assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "bleu"]);
   assert.equal(d.tags[0].mission, true);
-  assert.deepEqual(d.sets, [["Épées à une main", "Épées à une main"], ["Armes de tir"]], "« deux épées, c'est pas épée et bouclier »");
-  assert.equal(d.armor, "Armure intermédiaire");
+  // Le nom de chaque arme et de l'armure (Idan, 2026-11-16 : « épée longue et écu », « Arc », « Armure de cuir »), les deux
+  // mains (« deux épées, c'est pas épée et bouclier »).
+  assert.deepEqual(d.sets, [["Épée longue", "Épée courte"], ["Arc"]], "« deux épées, c'est pas épée et bouclier »");
+  assert.equal(d.armor, "Armure de cuir");
+  const {hoverWeapons} = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {hoverWeapons};")(...Object.values(stubs));
+  assert.equal(hoverWeapons(["Épée longue", "Écu"]), "Épée longue et écu");
+  assert.equal(hoverWeapons(["Arc"]), "Arc");
+  assert.equal(hoverWeapons([]), "");
+  assert.equal(api.mercenaryHoverData({...merc, items: [{id: 4, category: "Intermédiaire"}]}).armor, "Armure intermédiaire", "sans nom : son type");
   assert.deepEqual(d.schools, ["Feu", "Vie"], "les écoles où il a au moins un sort");
-  assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat"}, "« Ah oui » : sa monture");
+  assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat", code: "loup"}, "« Ah oui » : sa monture");
+  assert.deepEqual(api.mercenaryHoverData({...merc, items: [...merc.items.slice(0, 4), {id: 5, itemType: "mount", name: "Loup de combat", petName: "Croc-Noir", mountCode: "loup"}]}).mount,
+    {name: "Croc-Noir", kind: "Loup de combat", code: "loup"}, "le nom qu'on lui a donné, puis son espèce");
   assert.equal(d.bonus, 81);
   assert.equal(api.mercenaryHoverData({...merc, contract: null}).bonus, 40, "sans contrat : la prime qu'il demanderait");
   // Les écoles : les 9 pictos d'Idan (assets/pictos/ecole-<slug>.webp), un par école de magie.
@@ -503,5 +515,96 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(css, /\.hc-portrait\{position:absolute;left:1\.2%;top:1\.5%;width:34%;height:97%;/);
   assert.match(css, /\.hc-banner\{position:absolute;left:36\.2%;right:1\.2%;top:1\.5%;height:14\.35%;/);
   assert.doesNotMatch(hoverSrc + css, /hc-corner|hover-card-ring|hover-card-bar|hc-side/, "plus de cadres : ils viendront en dernier");
+  // Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, une fente dans le parchemin (plus épaisse
+  // au milieu qu'aux extrémités, « beaucoup plus fine »), à droite la réputation, l'affinité et la prime ; les cœurs à
+  // facettes, comme les étoiles de la réputation (« un style commun »).
+  const head = hoverSrc.slice(hoverSrc.indexOf('<div class="hc-head">'), hoverSrc.indexOf("${tags?"));
+  const at2 = needle => head.indexOf(needle);
+  assert.ok(at2('<section class="hc-origins"') > 0 && at2('<section class="hc-origins"') < at2('<i class="hc-fente" aria-hidden="true"></i>')
+    && at2('<i class="hc-fente"') < at2('<div class="hc-stats">') && at2("Réputation") < at2("${affinity}") && at2("${affinity}") < at2('<span class="hc-label" title="Prime de mission">Prime</span>'), "origines | fente | réputation, affinité, prime");
+  assert.match(css, /\.hc-head\{display:grid;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/, "la fente au milieu, dans l'axe de la couronne");
+  assert.match(css, /\.hc-fente\{[^}]*width:3px;[^}]*background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
+  assert.match(css, /\.hc-origins\{display:grid;grid-template-columns:minmax\(0,1fr\);/, "la phrase passe sur deux lignes dans sa colonne");
+  assert.match(hoverSrc, /`<i class="hc-heart\$\{i<filled\?" is-full":""\}"><\/i>`/);
+  assert.match(css, /\.hc-heart\{[^}]*background:url\("assets\/ui\/coeurs\/vide\.svg"\)/);
+  assert.match(css, /\.hc-heart\.is-full\{background-image:url\("assets\/ui\/coeurs\/plein\.svg"\)/);
+  for (const f of ["plein", "vide"]) assert.match(fs.readFileSync(path.join(root, "prototype-web/assets/ui/coeurs", f + ".svg"), "utf8"), /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 100 100"><!-- Blood & Wages : cœur [^>]*à facettes/);
+  assert.match(css, /\.hc-bonus img\{width:24px;height:24px;/, "des pièces d'or plus petites");
+  assert.match(css, /\.hc-bonus b\{font:700 18px\/1 /);
+  // Les tags : au plus 5, en quinconce (trois en haut, deux décalés dessous, rangées centrées) ; à partir de 6, la dernière
+  // plaque dit combien d'autres (Idan, 2026-11-16).
+  {
+    const {hoverTagPlates} = require(path.join(root, "prototype-web/hover-card-ui.js"));
+    const t = n => Array.from({length: n}, (_, i) => ({name: "T" + (i + 1), tone: "bleu", mission: false}));
+    const cols = n => hoverTagPlates(t(n)).map(p => p.col);
+    assert.deepEqual([cols(1), cols(2), cols(3), cols(4), cols(5)], [[3], [2, 4], [1, 3, 5], [1, 3, 5, 3], [1, 3, 5, 2, 4]]);
+    const six = hoverTagPlates(t(6)), eight = hoverTagPlates(t(8));
+    assert.deepEqual(six.map(p => p.name), ["T1", "T2", "T3", "T4", "2 autres rôles"]);
+    assert.deepEqual([eight.length, eight[4].name, eight[4].more, eight[4].hidden], [5, "4 autres rôles", true, ["T5", "T6", "T7", "T8"]]);
+    assert.match(hoverSrc, /hoverTagPlates\(d\.tags\)\.map\(tag=>`<li class="hc-tag[\s\S]*?style="grid-column:\$\{tag\.col\}\/span 2"/);
+    // Le niveau de chaque tag sur sa plaque (Idan, 2026-11-16) : contour seul (1), fond à 50 % (2), plein (3).
+    assert.match(hoverSrc, /\$\{tag\.level<3\?` is-n\$\{tag\.level\}`:""\}/);
+    assert.match(hoverSrc, /level:shown\[id\]\?\.level\|\|3/);
+    assert.match(css, /\.hc-tag\.is-n1::after,\.hc-tag\.is-n2::after\{[^}]*clip-path:polygon\(evenodd,/);
+    assert.match(css, /\.hc-tag\.is-n1::before\{opacity:0\}\n\.hc-tag\.is-n2::before\{opacity:\.5\}/);
+    assert.equal(eight[4].level, 1, "la plaque « N autres rôles » : le contour seul");
+    // Deux tags au même nom : le nom du parent devant, l'adjectif accordé (Idan, 2026-11-16 : « oui »).
+    const {hoverTagFullName} = require(path.join(root, "prototype-web/hover-card-ui.js"));
+    assert.deepEqual([hoverTagFullName("Dégâts", "De zone"), hoverTagFullName("Soin", "De zone"), hoverTagFullName("Dégâts", "Brûlant"),
+      hoverTagFullName("Dégâts élémentaires", "Glaçant")], ["Dégâts de zone", "Soin de zone", "Dégâts brûlants", "Dégâts élémentaires glaçants"]);
+    const dupNames = {"role/degats": "Dégâts", "role/soin": "Soin", "role/degats/de-zone": "De zone", "role/soin/de-zone": "De zone", "role/protection": "Protection"};
+    const dupApi = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData};")(...Object.values({...stubs,
+      tagRules: () => ({litIds: () => ["role/degats", "role/degats/de-zone", "role/soin", "role/soin/de-zone", "role/protection"], node: id => ({nom: dupNames[id] || id}),
+        columns: [{code: "role", teinte: "bleu"}]})}));
+    assert.deepEqual(dupApi.mercenaryHoverData(merc).tags.map(t => t.name), ["Dégâts de zone", "Soin de zone", "Protection"], "le parent seulement en cas de doublon");
+    assert.match(css, /\.hc-tags\{display:grid;grid-template-columns:repeat\(6,minmax\(0,1fr\)\);/);
+  }
+  // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
+  // tracée en SVG noir, servi de masque.
+  assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
+  // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
+  assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:6px 2px\}/, "de la marge avant et après le bloc armes");
+  assert.match(hoverSrc, /const kit=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
+  // Entre les colonnes de l'équipement et entre les écoles, la fente du parchemin (Idan : « Oui »).
+  assert.match(css, /\.hc-kit-item\+\.hc-kit-item::before,\.hc-school\+\.hc-school::before\{content:"";position:absolute;[^}]*width:3px;background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
+  assert.doesNotMatch(css, /\.hc-(kit-item|school)[^{]*\{[^}]*border-left/);
+  // Dessous, deux colonnes : les écoles de magie à gauche, la monture à droite, la fente entre les deux ; seule, l'une ou
+  // l'autre se centre (Idan, 2026-11-16).
+  assert.match(hoverSrc, /<div class="hc-foot\$\{magic&&steed\?" is-2":""\}">\$\{magic\}\$\{magic&&steed\?`<i class="hc-fente" aria-hidden="true"><\/i>`:""\}\$\{steed\}<\/div>/);
+  assert.match(hoverSrc, /<div class="hc-kit">\$\{kit\}<\/div>\s*\$\{foot\}\s*<\/div>/);
+  assert.match(css, /\.hc-foot\.is-2\{grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/);
+  // La monture : son portrait seul, un peu plus petit (Idan, 2026-11-16 : « réduire un peu l'avatar monture, virer le nom
+  // de la monture ») ; son nom reste pour les lecteurs d'écran.
+  assert.match(hoverSrc, /const steed=d\.mount\?hoverMountPortrait\(d\.mount\):"";/, "le portrait seul, sans le nom");
+  assert.match(css, /\.hc-steed-portrait\{[^}]*width:72px;height:72px;/, "réduire un peu l'avatar monture");
+  assert.doesNotMatch(css, /\.hc-steed[\s>{]/, "plus de bloc portrait + nom");
+  {
+    const {hoverMountPortrait} = new Function(...Object.keys(stubs), "esc", hoverSrc + "\nreturn {hoverMountPortrait};")(...Object.values(stubs), esc);
+    const fig = hoverMountPortrait({name: "Croc-Noir", kind: "Loup de combat", code: "loup"});
+    assert.match(fig, /aria-label="Croc-Noir, Loup de combat"/);
+    assert.doesNotMatch(fig.replace(/aria-label="[^"]*"/, ""), /Croc-Noir/, "le nom n'est plus affiché");
+  }
+  assert.doesNotMatch(hoverSrc + css, /hc-rule/, "plus de filet : les fentes du parchemin");
+  // Les écoles : les pictos seuls, 48 px, sur une ligne, qui rétrécissent pour tout faire tenir (Idan, 2026-11-16).
+  assert.match(hoverSrc, /`<span class="hc-school" role="img" aria-label="\$\{esc\(name\)\}">\$\{renderPicto\("school",name,\{size:"md"\}\)\}<\/span>`/, "pictos seuls, sans nom");
+  assert.match(css, /\.hc-school\{position:relative;flex:0 0 min\(48px,calc\(\(100% - \(var\(--n,1\) - 1\) \* var\(--ecart\)\) \/ var\(--n,1\)\)\);/, "48 px, rétrécis pour tout faire tenir");
+  // Une ligne ; à côté de la monture, au-delà de 4, deux lignes, la première la plus longue (« Deux lignes »).
+  const {hoverSchoolRows} = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {hoverSchoolRows};")(...Object.values(stubs));
+  const nine = ["Transmutation", "Nécromancie", "Télékinésie", "Invocation", "Illusion", "Foudre", "Feu", "Eau", "Vie"];
+  assert.deepEqual(hoverSchoolRows(nine, false).map(r => r.length), [9]);
+  assert.deepEqual(hoverSchoolRows(nine.slice(0, 4), true).map(r => r.length), [4]);
+  assert.deepEqual(hoverSchoolRows(nine.slice(0, 5), true).map(r => r.length), [3, 2]);
+  assert.deepEqual(hoverSchoolRows(nine, true).map(r => r.length), [5, 4]);
+  assert.deepEqual(hoverSchoolRows([], true), []);
+  assert.doesNotMatch(hoverSrc, /Écoles de magie/, "« Retire le école de magie »");
+  assert.doesNotMatch(hoverSrc, /"Set [12]"|\["Armure",/, "« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »");
+  assert.match(css, /\.hc-kit\{display:grid;grid-auto-columns:minmax\(0,1fr\);grid-auto-flow:column\}/);
+  assert.match(css, /\.hc-sep\{[^}]*height:34px;margin:8px 0 5px;/, "la couronne descendue sous la tête, de l\'air dessous");
+  assert.match(css, /\.hc-sep\{[^}]*background:var\(--hc-culture,var\(--encre\)\);[^}]*mask:url\("assets\/fiche\/separateurs\/couronne\.svg"\) center\/contain no-repeat;/);
+  const sep = fs.readFileSync(path.join(root, "prototype-web/assets/fiche/separateurs/couronne.svg"), "utf8");
+  assert.match(sep, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 1278\.0+ 298\.0+">/);
+  assert.doesNotMatch(sep, /(?:fill|stroke)="(?!#000"|none")/, "monochrome, coloré par le CSS");
+  // Le nom et le titre tiennent dans le cartouche sans son bas réservé (fiches au kit : plus d'air sous le titre).
+  assert.match(hoverSrc, /room=banner\.clientHeight-\(parseFloat\(cs\.paddingTop\)\|\|0\)-\(parseFloat\(cs\.paddingBottom\)\|\|0\)/);
 }
 console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action, choix de l'escouade — OK");

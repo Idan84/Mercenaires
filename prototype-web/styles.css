@@ -2472,6 +2472,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    en tuile, assombri ; l'ornement du titre à la hauteur choisie par Idan (sa boîte commune, la partie vide vers
    l'extérieur rattrapée par une marge négative) ; le cadre posé par-dessus la carte, ses ornements peuvent déborder. */
 .hover-card[data-kit] .hc-banner{background:linear-gradient(rgba(12,2,16,var(--hc-kit-sombre)),rgba(12,2,16,var(--hc-kit-sombre))),var(--hc-texture) 50% 50%/var(--hc-kit-grain) repeat,#1d1220}
+/* Plus d'air sous le titre, au-dessus de la sangle sous le nom (Idan, 2026-11-16 : « 4-5 px de plus de marge sous le titre »,
+   puis « sous le titre, pas sous le nom… encore 4-5 px de plus ») : le bas réservé remonte le nom et le titre (centrés) de
+   sa moitié, puis le titre seul remonte de 5 px vers le nom, le nom restant en place. */
+.hover-card[data-kit] .hc-banner{padding-bottom:14px}
+.hover-card[data-kit] .hc-title{margin-top:-5px}
+/* La sangle sous le nom mord sur le haut de la page : plus d'air au-dessus des pictos (Idan, 2026-11-16 : « espacer un
+   peu au-dessus des pictos et la barre à clous »). */
+.hover-card[data-kit] .hc-page{padding-top:27px}
 .hover-card[data-kit] .hc-orn{width:var(--hc-orn-w);height:var(--hc-orn-h)}
 .hover-card[data-kit] .hc-orn--l{margin:0 var(--hc-orn-ecart) 0 calc(var(--hc-orn-vide) * -1)}
 .hover-card[data-kit] .hc-orn--r{margin:0 calc(var(--hc-orn-vide) * -1) 0 var(--hc-orn-ecart)}
@@ -2482,50 +2490,84 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-choice-hover{position:fixed;left:0;top:0;z-index:30;pointer-events:none;transform:scale(var(--hc-scale,1));transform-origin:0 0}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
-.hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6a40 18%,#8a6a40 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
-.hc-origins{display:grid;justify-items:center;gap:6px}
+/* Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, à droite la réputation, l'affinité et la
+   prime de mission (« Prime » : « ça va nous permettre de gagner de la place à gauche ») ; entre les deux, une fente dans
+   le parchemin, plus épaisse au milieu qu'aux extrémités, fine, marron parchemin foncé (la couleur des filets), centrée
+   dans l'axe de la couronne dessous (« il faut que la fente… soit centrée »). */
+.hc-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:12px}
+.hc-fente{display:block;align-self:stretch;width:3px;margin:2px 0;background:#8a6a40;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+/* La même fente, couchée, sous les tags et sous l'équipement (Idan, 2026-11-16 : « séparateur horizontal (parchemin
+   fendu) ») ; de l'air au-dessus et au-dessous (« Il faut de la marge avant et après le bloc armes »). */
+.hc-fente--h{align-self:auto;width:auto;height:3px;margin:6px 2px}
+.hc-origins{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:6px}
 /* Zone 2, les origines (Idan, 2026-11-15) : les deux ou trois pictos (peuple, culture, ascendance) centrés, alignés, à la
    même taille, ombrés ; dessous, une seule phrase (« Nain des montagnes au sang de dragon »), en gras, dans la couleur de
    la culture (culture-colors.json), avec une légère ombre. */
-.hc-emblems{display:flex;justify-content:center;align-items:center;gap:26px}
+.hc-emblems{display:flex;justify-content:center;align-items:center;gap:12px}
 .hc-emblem{display:block;line-height:0}
-.hc-emblem .picto{display:block;width:52px;height:52px;margin:0;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(36,24,12,.55))}
+.hc-emblem .picto{display:block;width:48px;height:48px;margin:0;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(36,24,12,.55))}
 .hc-origin{margin:0;max-width:100%;text-align:center;text-wrap:balance;font:700 20px/1.15 var(--police-texte);color:var(--hc-culture,var(--encre));text-shadow:0 1px 1.5px rgba(40,22,8,.3)}
-.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px 16px;padding:0 6px}
+.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:9px 10px}
 .hc-stat{display:contents}
 .hc-stat>:not(.hc-label){justify-self:start}
-.hc-bonus{display:inline-flex;align-items:center;gap:8px}
-.hc-label{font:600 17px/1 var(--police-texte);color:#3b2a1b}
+.hc-bonus{display:inline-flex;align-items:center;gap:6px}
+.hc-label{font:600 16px/1 var(--police-texte);color:#3b2a1b}
 .hc-stats .rep-stars{font-size:20px;gap:0}
 .hc-stats .rep-star:not(.rep-star--empty){filter:drop-shadow(0 1px 0 rgba(70,42,18,.55)) drop-shadow(0 0 1px rgba(0,0,0,.55))}
-.hc-hearts{display:inline-flex;gap:2px}
-.hc-heart{width:14px;height:13px;fill:#a69578;stroke:rgba(60,40,20,.45);stroke-width:1.2}
-.hc-heart.is-full{fill:#c4241a;stroke:#6e1712;filter:drop-shadow(0 1px 0 rgba(255,255,255,.35))}
-.hc-bonus img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
-.hc-bonus b{font:700 23px/1 var(--police-texte);color:var(--encre)}
-/* Les tags : plaques biseautées, bord d'argent ; celle de la mission, bord d'or. Trois par rangée. */
-.hc-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 6px;margin:0;padding:0;list-style:none}
+/* Les cœurs de l'affinité, à facettes comme les étoiles (Idan, 2026-11-16 : « un style commun ») : pleins en rubis,
+   vides en gris transparent ; la même ombre que les étoiles. */
+.hc-hearts{display:inline-flex;gap:1px}
+.hc-heart{display:block;flex:none;width:14px;height:14px;background:url("assets/ui/coeurs/vide.svg") center/contain no-repeat}
+.hc-heart.is-full{background-image:url("assets/ui/coeurs/plein.svg");filter:drop-shadow(0 1px 0 rgba(70,42,18,.55)) drop-shadow(0 0 1px rgba(0,0,0,.55))}
+.hc-bonus img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
+.hc-bonus b{font:700 18px/1 var(--police-texte);color:var(--encre)}
+/* Sous la tête de la page, avant les tags : la couronne et ses rinceaux, dans la couleur de la culture (Idan, 2026-11-16 :
+   « Dans la couleur de la culture, on pose ça pour séparer avant les tags » ; planche d'Idan, tracée par
+   scripts/build-hover-separators.sh), avec l'ombre de la phrase d'origine. */
+.hc-sep{display:block;justify-self:center;width:146px;height:34px;margin:8px 0 5px;background:var(--hc-culture,var(--encre));-webkit-mask:url("assets/fiche/separateurs/couronne.svg") center/contain no-repeat;mask:url("assets/fiche/separateurs/couronne.svg") center/contain no-repeat;filter:drop-shadow(0 1px 1.5px rgba(40,22,8,.3))}
+/* Les tags : plaques biseautées, bord d'argent ; celle de la mission, bord d'or. Au plus cinq, en quinconce : trois en haut,
+   deux décalés dessous (hoverTagPlates : chaque plaque prend 2 colonnes sur 6). */
+.hc-tags{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px 6px;margin:0;padding:0;list-style:none}
 .hc-tag{--hex:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:32px;box-sizing:border-box;padding:4px 14px 5px;clip-path:var(--hex);background:linear-gradient(#f4f1ec,#9da2a7 40%,#5d6267 60%,#b9bdc1);text-align:center;font:600 15px/1.08 var(--police-texte);color:#f4f1ec;text-shadow:0 1px 1px rgba(0,0,0,.65)}
 .hc-tag::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);background:linear-gradient(var(--t1),var(--t2))}
 .hc-tag--rouge{--t1:#8b2f25;--t2:#521719}
 .hc-tag--vert{--t1:#2f6b3b;--t2:#1b3a21}
 .hc-tag--bleu{--t1:#38598c;--t2:#1b2f52}
 .hc-tag.is-mission{--t1:#64492e;--t2:#3b2a1b;background:linear-gradient(#fff3cf,#e0a95a 40%,#8a6120 62%,#f0c77f);color:#ffe1ac}
-/* Les armes, l'armure et la monture : une case chacune, le nom au-dessus, entre de fins filets. */
+/* Le niveau du tag (Idan, 2026-11-16 : « les tags ont 3 niveaux. Le premier niveau : contour de couleur et fond transparent.
+   Au second niveau, fond à 50 %. Niveau 3, c'est plein ») : la plaque pleine ci-dessus est le niveau 3 ; aux niveaux 1 et 2,
+   un contour de 2 px dans la couleur du tag (la mission aussi : « laisse tomber » l'or ici) autour du parchemin, rempli à 50 % au niveau 2, le
+   texte dans la couleur foncée du tag. La plaque « N autres rôles » a le contour seul. */
+.hc-tag.is-n1,.hc-tag.is-n2{background:none;color:var(--t2);text-shadow:0 1px 0 rgba(255,250,236,.55)}
+.hc-tag.is-n1::after,.hc-tag.is-n2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
+.hc-tag.is-n1::before{opacity:0}
+.hc-tag.is-n2::before{opacity:.5}
+/* L'équipement en trois colonnes égales (Idan, 2026-11-16) : les armes du set 1, celles du set 2, l'armure ; les noms seuls
+   (sans « Set 1 », « Set 2 » ni « Armure »), sur la même ligne. Entre les colonnes, et entre les écoles de magie, la fente
+   du parchemin (Idan : « Oui »). */
 .hc-kit{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column}
-.hc-kit-item{display:grid;align-content:start;gap:2px;padding:0 8px;text-align:center}
-.hc-kit-item+.hc-kit-item{border-left:1px solid rgba(93,68,41,.4)}
-.hc-kit-item b{font:600 13px/1.1 var(--police-texte);letter-spacing:.08em;text-transform:uppercase;color:var(--encre-2)}
+.hc-kit-item{display:grid;align-content:end;gap:2px;padding:0 8px;text-align:center}
+.hc-kit-item{position:relative}
+.hc-kit-item+.hc-kit-item::before,.hc-school+.hc-school::before{content:"";position:absolute;left:-1.5px;top:-4px;bottom:-4px;width:3px;background:#8a6a40;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .hc-kit-item i{font:italic 500 17px/1.15 var(--police-texte);color:var(--encre)}
-/* Les écoles : la plaque, puis les pictos d’Idan (assets/pictos/ecole-<slug>.webp). */
-.hc-magic{display:grid;justify-items:center;gap:8px}
-.hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f4f1ec,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:#f4f1ec;text-shadow:0 1px 1px rgba(0,0,0,.65)}
-.hc-plaque::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,13px 100%,0 50%);background:linear-gradient(#315d36,#18301c)}
-.hc-schools{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));width:100%;row-gap:10px}
-.hc-school{display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px;border-left:1px solid rgba(93,68,41,.4)}
-.hc-school:nth-child(3n+1){border-left:0}
-.hc-school>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
-.hc-school .picto{width:56px;height:56px;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
+/* Dessous, deux colonnes (Idan, 2026-11-16) : les écoles de magie à gauche, la monture à droite, la fente entre les deux dans
+   l'axe de celle du haut (même grille que .hc-head) ; seule, l'une ou l'autre se centre. La monture : son portrait seul (un
+   cadre à son espèce tant qu'il n'existe pas), sans son nom, en 72 px (Idan, 2026-11-16 : « réduire un peu l'avatar
+   monture, virer le nom de la monture »). */
+.hc-foot{display:grid;justify-items:center}
+.hc-foot.is-2{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:12px}
+.hc-steed-portrait{display:grid;place-items:center;width:72px;height:72px;margin:0;box-sizing:border-box;border:2px solid #8a6a40;background:rgba(93,68,41,.12);box-shadow:inset 0 0 10px rgba(93,68,41,.3)}
+.hc-steed-portrait>span{padding:0 4px;font:italic 500 14px/1.1 var(--police-texte);text-align:center;color:var(--encre-2)}
+/* Les écoles : les pictos d’Idan (assets/pictos/ecole-<slug>.webp), seuls, sans plaque ni nom (« Retire le école de
+   magie » ; « Pictos seuls en 48 px avec la possibilité de les rétrécir pour tout rentrer ») : 48 px chacun, sur une
+   ligne, ou deux à côté de la monture (hoverSchoolRows : « Deux lignes ») ; --n pictos sur la plus longue ; s'ils ne
+   tiennent pas dans la largeur, ils rétrécissent tous d'autant. Chaque ligne centrée ; la fente au milieu de l'écart. */
+.hc-magic{display:grid;justify-items:center;width:100%}
+.hc-schools{--ecart:10px;display:grid;row-gap:10px;width:100%}
+.hc-schools-row{display:flex;justify-content:center;gap:var(--ecart)}
+.hc-school{position:relative;flex:0 0 min(48px,calc((100% - (var(--n,1) - 1) * var(--ecart)) / var(--n,1)));display:grid;place-items:center;min-width:0}
+.hc-school+.hc-school::before{left:calc(var(--ecart) / -2 - 1.5px)}
+.hc-school .picto{width:100%;height:auto;aspect-ratio:1;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
 
 /* Le choix de l'escouade, d'après la maquette de Chatty (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») :
    sur le panneau des missions assombri, la mission en grand ; à gauche, les mercenaires au camp sur le parchemin de la

@@ -67,7 +67,7 @@
       "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
-  "row_count": 24,
+  "row_count": 25,
   "rows": [
     {
       "cle": "fond-camp",
@@ -502,6 +502,26 @@
       ],
       "motifs": [
         "assets/fiche/ornements/*.svg"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "separateurs-fiche",
+      "famille": "Séparateurs de la fiche au survol",
+      "nombre": 1,
+      "ou": "Fiche au survol : sous les origines et les chiffres, avant les tags.",
+      "pourquoi": "Séparer la tête de la fiche du reste, dans la couleur de la culture (Idan, 2026-11-16).",
+      "fichiers": "assets/fiche/separateurs/<motif>.svg",
+      "affichage": "146 × 34 px, couleur de la culture.",
+      "depot": "Un motif noir sur blanc à vectoriser (planches d'Idan, media/Ornements.zip).",
+      "format_jeu": "SVG noir, servi de masque et coloré par le CSS.",
+      "alternates": "Non.",
+      "source": "scripts/build-hover-separators.sh, depuis la planche « Vector_silhouette_ornament_divid… » d'Idan.",
+      "exemples": [
+        "assets/fiche/separateurs/couronne.svg"
+      ],
+      "motifs": [
+        "assets/fiche/separateurs/*.svg"
       ],
       "variantes": false
     },

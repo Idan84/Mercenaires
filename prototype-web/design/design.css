@@ -150,3 +150,41 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .img-tile figcaption{display:grid;gap:2px;padding:6px 8px;font-size:.76rem;line-height:1.3}
 .img-tile figcaption strong{overflow-wrap:anywhere;font-weight:650}
 .img-tile figcaption span{color:#81796e;font-variant-numeric:tabular-nums}
+/* Dépôts (étape B, Idan 2026-11-16) : boutons sous chaque image, fenêtre de dépôt, encadré « Dépôts ». */
+.img-tile-actions{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.img-tile-actions button{border:1px solid #cfc5b8;background:#f7f2ea;border-radius:6px;padding:3px 8px;font-size:.74rem;font-weight:700;cursor:pointer;color:#26221d}
+.img-tile-actions button:hover{background:#eee5d8}
+.img-tile-depot{display:inline-block;justify-self:start;background:#d98b2b;color:#fff;border-radius:999px;padding:1px 8px;font-size:.7rem;font-style:normal;font-weight:700}
+.depot-dlg{width:min(760px,calc(100vw - 32px))}
+.depot-compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+.depot-compare figure{margin:0;display:grid;gap:6px;min-width:0}
+.depot-compare figcaption{font-size:.8rem;color:#5a5249;overflow-wrap:anywhere}
+.depot-img{display:grid;place-items:center;height:240px;padding:10px;box-sizing:border-box;background:#1d1915;border-radius:8px;overflow:hidden}
+.depot-img img{display:block;width:100%;height:100%;object-fit:contain}
+.depot-drop{border:2px dashed #8a7d6c;cursor:pointer;color:#e9e1d4;text-align:center;font-size:.86rem;line-height:1.4}
+.depot-drop.is-over{border-color:#e0a24c;background:#2a231c}
+.depot-file{position:absolute;width:1px;height:1px;opacity:0}
+.depot-file:focus-visible+*,.depot-drop:focus-within{outline:2px solid #26221d}
+.depot-checks{margin:4px 0 10px;padding:0;list-style:none;display:grid;gap:4px;font-size:.84rem}
+.depot-checks li{padding:6px 10px;border-radius:6px}
+.depot-checks li.ok{background:#e5f1e6;color:#24502d}
+.depot-checks li.warn{background:#fbeed8;color:#6b4510}
+.depot-checks li.bad{background:#f7e0dc;color:#7d2d24}
+.depot-note-field{display:grid;gap:4px;font-size:.84rem;font-weight:650;color:#5a5249}
+.depot-note-field textarea{font:inherit;font-weight:400;padding:7px 10px;border:1px solid #cfc5b8;border-radius:8px;background:#fff;resize:vertical}
+.depot-status{min-height:1.3em;margin:8px 0 0;font-size:.86rem}
+.depot-status.ok{color:#24502d;font-weight:700}
+.depot-status.bad{color:#7d2d24;font-weight:700}
+.depot-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+.depot-actions button{border:1px solid #cfc5b8;background:#f7f2ea;border-radius:8px;padding:7px 14px;font-weight:750;cursor:pointer;color:#26221d}
+.depot-actions .depot-send{background:#26221d;color:#fbf8f3;border-color:#26221d}
+.depot-actions .depot-send:disabled{opacity:.45;cursor:not-allowed}
+.depot-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.depot-item{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;align-items:start;background:#fff;border:1px solid #e1d9cc;border-radius:8px;padding:8px}
+.depot-item a{display:block;height:84px;background:#1d1915;border-radius:6px;overflow:hidden}
+.depot-item img{display:block;width:100%;height:100%;object-fit:contain}
+.depot-item div{display:grid;gap:2px;font-size:.8rem;min-width:0}
+.depot-item strong{overflow-wrap:anywhere}
+.depot-item span{color:#81796e}
+.depot-item .depot-note{color:#3d362e;font-style:italic}
+.depot-item em{color:#a8641a;font-style:normal;font-weight:700}

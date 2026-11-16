@@ -47,7 +47,7 @@ const ImagesLab=(()=>{
   }
 
   async function compute(onProgress){
-    if(cache) return cache;
+    if(cache){ cache.depots=await loadDepots(); return cache; }
     const [catalogue,fichiers]=await Promise.all([loadCatalogue(),loadFichiers()]);
     const reference=await loadReferenceData();
     const sections=MercenairesAssetCoverage.listExpected(reference,{equipmentArt:typeof EQUIPMENT_ART!=="undefined"?EQUIPMENT_ART:new Set()});
@@ -60,7 +60,7 @@ const ImagesLab=(()=>{
         onProgress(++done,pending.length);
       }
     }));
-    cache={sections,summary:MercenairesAssetCoverage.summarize(sections),catalogue,fichiers};
+    cache={sections,summary:MercenairesAssetCoverage.summarize(sections),catalogue,fichiers,depots:await loadDepots()};
     return cache;
   }
 
@@ -85,7 +85,7 @@ const ImagesLab=(()=>{
   function render(data){
     const rows=data.summary.map(s=>`<tr><td><a href="#${anchor(s.key)}" data-img="${anchor(s.key)}">${html(s.title)}</a></td>`
       +`<td class="num">${s.total}</td><td class="num">${s.missing}</td><td>${badge(s)}</td></tr>`).join("");
-    return renderCatalogue(data.catalogue,data.fichiers)+`<h3 class="cat-coverage-title">Ce qui manque</h3><p class="cov-intro">Les images attendues par le jeu, <strong>hors avatars</strong> (voir l'onglet Avatars). Pour chaque famille :
+    return renderDepots(data)+renderCatalogue(data.catalogue,data.fichiers)+`<h3 class="cat-coverage-title">Ce qui manque</h3><p class="cov-intro">Les images attendues par le jeu, <strong>hors avatars</strong> (voir l'onglet Avatars). Pour chaque famille :
       ce qui manque, et où déposer le master dans <code>assets-src/</code> (voir son README) ; JC3 en tire les versions du jeu.
       <strong>« À produire »</strong> : le jeu n'affiche pas encore d'image à cet endroit, elle sera branchée à l'arrivée des images.</p>
       <table class="cov-summary"><thead><tr><th>Famille</th><th>Attendues</th><th>Manquantes</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
@@ -118,17 +118,21 @@ const ImagesLab=(()=>{
     }
     return dlg;
   }
-  function renderFamily(row,files){
+  const fileName=chemin=>chemin.slice(chemin.lastIndexOf("/")+1);
+  function renderFamily(row,files,pending=new Set()){
     const total=files.reduce((s,f)=>s+f.octets,0);
     const spec=(label,value)=>value?`<div class="cat-row"><dt>${html(label)}</dt><dd>${html(value)}</dd></div>`:"";
     const groups=new Map();
     for(const f of files){ const dir=f.chemin.slice(0,f.chemin.lastIndexOf("/")); if(!groups.has(dir)) groups.set(dir,[]); groups.get(dir).push(f); }
     const tile=f=>{
-      const name=f.chemin.slice(f.chemin.lastIndexOf("/")+1);
       const dims=f.largeur?`${f.largeur} × ${f.hauteur} px · `:"";
+      const action=(type,label)=>`<button type="button" data-depot="${type}" data-cible="${html(f.chemin)}">${label}</button>`;
       return `<figure class="img-tile" data-nom="${html(f.chemin.toLowerCase())}"><a href="/${html(f.chemin)}" target="_blank" rel="noopener">`
-        +`<img src="/${html(f.chemin)}" alt="" loading="lazy"></a><figcaption><strong>${html(name)}</strong>`
-        +`<span>${dims}${poids(f.octets)}</span></figcaption></figure>`;
+        +`<img src="/${html(f.chemin)}" alt="" loading="lazy"></a><figcaption><strong>${html(fileName(f.chemin))}</strong>`
+        +`<span>${dims}${poids(f.octets)}</span>`
+        +(pending.has(f.chemin)?`<em class="img-tile-depot">Dépôt en attente</em>`:"")
+        +`<span class="img-tile-actions">${action("remplacer","Remplacer")}${row.variantes?action("variante","Variante"):""}</span>`
+        +`</figcaption></figure>`;
     };
     return `<header class="img-dlg-head"><div><h3>${html(row.famille)}</h3><p>${files.length} image${files.length>1?"s":""} · ${poids(total)} au total</p></div>`
       +`<button type="button" class="img-dlg-close" aria-label="Fermer">×</button></header>`
@@ -137,22 +141,142 @@ const ImagesLab=(()=>{
       +[...groups].map(([dir,list])=>`<section class="img-dlg-group"><h4><code>${html(dir)}/</code> <small>${list.length}</small></h4>`
         +`<div class="img-tiles">${list.map(tile).join("")}</div></section>`).join("");
   }
+  const pendingSet=data=>new Set((data.depots||[]).map(d=>d.cible));
   function openFamily(data,cle){
     const row=data.catalogue.rows.find(r=>r.cle===cle),files=data.fichiers?.familles?.[cle]||[];
     if(!row) return;
     const dlg=familyDialog();
-    dlg.innerHTML=renderFamily(row,files);
+    dlg.innerHTML=renderFamily(row,files,pendingSet(data));
+    dlg.dataset.cle=cle;
     const filter=dlg.querySelector(".img-dlg-filter");
     if(filter) filter.addEventListener("input",()=>{
       const q=filter.value.trim().toLowerCase();
       dlg.querySelectorAll(".img-tile").forEach(t=>{ t.hidden=Boolean(q)&&!t.dataset.nom.includes(q); });
       dlg.querySelectorAll(".img-dlg-group").forEach(g=>{ g.hidden=!g.querySelector(".img-tile:not([hidden])"); });
     });
-    dlg.showModal();dlg.scrollTop=0;
+    dlg.querySelectorAll("[data-depot]").forEach(b=>b.onclick=()=>openDepot(data,row,files.find(f=>f.chemin===b.dataset.cible),b.dataset.depot));
+    if(!dlg.open) dlg.showModal();
+    dlg.scrollTop=0;
   }
+
+  // Les dépôts (étape B, Idan 2026-11-16 : « Remplacer » ou « Ajouter une variante » ; JC intègre ensuite). Le fichier part
+  // sur Hostinger, dans media/depots/ (design/api/depot.php) ; media/depots/index.json les liste.
+  const DEPOT_URL="api/depot.php", DEPOT_MAX=30*1024*1024;
+  async function loadDepots(){
+    try{ const r=await fetch("/media/depots/index.json?t="+Date.now(),{cache:"no-store"}); return r.ok?((await r.json()).depots||[]):[]; }catch{ return []; }
+  }
+  const dateFr=iso=>new Date(iso).toLocaleString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  function renderDepots(data){
+    const nom=cle=>data.catalogue?.rows.find(r=>r.cle===cle)?.famille||cle;
+    const items=(data.depots||[]).map(d=>`<li class="depot-item"><a href="/${html(d.fichier)}" target="_blank" rel="noopener"><img src="/${html(d.fichier)}" alt="" loading="lazy"></a>`
+      +`<div><strong>${d.type==="variante"?"Variante de":"Remplace"} ${html(fileName(d.cible))}</strong>`
+      +`<span>${html(nom(d.famille))} · ${dateFr(d.date)}${d.largeur?` · ${d.largeur} × ${d.hauteur} px`:""} · ${poids(d.octets)}</span>`
+      +(d.note?`<span class="depot-note">« ${html(d.note)} »</span>`:"")+`<em>En attente : JC l'intègre</em></div></li>`).join("");
+    return `<section class="cov-people" id="img-depots"><h3>Dépôts <small>${(data.depots||[]).length}</small></h3>`
+      +(items?`<p class="cov-intro">Les images déposées depuis cette page. Dis à JC « regarde les dépôts » : il les convertit au format du jeu et les met en ligne.</p><ul class="depot-list">${items}</ul>`
+        :`<p class="cov-intro">Aucun dépôt en attente. Pour remplacer une image : « Voir les images » d'une famille, puis « Remplacer » sous l'image.</p>`)
+      +`</section>`;
+  }
+  async function refreshDepots(data){
+    data.depots=await loadDepots();
+    const old=document.getElementById("img-depots");
+    if(old){ const box=document.createElement("div");box.innerHTML=renderDepots(data);old.replaceWith(box.firstElementChild); }
+    const fam=document.getElementById("img-dlg");
+    if(fam?.open&&fam.dataset.cle) openFamily(data,fam.dataset.cle);
+  }
+
+  // L'image du jeu est-elle transparente ? (quelques pixels lus sur un canevas ; même site, donc lisibles)
+  async function hasAlpha(src){
+    try{
+      const img=new Image();img.src=src;await img.decode();
+      const c=document.createElement("canvas");c.width=Math.min(img.naturalWidth,64);c.height=Math.min(img.naturalHeight,64);
+      const g=c.getContext("2d");g.drawImage(img,0,0,c.width,c.height);
+      const px=g.getImageData(0,0,c.width,c.height).data;
+      for(let i=3;i<px.length;i+=4) if(px[i]<250) return true;
+      return false;
+    }catch{ return false; }
+  }
+  // Les vérifications avant l'envoi : des avertissements (le dépôt reste possible), sauf format et poids.
+  async function checkFile(file,target){
+    const notes=[],svgTarget=/\.svg$/i.test(target.chemin),isSvg=/\.svg$/i.test(file.name);
+    if(file.size>DEPOT_MAX) return {block:true,notes:[{bad:true,text:`Trop lourd : ${poids(file.size)} pour 30 Mo au plus.`}]};
+    if(svgTarget!==isSvg) return {block:true,notes:[{bad:true,text:svgTarget?"Cette image est un SVG : dépose un fichier .svg.":"Dépose une image PNG, JPEG, WebP ou GIF."}]};
+    if(isSvg) return {block:false,notes:[{text:"SVG : JC vérifie qu'il est d'une seule encre, comme les autres."}]};
+    let w=0,h=0;
+    try{ const bmp=await createImageBitmap(file);w=bmp.width;h=bmp.height;bmp.close(); }
+    catch{ return {block:true,notes:[{bad:true,text:"Ce fichier n'est pas une image lisible."}]}; }
+    if(target.largeur){
+      if(w<target.largeur||h<target.hauteur) notes.push({warn:true,text:`Plus petite que l'image du jeu (${target.largeur} × ${target.hauteur} px) : elle risque d'être floue.`});
+      const r1=target.largeur/target.hauteur,r2=w/h;
+      if(Math.abs(r2-r1)/r1>.03) notes.push({warn:true,text:`Proportions différentes : ${r1.toFixed(2).replace(".",",")} dans le jeu, ${r2.toFixed(2).replace(".",",")} pour ton fichier. Elle sera recadrée ou déformée : à vérifier.`});
+    }
+    if(/\.jpe?g$/i.test(file.name)&&await hasAlpha("/"+target.chemin)) notes.push({warn:true,text:"L'image du jeu est transparente et ton JPEG ne l'est pas : un fond uni à retirer ?"});
+    if(!notes.length) notes.push({text:"Taille et proportions cohérentes avec l'image du jeu."});
+    return {block:false,notes,w,h};
+  }
+  function depotDialog(){
+    let dlg=document.getElementById("depot-dlg");
+    if(!dlg){
+      dlg=document.createElement("dialog");dlg.id="depot-dlg";dlg.className="img-dlg depot-dlg";
+      dlg.addEventListener("click",e=>{ if(e.target===dlg||e.target.closest(".img-dlg-close,.depot-cancel")) dlg.close(); });
+      document.body.append(dlg);
+    }
+    return dlg;
+  }
+  function openDepot(data,row,target,type){
+    if(!target) return;
+    const dlg=depotDialog(),svg=/\.svg$/i.test(target.chemin);
+    dlg.innerHTML=`<form class="depot-form"><header class="img-dlg-head"><div><h3>${type==="variante"?"Ajouter une variante":"Remplacer"} : ${html(fileName(target.chemin))}</h3>`
+      +`<p>${html(row.famille)}</p></div><button type="button" class="img-dlg-close" aria-label="Fermer">×</button></header>`
+      +`<div class="depot-compare"><figure><div class="depot-img"><img src="/${html(target.chemin)}" alt=""></div>`
+      +`<figcaption>Dans le jeu${target.largeur?` · ${target.largeur} × ${target.hauteur} px`:""}</figcaption></figure>`
+      +`<figure><label class="depot-img depot-drop" for="depot-file"><span>Glisse ton fichier ici<br>ou clique pour le choisir</span></label>`
+      +`<figcaption class="depot-new-caption">Ton fichier</figcaption></figure></div>`
+      +`<input type="file" id="depot-file" class="depot-file" accept="${svg?".svg,image/svg+xml":"image/png,image/jpeg,image/webp,image/gif"}">`
+      +`<dl class="img-dlg-specs"><div class="cat-row"><dt>À déposer</dt><dd>${html(row.depot)}</dd></div></dl>`
+      +`<ul class="depot-checks"></ul>`
+      +`<label class="depot-note-field" for="depot-note">Note pour JC (facultatif)<textarea id="depot-note" maxlength="500" rows="2" placeholder="Ce qui change, ce qu'il faut savoir…"></textarea></label>`
+      +`<p class="depot-status" role="status"></p>`
+      +`<div class="depot-actions"><button type="button" class="depot-cancel">Annuler</button><button type="submit" class="depot-send" disabled>Envoyer</button></div></form>`;
+    const input=dlg.querySelector(".depot-file"),drop=dlg.querySelector(".depot-drop"),send=dlg.querySelector(".depot-send");
+    const status=dlg.querySelector(".depot-status");
+    let chosen=null;
+    const choose=async file=>{
+      if(!file) return;
+      chosen=null;send.disabled=true;status.textContent="";
+      drop.innerHTML=`<img src="${URL.createObjectURL(file)}" alt="">`;
+      const res=await checkFile(file,target);
+      dlg.querySelector(".depot-new-caption").textContent=`${file.name}${res.w?` · ${res.w} × ${res.h} px`:""} · ${poids(file.size)}`;
+      dlg.querySelector(".depot-checks").innerHTML=res.notes.map(n=>`<li class="${n.bad?"bad":n.warn?"warn":"ok"}">${html(n.text)}</li>`).join("");
+      if(!res.block){ chosen=file;send.disabled=false; }
+    };
+    input.onchange=()=>choose(input.files[0]);
+    drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("is-over");});
+    drop.addEventListener("dragleave",()=>drop.classList.remove("is-over"));
+    drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("is-over");choose(e.dataTransfer.files[0]);});
+    dlg.querySelector(".depot-form").onsubmit=async e=>{
+      e.preventDefault();
+      if(!chosen) return;
+      send.disabled=true;status.className="depot-status";status.textContent="Envoi…";
+      const body=new FormData();
+      body.append("famille",row.cle);body.append("cible",target.chemin);body.append("type",type);
+      body.append("note",dlg.querySelector("#depot-note").value);body.append("fichier",chosen,chosen.name);
+      try{
+        const r=await fetch(DEPOT_URL,{method:"POST",body,headers:{"X-Depot":"1"},credentials:"same-origin"});
+        const res=await r.json().catch(()=>({ok:false,erreur:`Le serveur a répondu ${r.status}.`}));
+        if(!res.ok) throw new Error(res.erreur||`Erreur ${r.status}.`);
+        status.className="depot-status ok";status.textContent="Déposé. En attente : dis à JC « regarde les dépôts ».";
+        await refreshDepots(data);
+      }catch(err){
+        status.className="depot-status bad";status.textContent="Dépôt impossible : "+err.message;send.disabled=false;
+      }
+    };
+    dlg.showModal();
+  }
+
   // Les boutons « Voir les N images » des cartes (design.js l'appelle après render).
   function wire(root,data){
     root.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>openFamily(data,b.dataset.cat));
   }
-  return {compute,render,meta,anchor,catalogueNav,wire,renderFamily};
+  return {compute,render,meta,anchor,catalogueNav,wire,renderFamily,renderDepots};
 })();

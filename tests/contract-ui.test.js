@@ -576,9 +576,15 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.doesNotMatch(hoverSrc + css, /hc-rule/, "plus de filet : les fentes du parchemin");
   // Les écoles : les pictos seuls, 48 px, sur une ligne, qui rétrécissent pour tout faire tenir (Idan, 2026-11-16).
   assert.match(hoverSrc, /`<span class="hc-school" role="img" aria-label="\$\{esc\(name\)\}">\$\{renderPicto\("school",name,\{size:"md"\}\)\}<\/span>`/, "pictos seuls, sans nom");
-  assert.match(hoverSrc, /<div class="hc-schools" style="--n:\$\{d\.schools\.length\}">/, "toutes les écoles, sur une ligne");
-  assert.match(css, /\.hc-schools\{[^}]*grid-template-columns:repeat\(var\(--n,1\),minmax\(0,48px\)\);/);
-  assert.match(css, /\.hc-school \.picto\{width:100%;height:auto;max-width:48px;aspect-ratio:1;/);
+  assert.match(css, /\.hc-school\{position:relative;flex:0 0 min\(48px,calc\(\(100% - \(var\(--n,1\) - 1\) \* var\(--ecart\)\) \/ var\(--n,1\)\)\);/, "48 px, rétrécis pour tout faire tenir");
+  // Une ligne ; à côté de la monture, au-delà de 4, deux lignes, la première la plus longue (« Deux lignes »).
+  const {hoverSchoolRows} = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {hoverSchoolRows};")(...Object.values(stubs));
+  const nine = ["Transmutation", "Nécromancie", "Télékinésie", "Invocation", "Illusion", "Foudre", "Feu", "Eau", "Vie"];
+  assert.deepEqual(hoverSchoolRows(nine, false).map(r => r.length), [9]);
+  assert.deepEqual(hoverSchoolRows(nine.slice(0, 4), true).map(r => r.length), [4]);
+  assert.deepEqual(hoverSchoolRows(nine.slice(0, 5), true).map(r => r.length), [3, 2]);
+  assert.deepEqual(hoverSchoolRows(nine, true).map(r => r.length), [5, 4]);
+  assert.deepEqual(hoverSchoolRows([], true), []);
   assert.doesNotMatch(hoverSrc, /Écoles de magie/, "« Retire le école de magie »");
   assert.doesNotMatch(hoverSrc, /"Set [12]"|\["Armure",/, "« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »");
   assert.match(css, /\.hc-kit\{display:grid;grid-auto-columns:minmax\(0,1fr\);grid-auto-flow:column\}/);

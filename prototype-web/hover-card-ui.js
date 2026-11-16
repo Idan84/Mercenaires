@@ -284,6 +284,16 @@ function hoverKitFrame(kit){
 // cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
 // Les cœurs de l'affinité : à facettes, comme les étoiles de la réputation (Idan, 2026-11-16 : « des coeurs assortis aux
 // étoiles… avoir un style commun, c'est important » ; images : assets/ui/coeurs/, styles.css).
+// Les rangées de pictos d'écoles. Une seule ligne, sauf à côté de la monture au-delà de 4 (ce qui tient en 48 px dans sa
+// demi-colonne) : deux lignes (Idan, 2026-11-16 : « Deux lignes »), la première la plus longue (5 + 4 pour 9).
+const HOVER_SCHOOLS_BESIDE_MOUNT=4;
+function hoverSchoolRows(schools,withMount){
+  if(!schools.length) return [];
+  const perRow=withMount&&schools.length>HOVER_SCHOOLS_BESIDE_MOUNT?Math.ceil(schools.length/2):schools.length;
+  const rows=[];
+  for(let i=0;i<schools.length;i+=perRow) rows.push(schools.slice(i,i+perRow));
+  return rows;
+}
 // Le portrait de la monture, carré (Idan, 2026-11-16 : « L'avatar de la monture sera carré »). Il n'en existe pas encore :
 // en attendant, un cadre carré à son espèce (« Destrier »), à la taille du portrait (88 px, styles.css).
 function hoverMountPortrait(mount){
@@ -315,8 +325,9 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp), sans plaque « Écoles
   // de magie » (Idan, 2026-11-16 : « Retire le école de magie ») ni nom : « Pictos seuls en 48 px avec la possibilité de les
   // rétrécir pour tout rentrer » (une seule ligne, styles.css).
-  const schools=d.schools.map(name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`).join("");
-  const magic=schools?`<div class="hc-magic"><div class="hc-schools" style="--n:${d.schools.length}">${schools}</div></div>`:"";
+  const school=name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
+  const rows=hoverSchoolRows(d.schools,Boolean(d.mount));
+  const magic=rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
   const steed=d.mount?`<div class="hc-steed">${hoverMountPortrait(d.mount)}<span>${esc(d.mount.name)}</span></div>`:"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
@@ -389,4 +400,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverSchoolRows,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};

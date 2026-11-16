@@ -298,10 +298,10 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}</span>`).join("");
   const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
-  // L'équipement en trois colonnes (Idan, 2026-11-16) : les armes du set 1 (« épée longue et écu »), celles du set 2, l'armure.
-  // Sa monture, s'il en a une, dessous.
-  const kitItem=([label,value])=>`<span class="hc-kit-item"><b>${esc(label)}</b><i>${esc(value)}</i></span>`;
-  const kit=[["Set 1",hoverWeapons(d.sets[0])||"Mains nues"],["Set 2",hoverWeapons(d.sets[1])||"—"],["Armure",d.armor||"Sans armure"]].map(kitItem).join("");
+  // L'équipement en trois colonnes (Idan, 2026-11-16) : les armes du set 1 (« épée longue et écu »), celles du set 2, l'armure ;
+  // sans « Set 1 » ni « Set 2 » (« pas besoin de mettre set 1 ou set 2 »). Sa monture, s'il en a une, dessous.
+  const kitItem=([label,value])=>`<span class="hc-kit-item">${label?`<b>${esc(label)}</b>`:""}<i>${esc(value)}</i></span>`;
+  const kit=[["",hoverWeapons(d.sets[0])||"Mains nues"],["",hoverWeapons(d.sets[1])||"—"],["Armure",d.armor||"Sans armure"]].map(kitItem).join("");
   const mount=d.mount?kitItem(["Monture",d.mount.name+(d.mount.kind?` (${d.mount.kind})`:"")]):"";
   // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
   const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");

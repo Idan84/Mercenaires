@@ -512,8 +512,8 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   const at2 = needle => head.indexOf(needle);
   assert.ok(at2('<section class="hc-origins"') > 0 && at2('<section class="hc-origins"') < at2('<i class="hc-fente" aria-hidden="true"></i>')
     && at2('<i class="hc-fente"') < at2('<div class="hc-stats">') && at2("Réputation") < at2("${affinity}") && at2("${affinity}") < at2('<span class="hc-label" title="Prime de mission">Prime</span>'), "origines | fente | réputation, affinité, prime");
-  assert.match(css, /\.hc-head\{display:grid;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1\.2fr\);/);
-  assert.match(css, /\.hc-fente\{[^}]*width:3px;[^}]*clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
+  assert.match(css, /\.hc-head\{display:grid;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/, "la fente au milieu, dans l'axe de la couronne");
+  assert.match(css, /\.hc-fente\{[^}]*width:3px;[^}]*background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
   assert.match(css, /\.hc-origins\{display:grid;grid-template-columns:minmax\(0,1fr\);/, "la phrase passe sur deux lignes dans sa colonne");
   assert.match(hoverSrc, /`<i class="hc-heart\$\{i<filled\?" is-full":""\}"><\/i>`/);
   assert.match(css, /\.hc-heart\{[^}]*background:url\("assets\/ui\/coeurs\/vide\.svg"\)/);

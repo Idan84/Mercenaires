@@ -2490,9 +2490,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6a40 18%,#8a6a40 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
 /* Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, à droite la réputation, l'affinité et la
    prime de mission (« Prime » : « ça va nous permettre de gagner de la place à gauche ») ; entre les deux, une fente dans
-   le parchemin, plus épaisse au milieu qu'aux extrémités, fine. */
-.hc-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.2fr);align-items:center;column-gap:14px}
-.hc-fente{display:block;align-self:stretch;width:3px;margin:2px 0;background:linear-gradient(90deg,#3a2614 0 62%,rgba(255,250,236,.85) 62%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+   le parchemin, plus épaisse au milieu qu'aux extrémités, fine, marron parchemin foncé (la couleur des filets), centrée
+   dans l'axe de la couronne dessous (« il faut que la fente… soit centrée »). */
+.hc-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:12px}
+.hc-fente{display:block;align-self:stretch;width:3px;margin:2px 0;background:#8a6a40;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .hc-origins{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:6px}
 /* Zone 2, les origines (Idan, 2026-11-15) : les deux ou trois pictos (peuple, culture, ascendance) centrés, alignés, à la
    même taille, ombrés ; dessous, une seule phrase (« Nain des montagnes au sang de dragon »), en gras, dans la couleur de
@@ -2501,7 +2502,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-emblem{display:block;line-height:0}
 .hc-emblem .picto{display:block;width:48px;height:48px;margin:0;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(36,24,12,.55))}
 .hc-origin{margin:0;max-width:100%;text-align:center;text-wrap:balance;font:700 20px/1.15 var(--police-texte);color:var(--hc-culture,var(--encre));text-shadow:0 1px 1.5px rgba(40,22,8,.3)}
-.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:9px 12px}
+.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:9px 10px}
 .hc-stat{display:contents}
 .hc-stat>:not(.hc-label){justify-self:start}
 .hc-bonus{display:inline-flex;align-items:center;gap:6px}
@@ -2511,7 +2512,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Les cœurs de l'affinité, à facettes comme les étoiles (Idan, 2026-11-16 : « un style commun ») : pleins en rubis,
    vides en gris transparent ; la même ombre que les étoiles. */
 .hc-hearts{display:inline-flex;gap:1px}
-.hc-heart{display:block;flex:none;width:15px;height:15px;background:url("assets/ui/coeurs/vide.svg") center/contain no-repeat}
+.hc-heart{display:block;flex:none;width:14px;height:14px;background:url("assets/ui/coeurs/vide.svg") center/contain no-repeat}
 .hc-heart.is-full{background-image:url("assets/ui/coeurs/plein.svg");filter:drop-shadow(0 1px 0 rgba(70,42,18,.55)) drop-shadow(0 0 1px rgba(0,0,0,.55))}
 .hc-bonus img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
 .hc-bonus b{font:700 18px/1 var(--police-texte);color:var(--encre)}

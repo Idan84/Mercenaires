@@ -521,6 +521,19 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   for (const f of ["plein", "vide"]) assert.match(fs.readFileSync(path.join(root, "prototype-web/assets/ui/coeurs", f + ".svg"), "utf8"), /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 100 100"><!-- Blood & Wages : cœur [^>]*à facettes/);
   assert.match(css, /\.hc-bonus img\{width:24px;height:24px;/, "des pièces d'or plus petites");
   assert.match(css, /\.hc-bonus b\{font:700 18px\/1 /);
+  // Les tags : au plus 5, en quinconce (trois en haut, deux décalés dessous, rangées centrées) ; à partir de 6, la dernière
+  // plaque dit combien d'autres (Idan, 2026-11-16).
+  {
+    const {hoverTagPlates} = require(path.join(root, "prototype-web/hover-card-ui.js"));
+    const t = n => Array.from({length: n}, (_, i) => ({name: "T" + (i + 1), tone: "bleu", mission: false}));
+    const cols = n => hoverTagPlates(t(n)).map(p => p.col);
+    assert.deepEqual([cols(1), cols(2), cols(3), cols(4), cols(5)], [[3], [2, 4], [1, 3, 5], [1, 3, 5, 3], [1, 3, 5, 2, 4]]);
+    const six = hoverTagPlates(t(6)), eight = hoverTagPlates(t(8));
+    assert.deepEqual(six.map(p => p.name), ["T1", "T2", "T3", "T4", "2 autres rôles"]);
+    assert.deepEqual([eight.length, eight[4].name, eight[4].more, eight[4].hidden], [5, "4 autres rôles", true, ["T5", "T6", "T7", "T8"]]);
+    assert.match(hoverSrc, /hoverTagPlates\(d\.tags\)\.map\(tag=>`<li class="hc-tag[^`]*style="grid-column:\$\{tag\.col\}\/span 2"/);
+    assert.match(css, /\.hc-tags\{display:grid;grid-template-columns:repeat\(6,minmax\(0,1fr\)\);/);
+  }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-rule" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);

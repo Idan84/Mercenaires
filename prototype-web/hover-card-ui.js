@@ -34,6 +34,19 @@ function originPhrase({people="",culture="",ascendance=""}={}){
 // Les tags de la fiche au survol (Idan, 2026-11-16 : « On va limiter le nombre. On met que la catégorie la plus basse. On
 // met uniquement les tags missions et rôle au combat ») : les missions (camps, chasses, garde du corps) et le rôle au combat.
 const HOVER_TAG_BRANCHES=["occupation/mission","occupation/garde-du-corps","role"];
+// Les plaques des tags (Idan, 2026-11-16 : « on va en mettre jusqu'à 5 en quinconce. S'il existe 6 tags ou plus on marque
+// dans le dernier x autres rôles ») : au plus 5, trois en haut et deux décalés dessous, chaque rangée centrée ; à partir de
+// 6, les 4 premiers et une plaque « N autres rôles ». col : la colonne où commence la plaque, sur une grille de 6 (chaque
+// plaque en prend 2). Logique pure (tests, portage).
+const HOVER_TAG_MAX=5;
+function hoverTagPlates(tags,max=HOVER_TAG_MAX){
+  const extra=tags.length>max?tags.length-(max-1):0;
+  const plates=extra?[...tags.slice(0,max-1),{name:`${extra} autres rôles`,tone:"bleu",mission:false,more:true,hidden:tags.slice(max-1).map(tag=>tag.name)}]:tags.slice(0,max);
+  return plates.map((plate,i)=>{
+    const row=i<3?0:1,inRow=row?plates.length-3:Math.min(3,plates.length),pos=row?i-3:i;
+    return {...plate,col:1+(3-inRow)+2*pos};
+  });
+}
 // Ce que la fiche montre, sans HTML (tests, portage).
 function mercenaryHoverData(c,{missionTag=null}={}){
   const reference=game.referenceData||{};
@@ -269,7 +282,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
     .filter(([,value])=>value).map(([label,value])=>`<span class="hc-kit-item"><b>${esc(label)}</b><i>${esc(value)}</i></span>`).join("");
   // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
   const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
-  const tags=d.tags.map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
+  const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
@@ -339,4 +352,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverTagPlates,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};

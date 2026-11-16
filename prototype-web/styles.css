@@ -2543,8 +2543,8 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-tag.is-n1::before{opacity:0}
 .hc-tag.is-n2::before{opacity:.5}
 /* L'équipement en trois colonnes égales (Idan, 2026-11-16) : les armes du set 1, celles du set 2, l'armure ; le nom de la
-   case au-dessus (l'armure seule : pas de « Set 1 » ni « Set 2 »), les trois noms sur la même ligne, entre de fins filets.
-   La monture, s'il en a une, dessous. */
+   case au-dessus seulement pour la monture (les trois colonnes : les noms seuls, sans « Set 1 », « Set 2 » ni « Armure »),
+   sur la même ligne, entre de fins filets. La monture, s'il en a une, dessous. */
 .hc-kit{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column}
 .hc-kit-item{display:grid;align-content:end;gap:2px;padding:0 8px;text-align:center}
 .hc-kit-item+.hc-kit-item{border-left:1px solid rgba(93,68,41,.4)}

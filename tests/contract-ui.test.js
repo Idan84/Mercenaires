@@ -562,8 +562,8 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
   // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
   assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:0 2px\}/);
-  assert.match(hoverSrc, /const kit=\[\["",hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues"\],\["",hoverWeapons\(d\.sets\[1\]\)\|\|"—"\],\["Armure",d\.armor\|\|"Sans armure"\]\]\.map\(kitItem\)/, "« pas besoin de mettre set 1 ou set 2 »");
-  assert.doesNotMatch(hoverSrc, /"Set [12]"/);
+  assert.match(hoverSrc, /const kit=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\.map\(value=>kitItem\(\["",value\]\)\)/, "les noms seuls");
+  assert.doesNotMatch(hoverSrc, /"Set [12]"|\["Armure",/, "« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »");
   assert.match(css, /\.hc-kit\{display:grid;grid-auto-columns:minmax\(0,1fr\);grid-auto-flow:column\}/);
   assert.match(css, /\.hc-sep\{[^}]*height:34px;margin:8px 0 5px;/, "la couronne descendue sous la tête, de l\'air dessous");
   assert.match(css, /\.hc-sep\{[^}]*background:var\(--hc-culture,var\(--encre\)\);[^}]*mask:url\("assets\/fiche\/separateurs\/couronne\.svg"\) center\/contain no-repeat;/);

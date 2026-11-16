@@ -52,9 +52,9 @@ assert.match(html,/<th title="Niveau de mission minimum">Dès<\/th><th title="[^
 
 // Missions : « Faire le ménage » (camps, ordres, variables) et la garde du corps.
 const builtMissions=MissionsLab.build(reference),missions=plain(builtMissions);
-assert.deepEqual(missions.types.map(t=>t.code),["cleanup","hunt_wolves","hunt_unicorn","hunt_cerberus","hunt_wild_dogs","hunt_butterflies","bodyguard"]);
+assert.deepEqual(missions.types.map(t=>t.code),["cleanup","hunt_wolves","hunt_unicorn","hunt_cerberus","hunt_wild_dogs","hunt_butterflies","hunt_boars","bodyguard"]);
 // Les chasses (Idan, 2026-11-07) : leurs règles et leurs lettres, sans camp.
-assert.deepEqual(missions.types.filter(t=>t.kind==="hunt").map(t=>[t.code,t.orders.length]),[["hunt_wolves",2],["hunt_unicorn",2],["hunt_cerberus",2],["hunt_wild_dogs",2],["hunt_butterflies",2]]);
+assert.deepEqual(missions.types.filter(t=>t.kind==="hunt").map(t=>[t.code,t.orders.length]),[["hunt_wolves",2],["hunt_unicorn",2],["hunt_cerberus",2],["hunt_wild_dogs",2],["hunt_butterflies",2],["hunt_boars",2]]);
 assert.match(MissionsLab.render(builtMissions),/1D6 par étoile, au plus 100 · fiche fixe : loup/);
 const cleanup=missions.types[0];
 assert.deepEqual(cleanup.camps.map(c=>c.faction),reference.oneShotMissions.missions[0].camps.map(c=>c.faction));

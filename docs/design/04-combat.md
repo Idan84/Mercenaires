@@ -471,6 +471,10 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Molosse de guerre** (Idan : « Il est assez faible » ; « Personne ne le monte ») : Force 30, Constitution 35 (**145 PV**),
   Vitesse 50, **Morsure** 1D6, perforant 25 ; gabarit 0,5 : personne ne le monte, il se bat à pied à côté de son maître
   (`compagnon`) ; neutre mauvais.
+- **Sanglier de combat** (Idan, 2026-11-16 : « Je voudrais qu'on ajoute une monture : sanglier de combat » ; « le reste est
+  validé ») : Force 85, Constitution 80 (**300 PV**), Vitesse 70 (7 cases), Esquive 15, Courage 75 ; les **Défenses** de
+  l'invocation (1D8, perforant 35), **doublées en charge** (`bonus_charge` 2, comme les armes d'hast) ; gabarit 2, une case :
+  tout le monde le monte, sauf l'ogre, qui l'emmène à pied (`compagnon`) ; chaotique neutre ; « à dos de sanglier ».
 - **Les papillons** (Idan, 2026-11-09), qui **volent** tous :
   - **télépathe** (« le drone de repérage ») : Discrétion **300**, Perception 90, Vitesse 110 ; **il n'attaque pas**
     (`attaque` null : pas d'arme) ; personne ne le monte ;

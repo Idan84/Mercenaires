@@ -96,7 +96,7 @@
       "key": "pluriel"
     }
   ],
-  "row_count": 9,
+  "row_count": 10,
   "rows": [
     {
       "nom": "Destrier",
@@ -620,6 +620,65 @@
       "titre": "à dos de papillon",
       "place": 1,
       "charge_aerienne": "montée"
+    },
+    {
+      "nom": "Sanglier de combat",
+      "code": "sanglier",
+      "espece": "Sangliers de combat",
+      "gabarit": 2,
+      "taille": "normale",
+      "caracteristiques": {
+        "Force": 85,
+        "Constitution": 80,
+        "Dextérité": 30,
+        "Vitesse": 70,
+        "Endurance": 80,
+        "Esquive": 15,
+        "Courage": 75,
+        "Volonté": 40,
+        "Perception": 50,
+        "Intelligence": 10,
+        "Chance": 50,
+        "Charisme": 20,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 3,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 8
+      },
+      "competences_martiales": {
+        "Armes naturelles": 54,
+        "Défenses": 50,
+        "Discrétion": 15
+      },
+      "attaque": {
+        "nom": "Défenses",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "bonus_charge": 2
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 45
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
+      "capturable": true,
+      "entretien": 15,
+      "alignement": "Chaotique neutre",
+      "rang_echange": 3,
+      "titre": "à dos de sanglier",
+      "logement": "trainer_pigsty",
+      "compagnon": true,
+      "place": 1
     }
   ]
 }

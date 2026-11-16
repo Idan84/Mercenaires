@@ -1058,6 +1058,26 @@
       "lieu": null
     },
     {
+      "code": "trainer_pigsty",
+      "nom": "La Porcherie",
+      "description": "Les sangliers de combat : deux places par niveau. Chaque sanglier coûte son entretien, chaque jour.",
+      "niveaux": 10,
+      "prix_base": 500,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "trainer_barn",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Sangliers de combat",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null,
+      "places_par_niveau": 2,
+      "lieu": null
+    },
+    {
       "code": "canteen",
       "nom": "La Cantine",
       "description": "Le tavernier y cuisine pour toute la compagnie : chaque jour, le plat du jour fait progresser ceux qui sont au camp.",
@@ -1098,5 +1118,5 @@
       "lieu": "taverne"
     }
   ],
-  "row_count": 51
+  "row_count": 52
 }

@@ -530,6 +530,11 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   pas), **papillon vénéneux** (4 PO, chaotique neutre, vendu par Jasper Bonnebourse, des Halflings des cités humaines ; il
   se capture à la Chasse aux papillons), **papillon géant** (10 PO, neutre bon, « à dos de papillon » pour un petit qui le
   monte, vendu par Dottie Mielbruyère, des Halflings des villages isolés ; seulement vendu). Les fiches : doc 04.
+- **La Porcherie** (`trainer_pigsty` ; Idan, 2026-11-16 : « Logé à la porcherie ! Nouvelle salle » ; « Comme le Chenil ») :
+  la quatrième aile de la Grange, comme le Chenil (2 places par niveau ; on s'y entraîne avec son sanglier : Sangliers de
+  combat, compétence de Compagnon animal qui existait déjà, et Compagnon animal). Le **sanglier de combat** : 15 PO
+  d'entretien, rang d'échange 3 (celui du destrier et du loup), chaotique neutre, « à dos de sanglier », 1 place ; il se
+  capture à la Chasse au sanglier (doc 17 §23). Son marchand reste à choisir. La fiche : doc 04.
 - **Entretien** : chaque matin, **10 PO par destrier** (`mounts.json`, `entretien`), avec les salaires (le journal et la notification du jour le disent). Si la caisse ne suffit pas (Idan, 2026-11-10) : l'entretien d'une monture est dû à son cavalier ; celui d'une monture sans propriétaire ou de celle du capitaine, au Dresseur ; sans Dresseur, elle est relâchée (les dettes, doc 09).
 - **Écran** : sous la Grange, dans Ma Compagnie, la liste des montures (d'où elles viennent, le jour de leur capture, leur entretien), places prises / places, **Relâcher** pour libérer une place (sans propriétaire), **Apprivoiser** (à un mercenaire, sa chance du jour au survol). Apprivoisée et équipée, il part à cheval (doc 04, « Combat à cheval »).
 - **Une monture est un objet** (Idan, 2026-11-07 : « On peut donc acheter et vendre des chevaux comme les autres biens ») : type `mount`, sans tier ni qualité ; sans propriétaire, à l'**Intendance** (onglet **Montures**) ; où qu'elle soit, elle loge aux Écuries (sa place, son entretien). Achat et vente chez les marchands : doc 18 §12 bis.

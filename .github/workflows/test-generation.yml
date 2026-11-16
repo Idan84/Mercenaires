@@ -77,6 +77,8 @@ jobs:
       - run: node tests/biography.test.js
       - run: node tests/pictos.test.js
       - run: node tests/culture-colors.test.js
+      - run: node tests/culture-kits.test.js
+      - run: bash -n scripts/build-culture-kit.sh
       - run: node tests/charte.test.js
       - run: node tests/images-index.test.js
       - run: node --check prototype-web/design/images-lab.js

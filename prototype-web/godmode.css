@@ -20,6 +20,7 @@
 .godmode-status{min-height:1.2em;margin:4px 0 8px;text-align:center;color:#b9d79a}
 .godmode-status.is-error{color:#ff9d8a}
 .godmode-label{margin:4px 0;color:#d8c6a4;font-size:.75rem}
-/* La fiche au survol (860 × 565) à moitié de sa taille. */
-.godmode-preview{width:430px;height:283px;overflow:hidden}
-.godmode-preview-scale{width:860px;transform:scale(.5);transform-origin:0 0}
+/* La fiche au survol (860 × 565) à 45 % de sa taille, avec de la place autour pour les ornements de son cadre qui
+   débordent (kits graphiques des cultures) ; le tout dans la largeur du panneau (438 px). */
+.godmode-preview{width:438px;height:305px;overflow:hidden}
+.godmode-preview-scale{width:860px;margin:25px;transform:scale(.45);transform-origin:0 0}

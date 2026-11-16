@@ -86,7 +86,8 @@ const REFERENCE_FILES = {
   domains: "domains.json",
   itemTitles: "item-titles.json",
   renamedNames: "renamed-names.json",
-  cultureColors: "culture-colors.json"
+  cultureColors: "culture-colors.json",
+  cultureKits: "culture-kits.json"
 };
 
 async function loadReferenceData(base = "/data/") {

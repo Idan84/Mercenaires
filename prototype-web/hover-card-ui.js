@@ -99,7 +99,7 @@ const HOVER_TITLE_ORNAMENTS={
   "nains-des-montagnes":"marteau","nains-du-chaos":"crane-flamme","nains-esclaves":"chaine",
   "gnomes-des-forets":"gland","gnomes-des-cavernes":"bougie","gnomes-des-villes":"cle-ailee",
   "halflings-des-cites-humaines":"couronne-croix","halflings-des-villages-isoles":"epi","explorateurs":"tentacule-sabre",
-  "elfes-noirs":"croissant","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"branche",
+  "elfes-noirs":"pointe-epines","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"branche",
   "cites-libres":"lys","montagnes-du-nord":"flocon","tribus-de-la-jungle":"fleur",
   "steppes-desertiques":"croissant-haut","royaumes-du-soleil-levant":"dragon",
   "reptiliens-des-villes":"oeil","reptiliens-des-marecages":"crapaud","reptiliens-des-cites-temples":"triangle"
@@ -111,17 +111,136 @@ function hoverCultureFrame(culture){
   const top=bar.bandTop+inset,band=bar.bandBottom-bar.bandTop-2*inset;
   const ornament=HOVER_TITLE_ORNAMENTS[key]||"lys";
   // Sa couleur (data/reference/culture-colors.json), pour la phrase d'origine.
-  const colors=typeof game!=="undefined"?game.referenceData?.cultureColors?.rows||[]:[];
-  const color=colors.find(row=>row.nom===culture)?.couleur;
-  return {key,ornament,color,
-    vars:[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
-      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`,
-      `--hc-orn:url("assets/fiche/ornements/${ornament}.svg")`,...(color?[`--hc-culture:${color}`]:[])].join(";")};
+  const ref=typeof game!=="undefined"?game.referenceData||{}:{};
+  const color=(ref.cultureColors?.rows||[]).find(row=>row.nom===culture)?.couleur;
+  // Son kit graphique, s'il en a un (data/reference/culture-kits.json) : le cuir du cartouche et l'ornement du titre
+  // à la taille choisie par Idan ; le cadre lui-même est posé par hoverKitFrame.
+  const kit=(ref.cultureKits?.rows||[]).find(row=>row.culture===culture)||null;
+  const texture=kit?[`--hc-texture:url("${kit.dossier}/${kit.geometrie.texture}")`,`--hc-kit-grain:${256*kit.fiche.cuir.grain/100}px`,
+      `--hc-kit-sombre:${kit.fiche.cuir.sombre/100}`,...hoverKitTitleVars(kit)]
+    :[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
+      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`];
+  return {key,ornament,color,kit,
+    vars:[...texture,`--hc-orn:url("assets/fiche/ornements/${ornament}.svg")`,...(color?[`--hc-culture:${color}`]:[])].join(";")};
+}
+
+// ---- Les kits graphiques par culture (Chatty, Idan) : le cadre de la fiche ----
+// Positions en pixels de la carte (860 × 565, styles.css), relevées sur ses zones : séparation portrait / texte (entre
+// le portrait, 1,2 % + 34 %, et la page, 36,2 %), bas du cartouche (entre 15,85 % et la page, 17,25 %), milieux du
+// portrait et de la page ; la hauteur du cartouche (14,35 %).
+const HOVER_CARD={w:860,h:565,sepX:307,sepNomY:93.5,pageCx:580.5,portraitCx:156.5,cartH:81.08};
+// Les coins : côté extérieur (x, y) ; transformations (pièces dessinées pour le coin haut gauche) et où elles envoient un
+// point d'une toile carrée de n pixels.
+const HOVER_KIT_ANGLES={
+  hg:{sx:-1,sy:-1,miroir:["none",(x,y)=>[x,y]],rotation:["none",(x,y)=>[x,y]]},
+  hd:{sx:1,sy:-1,miroir:["scaleX(-1)",(x,y,n)=>[n-x,y]],rotation:["rotate(90deg)",(x,y,n)=>[n-y,x]]},
+  bd:{sx:1,sy:1,miroir:["scale(-1,-1)",(x,y,n)=>[n-x,n-y]],rotation:["rotate(180deg)",(x,y,n)=>[n-x,n-y]]},
+  bg:{sx:-1,sy:1,miroir:["scaleY(-1)",(x,y,n)=>[x,n-y]],rotation:["rotate(270deg)",(x,y,n)=>[y,n-x]]}};
+const hcPx=n=>`${+(+n).toFixed(2)}px`;
+// L'ornement du titre à la hauteur choisie (pixels de la carte) : sa boîte commune 104 × 24, la pointe côté titre ; la
+// partie vide de la boîte (vers l'extérieur) est rattrapée par une marge négative, et l'écart s'ajoute côté titre.
+function hoverKitTitleVars(kit){
+  const t=kit.fiche.titre,svg=24,h=t.hauteur,boite=h*104/svg,motif=h*kit.geometrie.ornementTitre.largeur/svg,k=v=>`calc(var(--hc-cart-h) * ${(v/HOVER_CARD.cartH).toFixed(4)})`;
+  return [`--hc-orn-w:${k(boite)}`,`--hc-orn-h:${k(h)}`,`--hc-orn-vide:${k(boite-motif)}`,`--hc-orn-ecart:${k(t.ecart)}`];
+}
+// Une sangle droite de (a) à (b) le long d'un axe, centrée sur une ligne. pa et pb : où tombe, depuis chaque bout, la
+// première limite de cellule (milieu entre deux clous) ; entre elles, un nombre entier de cellules, donc un pas régulier.
+function hoverKitStrap(dir,S,axe,a,b,ligne,ep,pa=0,pb=0){
+  const s=ep/S.coeur,lg=b-a;if(lg<=1)return "";
+  const large=(S.coeur+2*S.bord)*s,pas=S.pas*s,dedans=Math.max(pas,lg-pa-pb),cell=dedans/Math.max(1,Math.round(dedans/pas));
+  return axe==="x"
+    ?`<i style="left:${hcPx(a)};top:${hcPx(ligne-large/2)};width:${hcPx(lg)};height:${hcPx(large)};background:url('${dir}/${S.h}') ${hcPx(pa)} 0/${hcPx(cell)} ${hcPx(large)} repeat-x"></i>`
+    :`<i style="left:${hcPx(ligne-large/2)};top:${hcPx(a)};width:${hcPx(large)};height:${hcPx(lg)};background:url('${dir}/${S.v}') 0 ${hcPx(pa)}/${hcPx(large)} ${hcPx(cell)} repeat-y"></i>`;
+}
+// Le coin sobre d'un angle : l'image (bras coupés avant leur embout), le bout de chaque bras et où la bordure qui le
+// prolonge place sa première limite de cellule, pour que le clou suivant tombe un pas après le dernier clou du coin.
+function hoverKitCorner(kit,a,bords){
+  const G=kit.geometrie.coinSobre,c=kit.fiche.coins[a],A=HOVER_KIT_ANGLES[a],s=kit.fiche.cadre.ep/G.coeur,n=G.n,[tr,f]=A[c.sens];
+  const ox=A.sx<0?bords.x0:bords.x1,oy=A.sy<0?bords.y0:bords.y1;
+  const [ax,ay]=f(G.ax,G.ay,n),left=ox-ax*s+c.dx,top=oy-ay*s+c.dy;
+  const phase=(clou,coupe,pas)=>((clou+pas/2-coupe)%pas+pas)%pas*s;
+  const bras=[{p:f(G.coupeX,G.ay,n),d:phase(G.clouX,G.coupeX,G.pasX)},{p:f(G.ax,G.coupeY,n),d:phase(G.clouY,G.coupeY,G.pasV)}]
+    .map(b=>({x:left+b.p[0]*s,y:top+b.p[1]*s,d:b.d}));
+  const hor=bras.find(b=>Math.abs(b.y-(top+ay*s))<1)||bras[0],ver=bras.find(b=>b!==hor);
+  return {html:`<img src="${kit.dossier}/${G.f}" alt="" style="left:${hcPx(left)};top:${hcPx(top)};width:${hcPx(n*s)};height:${hcPx(n*s)};clip-path:inset(0 ${hcPx((n-G.coupeX)*s)} ${hcPx((n-G.coupeY)*s)} 0);transform:${tr}">`,
+    finX:hor.x,phaseX:hor.d,finY:ver.y,phaseY:ver.d};
+}
+// Le cadre : d'abord le cadre de base (séparation, sous le nom, raccords en T, bordure entre les bouts des bras des coins
+// sobres, coins), puis les ornements (chaîne torsadée, ornements de coin, chaîne suspendue, couronne).
+function hoverKitFrame(kit){
+  if(!kit) return "";
+  const G=kit.geometrie,F=kit.fiche,dir=kit.dossier,e=F.cadre.ep,C=F.cotes,out=[];
+  const B={x0:C.gauche,x1:HOVER_CARD.w+C.droite,y0:C.haut,y1:HOVER_CARD.h+C.bas};
+  const coins=F.cadre.sobres?Object.fromEntries(Object.keys(HOVER_KIT_ANGLES).map(a=>[a,hoverKitCorner(kit,a,B)])):{};
+  // Les côtés verticaux à l'échelle du bras vertical du coin sobre, dessiné 5 % plus petit.
+  const eV=F.cadre.style==="gros"&&F.cadre.sobres?e*G.coinSobre.coeurV/G.coinSobre.coeur:e;
+  const mi={haut:B.y0+e/2,bas:B.y1-e/2,gauche:B.x0+eV/2,droite:B.x1-eV/2};
+  const S=F.separation,sx=HOVER_CARD.sepX+S.dx,se=S.ep,T=G.raccordT,Tk=se/T.coeur;
+  const raccords=[];
+  if(S.style!=="aucune"){
+    out.push(hoverKitStrap(dir,G.sangles[S.style],"y",B.y0,B.y1,sx,se));
+    if(S.raccords!=="aucun"){
+      const pose=(p,y,retourne)=>`<img src="${dir}/${T.f}" alt="" style="left:${hcPx(sx-T.cx*Tk+p.dx)};top:${hcPx(y+p.dy)};width:${hcPx(T.w*Tk)};height:${hcPx(T.h*Tk)}${retourne?";transform:scaleY(-1)":""}">`;
+      raccords.push(pose(S.tHaut,B.y0+(e-se)/2-T.haut*Tk,false),pose(S.tBas,B.y1-(e-se)/2-(T.h-T.haut)*Tk,true));
+    }
+  }
+  if(F.sousNom.style!=="aucune") out.push(hoverKitStrap(dir,G.sangles[F.sousNom.style],"x",sx,B.x1-e/2,HOVER_CARD.sepNomY+F.sousNom.dy,se));
+  if(S.raccords==="dessous") out.push(...raccords);
+  if(F.cadre.style!=="aucune"){
+    // Chaque côté part du bout des bras (un demi-pixel sous le coin, pour ne laisser aucun jour).
+    const st=G.sangles[F.cadre.style],c=coins,gros=F.cadre.style==="gros",lo=.5,ph=(x,cle)=>gros&&x?x[cle]+lo:0;
+    out.push(hoverKitStrap(dir,st,"x",c.hg?c.hg.finX-lo:B.x0,c.hd?c.hd.finX+lo:B.x1,mi.haut,e,ph(c.hg,"phaseX"),ph(c.hd,"phaseX")));
+    out.push(hoverKitStrap(dir,st,"x",c.bg?c.bg.finX-lo:B.x0,c.bd?c.bd.finX+lo:B.x1,mi.bas,e,ph(c.bg,"phaseX"),ph(c.bd,"phaseX")));
+    out.push(hoverKitStrap(dir,st,"y",c.hg?c.hg.finY-lo:B.y0,c.bg?c.bg.finY+lo:B.y1,mi.gauche,eV,ph(c.hg,"phaseY"),ph(c.bg,"phaseY")));
+    out.push(hoverKitStrap(dir,st,"y",c.hd?c.hd.finY-lo:B.y0,c.bd?c.bd.finY+lo:B.y1,mi.droite,eV,ph(c.hd,"phaseY"),ph(c.bd,"phaseY")));
+  }
+  if(S.raccords==="dessus") out.push(...raccords);
+  for(const c of Object.values(coins)) out.push(c.html);
+  // Les ornements.
+  const tor=F.chaineTorsadee,TG=G.chaineTorsadee;
+  if(tor.place!=="aucune"){
+    const w=tor.taille,h=w*TG.h/TG.w,pas=Math.max(2,h+tor.espacement),vertical=["separation","gauche","droite"].includes(tor.place);
+    const L=(vertical?HOVER_CARD.h:HOVER_CARD.w)*tor.longueur/100,nb=Math.max(1,Math.floor((L-h)/pas)+1),total=h+(nb-1)*pas;
+    const maillons=Array.from({length:nb},(_,i)=>`<img src="${dir}/${TG.f}" alt="" style="left:0;top:${hcPx(i*pas)};width:${hcPx(w)};height:${hcPx(h)}">`).join("");
+    if(vertical){
+      const cx={separation:sx,gauche:mi.gauche,droite:mi.droite}[tor.place];
+      out.push(`<span style="left:${hcPx(cx-w/2+tor.dx)};top:${hcPx((HOVER_CARD.h-total)/2+tor.dy)};width:${hcPx(w)};height:${hcPx(total)}">${maillons}</span>`);
+    }else{
+      const cy=tor.place==="bas"?mi.bas:mi.haut;
+      out.push(`<span style="left:${hcPx(HOVER_CARD.w/2-w/2+tor.dx)};top:${hcPx(cy-total/2+tor.dy)};width:${hcPx(w)};height:${hcPx(total)};transform:rotate(90deg)">${maillons}</span>`);
+    }
+  }
+  for(const [a,A] of Object.entries(HOVER_KIT_ANGLES)){
+    const o=F.ornementsCoin[a];if(!o||o.modele==="aucun")continue;
+    const x=(A.sx<0?B.x0:B.x1-o.taille)+o.dx,y=(A.sy<0?B.y0:B.y1-o.taille)+o.dy;
+    out.push(`<img src="${dir}/${G.ornementsCoin[o.modele]}" alt="" style="left:${hcPx(x)};top:${hcPx(y)};width:${hcPx(o.taille)};height:${hcPx(o.taille)};object-fit:contain;object-position:0 0;transform:${A[o.sens][0]}">`);
+  }
+  const ch=F.chaine,CG=G.chaine;
+  if(ch.place!=="aucune"){
+    const W=ch.taille,H=W*CG.h/CG.w;
+    if(ch.place.startsWith("coin")){
+      const L=W/Math.SQRT2,g=ch.place==="coin-g",cx=(g?L/2+mi.gauche:HOVER_CARD.w-L/2+C.droite-e/2)+ch.dx,cy=L/2+mi.haut+ch.dy;
+      out.push(`<img src="${dir}/${CG.f}" alt="" style="left:${hcPx(cx-W/2)};top:${hcPx(cy)};width:${hcPx(W)};height:${hcPx(H)};transform-origin:50% 0;transform:rotate(${g?-45:45}deg)">`);
+    }else{
+      const cx={"haut-portrait":HOVER_CARD.portraitCx,"haut-page":HOVER_CARD.pageCx,"sous-nom":HOVER_CARD.pageCx}[ch.place];
+      const y0=(ch.place==="sous-nom"?HOVER_CARD.sepNomY:mi.haut)+ch.dy;
+      out.push(`<img src="${dir}/${CG.f}" alt="" style="left:${hcPx(cx-W/2+ch.dx)};top:${hcPx(y0-H*CG.attache)};width:${hcPx(W)};height:${hcPx(H)}">`);
+    }
+  }
+  const co=F.couronne,KG=G.couronne;
+  if(co.place!=="aucune"){
+    const W=co.taille,H=W*KG.h/KG.w,[cote,ou]=co.place.split("-");
+    const cx={page:HOVER_CARD.pageCx,centre:HOVER_CARD.w/2,portrait:HOVER_CARD.portraitCx}[ou],ligne=cote==="bas"?mi.bas:mi.haut;
+    // Sa base (le bandeau à pointes, en bas de l'image) chevauche la bordure ; retournée, elle pend sous la ligne.
+    const haut=co.retournee?ligne-H*KG.base:ligne-H+H*KG.base;
+    out.push(`<img src="${dir}/${KG.f}" alt="" style="left:${hcPx(cx-W/2+co.dx)};top:${hcPx(haut+co.dy)};width:${hcPx(W)};height:${hcPx(H)};transform:${co.retournee?"scaleY(-1)":"none"}">`);
+  }
+  return `<div class="hc-cadre" aria-hidden="true">${out.join("")}</div>`;
 }
 
 // La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15). Une carte et un avatar aux dimensions fixes,
-// aux proportions de Chatty (styles.css) ; les cadres viendront en dernier, une image par culture posée par-dessus
-// (« On aura simplement 32 PNG qui n'auront plus qu'à se coller dessus »). À gauche le portrait en pied ; à droite le
+// aux proportions de Chatty (styles.css) ; le cadre vient du kit graphique de la culture, posé par-dessus
+// (hoverKitFrame ; les cultures sans kit n'en ont pas encore). À gauche le portrait en pied ; à droite le
 // cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
 const HEART='<path d="M12 21.2s-7.6-4.7-10.1-9.3C.1 8.4 1.6 3.4 6.1 2.4 8.6 1.8 10.7 3 12 5c1.3-2 3.4-3.2 5.9-2.6 4.5 1 6 6 4.2 9.5-2.5 4.6-10.1 9.3-10.1 9.3z"/>';
 function hoverHearts(filled){
@@ -144,7 +263,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
   const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
   const tags=d.tags.map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
-  return `<article class="hover-card" data-culture="${esc(frame.key)}" style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
+  return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
@@ -160,6 +279,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
       <div class="hc-kit">${kit}</div>
       ${schools?`<i class="hc-rule" aria-hidden="true"></i><div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:""}
     </div>
+    ${hoverKitFrame(frame.kit)}
   </article>`;
 }
 
@@ -194,4 +314,4 @@ function fitHoverCard(root){
   }
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,fitHoverCard,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,originPhrase};

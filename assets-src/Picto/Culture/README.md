@@ -14,7 +14,7 @@ les « Nains du chaos ».
 | Cités libres | `cites-libres.jpg` | Dark_fantasy_heraldic_emblem_sword_20261022215821.jpg | oui |
 | Clans des grandes steppes | `clans-des-grandes-steppes.jpg` | Ram_skull_emblem_with_spears_20261022215821.jpg | validé |
 | Elfes des grandes cités | `elfes-des-grandes-cites.jpg` | Dark_fantasy_sun_emblem_20261022215821.jpg | validé |
-| Elfes noirs | `elfes-noirs.jpg` | Dark_Elf_heraldic_logo_emblem_20261022215821.jpg | oui |
+| Elfes noirs | `elfes-noirs.jpg` (remplacé le 2026-11-16 par le logo de son kit, `assets-src/Kits/elfes-noirs/logo.png`) | Dark_Elf_heraldic_logo_emblem_20261022215821.jpg | oui |
 | Elfes sylvains | `elfes-sylvains.jpg` | Wood_Elf_glowing_leaf_emblem_20261022215821.jpg | oui |
 | Explorateurs | `explorateurs.jpg` | Halfling_Explorers_heraldic_logo…_20261022215821.jpg | oui |
 | Gnomes des cavernes | `gnomes-des-cavernes.jpg` | Cave_Gnomes_emblem_with_crystals_20261022215821.jpg | oui |

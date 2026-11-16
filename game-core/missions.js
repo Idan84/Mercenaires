@@ -168,7 +168,7 @@
       };
       return {id:`${def.code}-${day}-${Math.floor(random()*1e9).toString(36)}`,code:def.code,name:def.nom,campName:camp.campName,faction:camp.faction,
         difficulty:missionLevel,level:missionLevel,day,expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),distance,camp,enemyCount,
-        reward:fields.récompense,order:order.code,fields};
+        reward:fields.récompense,order:order.code,fields,place:placePhrases(camp.campName,fields.lieu)};
     }
 
     // Les chasses (Idan, 2026-11-07 : « Récompense de 1000 Po par étoile. 0,25 à 1 jour de marche par étoile. Arrondi sup.
@@ -192,6 +192,18 @@
       const [low,high]=def.marche?.facteur||[0.25,1];
       return Math.max(1,Math.ceil(level*(low+random()*(high-low))-1e-9));
     }
+    // Le lieu d'une offre avec son article (Idan, 2026-11-16 : « le vallée des défenses » ne va pas) : masculin par défaut,
+    // féminin ou pluriel d'après one-shot-missions.json (genres_lieux) ; l'élision devant une voyelle (l'antre, l'aire).
+    // Trois formes : le (« pour la vallée… »), au (« arrivée à la vallée… »), du (« retour de la vallée… »), avec le village.
+    function placePhrases(name,lieu){
+      const g=data.genres_lieux||{},low=String(name||"").toLocaleLowerCase("fr");
+      const vowel=s=>/^[aeiouyàâäéèêëîïôöùûü]/i.test(s);
+      const article=(g.pluriel||[]).includes(name)?{le:"les ",au:"aux ",du:"des "}
+        :vowel(low)?{le:"l’",au:"à l’",du:"de l’"}
+        :(g.feminin||[]).includes(name)?{le:"la ",au:"à la ",du:"de la "}:{le:"le ",au:"au ",du:"du "};
+      const of=lieu?(vowel(lieu)?" d’":" de ")+lieu:"";
+      return {le:article.le+low+of,au:article.au+low+of,du:article.du+low+of};
+    }
     function createHuntOffer(def,{day=1,renown=0,level=null}={}){
       const missionLevel=level==null?rollMissionLevel(def,renown):clampLevel(level);
       const b=def.bete,count=rollBeasts(def,missionLevel),distance=huntDistance(def,missionLevel);
@@ -209,7 +221,7 @@
       };
       return {id:`${def.code}-${day}-${Math.floor(random()*1e9).toString(36)}`,code:def.code,name:def.nom,campName:place,faction:b.faction,
         difficulty:missionLevel,level:missionLevel,day,expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),distance,camp,enemyCount:count,
-        reward,order:order?.code||null,fields,hunt:true};
+        reward,order:order?.code||null,fields,place:placePhrases(place,fields.lieu),hunt:true};
     }
     // Une chasse au tableau : l'une des missions de chasse, selon son poids. Une chasse plafonnée (niveau.max : les chiens
     // sauvages, Idan, 2026-11-09 : « On limite la mission à 1 étoile argent max. Au dessus elle n'est pas proposée ») n'est
@@ -480,7 +492,7 @@
     // centre (2026-11-09 ; 30 × 15 avant).
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||36,rows:map.lignes||25}; }
 
-    return {definition,archetype,points,missionMin,lootOf,accessoryDrops,ACCESSORY_SLOTS,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
+    return {placePhrases,definition,archetype,points,missionMin,lootOf,accessoryDrops,ACCESSORY_SLOTS,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
       createOffer,createHunt,rollBeasts,huntDistance,orderText,applyArchetype,buildEnemies,lootFrom,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
   }
 

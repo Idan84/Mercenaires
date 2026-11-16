@@ -45,8 +45,8 @@ for (const def of [wolves, unicorns]) {
 
 // 2. Le tirage : renommée ± 2, les bêtes, la marche, la récompense.
 const renown = 0, base = rules.renownLevel(renown);
-const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0};
-for (let i = 0; i < 400; i++) {
+const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0, hunt_boars: 0, hunt_pegasus: 0, hunt_mammoths: 0};
+for (let i = 0; i < 1000; i++) {
   const offer = rules.createHunt({day: 1, renown});
   seen[offer.code]++;
   const def = rules.definition(offer.code), L = offer.level;
@@ -63,9 +63,11 @@ for (let i = 0; i < 400; i++) {
   assert.ok(letter && letter.paragraphs.every(p => !/\{[^}]+\}/.test(p)), "la lettre est remplie");
 }
 const huntTotal = Object.values(seen).reduce((a, b) => a + b, 0);
-// À ce niveau : loups, licornes, chiens sauvages et papillons à égalité ; pas de cerbère avant le niveau 6.
-assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs", "hunt_butterflies"].every(c => seen[c] > 0.18 * huntTotal), "à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
+// À ce niveau : loups, licornes, chiens sauvages, papillons et sangliers à égalité ; pas de cerbère avant le niveau 6.
+assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs", "hunt_butterflies", "hunt_boars"].every(c => seen[c] > 0.15 * huntTotal), "à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
 assert.equal(seen.hunt_cerberus, 0, "pas de cerbère avant le niveau 6");
+assert.equal(seen.hunt_pegasus, 0, "pas de pégase avant 3★");
+assert.equal(seen.hunt_mammoths, 0, "pas de mammouth avant 6★");
 // Le cerbère (dès le niveau 6) et les chiens sauvages (jusqu'à 6 : « au dessus elle n'est pas proposée ») ; Idan, 2026-11-09.
 const cerberus = rules.definition("hunt_cerberus"), dogs = rules.definition("hunt_wild_dogs");
 assert.deepEqual([cerberus.bete.code, cerberus.bete.des, cerberus.bete.faces, cerberus.niveau.min], ["cerbere", 1, 3, 6]);
@@ -74,6 +76,40 @@ for (const def of [cerberus, dogs]) assert.equal(reference.oneShotMissions.ordre
 const kinds = level => new Set(Array.from({length: 300}, () => rules.createHunt({day: 1, level}).code));
 assert.ok(kinds(6).has("hunt_cerberus") && kinds(6).has("hunt_wild_dogs"), "à 6 étoiles : les deux");
 assert.ok(kinds(7).has("hunt_cerberus") && !kinds(7).has("hunt_wild_dogs") && !kinds(7).has("hunt_butterflies"), "à 7 étoiles : plus de chiens sauvages ni de papillons");
+// Le sanglier de combat (Idan, 2026-11-16 : « 1D3 par étoile », à tous les niveaux) : deux lettres, des commanditaires.
+const boars = rules.definition("hunt_boars");
+assert.deepEqual([boars.bete.code, boars.bete.nom, boars.bete.des, boars.bete.faces, boars.bete.faction, boars.niveau.min, boars.niveau.max], ["sanglier", "Sanglier", 1, 3, "Sangliers", undefined, undefined]);
+assert.ok(kinds(1).has("hunt_boars") && kinds(9).has("hunt_boars"), "le sanglier, de 1 à 9 étoiles");
+const boarOrders = reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_boars");
+assert.equal(boarOrders.length, 2, "hunt_boars : deux lettres");
+for (const o of boarOrders) assert.ok(reference.oneShotMissions.noms[o.noms_commanditaire]?.length, o.code + " : ses commanditaires");
+// Le pégase (Idan, 2026-11-16 : « Elle commence à 3* bronze et est un peu plus dur » ; « 1D4 par étoile ») : deux lettres.
+const pegasus = rules.definition("hunt_pegasus");
+assert.deepEqual([pegasus.bete.code, pegasus.bete.des, pegasus.bete.faces, pegasus.bete.faction, pegasus.niveau.min, pegasus.niveau.max], ["pegase", 1, 4, "Pégases", 3, undefined]);
+assert.ok(!kinds(2).has("hunt_pegasus") && kinds(3).has("hunt_pegasus") && kinds(12).has("hunt_pegasus"), "le pégase dès 3★ bronze, sans plafond");
+const pegasusOrders = reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_pegasus");
+assert.deepEqual(pegasusOrders.map(o => o.faction), ["Pégases", "Pégases"], "hunt_pegasus : deux lettres");
+for (const o of pegasusOrders) assert.ok(reference.oneShotMissions.noms[o.noms_commanditaire]?.length, o.code + " : ses commanditaires");
+// Le mammouth (Idan, 2026-11-16 : « On ajoute déjà un mamouth et une chasse » ; 1D2 par étoile, dès 6★) : deux lettres.
+const mammoths = rules.definition("hunt_mammoths");
+assert.deepEqual([mammoths.bete.code, mammoths.bete.nom, mammoths.bete.des, mammoths.bete.faces, mammoths.bete.faction, mammoths.niveau.min], ["mammouth", "Mammouth", 1, 2, "Mammouths", 6]);
+assert.ok(!kinds(5).has("hunt_mammoths") && kinds(6).has("hunt_mammoths") && kinds(15).has("hunt_mammoths"), "le mammouth dès 6★");
+assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_mammoths").length, 2, "hunt_mammoths : deux lettres");
+// Le lieu avec son article (Idan, 2026-11-16 : « le vallée des défenses » corrigé) : féminin, pluriel, élision, masculin.
+assert.deepEqual(rules.placePhrases("Vallée des défenses", "Mornecombe"),
+  {le: "la vallée des défenses de Mornecombe", au: "à la vallée des défenses de Mornecombe", du: "de la vallée des défenses de Mornecombe"});
+assert.deepEqual(["Friches aux crocs", "Antre du cerbère", "Aire des pégases", "Col des mammouths", "Camp gobelin"].map(n => rules.placePhrases(n, "Brume").au),
+  ["aux friches aux crocs de Brume", "à l’antre du cerbère de Brume", "à l’aire des pégases de Brume", "au col des mammouths de Brume", "au camp gobelin de Brume"]);
+const knownPlaces = new Set(reference.oneShotMissions.missions.flatMap(m => [...(m.bete?.lieux || []), ...(m.camps || []).map(c => c.nom_camp)]));
+const genres = reference.oneShotMissions.genres_lieux;
+assert.deepEqual([...genres.feminin, ...genres.pluriel].filter(n => !knownPlaces.has(n)), [], "des lieux qui existent");
+const huntOffer = rules.createOffer({code: "hunt_mammoths", level: 6});
+assert.equal(huntOffer.place.le, rules.placePhrases(huntOffer.campName, huntOffer.fields.lieu).le, "l'offre garde son lieu");
+for (const level of [3, 7]) {
+  const offer = rules.createOffer({code: "hunt_pegasus", level});
+  assert.ok(offer.enemyCount >= level && offer.enemyCount <= 4 * level, level + " étoiles : " + offer.enemyCount + " pégases");
+  assert.ok(rules.buildEnemies(offer).every(e => e.mount?.code === "pegase" && e.mount.capturable), "des pégases, capturables");
+}
 // Les papillons vénéneux (Idan, 2026-11-09 : « Chasse aux papillons 3D6 » ; « On fait que les vénéneux » ; jusqu'à 6★).
 const butterflies = rules.definition("hunt_butterflies");
 assert.deepEqual([butterflies.bete.code, butterflies.bete.des, butterflies.bete.faces, butterflies.niveau.max], ["papillon_veneneux", 3, 6, 6]);

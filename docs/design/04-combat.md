@@ -471,6 +471,16 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Molosse de guerre** (Idan : « Il est assez faible » ; « Personne ne le monte ») : Force 30, Constitution 35 (**145 PV**),
   Vitesse 50, **Morsure** 1D6, perforant 25 ; gabarit 0,5 : personne ne le monte, il se bat à pied à côté de son maître
   (`compagnon`) ; neutre mauvais.
+- **Sanglier de combat** (Idan, 2026-11-16 : « Je voudrais qu'on ajoute une monture : sanglier de combat » ; « le reste est
+  validé ») : Force 85, Constitution 80 (**300 PV**), Vitesse 70 (7 cases), Esquive 15, Courage 75 ; les **Défenses** de
+  l'invocation (1D8, perforant 35), **doublées en charge** (`bonus_charge` 2, comme les armes d'hast) ; gabarit 2, une case :
+  tout le monde le monte, sauf l'ogre, qui l'emmène à pied (`compagnon`) ; chaotique neutre ; « à dos de sanglier ».
+- **Mammouth de guerre** (Idan, 2026-11-16 : « Fais le très lent » ; « Le fait pas trop courageux... Quelques petits
+  cochons qui crient et ils ont peur. Il est fort mais c'est pas un combattant ») : Force 130, Constitution 120 (**426 PV**),
+  Vitesse 25 (**4 cases** : le pas d'un piéton, la moitié d'un destrier), Courage 20, Armes naturelles 30 ; les **Défenses**
+  (1D12, contondant 50), doublées en charge ; gabarit 3 : **tout le monde le monte, les ogres aussi** ; **3 cases** sur la
+  carte (taille « grande », + 10 pour le toucher) ; au tir, la monture est visée à 3 ÷ (3 + le cavalier) : 75 % sous un
+  humain (67 % sur un destrier), 60 % sous un ogre ; neutre ; « à dos de mammouth ».
 - **Les papillons** (Idan, 2026-11-09), qui **volent** tous :
   - **télépathe** (« le drone de repérage ») : Discrétion **300**, Perception 90, Vitesse 110 ; **il n'attaque pas**
     (`attaque` null : pas d'arme) ; personne ne le monte ;
@@ -501,7 +511,7 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Le cheval monté a son attaque** (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement
   commun » ; « faut pas que l'animal joue après. Ils jouent en même temps, on rajoute des boutons.. l'attaque principale de
   l'animal qui compte pas pour le mercenaire ») : **pendant l'activation de son cavalier**, le cheval a sa propre action
-  principale et sa propre action rapide : le bouton **Attaque de la monture** (au contact du couple ; « Viser le cheval »
+  principale et sa propre action rapide : le bouton **Attaque de la monture** (au contact du couple ; « Viser la monture »
   vaut aussi pour elle) et ses sorts dans la barre de sorts, avec son mana. Le déplacement est celui du couple. Ennemis et
   combat automatique : après le cavalier, dans la même activation, un sort, sinon son attaque contre un ennemi au contact.
 - **Le cheval monté menace aussi** (Idan, 2026-11-07 : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ;
@@ -512,10 +522,10 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   titre A ») : les exploits de sa monture comptent pour sa réputation (doc 09) ; sa monture équipée s'ajoute à son titre
   (« à cheval », doc 19).
 - **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
-- **Qui prend les coups** : au corps à corps et en charge, le joueur choisit (bouton **Viser le cheval** ; sinon le
+- **Qui prend les coups** : au corps à corps et en charge, le joueur choisit (bouton **Viser la monture** ; sinon le
   cavalier) ; au tir, pour un sort qui vise, pour une attaque d'opportunité et pour les coups de l'IA (Idan, 2026-11-07 :
   « oui »), un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit du cavalier) (un humain sur un
-  destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux. Sur un allié à cheval, **Viser le cheval** donne au cheval
+  destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux. Sur un allié à cheval, **Viser la monture** donne au cheval
   le sort (un soin…) ou la potion de soins ou de mana que le cavalier lui fait boire (action rapide).
 - **Hauteur** : au corps à corps, le cavalier compte comme un niveau plus haut (+ 10 au Toucher pour lui, − 10 contre lui ;
   rien contre le cheval ; `combat.monture.hauteur_cac`).
@@ -650,7 +660,7 @@ Périmètre actif :
 - écran (Idan, 2026-11-04) : l'attaque, la charge ou le sort choisi éclaire sa **portée** ; au survol d'une case qu'il peut viser, un sort de zone éclaire sa **zone** (disque, anneau, ligne, cône, mur) ; en **Attaquer**, un ennemi hors d'atteinte mais à portée de mouvement est cliquable : le personnage s'en approche par le plus court chemin (à égalité, celui qui provoque le moins d'attaques d'opportunité), puis frappe s'il le peut encore ; le survol montre le chemin, sa longueur et ses attaques d'opportunité ;
 - aperçu d'un sort au survol (Idan, 2026-11-04) : réussite, coût, Toucher (un trait) ou précision (une zone qui peut dévier), dégâts / soins / mana de tant à tant (après la protection élémentaire de la cible, selon sa Volonté pour un sort psychique, l'étape Blesser et la Résistance physique pour un sort physique), bonus, zone, durée ;
 - tour ennemi (Idan, 2026-11-04) : les ennemis jouent l'un après l'autre ; celui qui joue est mis en évidence, ses déplacements et ses coups s'animent, puis une pause d'environ 1 s avant le suivant ; **Accélérer** la raccourcit (le combat automatique joue toujours d'un coup) ;
-- caméra au début de chaque tour (Idan, 2026-11-14 : « quand un joueur ou un ennemi commence son tour, on fait une petite animation de caméra qui se met sur lui, zoom et dézoome un peu en le mettant au centre sauf si après le dézoom on a des bords vides de la carte. Dans ce cas, le personnage n'est plus centré dans la vue, on décale pour voir sur les bords les bords de la carte ») : la vue glisse sur lui en zoomant un peu (× 1,15), puis revient au zoom du joueur (la carte entière s'il ne l'a pas changé), centrée sur lui, sans vide au-delà des bords de la carte ; environ 0,7 s, plus court avec **Accélérer**, rien si le système demande moins de mouvement ; un ennemi part de la case où il a commencé son tour, sauf s'il y était caché (la caméra ne trahit pas sa cachette) ; zoomer ou faire glisser la carte l'interrompt ; code : `startMissionCamera`, `missionViewOn` (`prototype-web/mission.js`) ;
+- caméra au début de chaque tour (Idan, 2026-11-14 : « quand un joueur ou un ennemi commence son tour, on fait une petite animation de caméra qui se met sur lui, zoom et dézoome un peu en le mettant au centre sauf si après le dézoom on a des bords vides de la carte. Dans ce cas, le personnage n'est plus centré dans la vue, on décale pour voir sur les bords les bords de la carte ») : puis (Idan, 2026-11-16 : « ça zoom pas, ça fait juste un mouvement de caméra inutile au début de chaque tour » ; choix : « Zoomer et rester ») la vue glisse sur lui et zoome vraiment, deux fois la carte entière tant que le joueur n'a pas choisi son zoom (sinon le sien), centrée sur lui, sans vide au-delà des bords de la carte, et reste là pendant son tour ; au tour suivant, elle glisse au même zoom vers le suivant ; la molette, les boutons et « carte entière » restent pour reculer (après « carte entière », le tour suivant zoome à nouveau) ; environ 0,7 s, plus court avec **Accélérer**, rien si le système demande moins de mouvement ; un ennemi part de la case où il a commencé son tour, sauf s'il y était caché (la caméra ne trahit pas sa cachette) ; zoomer ou faire glisser la carte l'interrompt ; code : `startMissionCamera`, `missionViewOn` (`prototype-web/mission.js`) ;
 - fin du test lorsque les trois membres d'une équipe sont **hors combat**.
 
 Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'est qu'une interface de test.

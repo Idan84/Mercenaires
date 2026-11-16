@@ -96,7 +96,7 @@
       "key": "pluriel"
     }
   ],
-  "row_count": 9,
+  "row_count": 11,
   "rows": [
     {
       "nom": "Destrier",
@@ -620,6 +620,124 @@
       "titre": "à dos de papillon",
       "place": 1,
       "charge_aerienne": "montée"
+    },
+    {
+      "nom": "Sanglier de combat",
+      "code": "sanglier",
+      "espece": "Bêtes à cornes",
+      "gabarit": 2,
+      "taille": "normale",
+      "caracteristiques": {
+        "Force": 85,
+        "Constitution": 80,
+        "Dextérité": 30,
+        "Vitesse": 70,
+        "Endurance": 80,
+        "Esquive": 15,
+        "Courage": 75,
+        "Volonté": 40,
+        "Perception": 50,
+        "Intelligence": 10,
+        "Chance": 50,
+        "Charisme": 20,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 3,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 8
+      },
+      "competences_martiales": {
+        "Armes naturelles": 54,
+        "Défenses": 50,
+        "Discrétion": 15
+      },
+      "attaque": {
+        "nom": "Défenses",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "bonus_charge": 2
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 45
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
+      "capturable": true,
+      "entretien": 15,
+      "alignement": "Chaotique neutre",
+      "rang_echange": 3,
+      "titre": "à dos de sanglier",
+      "logement": "trainer_wallow",
+      "compagnon": true,
+      "place": 1
+    },
+    {
+      "nom": "Mammouth de guerre",
+      "code": "mammouth",
+      "espece": "Bêtes à cornes",
+      "gabarit": 3,
+      "taille": "grande",
+      "caracteristiques": {
+        "Force": 130,
+        "Constitution": 120,
+        "Dextérité": 15,
+        "Vitesse": 25,
+        "Endurance": 90,
+        "Esquive": 5,
+        "Courage": 20,
+        "Volonté": 40,
+        "Perception": 40,
+        "Intelligence": 30,
+        "Chance": 50,
+        "Charisme": 20,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 1,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 6
+      },
+      "competences_martiales": {
+        "Armes naturelles": 30,
+        "Défenses": 30,
+        "Discrétion": 5
+      },
+      "attaque": {
+        "nom": "Défenses",
+        "degats_pv_base": "1D12",
+        "puissance_contondante": 50,
+        "bonus_charge": 2
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 60
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
+      "capturable": true,
+      "entretien": 50,
+      "alignement": "Neutre",
+      "rang_echange": 4,
+      "titre": "à dos de mammouth",
+      "logement": "trainer_wallow",
+      "compagnon": true,
+      "place": 2
     }
   ]
 }

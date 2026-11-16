@@ -2558,10 +2558,8 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-steed>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
 .hc-steed-portrait{display:grid;place-items:center;width:88px;height:88px;margin:0;box-sizing:border-box;border:2px solid #8a6a40;background:rgba(93,68,41,.12);box-shadow:inset 0 0 12px rgba(93,68,41,.3)}
 .hc-steed-portrait>span{padding:0 6px;font:italic 500 15px/1.1 var(--police-texte);text-align:center;color:var(--encre-2)}
-/* Les écoles : la plaque, puis les pictos d’Idan (assets/pictos/ecole-<slug>.webp). */
+/* Les écoles : les pictos d’Idan (assets/pictos/ecole-<slug>.webp), sans plaque (« Retire le école de magie »). */
 .hc-magic{display:grid;justify-items:center;gap:8px}
-.hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f4f1ec,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:#f4f1ec;text-shadow:0 1px 1px rgba(0,0,0,.65)}
-.hc-plaque::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,13px 100%,0 50%);background:linear-gradient(#315d36,#18301c)}
 .hc-schools{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));width:100%;row-gap:10px}
 .hc-school{position:relative;display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px}
 .hc-school:nth-child(3n+1)::before{display:none}

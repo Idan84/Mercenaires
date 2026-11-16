@@ -294,10 +294,12 @@ function hoverSchoolRows(schools,withMount){
   for(let i=0;i<schools.length;i+=perRow) rows.push(schools.slice(i,i+perRow));
   return rows;
 }
-// Le portrait de la monture, carré (Idan, 2026-11-16 : « L'avatar de la monture sera carré »). Il n'en existe pas encore :
-// en attendant, un cadre carré à son espèce (« Destrier »), à la taille du portrait (88 px, styles.css).
+// Le portrait de la monture, carré (Idan, 2026-11-16 : « L'avatar de la monture sera carré »), seul : « virer le nom de la
+// monture » (il ne reste que pour les lecteurs d'écran). Il n'en existe pas encore : en attendant, un cadre carré à son
+// espèce (« Destrier »), à la taille du portrait (72 px, styles.css : « réduire un peu l'avatar monture »).
 function hoverMountPortrait(mount){
-  return `<figure class="hc-steed-portrait" data-mount="${esc(mount.code)}" aria-label="${esc(mount.kind||mount.name)}"><span>${esc(mount.kind||mount.name)}</span></figure>`;
+  const label=[mount.name,mount.kind].filter(Boolean).join(", ");
+  return `<figure class="hc-steed-portrait" data-mount="${esc(mount.code)}" aria-label="${esc(label)}"><span>${esc(mount.kind||mount.name)}</span></figure>`;
 }
 // Les armes d'un set, comme Idan les dit : « Épée longue et écu ».
 function hoverWeapons(names){
@@ -328,7 +330,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const school=name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
   const rows=hoverSchoolRows(d.schools,Boolean(d.mount));
   const magic=rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
-  const steed=d.mount?`<div class="hc-steed">${hoverMountPortrait(d.mount)}<span>${esc(d.mount.name)}</span></div>`:"";
+  const steed=d.mount?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">

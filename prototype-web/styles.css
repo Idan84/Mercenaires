@@ -2551,14 +2551,13 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-kit-item+.hc-kit-item::before,.hc-school+.hc-school::before{content:"";position:absolute;left:-1.5px;top:-4px;bottom:-4px;width:3px;background:#8a6a40;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .hc-kit-item i{font:italic 500 17px/1.15 var(--police-texte);color:var(--encre)}
 /* Dessous, deux colonnes (Idan, 2026-11-16) : les écoles de magie à gauche, la monture à droite, la fente entre les deux dans
-   l'axe de celle du haut (même grille que .hc-head) ; seule, l'une ou l'autre se centre. La monture : son portrait (un cadre
-   à son espèce tant qu'il n'existe pas) et son nom. */
+   l'axe de celle du haut (même grille que .hc-head) ; seule, l'une ou l'autre se centre. La monture : son portrait seul (un
+   cadre à son espèce tant qu'il n'existe pas), sans son nom, en 72 px (Idan, 2026-11-16 : « réduire un peu l'avatar
+   monture, virer le nom de la monture »). */
 .hc-foot{display:grid;justify-items:center}
 .hc-foot.is-2{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:12px}
-.hc-steed{display:grid;justify-items:center;gap:5px}
-.hc-steed>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
-.hc-steed-portrait{display:grid;place-items:center;width:88px;height:88px;margin:0;box-sizing:border-box;border:2px solid #8a6a40;background:rgba(93,68,41,.12);box-shadow:inset 0 0 12px rgba(93,68,41,.3)}
-.hc-steed-portrait>span{padding:0 6px;font:italic 500 15px/1.1 var(--police-texte);text-align:center;color:var(--encre-2)}
+.hc-steed-portrait{display:grid;place-items:center;width:72px;height:72px;margin:0;box-sizing:border-box;border:2px solid #8a6a40;background:rgba(93,68,41,.12);box-shadow:inset 0 0 10px rgba(93,68,41,.3)}
+.hc-steed-portrait>span{padding:0 4px;font:italic 500 14px/1.1 var(--police-texte);text-align:center;color:var(--encre-2)}
 /* Les écoles : les pictos d’Idan (assets/pictos/ecole-<slug>.webp), seuls, sans plaque ni nom (« Retire le école de
    magie » ; « Pictos seuls en 48 px avec la possibilité de les rétrécir pour tout rentrer ») : 48 px chacun, sur une
    ligne, ou deux à côté de la monture (hoverSchoolRows : « Deux lignes ») ; --n pictos sur la plus longue ; s'ils ne

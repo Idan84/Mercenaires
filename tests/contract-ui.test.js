@@ -573,6 +573,17 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(hoverSrc, /<div class="hc-foot\$\{magic&&steed\?" is-2":""\}">\$\{magic\}\$\{magic&&steed\?`<i class="hc-fente" aria-hidden="true"><\/i>`:""\}\$\{steed\}<\/div>/);
   assert.match(hoverSrc, /<div class="hc-kit">\$\{kit\}<\/div>\s*\$\{foot\}\s*<\/div>/);
   assert.match(css, /\.hc-foot\.is-2\{grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/);
+  // La monture : son portrait seul, un peu plus petit (Idan, 2026-11-16 : « réduire un peu l'avatar monture, virer le nom
+  // de la monture ») ; son nom reste pour les lecteurs d'écran.
+  assert.match(hoverSrc, /const steed=d\.mount\?hoverMountPortrait\(d\.mount\):"";/, "le portrait seul, sans le nom");
+  assert.match(css, /\.hc-steed-portrait\{[^}]*width:72px;height:72px;/, "réduire un peu l'avatar monture");
+  assert.doesNotMatch(css, /\.hc-steed[\s>{]/, "plus de bloc portrait + nom");
+  {
+    const {hoverMountPortrait} = new Function(...Object.keys(stubs), "esc", hoverSrc + "\nreturn {hoverMountPortrait};")(...Object.values(stubs), esc);
+    const fig = hoverMountPortrait({name: "Croc-Noir", kind: "Loup de combat", code: "loup"});
+    assert.match(fig, /aria-label="Croc-Noir, Loup de combat"/);
+    assert.doesNotMatch(fig.replace(/aria-label="[^"]*"/, ""), /Croc-Noir/, "le nom n'est plus affiché");
+  }
   assert.doesNotMatch(hoverSrc + css, /hc-rule/, "plus de filet : les fentes du parchemin");
   // Les écoles : les pictos seuls, 48 px, sur une ligne, qui rétrécissent pour tout faire tenir (Idan, 2026-11-16).
   assert.match(hoverSrc, /`<span class="hc-school" role="img" aria-label="\$\{esc\(name\)\}">\$\{renderPicto\("school",name,\{size:"md"\}\)\}<\/span>`/, "pictos seuls, sans nom");

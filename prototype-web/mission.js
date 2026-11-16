@@ -1288,7 +1288,7 @@ function departContractSquad(chosen){
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition,days=e.offer.distance;
-  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" partira demain matin pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+", à "+days+" jour"+(days>1?"s":"")+" de marche. D’ici là, vous pouvez encore l’équiper.","turn");
+  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" partira demain matin pour "+(e.offer.place?.le||"le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu)+", à "+days+" jour"+(days>1?"s":"")+" de marche. D’ici là, vous pouvez encore l’équiper.","turn");
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function") renderContractBoard();
@@ -1322,7 +1322,7 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   $("expedition-dialog")?.close?.();
   $("game-panel").classList.add("hidden");
   $("mission-panel").classList.remove("hidden");
-  missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
+  missionLog(offer.name+" : "+(offer.place?.le||"le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu)+". Votre équipe a l’initiative.","turn");
   // Une chasse (Idan, 2026-11-07) : les bêtes, en nombre.
   const beast=offer.camp?.beast;
   // Le nom des bêtes : celui de la chasse (les chiens sauvages), sinon celui de leur fiche (mounts.json).
@@ -5594,7 +5594,7 @@ function renderMission(){
     twoHandsBtn.disabled=!availability.twoHands;
     twoHandsBtn.classList.toggle("selected",m.mode==="melee"&&Boolean(m.twoHands));
   }
-  // « Viser le cheval » : seulement face à un cavalier.
+  // « Viser la monture » (ex-« Viser le cheval », Idan, 2026-11-16) : seulement face à un cavalier.
   const aimBtn=$("mission-aim-mount-btn");
   if(aimBtn){
     const riders=Boolean(u)&&missionUnits().some(o=>o.alive&&!o.offMap&&e.mountOf?.(o));

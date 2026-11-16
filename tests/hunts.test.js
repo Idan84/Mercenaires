@@ -95,6 +95,16 @@ const mammoths = rules.definition("hunt_mammoths");
 assert.deepEqual([mammoths.bete.code, mammoths.bete.nom, mammoths.bete.des, mammoths.bete.faces, mammoths.bete.faction, mammoths.niveau.min], ["mammouth", "Mammouth", 1, 2, "Mammouths", 6]);
 assert.ok(!kinds(5).has("hunt_mammoths") && kinds(6).has("hunt_mammoths") && kinds(15).has("hunt_mammoths"), "le mammouth dès 6★");
 assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_mammoths").length, 2, "hunt_mammoths : deux lettres");
+// Le lieu avec son article (Idan, 2026-11-16 : « le vallée des défenses » corrigé) : féminin, pluriel, élision, masculin.
+assert.deepEqual(rules.placePhrases("Vallée des défenses", "Mornecombe"),
+  {le: "la vallée des défenses de Mornecombe", au: "à la vallée des défenses de Mornecombe", du: "de la vallée des défenses de Mornecombe"});
+assert.deepEqual(["Friches aux crocs", "Antre du cerbère", "Aire des pégases", "Col des mammouths", "Camp gobelin"].map(n => rules.placePhrases(n, "Brume").au),
+  ["aux friches aux crocs de Brume", "à l’antre du cerbère de Brume", "à l’aire des pégases de Brume", "au col des mammouths de Brume", "au camp gobelin de Brume"]);
+const knownPlaces = new Set(reference.oneShotMissions.missions.flatMap(m => [...(m.bete?.lieux || []), ...(m.camps || []).map(c => c.nom_camp)]));
+const genres = reference.oneShotMissions.genres_lieux;
+assert.deepEqual([...genres.feminin, ...genres.pluriel].filter(n => !knownPlaces.has(n)), [], "des lieux qui existent");
+const huntOffer = rules.createOffer({code: "hunt_mammoths", level: 6});
+assert.equal(huntOffer.place.le, rules.placePhrases(huntOffer.campName, huntOffer.fields.lieu).le, "l'offre garde son lieu");
 for (const level of [3, 7]) {
   const offer = rules.createOffer({code: "hunt_pegasus", level});
   assert.ok(offer.enemyCount >= level && offer.enemyCount <= 4 * level, level + " étoiles : " + offer.enemyCount + " pégases");

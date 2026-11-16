@@ -511,7 +511,7 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Le cheval monté a son attaque** (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement
   commun » ; « faut pas que l'animal joue après. Ils jouent en même temps, on rajoute des boutons.. l'attaque principale de
   l'animal qui compte pas pour le mercenaire ») : **pendant l'activation de son cavalier**, le cheval a sa propre action
-  principale et sa propre action rapide : le bouton **Attaque de la monture** (au contact du couple ; « Viser le cheval »
+  principale et sa propre action rapide : le bouton **Attaque de la monture** (au contact du couple ; « Viser la monture »
   vaut aussi pour elle) et ses sorts dans la barre de sorts, avec son mana. Le déplacement est celui du couple. Ennemis et
   combat automatique : après le cavalier, dans la même activation, un sort, sinon son attaque contre un ennemi au contact.
 - **Le cheval monté menace aussi** (Idan, 2026-11-07 : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ;
@@ -522,10 +522,10 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   titre A ») : les exploits de sa monture comptent pour sa réputation (doc 09) ; sa monture équipée s'ajoute à son titre
   (« à cheval », doc 19).
 - **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
-- **Qui prend les coups** : au corps à corps et en charge, le joueur choisit (bouton **Viser le cheval** ; sinon le
+- **Qui prend les coups** : au corps à corps et en charge, le joueur choisit (bouton **Viser la monture** ; sinon le
   cavalier) ; au tir, pour un sort qui vise, pour une attaque d'opportunité et pour les coups de l'IA (Idan, 2026-11-07 :
   « oui »), un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit du cavalier) (un humain sur un
-  destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux. Sur un allié à cheval, **Viser le cheval** donne au cheval
+  destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux. Sur un allié à cheval, **Viser la monture** donne au cheval
   le sort (un soin…) ou la potion de soins ou de mana que le cavalier lui fait boire (action rapide).
 - **Hauteur** : au corps à corps, le cavalier compte comme un niveau plus haut (+ 10 au Toucher pour lui, − 10 contre lui ;
   rien contre le cheval ; `combat.monture.hauteur_cac`).

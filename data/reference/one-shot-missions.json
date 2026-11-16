@@ -1471,6 +1471,10 @@
       "noms_commanditaire": "nobles"
     }
   ],
+  "genres_lieux": {
+    "feminin": ["Chênaie des hures", "Gorge des trois gueules", "Lande des chiens perdus", "Lisière aux souilles", "Prairie aux mille couleurs", "Toundra des grands os", "Vallée des défenses", "Vieille mine"],
+    "pluriel": ["Friches aux crocs", "Pics des nuées"]
+  },
   "noms": {
     "lieux": [
       "Valombre",

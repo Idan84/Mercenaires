@@ -308,11 +308,16 @@ function cancelScheduledExpedition(id){
   const result=campaignRules().cancelExpedition(game.campaign,id);
   if(!result.ok){ tavernLog(result.reason,"warn"); return; }
   const e=result.expedition;
-  tavernLog((e.kind==="bodyguard"?"Garde du corps annulée ("+e.offer.client.toLocaleLowerCase("fr")+")":"Départ annulé pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu)
+  tavernLog((e.kind==="bodyguard"?"Garde du corps annulée ("+e.offer.client.toLocaleLowerCase("fr")+")":"Départ annulé pour "+offerPlace(e.offer,"le"))
     +(result.returned?" : l’offre retourne au tableau.":"."),"info");
   saveGame();
   renderGame();
   renderContractBoard();
+}
+
+// Le lieu d'une offre avec son article (game-core, missions.js : placePhrases) ; une offre sans : l'ancienne formule.
+function offerPlace(offer,form){
+  return offer.place?.[form]||{le:"le ",au:"au ",du:"du "}[form]+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu;
 }
 
 // Journal du jour et, si une escouade arrive, la fenêtre « Commencer le combat ». « Plus tard » laisse finir la journée
@@ -323,14 +328,14 @@ function logExpeditionReport(report){
   const name=id=>game.campaign?.company.roster.find(m=>m.id===id)?.name||"?";
   for(const e of report.departed||[]){
     if(e.kind==="bodyguard") tavernLog(e.memberIds.map(name).join(", ")+" part"+(e.memberIds.length>1?"ent":"")+" en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") : retour dans "+e.offer.days+" jours"+(e.paid?", +"+fmt(e.paid)+" PO d’acompte":"")+".","turn");
-    else tavernLog("L’escouade part pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : arrivée dans "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+".","turn");
+    else tavernLog("L’escouade part pour "+offerPlace(e.offer,"le")+" : arrivée dans "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+".","turn");
   }
-  for(const e of report.arrived) tavernLog("L’escouade est arrivée au "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : le combat vous attend.","turn");
+  for(const e of report.arrived) tavernLog("L’escouade est arrivée "+offerPlace(e.offer,"au")+" : le combat vous attend.","turn");
   for(const r of report.returned){
     const e=r.expedition;
     tavernLog(e.memberIds.length
-      ?"L’escouade du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" est rentrée"+(r.gold?" : +"+fmt(r.gold)+" PO":"")+(r.items?", "+r.items+" objet"+(r.items>1?"s":"")+" à l’Intendance":"")+(r.bonusPaid?", primes versées "+fmt(r.bonusPaid)+" PO":"")+(r.bonusOwed?", "+fmt(r.bonusOwed)+" PO de primes restent dues":"")+"."
-      :"Personne ne revient du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+".",r.gold?"gear":"info");
+      ?"L’escouade "+offerPlace(e.offer,"du")+" est rentrée"+(r.gold?" : +"+fmt(r.gold)+" PO":"")+(r.items?", "+r.items+" objet"+(r.items>1?"s":"")+" à l’Intendance":"")+(r.bonusPaid?", primes versées "+fmt(r.bonusPaid)+" PO":"")+(r.bonusOwed?", "+fmt(r.bonusOwed)+" PO de primes restent dues":"")+"."
+      :"Personne ne revient "+offerPlace(e.offer,"du")+".",r.gold?"gear":"info");
     if(typeof logStableArrivals==="function") logStableArrivals(r.mounts);
   }
   if(report.waiting.length) game.pendingExpeditionDialog=report.waiting[0].id;

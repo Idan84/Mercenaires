@@ -2490,7 +2490,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-choice-hover{position:fixed;left:0;top:0;z-index:30;pointer-events:none;transform:scale(var(--hc-scale,1));transform-origin:0 0}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
-.hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6a40 18%,#8a6a40 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7a5c3c 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
 /* Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, à droite la réputation, l'affinité et la
    prime de mission (« Prime » : « ça va nous permettre de gagner de la place à gauche ») ; entre les deux, une fente dans
    le parchemin, plus épaisse au milieu qu'aux extrémités, fine, marron parchemin foncé (la couleur des filets), centrée
@@ -2542,22 +2541,30 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-tag.is-n1::after,.hc-tag.is-n2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
 .hc-tag.is-n1::before{opacity:0}
 .hc-tag.is-n2::before{opacity:.5}
-/* L'équipement en trois colonnes égales (Idan, 2026-11-16) : les armes du set 1, celles du set 2, l'armure ; le nom de la
-   case au-dessus seulement pour la monture (les trois colonnes : les noms seuls, sans « Set 1 », « Set 2 » ni « Armure »),
-   sur la même ligne, entre de fins filets. La monture, s'il en a une, dessous. */
+/* L'équipement en trois colonnes égales (Idan, 2026-11-16) : les armes du set 1, celles du set 2, l'armure ; les noms seuls
+   (sans « Set 1 », « Set 2 » ni « Armure »), sur la même ligne. Entre les colonnes, et entre les écoles de magie, la fente
+   du parchemin (Idan : « Oui »). */
 .hc-kit{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column}
 .hc-kit-item{display:grid;align-content:end;gap:2px;padding:0 8px;text-align:center}
-.hc-kit-item+.hc-kit-item{border-left:1px solid rgba(93,68,41,.4)}
-.hc-kit-item b{font:600 13px/1.1 var(--police-texte);letter-spacing:.08em;text-transform:uppercase;color:var(--encre-2)}
+.hc-kit-item{position:relative}
+.hc-kit-item+.hc-kit-item::before,.hc-school+.hc-school::before{content:"";position:absolute;left:-1.5px;top:-4px;bottom:-4px;width:3px;background:#8a6a40;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .hc-kit-item i{font:italic 500 17px/1.15 var(--police-texte);color:var(--encre)}
-.hc-mount{display:grid;justify-items:center}
+/* Dessous, deux colonnes (Idan, 2026-11-16) : les écoles de magie à gauche, la monture à droite, la fente entre les deux dans
+   l'axe de celle du haut (même grille que .hc-head) ; seule, l'une ou l'autre se centre. La monture : son portrait (un cadre
+   à son espèce tant qu'il n'existe pas) et son nom. */
+.hc-foot{display:grid;justify-items:center}
+.hc-foot.is-2{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:12px}
+.hc-steed{display:grid;justify-items:center;gap:5px}
+.hc-steed>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
+.hc-steed-portrait{display:grid;place-items:center;width:88px;height:88px;margin:0;box-sizing:border-box;border:2px solid #8a6a40;background:rgba(93,68,41,.12);box-shadow:inset 0 0 12px rgba(93,68,41,.3)}
+.hc-steed-portrait>span{padding:0 6px;font:italic 500 15px/1.1 var(--police-texte);text-align:center;color:var(--encre-2)}
 /* Les écoles : la plaque, puis les pictos d’Idan (assets/pictos/ecole-<slug>.webp). */
 .hc-magic{display:grid;justify-items:center;gap:8px}
 .hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f4f1ec,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:#f4f1ec;text-shadow:0 1px 1px rgba(0,0,0,.65)}
 .hc-plaque::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,13px 100%,0 50%);background:linear-gradient(#315d36,#18301c)}
 .hc-schools{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));width:100%;row-gap:10px}
-.hc-school{display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px;border-left:1px solid rgba(93,68,41,.4)}
-.hc-school:nth-child(3n+1){border-left:0}
+.hc-school{position:relative;display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px}
+.hc-school:nth-child(3n+1)::before{display:none}
 .hc-school>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
 .hc-school .picto{width:56px;height:56px;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
 

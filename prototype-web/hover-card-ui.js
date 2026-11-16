@@ -110,7 +110,11 @@ function mercenaryHoverData(c,{missionTag=null}={}){
     sets:[set(1),set(2)],
     armor:armor?(armor.name||ARMOR[armor.category]||armor.category):"",
     schools,
-    mount:mountItem?{name:mountItem.name||mountKind,kind:mountKind&&mountKind!==mountItem.name?mountKind:""}:null,
+    // Son nom (celui qu'on lui a donné, stables.js), son espèce (mounts.json), son code (pour son portrait).
+    mount:mountItem?(()=>{
+      const name=mountItem.petName||mountItem.name||mountKind,kind=mountKind||mountItem.name||"";
+      return {name,kind:kind&&kind!==name?kind:"",code:mountItem.mountCode||""};
+    })():null,
     tags
   };
 }
@@ -280,6 +284,10 @@ function hoverKitFrame(kit){
 // cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
 // Les cœurs de l'affinité : à facettes, comme les étoiles de la réputation (Idan, 2026-11-16 : « des coeurs assortis aux
 // étoiles… avoir un style commun, c'est important » ; images : assets/ui/coeurs/, styles.css).
+// Le portrait de la monture. Il n'en existe pas encore : en attendant, un cadre à son espèce (« Destrier »).
+function hoverMountPortrait(mount){
+  return `<figure class="hc-steed-portrait" data-mount="${esc(mount.code)}" aria-label="${esc(mount.kind||mount.name)}"><span>${esc(mount.kind||mount.name)}</span></figure>`;
+}
 // Les armes d'un set, comme Idan les dit : « Épée longue et écu ».
 function hoverWeapons(names){
   return names.map((name,i)=>i?name.charAt(0).toLocaleLowerCase("fr")+name.slice(1):name).join(" et ");
@@ -299,13 +307,15 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}</span>`).join("");
   const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
   // L'équipement en trois colonnes (Idan, 2026-11-16) : les armes du set 1 (« épée longue et écu »), celles du set 2, l'armure ;
-  // les noms seuls (« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »). Sa monture, s'il en
-  // a une, dessous.
-  const kitItem=([label,value])=>`<span class="hc-kit-item">${label?`<b>${esc(label)}</b>`:""}<i>${esc(value)}</i></span>`;
-  const kit=[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"].map(value=>kitItem(["",value])).join("");
-  const mount=d.mount?kitItem(["Monture",d.mount.name+(d.mount.kind?` (${d.mount.kind})`:"")]):"";
-  // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
+  // les noms seuls (« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »).
+  const kit=[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"]
+    .map(value=>`<span class="hc-kit-item"><i>${esc(value)}</i></span>`).join("");
+  // Dessous, deux colonnes (Idan, 2026-11-16 : « Les pictos d'écoles de magie à gauche, l'avatar de la monture à droite ») ;
+  // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
   const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
+  const magic=schools?`<div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:"";
+  const steed=d.mount?`<div class="hc-steed">${hoverMountPortrait(d.mount)}<span>${esc(d.mount.name)}</span></div>`:"";
+  const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
@@ -323,8 +333,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
       <i class="hc-sep" aria-hidden="true"></i>
       ${tags?`<ul class="hc-tags">${tags}</ul><i class="hc-fente hc-fente--h" aria-hidden="true"></i>`:""}
       <div class="hc-kit">${kit}</div>
-      ${mount?`<div class="hc-mount">${mount}</div>`:""}
-      ${schools?`<i class="hc-rule" aria-hidden="true"></i><div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:""}
+      ${foot}
     </div>
     ${hoverKitFrame(frame.kit)}
   </article>`;
@@ -377,4 +386,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};

@@ -464,7 +464,9 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.equal(hoverWeapons([]), "");
   assert.equal(api.mercenaryHoverData({...merc, items: [{id: 4, category: "Intermédiaire"}]}).armor, "Armure intermédiaire", "sans nom : son type");
   assert.deepEqual(d.schools, ["Feu", "Vie"], "les écoles où il a au moins un sort");
-  assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat"}, "« Ah oui » : sa monture");
+  assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat", code: "loup"}, "« Ah oui » : sa monture");
+  assert.deepEqual(api.mercenaryHoverData({...merc, items: [...merc.items.slice(0, 4), {id: 5, itemType: "mount", name: "Loup de combat", petName: "Croc-Noir", mountCode: "loup"}]}).mount,
+    {name: "Croc-Noir", kind: "Loup de combat", code: "loup"}, "le nom qu'on lui a donné, puis son espèce");
   assert.equal(d.bonus, 81);
   assert.equal(api.mercenaryHoverData({...merc, contract: null}).bonus, 40, "sans contrat : la prime qu'il demanderait");
   // Les écoles : les 9 pictos d'Idan (assets/pictos/ecole-<slug>.webp), un par école de magie.
@@ -562,7 +564,16 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
   // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
   assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:0 2px\}/);
-  assert.match(hoverSrc, /const kit=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\.map\(value=>kitItem\(\["",value\]\)\)/, "les noms seuls");
+  assert.match(hoverSrc, /const kit=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
+  // Entre les colonnes de l'équipement et entre les écoles, la fente du parchemin (Idan : « Oui »).
+  assert.match(css, /\.hc-kit-item\+\.hc-kit-item::before,\.hc-school\+\.hc-school::before\{content:"";position:absolute;[^}]*width:3px;background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
+  assert.doesNotMatch(css, /\.hc-(kit-item|school)[^{]*\{[^}]*border-left/);
+  // Dessous, deux colonnes : les écoles de magie à gauche, la monture à droite, la fente entre les deux ; seule, l'une ou
+  // l'autre se centre (Idan, 2026-11-16).
+  assert.match(hoverSrc, /<div class="hc-foot\$\{magic&&steed\?" is-2":""\}">\$\{magic\}\$\{magic&&steed\?`<i class="hc-fente" aria-hidden="true"><\/i>`:""\}\$\{steed\}<\/div>/);
+  assert.match(hoverSrc, /<div class="hc-kit">\$\{kit\}<\/div>\s*\$\{foot\}\s*<\/div>/);
+  assert.match(css, /\.hc-foot\.is-2\{grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/);
+  assert.doesNotMatch(hoverSrc + css, /hc-rule/, "plus de filet : les fentes du parchemin");
   assert.doesNotMatch(hoverSrc, /"Set [12]"|\["Armure",/, "« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »");
   assert.match(css, /\.hc-kit\{display:grid;grid-auto-columns:minmax\(0,1fr\);grid-auto-flow:column\}/);
   assert.match(css, /\.hc-sep\{[^}]*height:34px;margin:8px 0 5px;/, "la couronne descendue sous la tête, de l\'air dessous");

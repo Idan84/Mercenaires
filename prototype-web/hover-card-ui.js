@@ -31,13 +31,17 @@ function originPhrase({people="",culture="",ascendance=""}={}){
   return (ascendance?`${phrase} au ${lower(ascendance)}`:phrase).trim();
 }
 
+// Les tags de la fiche au survol (Idan, 2026-11-16 : « On va limiter le nombre. On met que la catégorie la plus basse. On
+// met uniquement les tags missions et rôle au combat ») : les missions (camps, chasses, garde du corps) et le rôle au combat.
+const HOVER_TAG_BRANCHES=["occupation/mission","occupation/garde-du-corps","role"];
 // Ce que la fiche montre, sans HTML (tests, portage).
 function mercenaryHoverData(c,{missionTag=null}={}){
   const reference=game.referenceData||{};
   const rules=typeof tagRules==="function"?tagRules():null;
   // Les tags allumés, seulement les plus précis (aucun de leurs sous-tags n'est allumé) ; celui de la mission d'abord.
   const lit=rules?rules.litIds(c):[];
-  const precise=lit.filter(id=>!lit.some(other=>other.startsWith(id+"/")));
+  const precise=lit.filter(id=>!lit.some(other=>other.startsWith(id+"/")))
+    .filter(id=>HOVER_TAG_BRANCHES.some(branch=>id===branch||id.startsWith(branch+"/")));
   const toneOf=id=>rules?.columns.find(col=>col.code===String(id).split("/")[0])?.teinte||"";
   const isMission=id=>Boolean(missionTag)&&(id===missionTag||id.startsWith(missionTag+"/"));
   const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id)}))

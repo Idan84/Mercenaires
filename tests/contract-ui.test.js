@@ -448,8 +448,10 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.equal(api.originPhrase({people: "Halfling", culture: "Explorateurs"}), "Halfling explorateur");
   // Au masculin pour tous, la phrase comme le titre (« Humain (pour un homme et une femme) »).
   assert.doesNotMatch(hoverSrc, /isFemale|female/);
-  assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Haches", "Dégâts"], "seulement les plus précis, celui de la mission d'abord");
-  assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "vert", "bleu"]);
+  // « On met que la catégorie la plus basse. On met uniquement les tags missions et rôle au combat » (Idan, 2026-11-16) :
+  // ni l'équipement (Haches), ni les autres occupations.
+  assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Dégâts"], "seulement les plus précis, missions et rôle au combat, celui de la mission d'abord");
+  assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "bleu"]);
   assert.equal(d.tags[0].mission, true);
   assert.deepEqual(d.sets, [["Épées à une main", "Épées à une main"], ["Armes de tir"]], "« deux épées, c'est pas épée et bouclier »");
   assert.equal(d.armor, "Armure intermédiaire");

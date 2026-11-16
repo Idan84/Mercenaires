@@ -2515,6 +2515,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-heart.is-full{background-image:url("assets/ui/coeurs/plein.svg");filter:drop-shadow(0 1px 0 rgba(70,42,18,.55)) drop-shadow(0 0 1px rgba(0,0,0,.55))}
 .hc-bonus img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
 .hc-bonus b{font:700 18px/1 var(--police-texte);color:var(--encre)}
+/* Sous la tête de la page, avant les tags : la couronne et ses rinceaux, dans la couleur de la culture (Idan, 2026-11-16 :
+   « Dans la couleur de la culture, on pose ça pour séparer avant les tags » ; planche d'Idan, tracée par
+   scripts/build-hover-separators.sh), avec l'ombre de la phrase d'origine. */
+.hc-sep{display:block;justify-self:center;width:146px;height:34px;background:var(--hc-culture,var(--encre));-webkit-mask:url("assets/fiche/separateurs/couronne.svg") center/contain no-repeat;mask:url("assets/fiche/separateurs/couronne.svg") center/contain no-repeat;filter:drop-shadow(0 1px 1.5px rgba(40,22,8,.3))}
 /* Les tags : plaques biseautées, bord d'argent ; celle de la mission, bord d'or. Trois par rangée. */
 .hc-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 6px;margin:0;padding:0;list-style:none}
 .hc-tag{--hex:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:32px;box-sizing:border-box;padding:4px 14px 5px;clip-path:var(--hex);background:linear-gradient(#f4f1ec,#9da2a7 40%,#5d6267 60%,#b9bdc1);text-align:center;font:600 15px/1.08 var(--police-texte);color:#f4f1ec;text-shadow:0 1px 1px rgba(0,0,0,.65)}

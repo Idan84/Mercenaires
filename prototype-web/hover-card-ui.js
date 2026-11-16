@@ -279,8 +279,8 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
           <div class="hc-stat hc-stat--bonus"><span class="hc-label" title="Prime de mission">Prime</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
         </div>
       </div>
-      ${tags?`<i class="hc-rule" aria-hidden="true"></i><ul class="hc-tags">${tags}</ul>`:""}
-      <i class="hc-rule" aria-hidden="true"></i>
+      <i class="hc-sep" aria-hidden="true"></i>
+      ${tags?`<ul class="hc-tags">${tags}</ul><i class="hc-rule" aria-hidden="true"></i>`:""}
       <div class="hc-kit">${kit}</div>
       ${schools?`<i class="hc-rule" aria-hidden="true"></i><div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:""}
     </div>

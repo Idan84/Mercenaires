@@ -519,6 +519,13 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   for (const f of ["plein", "vide"]) assert.match(fs.readFileSync(path.join(root, "prototype-web/assets/ui/coeurs", f + ".svg"), "utf8"), /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 100 100"><!-- Blood & Wages : cœur [^>]*à facettes/);
   assert.match(css, /\.hc-bonus img\{width:24px;height:24px;/, "des pièces d'or plus petites");
   assert.match(css, /\.hc-bonus b\{font:700 18px\/1 /);
+  // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
+  // tracée en SVG noir, servi de masque.
+  assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-rule" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
+  assert.match(css, /\.hc-sep\{[^}]*background:var\(--hc-culture,var\(--encre\)\);[^}]*mask:url\("assets\/fiche\/separateurs\/couronne\.svg"\) center\/contain no-repeat;/);
+  const sep = fs.readFileSync(path.join(root, "prototype-web/assets/fiche/separateurs/couronne.svg"), "utf8");
+  assert.match(sep, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 1278\.0+ 298\.0+">/);
+  assert.doesNotMatch(sep, /(?:fill|stroke)="(?!#000"|none")/, "monochrome, coloré par le CSS");
   // Le nom et le titre tiennent dans le cartouche sans son bas réservé (fiches au kit : plus d'air sous le titre).
   assert.match(hoverSrc, /room=banner\.clientHeight-\(parseFloat\(cs\.paddingTop\)\|\|0\)-\(parseFloat\(cs\.paddingBottom\)\|\|0\)/);
 }

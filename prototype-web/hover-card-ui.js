@@ -284,7 +284,8 @@ function hoverKitFrame(kit){
 // cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
 // Les cœurs de l'affinité : à facettes, comme les étoiles de la réputation (Idan, 2026-11-16 : « des coeurs assortis aux
 // étoiles… avoir un style commun, c'est important » ; images : assets/ui/coeurs/, styles.css).
-// Le portrait de la monture. Il n'en existe pas encore : en attendant, un cadre à son espèce (« Destrier »).
+// Le portrait de la monture, carré (Idan, 2026-11-16 : « L'avatar de la monture sera carré »). Il n'en existe pas encore :
+// en attendant, un cadre carré à son espèce (« Destrier »), à la taille du portrait (88 px, styles.css).
 function hoverMountPortrait(mount){
   return `<figure class="hc-steed-portrait" data-mount="${esc(mount.code)}" aria-label="${esc(mount.kind||mount.name)}"><span>${esc(mount.kind||mount.name)}</span></figure>`;
 }

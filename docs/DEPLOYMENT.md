@@ -125,6 +125,13 @@ Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/silhouettes.
 
 Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/assets/audio/`, à côté des musiques suivies par Git. La mise en ligne automatique n'efface que ce qu'elle avait elle-même envoyé (son manifeste) : ce fichier, qui n'existe que sur Hostinger, ne risque donc rien. Le jeu la joue en boucle à la Taverne (`prototype-web/music-ui.js`, qui gère aussi la musique du menu et le thème du camp) ; sans fichier, la Taverne reste silencieuse.
 
+### Thèmes des cultures : `assets/audio/`
+
+Un thème par culture et par sexe du capitaine (64 à terme ; Idan, 2026-11-16), déposé au même endroit que `tavern.mp3`. Au camp, ils jouent au hasard avec le thème et la musique du menu ; celui de la culture et du sexe du capitaine passe en premier. Chaque thème est déclaré dans `MUSIC_TRACKS.camp` (`prototype-web/music-ui.js`) avec sa culture et son sexe. Un fichier manquant (pas encore déposé, nom différent) est sauté : le jeu passe au morceau suivant.
+
+- Elfes noirs, capitaine homme : `Filthy Velvet Theme Elfe Noir M.mp3`
+- Elfes noirs, capitaine femme : `Double Wages - Theme Elfe Noir F.mp3`
+
 ## Netlify (abandonné)
 
 Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` a été retiré le 2026-10-20 à la demande d'Idan. Tant que le projet Netlify `mercenaires-s708` n'est pas supprimé ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)), une reprise de ses builds publierait la racine du dépôt (public de toute façon) sur l'ancienne adresse Netlify ; Hostinger n'est pas concerné.

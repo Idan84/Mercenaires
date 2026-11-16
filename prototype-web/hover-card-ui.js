@@ -3,8 +3,8 @@
 // La fiche au survol d'un mercenaire (Idan, 2026-11-15 : « Au survol, on doit voir rapidement s'il convient ou non pour
 // la mission »). Le contenu, d'Idan : l'avatar en pied ; le prénom et le nom ; le titre ; la réputation ; l'affinité ; la
 // prime de mission ; les pictos du peuple, de la culture et de l'ascendance ; les tags (« seulement le plus précis »,
-// celui de la mission d'abord) ; le set 1 et le set 2 (la catégorie de chaque arme, les deux mains : « deux épées, c'est
-// pas épée et bouclier ») ; le type d'armure ; les écoles où il a au moins un sort (« juste un picto, celui qu'on a sur
+// celui de la mission d'abord) ; le set 1 et le set 2 (les deux mains : « deux épées, c'est pas épée et bouclier » ; le nom
+// de chaque arme, Idan, 2026-11-16 : « épée longue et écu », « Arc ») ; l'armure (« Armure de cuir ») ; les écoles où il a au moins un sort (« juste un picto, celui qu'on a sur
 // la fiche complète ») ; sa monture (« Ah oui »). La forme : le cadre de SA culture (« un joueur jusqu'à présent n'en
 // voit qu'un, celui de son capitaine, alors qu'on en a 32 de magnifiques ») : sa barre en haut (son nom dans la bande)
 // et en bas, son anneau au milieu de la barre du bas (le picto de sa culture dedans), la bande de la barre sur les côtés.
@@ -31,21 +31,55 @@ function originPhrase({people="",culture="",ascendance=""}={}){
   return (ascendance?`${phrase} au ${lower(ascendance)}`:phrase).trim();
 }
 
+// Les tags de la fiche au survol (Idan, 2026-11-16 : « On va limiter le nombre. On met que la catégorie la plus basse. On
+// met uniquement les tags missions et rôle au combat ») : les missions (camps, chasses, garde du corps) et le rôle au combat.
+const HOVER_TAG_BRANCHES=["occupation/mission","occupation/garde-du-corps","role"];
+// Les plaques des tags (Idan, 2026-11-16 : « on va en mettre jusqu'à 5 en quinconce. S'il existe 6 tags ou plus on marque
+// dans le dernier x autres rôles ») : au plus 5, trois en haut et deux décalés dessous, chaque rangée centrée ; à partir de
+// 6, les 4 premiers et une plaque « N autres rôles ». col : la colonne où commence la plaque, sur une grille de 6 (chaque
+// plaque en prend 2). Logique pure (tests, portage).
+const HOVER_TAG_MAX=5;
+function hoverTagPlates(tags,max=HOVER_TAG_MAX){
+  const extra=tags.length>max?tags.length-(max-1):0;
+  const plates=extra?[...tags.slice(0,max-1),{name:`${extra} autres rôles`,tone:"bleu",mission:false,level:1,more:true,hidden:tags.slice(max-1).map(tag=>tag.name)}]:tags.slice(0,max);
+  return plates.map((plate,i)=>{
+    const row=i<3?0:1,inRow=row?plates.length-3:Math.min(3,plates.length),pos=row?i-3:i;
+    return {...plate,col:1+(3-inRow)+2*pos};
+  });
+}
+// Deux tags au même nom (« De zone » en Dégâts et en Soin ; « Brûlant » en Dégâts et en Dégâts élémentaires) : chacun
+// prend le nom de son parent devant (Idan, 2026-11-16 : « oui » à « Dégâts de zone », « Soin de zone »), l'adjectif
+// accordé au pluriel après un parent au pluriel (« Dégâts brûlants »).
+function hoverTagFullName(parent,name){
+  const low=name?name[0].toLocaleLowerCase("fr")+name.slice(1):"";
+  const plural=/s$/.test(parent)&&!/\s/.test(low)&&!/[sx]$/.test(low)&&!/^(de|du|des|d’|d')/.test(low);
+  return `${parent} ${low}${plural?"s":""}`;
+}
 // Ce que la fiche montre, sans HTML (tests, portage).
 function mercenaryHoverData(c,{missionTag=null}={}){
   const reference=game.referenceData||{};
   const rules=typeof tagRules==="function"?tagRules():null;
   // Les tags allumés, seulement les plus précis (aucun de leurs sous-tags n'est allumé) ; celui de la mission d'abord.
   const lit=rules?rules.litIds(c):[];
-  const precise=lit.filter(id=>!lit.some(other=>other.startsWith(id+"/")));
+  const precise=lit.filter(id=>!lit.some(other=>other.startsWith(id+"/")))
+    .filter(id=>HOVER_TAG_BRANCHES.some(branch=>id===branch||id.startsWith(branch+"/")));
   const toneOf=id=>rules?.columns.find(col=>col.code===String(id).split("/")[0])?.teinte||"";
   const isMission=id=>Boolean(missionTag)&&(id===missionTag||id.startsWith(missionTag+"/"));
-  const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id)}))
+  // Le niveau de chaque tag (1 à 3 : la vue de l'arbre des tags), que la plaque montre (Idan, 2026-11-16).
+  const shown=rules&&typeof rules.view==="function"?rules.view(c):{};
+  const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id),level:shown[id]?.level||3}))
     .sort((a,b)=>Number(b.mission)-Number(a.mission));
+  for(const tag of tags){
+    if(tags.filter(other=>other.name===tag.name).length<2) continue;
+    const parent=rules?.node(tag.id.split("/").slice(0,-1).join("/"))?.nom;
+    if(parent) tag.fullName=hoverTagFullName(parent,tag.name);
+  }
+  for(const tag of tags) if(tag.fullName){ tag.name=tag.fullName; delete tag.fullName; }
   // Les objets portés.
   const slots=c.equipment?.slots||{},items=c.items||[];
   const itemIn=slot=>slots[slot]==null?null:items.find(item=>String(item.id)===String(slots[slot]))||null;
-  const handLabel=item=>item?(item.category||item.name||""):"";
+  // Le nom de base de l'objet (« Épée longue », « Écu », « Armure de cuir » ; pas son titre selon le tier), d'un coup d'œil.
+  const handLabel=item=>item?(item.name||item.category||""):"";
   const set=n=>{
     const main=itemIn(`weapon_set_${n}_main`),off=itemIn(`weapon_set_${n}_off`);
     return [main,off&&off!==main?off:null].map(handLabel).filter(Boolean);
@@ -74,9 +108,13 @@ function mercenaryHoverData(c,{missionTag=null}={}){
     bonus:Number(c.contract?.missionBonus??(typeof tavernRules==="function"?tavernRules().missionBonusDemand(c):0))||0,
     affinity:affinity?affinityPresentation(affinity.total,c):null,
     sets:[set(1),set(2)],
-    armor:armor?(ARMOR[armor.category]||armor.category||armor.name):"",
+    armor:armor?(armor.name||ARMOR[armor.category]||armor.category):"",
     schools,
-    mount:mountItem?{name:mountItem.name||mountKind,kind:mountKind&&mountKind!==mountItem.name?mountKind:""}:null,
+    // Son nom (celui qu'on lui a donné, stables.js), son espèce (mounts.json), son code (pour son portrait).
+    mount:mountItem?(()=>{
+      const name=mountItem.petName||mountItem.name||mountKind,kind=mountKind||mountItem.name||"";
+      return {name,kind:kind&&kind!==name?kind:"",code:mountItem.mountCode||""};
+    })():null,
     tags
   };
 }
@@ -177,6 +215,9 @@ function hoverKitFrame(kit){
   const mi={haut:B.y0+e/2,bas:B.y1-e/2,gauche:B.x0+eV/2,droite:B.x1-eV/2};
   const S=F.separation,sx=HOVER_CARD.sepX+S.dx,se=S.ep,T=G.raccordT,Tk=se/T.coeur;
   const raccords=[];
+  // La sangle sous le nom passe sous la séparation verticale (Idan, 2026-11-16 : « la barre en cuir cloutée horizontale
+  // sous la barre cuir clouée verticale qui est à gauche ») : posée avant elle.
+  if(F.sousNom.style!=="aucune") out.push(hoverKitStrap(dir,G.sangles[F.sousNom.style],"x",sx,B.x1-e/2,HOVER_CARD.sepNomY+F.sousNom.dy,se));
   if(S.style!=="aucune"){
     out.push(hoverKitStrap(dir,G.sangles[S.style],"y",B.y0,B.y1,sx,se));
     if(S.raccords!=="aucun"){
@@ -184,7 +225,6 @@ function hoverKitFrame(kit){
       raccords.push(pose(S.tHaut,B.y0+(e-se)/2-T.haut*Tk,false),pose(S.tBas,B.y1-(e-se)/2-(T.h-T.haut)*Tk,true));
     }
   }
-  if(F.sousNom.style!=="aucune") out.push(hoverKitStrap(dir,G.sangles[F.sousNom.style],"x",sx,B.x1-e/2,HOVER_CARD.sepNomY+F.sousNom.dy,se));
   if(S.raccords==="dessous") out.push(...raccords);
   if(F.cadre.style!=="aucune"){
     // Chaque côté part du bout des bras (un demi-pixel sous le coin, pour ne laisser aucun jour).
@@ -242,9 +282,31 @@ function hoverKitFrame(kit){
 // aux proportions de Chatty (styles.css) ; le cadre vient du kit graphique de la culture, posé par-dessus
 // (hoverKitFrame ; les cultures sans kit n'en ont pas encore). À gauche le portrait en pied ; à droite le
 // cartouche du nom, puis une page claire : origines, réputation, affinité, prime, tags, armes, écoles.
-const HEART='<path d="M12 21.2s-7.6-4.7-10.1-9.3C.1 8.4 1.6 3.4 6.1 2.4 8.6 1.8 10.7 3 12 5c1.3-2 3.4-3.2 5.9-2.6 4.5 1 6 6 4.2 9.5-2.5 4.6-10.1 9.3-10.1 9.3z"/>';
+// Les cœurs de l'affinité : à facettes, comme les étoiles de la réputation (Idan, 2026-11-16 : « des coeurs assortis aux
+// étoiles… avoir un style commun, c'est important » ; images : assets/ui/coeurs/, styles.css).
+// Les rangées de pictos d'écoles. Une seule ligne, sauf à côté de la monture au-delà de 4 (ce qui tient en 48 px dans sa
+// demi-colonne) : deux lignes (Idan, 2026-11-16 : « Deux lignes »), la première la plus longue (5 + 4 pour 9).
+const HOVER_SCHOOLS_BESIDE_MOUNT=4;
+function hoverSchoolRows(schools,withMount){
+  if(!schools.length) return [];
+  const perRow=withMount&&schools.length>HOVER_SCHOOLS_BESIDE_MOUNT?Math.ceil(schools.length/2):schools.length;
+  const rows=[];
+  for(let i=0;i<schools.length;i+=perRow) rows.push(schools.slice(i,i+perRow));
+  return rows;
+}
+// Le portrait de la monture, carré (Idan, 2026-11-16 : « L'avatar de la monture sera carré »), seul : « virer le nom de la
+// monture » (il ne reste que pour les lecteurs d'écran). Il n'en existe pas encore : en attendant, un cadre carré à son
+// espèce (« Destrier »), à la taille du portrait (72 px, styles.css : « réduire un peu l'avatar monture »).
+function hoverMountPortrait(mount){
+  const label=[mount.name,mount.kind].filter(Boolean).join(", ");
+  return `<figure class="hc-steed-portrait" data-mount="${esc(mount.code)}" aria-label="${esc(label)}"><span>${esc(mount.kind||mount.name)}</span></figure>`;
+}
+// Les armes d'un set, comme Idan les dit : « Épée longue et écu ».
+function hoverWeapons(names){
+  return names.map((name,i)=>i?name.charAt(0).toLocaleLowerCase("fr")+name.slice(1):name).join(" et ");
+}
 function hoverHearts(filled){
-  return Array.from({length:10},(_,i)=>`<svg class="hc-heart${i<filled?" is-full":""}" viewBox="0 0 24 22" aria-hidden="true">${HEART}</svg>`).join("");
+  return Array.from({length:10},(_,i)=>`<i class="hc-heart${i<filled?" is-full":""}"></i>`).join("");
 }
 function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const d=mercenaryHoverData(c,{missionTag});
@@ -257,27 +319,37 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}</span>`).join("");
   const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
-  const kit=[["Set 1",d.sets[0].join(" + ")||"Mains nues"],["Set 2",d.sets[1].join(" + ")],["Armure",d.armor||"Sans armure"],
-    ["Monture",d.mount?d.mount.name+(d.mount.kind?` (${d.mount.kind})`:""):""]]
-    .filter(([,value])=>value).map(([label,value])=>`<span class="hc-kit-item"><b>${esc(label)}</b><i>${esc(value)}</i></span>`).join("");
-  // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
-  const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
-  const tags=d.tags.map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
+  // L'équipement en trois colonnes (Idan, 2026-11-16) : les armes du set 1 (« épée longue et écu »), celles du set 2, l'armure ;
+  // les noms seuls (« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »).
+  const kit=[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"]
+    .map(value=>`<span class="hc-kit-item"><i>${esc(value)}</i></span>`).join("");
+  // Dessous, deux colonnes (Idan, 2026-11-16 : « Les pictos d'écoles de magie à gauche, l'avatar de la monture à droite ») ;
+  // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp), sans plaque « Écoles
+  // de magie » (Idan, 2026-11-16 : « Retire le école de magie ») ni nom : « Pictos seuls en 48 px avec la possibilité de les
+  // rétrécir pour tout rentrer » (une seule ligne, styles.css).
+  const school=name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
+  const rows=hoverSchoolRows(d.schools,Boolean(d.mount));
+  const magic=rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
+  const steed=d.mount?hoverMountPortrait(d.mount):"";
+  const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
+  const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
-      <section class="hc-origins" aria-label="Origines"><div class="hc-emblems">${emblems}</div><p class="hc-origin">${esc(d.origin)}</p></section>
-      <i class="hc-rule" aria-hidden="true"></i>
-      <div class="hc-stats">
-        <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
-        ${affinity}
-        <div class="hc-stat hc-stat--bonus"><span class="hc-label">Prime de mission</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
+      <div class="hc-head">
+        <section class="hc-origins" aria-label="Origines"><div class="hc-emblems">${emblems}</div><p class="hc-origin">${esc(d.origin)}</p></section>
+        <i class="hc-fente" aria-hidden="true"></i>
+        <div class="hc-stats">
+          <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
+          ${affinity}
+          <div class="hc-stat hc-stat--bonus"><span class="hc-label" title="Prime de mission">Prime</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
+        </div>
       </div>
-      ${tags?`<i class="hc-rule" aria-hidden="true"></i><ul class="hc-tags">${tags}</ul>`:""}
-      <i class="hc-rule" aria-hidden="true"></i>
+      <i class="hc-sep" aria-hidden="true"></i>
+      ${tags?`<ul class="hc-tags">${tags}</ul><i class="hc-fente hc-fente--h" aria-hidden="true"></i>`:""}
       <div class="hc-kit">${kit}</div>
-      ${schools?`<i class="hc-rule" aria-hidden="true"></i><div class="hc-magic"><span class="hc-plaque">Écoles de magie</span><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:""}
+      ${foot}
     </div>
     ${hoverKitFrame(frame.kit)}
   </article>`;
@@ -294,10 +366,11 @@ function fitHoverCard(root){
     return fits();
   };
   const name=root.querySelector(".hc-banner h3"),title=root.querySelector(".hc-title span"),banner=root.querySelector(".hc-banner");
-  // Le nom et le titre tiennent dans la hauteur du cartouche, avec 3 px de marge en haut et en bas (les jambages).
+  // Le nom et le titre tiennent dans la hauteur du cartouche (sans le bas réservé des fiches au kit), avec 3 px de marge en
+  // haut et en bas (les jambages).
   const bannerFits=()=>{
-    const gap=parseFloat(getComputedStyle(banner).rowGap)||0;
-    return (name?name.offsetHeight:0)+gap+title.parentElement.offsetHeight<=banner.clientHeight-6;
+    const cs=getComputedStyle(banner),gap=parseFloat(cs.rowGap)||0,room=banner.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0);
+    return (name?name.offsetHeight:0)+gap+title.parentElement.offsetHeight<=room-6;
   };
   if(name) shrink(name,()=>name.scrollWidth<=name.clientWidth+1,.6);
   // La phrase d'origine : une ligne, sa police baisse jusqu'à 82 % s'il le faut ; au-delà, elle passe sur deux lignes.
@@ -329,4 +402,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverSchoolRows,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};

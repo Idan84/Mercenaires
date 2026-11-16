@@ -115,8 +115,8 @@
     {
       "nom": "Elfes noirs",
       "description": "Ni dieux ni maîtres, sauf celui qui paie double. Les Elfes noirs vivent de provocation, de débauche et de lames empoisonnées.",
-      "force": "Dextérité, poison, illusion, nécromancie et armes sournoises.",
-      "faiblesse": "Charisme plus rude et faible affinité avec la magie de la vie."
+      "force": "Dextérité, poison, illusion, nécromancie, dagues et arbalètes.",
+      "faiblesse": "Leur charisme fait fuir les honnêtes gens, et la magie de la vie leur reste étrangère."
     },
     {
       "nom": "Nains des montagnes",

@@ -45,7 +45,7 @@ for (const def of [wolves, unicorns]) {
 
 // 2. Le tirage : renommée ± 2, les bêtes, la marche, la récompense.
 const renown = 0, base = rules.renownLevel(renown);
-const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0, hunt_boars: 0, hunt_pegasus: 0};
+const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0, hunt_boars: 0, hunt_pegasus: 0, hunt_mammoths: 0};
 for (let i = 0; i < 1000; i++) {
   const offer = rules.createHunt({day: 1, renown});
   seen[offer.code]++;
@@ -67,6 +67,7 @@ const huntTotal = Object.values(seen).reduce((a, b) => a + b, 0);
 assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs", "hunt_butterflies", "hunt_boars"].every(c => seen[c] > 0.15 * huntTotal), "à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
 assert.equal(seen.hunt_cerberus, 0, "pas de cerbère avant le niveau 6");
 assert.equal(seen.hunt_pegasus, 0, "pas de pégase avant 3★");
+assert.equal(seen.hunt_mammoths, 0, "pas de mammouth avant 6★");
 // Le cerbère (dès le niveau 6) et les chiens sauvages (jusqu'à 6 : « au dessus elle n'est pas proposée ») ; Idan, 2026-11-09.
 const cerberus = rules.definition("hunt_cerberus"), dogs = rules.definition("hunt_wild_dogs");
 assert.deepEqual([cerberus.bete.code, cerberus.bete.des, cerberus.bete.faces, cerberus.niveau.min], ["cerbere", 1, 3, 6]);
@@ -89,6 +90,11 @@ assert.ok(!kinds(2).has("hunt_pegasus") && kinds(3).has("hunt_pegasus") && kinds
 const pegasusOrders = reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_pegasus");
 assert.deepEqual(pegasusOrders.map(o => o.faction), ["Pégases", "Pégases"], "hunt_pegasus : deux lettres");
 for (const o of pegasusOrders) assert.ok(reference.oneShotMissions.noms[o.noms_commanditaire]?.length, o.code + " : ses commanditaires");
+// Le mammouth (Idan, 2026-11-16 : « On ajoute déjà un mamouth et une chasse » ; 1D2 par étoile, dès 6★) : deux lettres.
+const mammoths = rules.definition("hunt_mammoths");
+assert.deepEqual([mammoths.bete.code, mammoths.bete.nom, mammoths.bete.des, mammoths.bete.faces, mammoths.bete.faction, mammoths.niveau.min], ["mammouth", "Mammouth", 1, 2, "Mammouths", 6]);
+assert.ok(!kinds(5).has("hunt_mammoths") && kinds(6).has("hunt_mammoths") && kinds(15).has("hunt_mammoths"), "le mammouth dès 6★");
+assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_mammoths").length, 2, "hunt_mammoths : deux lettres");
 for (const level of [3, 7]) {
   const offer = rules.createOffer({code: "hunt_pegasus", level});
   assert.ok(offer.enemyCount >= level && offer.enemyCount <= 4 * level, level + " étoiles : " + offer.enemyCount + " pégases");

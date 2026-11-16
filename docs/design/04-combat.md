@@ -475,6 +475,12 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   validé ») : Force 85, Constitution 80 (**300 PV**), Vitesse 70 (7 cases), Esquive 15, Courage 75 ; les **Défenses** de
   l'invocation (1D8, perforant 35), **doublées en charge** (`bonus_charge` 2, comme les armes d'hast) ; gabarit 2, une case :
   tout le monde le monte, sauf l'ogre, qui l'emmène à pied (`compagnon`) ; chaotique neutre ; « à dos de sanglier ».
+- **Mammouth de guerre** (Idan, 2026-11-16 : « Fais le très lent » ; « Le fait pas trop courageux... Quelques petits
+  cochons qui crient et ils ont peur. Il est fort mais c'est pas un combattant ») : Force 130, Constitution 120 (**426 PV**),
+  Vitesse 25 (**4 cases** : le pas d'un piéton, la moitié d'un destrier), Courage 20, Armes naturelles 30 ; les **Défenses**
+  (1D12, contondant 50), doublées en charge ; gabarit 3 : **tout le monde le monte, les ogres aussi** ; **3 cases** sur la
+  carte (taille « grande », + 10 pour le toucher) ; au tir, la monture est visée à 3 ÷ (3 + le cavalier) : 75 % sous un
+  humain (67 % sur un destrier), 60 % sous un ogre ; neutre ; « à dos de mammouth ».
 - **Les papillons** (Idan, 2026-11-09), qui **volent** tous :
   - **télépathe** (« le drone de repérage ») : Discrétion **300**, Perception 90, Vitesse 110 ; **il n'attaque pas**
     (`attaque` null : pas d'arme) ; personne ne le monte ;

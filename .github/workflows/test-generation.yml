@@ -161,6 +161,7 @@ jobs:
       - run: node tests/kennel.test.js
       - run: node tests/greenhouse.test.js
       - run: node tests/boar.test.js
+      - run: node tests/mammoth.test.js
       - run: node tests/companion-training.test.js
       - run: node tests/hunts.test.js
       - run: node tests/combat-ai.test.js

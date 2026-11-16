@@ -800,6 +800,58 @@
       "defaite": {
         "multiplicateur_mort": 2
       }
+    },
+    {
+      "code": "hunt_mammoths",
+      "nom": "Chasse au mammouth",
+      "description": "Une harde de mammouths : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
+      "illustration": "",
+      "illustrations": [],
+      "niveau": {
+        "ecart": [
+          -4,
+          1
+        ],
+        "min": 6
+      },
+      "max_ennemis": 100,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 36,
+        "lignes": 25
+      },
+      "bete": {
+        "code": "mammouth",
+        "nom": "Mammouth",
+        "pluriel": "mammouths",
+        "des": 1,
+        "faces": 2,
+        "faction": "Mammouths",
+        "lieux": [
+          "Toundra des grands os",
+          "Col des mammouths",
+          "Vallée des défenses"
+        ]
+      },
+      "marche": {
+        "facteur": [
+          0.25,
+          1
+        ]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
     }
   ],
   "ordres": [
@@ -1386,6 +1438,37 @@
       ],
       "signature": "{commanditaire}, chef de {lieu}, le {date}",
       "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "mammoths_village",
+      "mission": "hunt_mammoths",
+      "faction": "Mammouths",
+      "commanditaire": "Chef de village",
+      "titre": "Les cochons ne suffisent plus",
+      "texte": [
+        "À la compagnie de mercenaires qui n'a pas froid aux yeux,",
+        "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Chaque hiver, les mammouths descendent de la toundra. Ils mangent nos réserves, couchent nos clôtures et marchent sur ce qui reste.",
+        "Les anciens disent qu'ils ont peur des cochons qui crient. C'est vrai. Malheureusement, ils ont marché sur nos cochons.",
+        "Les bergers en ont compté {estimation}. Ils les ont comptés de loin, et en courant.",
+        "Le village a réuni {récompense} pièces d'or. Tuez-les ou emmenez-les : tant qu'ils ne reviennent pas."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "mammoths_noble",
+      "mission": "hunt_mammoths",
+      "faction": "Mammouths",
+      "commanditaire": "Noble",
+      "titre": "Un trône d'ivoire",
+      "texte": [
+        "Aux mercenaires assez fous pour chasser plus gros qu'eux,",
+        "Je suis {commanditaire}, de {lieu}, à {jours} de marche de votre camp. Mon père avait un trône d'ivoire. Mon frère en a hérité. J'ai l'intention d'en avoir un plus grand.",
+        "Une harde de mammouths passe l'hiver dans les vallées au nord de mes terres. Mes chasseurs en ont vu {estimation}. Ils ne sont pas revenus avec de l'ivoire, mais ils sont revenus, c'est déjà ça.",
+        "Je paie {récompense} pièces d'or. Rapportez-moi les défenses. Les bêtes que vous ramènerez vivantes sont à vous : je n'ai ni écurie assez grande, ni fourrage pour l'hiver."
+      ],
+      "signature": "{commanditaire}, de {lieu}, le {date}",
+      "noms_commanditaire": "nobles"
     }
   ],
   "noms": {

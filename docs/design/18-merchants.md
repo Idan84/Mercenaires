@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 100 objets ; **100** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 101 objets ; **101** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -149,7 +149,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Orvald Sans-Collier | Nains esclaves | Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la chance | 6 |
 | Jiraya Senin | Royaumes du Soleil Levant | Katana, Nunchaku, Sai, Bottes d’esquive, Cape de discrétion, String du Charisme, Manuels de Vie | 7 |
 | Ysolwen Chantesève | Elfes sylvains | Arc, Bâton court, Bâton long, Slip d’Affinité, Cape d’esquive, Bottes de perception, Manuels de Vie, Licorne | 8 |
-| Hroska Crocs-de-Neige | Tribus nordiques | Hache double, Écu, Trident, Cape de résistance physique, Ceinture d’endurance, Bague de l’Eau, Manuels d’Eau | 7 |
+| Hroska Crocs-de-Neige | Tribus nordiques | Hache double, Écu, Trident, Cape de résistance physique, Ceinture d’endurance, Bague de l’Eau, Manuels d’Eau, Mammouth de guerre | 8 |
 | Drusk Sabot-de-Poussière | Clans des grandes steppes | Arc, Lance, Sabre, Bottes de vitesse, Bague du courage, Ceinture de courage, Manuels de Feu | 7 |
 | Gorma Porte-Tonneau | Ogres des cités humaines | Hallebarde, Masse d’armes, Brigandine, Gants de force, Culotte d’Intimidation, Potion de soins | 6 |
 | Rasz Tzel'Varr | Reptiliens des villes | Estoc, Sarbacane, Cuir renforcé, Chapeau d’intelligence, Bague de la télékinésie, Amulette de puissance magique, Manuels de Télékinésie | 7 |
@@ -264,6 +264,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Montures | Destrier | Amar | 1 |
 | Montures | Licorne | Ysolwen | 1 |
 | Montures | Loup | Fizzi | 1 |
+| Montures | Mammouth de guerre | Hroska | 1 |
 | Montures | Molosse | Kippa | 1 |
 | Montures | Papillon géant | Dottie | 1 |
 | Montures | Papillon télépathe | Callie | 1 |
@@ -297,6 +298,8 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
   Mielbruyère** (Halflings des villages isolés) le **papillon géant** (3 000 PO, 10 PO) ; ils logent à la Serre.
 - **Draz Crinsauvage** (Orcs des steppes) vend des **sangliers de combat** (Idan, 2026-11-16 : « Marchand, Orc des steppes ») :
   4 500 PO de valeur (15 PO d'entretien) ; ils logent à la Souille.
+- **Hroska Crocs-de-Neige** (Tribus nordiques) vend des **mammouths de guerre** (Idan, 2026-11-16 : « Marchand Homme bête ») :
+  15 000 PO de valeur (50 PO d'entretien) ; 2 places à la Souille.
 - **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
 - **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.

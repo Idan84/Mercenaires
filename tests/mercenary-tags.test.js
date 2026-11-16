@@ -40,7 +40,7 @@ assert.deepEqual(names(occupation),["Mission","Garde du corps","Job","Entraînem
 assert.deepEqual(names(find(occupation,"Mission").enfants),["Camps","Chasses"]);
 assert.deepEqual(names(find(occupation,"Mission","Camps").enfants),
   ["Gobelins","Orcs","Hommes-bêtes","Voleurs","Ogres","Culte des morts","Cour de sang"],"un camp par faction, tiré des ordres de mission");
-assert.deepEqual(names(find(occupation,"Mission","Chasses").enfants),["Loups","Licornes","Cerbères","Chiens sauvages","Papillons","Sangliers","Pégases"]);
+assert.deepEqual(names(find(occupation,"Mission","Chasses").enfants),["Loups","Licornes","Cerbères","Chiens sauvages","Papillons","Sangliers","Pégases","Mammouths"]);
 assert.equal(find(occupation,"Garde du corps").enfants.length,0,"la garde du corps, sans sous-tags");
 assert.deepEqual(names(find(occupation,"Job").enfants),["Bûcheron","Mines","Palais des plaisirs"],"pas la Cave : on n'y décide rien");
 const training=find(occupation,"Entraînement");

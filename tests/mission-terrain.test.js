@@ -44,7 +44,7 @@ const pale = reference.terrainDecors.rows.find(d => d.code === "palissade");
 assert.deepEqual([pale.nom, pale.cout_mouvement, pale.bloque_vue, pale.couverture], ["Palissade", null, false, "partielle"]);
 assert.equal(lands.enceinte.decor, "palissade");
 assert.deepEqual([lands.enceinte.distance, lands.enceinte.ouvertures, lands.enceinte.largeur], [2, [2, 3], 2]);
-assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes", "Loups", "Licornes", "Cerbères", "Chiens sauvages", "Papillons", "Sangliers", "Pégases"], "la forêt suffit ; les bêtes n’ont pas de camp");
+assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes", "Loups", "Licornes", "Cerbères", "Chiens sauvages", "Papillons", "Sangliers", "Pégases", "Mammouths"], "la forêt suffit ; les bêtes n’ont pas de camp");
 // Le cimetière du Culte des morts (Idan, 2026-11-06) : des tombes, entouré de murets.
 assert.equal(land("Culte des morts").nom, "Cimetière");
 assert.equal(land("Culte des morts").enceinte_decor, "muret");

@@ -96,7 +96,7 @@
       "key": "pluriel"
     }
   ],
-  "row_count": 10,
+  "row_count": 11,
   "rows": [
     {
       "nom": "Destrier",
@@ -679,6 +679,65 @@
       "logement": "trainer_wallow",
       "compagnon": true,
       "place": 1
+    },
+    {
+      "nom": "Mammouth de guerre",
+      "code": "mammouth",
+      "espece": "Bêtes à cornes",
+      "gabarit": 3,
+      "taille": "grande",
+      "caracteristiques": {
+        "Force": 130,
+        "Constitution": 120,
+        "Dextérité": 15,
+        "Vitesse": 25,
+        "Endurance": 90,
+        "Esquive": 5,
+        "Courage": 20,
+        "Volonté": 40,
+        "Perception": 40,
+        "Intelligence": 30,
+        "Chance": 50,
+        "Charisme": 20,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 1,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 6
+      },
+      "competences_martiales": {
+        "Armes naturelles": 30,
+        "Défenses": 30,
+        "Discrétion": 5
+      },
+      "attaque": {
+        "nom": "Défenses",
+        "degats_pv_base": "1D12",
+        "puissance_contondante": 50,
+        "bonus_charge": 2
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 60
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
+      "capturable": true,
+      "entretien": 50,
+      "alignement": "Neutre",
+      "rang_echange": 4,
+      "titre": "à dos de mammouth",
+      "logement": "trainer_wallow",
+      "compagnon": true,
+      "place": 2
     }
   ]
 }

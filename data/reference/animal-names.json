@@ -12,7 +12,7 @@
       "key": "noms"
     }
   ],
-  "row_count": 10,
+  "row_count": 11,
   "rows": [
     {
       "code": "destrier",
@@ -53,6 +53,10 @@
     {
       "code": "sanglier",
       "noms": ["Groin-de-Fer", "Brise-Haie", "Hure", "Ragot", "Solitaire", "Boutoir", "Truffe-Noire", "Laboureur", "Gros-Grain", "Soie-Rêche", "Bourbier", "Grogne", "Tonneau", "Rocaille", "Fouilleterre", "Glandée", "Châtaigne", "Cuirasse", "Saindoux", "Trompe-la-Mort", "Fend-Clôture", "Grand-Mâle", "Souille", "Vieux-Solitaire"]
+    },
+    {
+      "code": "mammouth",
+      "noms": ["Ivoire", "Glacier", "Avalanche", "Banquise", "Frimas", "Toison", "Laineux", "Colline", "Montagne", "Pesant", "Pas-Lourd", "Tremble-Terre", "Tonnerre-Lent", "Vieux-Givre", "Brise-Glace", "Grand-Laine", "Grosse-Patte", "Barrique", "Ronfleur", "Blizzard", "Placide", "Trouillard", "Ancêtre", "Toundra"]
     }
   ]
 }

@@ -304,6 +304,10 @@
         {
           "type": "manual",
           "ecole": "Eau"
+        },
+        {
+          "type": "mount",
+          "objet": "Mammouth de guerre"
         }
       ],
       "repliques": {

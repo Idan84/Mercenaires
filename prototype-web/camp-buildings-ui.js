@@ -37,7 +37,7 @@ function campBuildingEffectText(code,effects){
   // Les Écuries et le Chenil (Idan, 2026-11-07) : deux places par niveau pour les animaux ; on s'y entraîne aussi avec
   // son animal : les places prises le disent (campBuildingLevelState).
   const animalPlaces=code==="trainer_kennel"?effects.kennelPlaces:code==="trainer_greenhouse"?effects.greenhousePlaces
-    :code==="trainer_pigsty"?effects.pigstyPlaces:effects.stablePlaces;
+    :code==="trainer_wallow"?effects.wallowPlaces:effects.stablePlaces;
   if(Number(campaignRules().campBuildingRow(code)?.places_par_niveau)>0&&animalPlaces&&!campaignRules().campBuildingRow(code)?.entraine) return `${fmt(animalPlaces)} place${animalPlaces>1?"s":""}`;
   return "";
 }

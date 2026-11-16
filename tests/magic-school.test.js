@@ -103,7 +103,7 @@ assert.equal(rules.buildingPlaces(state,"dispensary"),0);
 for(const code of ["magic_school",...rooms.map(r=>r.code)]) at(code,10);
 assert.equal(["magic_school",...rooms.map(r=>r.code)].reduce((sum,code)=>sum+rules.buildingPlaces(state,code),0),60);
 // Pas encore d'effet : les bâtiments de soins ne bougent pas.
-assert.deepEqual(rules.campBuildingEffects(state),{woundFactor:1,medicFactor:1,fatigueRelief:0,manaBonus:0,bodyguardPay:0,stablePlaces:0,kennelPlaces:0,greenhousePlaces:0,pigstyPlaces:0});
+assert.deepEqual(rules.campBuildingEffects(state),{woundFactor:1,medicFactor:1,fatigueRelief:0,manaBonus:0,bodyguardPay:0,stablePlaces:0,kennelPlaces:0,greenhousePlaces:0,wallowPlaces:0});
 
 // Interface : l'encart de l'École dans Ma Compagnie, ses salles dedans une fois construite.
 const elements={};

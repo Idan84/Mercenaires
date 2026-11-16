@@ -296,7 +296,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
   d'entretien), **Jasper Bonnebourse** (Halflings des cités humaines) le **papillon vénéneux** (1 200 PO, 4 PO), **Dottie
   Mielbruyère** (Halflings des villages isolés) le **papillon géant** (3 000 PO, 10 PO) ; ils logent à la Serre.
 - **Draz Crinsauvage** (Orcs des steppes) vend des **sangliers de combat** (Idan, 2026-11-16 : « Marchand, Orc des steppes ») :
-  4 500 PO de valeur (15 PO d'entretien) ; ils logent à la Porcherie.
+  4 500 PO de valeur (15 PO d'entretien) ; ils logent à la Souille.
 - **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
 - **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.

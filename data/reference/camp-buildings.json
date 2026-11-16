@@ -1058,9 +1058,9 @@
       "lieu": null
     },
     {
-      "code": "trainer_pigsty",
-      "nom": "La Porcherie",
-      "description": "Les sangliers de combat : deux places par niveau. Chaque sanglier coûte son entretien, chaque jour.",
+      "code": "trainer_wallow",
+      "nom": "La Souille",
+      "description": "Les bêtes à cornes : deux places par niveau. Chaque bête coûte son entretien, chaque jour.",
       "niveaux": 10,
       "prix_base": 500,
       "jours_base": 4,
@@ -1071,7 +1071,7 @@
       "ecole": null,
       "places_base": 0,
       "places_pas": 0,
-      "entraine": "Sangliers de combat",
+      "entraine": "Bêtes à cornes",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
       "places_par_niveau": 2,

@@ -1,7 +1,8 @@
 "use strict";
 
 // Le sanglier de combat (Idan, 2026-11-16 : « Je voudrais qu'on ajoute une monture : sanglier de combat + chasse » ;
-// « Logé à la porcherie ! Nouvelle salle et le reste est validé » ; « 1D3 par étoile » ; la Porcherie « comme le Chenil ») :
+// « Logé à la porcherie ! Nouvelle salle et le reste est validé » ; « 1D3 par étoile » ; la Porcherie « comme le Chenil » ;
+// puis « On change la compétence en bêtes à cornes. On change la salle en Souille ») :
 // la carrure du destrier (tous le montent sauf les ogres), une case, Défenses 1D8 perforantes doublées en charge, compagnon
 // à pied comme le loup, entretien 15 PO, Chaotique neutre, « à dos de sanglier », rang d'échange du destrier et du loup ;
 // la chasse : 1D3 par étoile, à tous les niveaux, 1 000 PO par étoile, capture possible.
@@ -24,37 +25,38 @@ const sheet = code => reference.mounts.rows.find(r => r.code === code);
 // 1. La fiche.
 const boar = sheet("sanglier"), destrier = sheet("destrier"), loup = sheet("loup");
 assert.deepEqual([boar.nom, boar.espece, boar.gabarit, boar.taille, boar.logement, boar.compagnon, boar.place, boar.alignement, boar.entretien, boar.titre, boar.capturable],
-  ["Sanglier de combat", "Sangliers de combat", destrier.gabarit, "normale", "trainer_pigsty", true, 1, "Chaotique neutre", 15, "à dos de sanglier", true]);
+  ["Sanglier de combat", "Bêtes à cornes", destrier.gabarit, "normale", "trainer_wallow", true, 1, "Chaotique neutre", 15, "à dos de sanglier", true]);
 assert.deepEqual([boar.rang_echange, destrier.rang_echange, loup.rang_echange], [3, 3, 3], "le rang d'échange du destrier et du loup");
 assert.deepEqual([boar.attaque.nom, boar.attaque.degats_pv_base, boar.attaque.bonus_charge], ["Défenses", "1D8", 2], "Défenses 1D8, doublées en charge");
 const c = boar.caracteristiques;
 assert.deepEqual([c.Force, c.Constitution, c.Vitesse, c.Courage], [85, 80, 70, 75]);
 assert.ok(c.Esquive < loup.caracteristiques.Esquive && c.Esquive < destrier.caracteristiques.Esquive, "esquive faible");
-assert.ok(reference.skills.rows.some(s => s.nom === "Sangliers de combat"), "la compétence existait déjà (Compagnon animal)");
+assert.ok(reference.skills.rows.some(s => s.nom === "Bêtes à cornes" && s.parent === "Compagnon animal"), "la compétence de Compagnon animal");
+assert.ok(!reference.skills.rows.some(s => s.nom === "Sangliers de combat"), "son ancien nom a disparu");
 assert.equal(reference.animalNames.rows.find(r => r.code === "sanglier")?.noms.length, 24, "24 noms");
 // Son marchand (Idan, 2026-11-16 : « Marchand, Orc des steppes ») : Draz Crinsauvage.
 const draz = reference.merchants.rows.find(m => m.nom === "Draz Crinsauvage");
 assert.deepEqual([draz.culture, draz.vend.some(v => v.type === "mount" && v.objet === "Sanglier de combat")], ["Orcs des steppes", true]);
 
-// 2. La Porcherie : une aile de la Grange, comme le Chenil.
-const pigsty = reference.campBuildings.rows.find(r => r.code === "trainer_pigsty"), kennel = reference.campBuildings.rows.find(r => r.code === "trainer_kennel");
-assert.deepEqual([pigsty.nom, pigsty.requiert, pigsty.entraine, pigsty.places_par_niveau, pigsty.prix_base, pigsty.niveaux, pigsty.jours],
-  ["La Porcherie", "trainer_barn", "Sangliers de combat", kennel.places_par_niveau, kennel.prix_base, kennel.niveaux, kennel.jours]);
+// 2. La Souille : une aile de la Grange, comme le Chenil.
+const wallow = reference.campBuildings.rows.find(r => r.code === "trainer_wallow"), kennel = reference.campBuildings.rows.find(r => r.code === "trainer_kennel");
+assert.deepEqual([wallow.nom, wallow.requiert, wallow.entraine, wallow.places_par_niveau, wallow.prix_base, wallow.niveaux, wallow.jours],
+  ["La Souille", "trainer_barn", "Bêtes à cornes", kennel.places_par_niveau, kennel.prix_base, kennel.niveaux, kennel.jours]);
 let seed = 116;
 const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 Math.random = random;
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
 const stable = createStableRules({reference, random, makeItem: (type, name) => generator.createItemByName(type, name)});
-assert.equal(stable.houseOf("sanglier"), stable.PIGSTY);
-assert.deepEqual(stable.houseWords(stable.PIGSTY), {the: "la Porcherie", at: "à la Porcherie", need: "une Porcherie"});
+assert.equal(stable.houseOf("sanglier"), stable.WALLOW);
+assert.deepEqual(stable.houseWords(stable.WALLOW), {the: "la Souille", at: "à la Souille", need: "une Souille"});
 const pig = id => ({...generator.createItemByName("mount", "Sanglier de combat"), id});
 const state = {day: 3, company: {gold: 0, stock: [], roster: [], camp: {buildings: {trainer_barn: {level: 1}}}}};
-assert.equal(stable.canStore(state, pig("a")).ok, false, "sans Porcherie, pas de sanglier");
-state.company.camp.buildings.trainer_pigsty = {level: 1};
+assert.equal(stable.canStore(state, pig("a")).ok, false, "sans Souille, pas de sanglier");
+state.company.camp.buildings.trainer_wallow = {level: 1};
 state.company.stock.push(pig("a"), pig("b"));
-assert.equal(stable.used(state, stable.PIGSTY), 2);
+assert.equal(stable.used(state, stable.WALLOW), 2);
 assert.equal(stable.canStore(state, pig("c")).ok, false, "niveau 1 : deux places");
-state.company.camp.buildings.trainer_pigsty.level = 2;
+state.company.camp.buildings.trainer_wallow.level = 2;
 assert.equal(stable.canStore(state, pig("c")).ok, true, "niveau 2 : quatre places");
 const values = createItemValues({reference});
 assert.equal(values.value(pig("v")), 15 * values.value(generator.createItemByName("mount", "Destrier")) / destrier.entretien, "la valeur suit l'entretien, comme les autres");
@@ -89,4 +91,4 @@ for (const people of ["Humain", "Orc", "Elfe", "Nain", "Gobelin", "Ogre"]) {
 }
 assert.deepEqual(mount.items.map(i => [i.name, i.template.degats_pv_base, i.template.bonus_charge_base]), [["Défenses", "1D8", 2]]);
 
-console.log(JSON.stringify({ok: true, sanglier: {valeur: values.value(pig("v")), porcherie: pigsty.nom}}, null, 2));
+console.log(JSON.stringify({ok: true, sanglier: {valeur: values.value(pig("v")), souille: wallow.nom}}, null, 2));

@@ -36,9 +36,9 @@ function mountStatus(c,item){
 function stableHtml(c){
   const rules=stableRules();
   if(!rules||!c) return "";
-  // Les Écuries, puis le Chenil (Idan, 2026-11-07 : « Il loge au chenil »), la Serre et la Porcherie : chacun ses places et
+  // Les Écuries, puis le Chenil (Idan, 2026-11-07 : « Il loge au chenil »), la Serre et la Souille : chacun ses places et
   // ses animaux.
-  return [rules.STABLES,rules.KENNEL,rules.GREENHOUSE,rules.PIGSTY].filter(Boolean).map(house=>{
+  return [rules.STABLES,rules.KENNEL,rules.GREENHOUSE,rules.WALLOW].filter(Boolean).map(house=>{
     const places=rules.places(c,house),mounts=rules.mountsIn(c,house);
     if(!places&&!mounts.length) return "";
     const rows=mounts.map(m=>`<div class="study-row">

@@ -499,7 +499,7 @@ augmente les gains » ; « Parfait » ; « vas-y pour le Palais ») — même ba
 Le château peut accueillir des structures spécialisées selon les espèces :
 
 - écuries ;
-- porcherie ;
+- souille (les bêtes à cornes ; d'abord « porcherie ») ;
 - salle / antre pour dragon ;
 - autres bâtiments spécifiques à définir.
 
@@ -530,9 +530,10 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   pas), **papillon vénéneux** (4 PO, chaotique neutre, vendu par Jasper Bonnebourse, des Halflings des cités humaines ; il
   se capture à la Chasse aux papillons), **papillon géant** (10 PO, neutre bon, « à dos de papillon » pour un petit qui le
   monte, vendu par Dottie Mielbruyère, des Halflings des villages isolés ; seulement vendu). Les fiches : doc 04.
-- **La Porcherie** (`trainer_pigsty` ; Idan, 2026-11-16 : « Logé à la porcherie ! Nouvelle salle » ; « Comme le Chenil ») :
-  la quatrième aile de la Grange, comme le Chenil (2 places par niveau ; on s'y entraîne avec son sanglier : Sangliers de
-  combat, compétence de Compagnon animal qui existait déjà, et Compagnon animal). Le **sanglier de combat** : 15 PO
+- **La Souille** (`trainer_wallow` ; Idan, 2026-11-16 : « Logé à la porcherie ! Nouvelle salle » ; « Comme le Chenil » ;
+  puis, avec le rhinocéros, le mammouth et le tricératops en vue : « On change la compétence en bêtes à cornes. On change
+  la salle en Souille ») : la quatrième aile de la Grange, comme le Chenil (2 places par niveau ; on s'y entraîne avec sa
+  bête : **Bêtes à cornes**, compétence de Compagnon animal, ex-« Sangliers de combat », et Compagnon animal). Le **sanglier de combat** : 15 PO
   d'entretien, rang d'échange 3 (celui du destrier et du loup), chaotique neutre, « à dos de sanglier », 1 place ; il se
   capture à la Chasse au sanglier (doc 17 §23) et il est vendu par Draz Crinsauvage, des Orcs des steppes (Idan,
   2026-11-16 : « Marchand, Orc des steppes »). La fiche : doc 04.

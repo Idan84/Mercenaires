@@ -87,7 +87,7 @@ assert.deepEqual(names(find(role,"Protection","Protection élémentaire").enfant
 assert.deepEqual(names(find(role,"Entrave").enfants),["Immobilisation","Affaiblissement","Démoralisateur","Anti-magie","Anti-soins"]);
 assert.deepEqual(names(find(role,"Magie").enfants),["Feu","Eau","Foudre","Vie","Nécromancie","Illusion","Invocation","Transmutation","Télékinésie"]);
 assert.ok(find(role,"Magie").enfants.every(n=>n.enfants.length===0));
-assert.deepEqual(names(find(role,"Animal").enfants),["Équidés","Canidés","Papillons","Sangliers de combat"]);
+assert.deepEqual(names(find(role,"Animal").enfants),["Équidés","Canidés","Papillons","Bêtes à cornes"]);
 assert.deepEqual(names(find(role,"Animal","Canidés").enfants),["Loup","Molosse","Cerbère"]);
 
 // Identifiants : le chemin, unique.

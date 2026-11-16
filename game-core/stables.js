@@ -38,14 +38,15 @@
   root.MercenairesStables=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(missionEnd){
   // La Serre (Idan, 2026-11-09 : « J'ai envie de faire les papillons ! ») : la troisième aile, pour les papillons. La
-  // Porcherie (Idan, 2026-11-16 : « Logé à la porcherie ! Nouvelle salle ») : la quatrième, pour les sangliers de combat.
-  const BARN="trainer_barn",STABLES="trainer_stables",KENNEL="trainer_kennel",GREENHOUSE="trainer_greenhouse",PIGSTY="trainer_pigsty";
+  // Souille (Idan, 2026-11-16 : « Logé à la porcherie ! Nouvelle salle », puis « On change la salle en Souille ») : la
+  // quatrième, pour les bêtes à cornes (le sanglier, puis le mammouth…).
+  const BARN="trainer_barn",STABLES="trainer_stables",KENNEL="trainer_kennel",GREENHOUSE="trainer_greenhouse",WALLOW="trainer_wallow";
   // Les logements : leurs mots dans les phrases (« Pas de place au Chenil. »).
   const HOUSE_WORDS={
     [STABLES]:{the:"les Écuries",at:"aux Écuries",need:"des Écuries"},
     [KENNEL]:{the:"le Chenil",at:"au Chenil",need:"un Chenil"},
     [GREENHOUSE]:{the:"la Serre",at:"à la Serre",need:"une Serre"},
-    [PIGSTY]:{the:"la Porcherie",at:"à la Porcherie",need:"une Porcherie"}
+    [WALLOW]:{the:"la Souille",at:"à la Souille",need:"une Souille"}
   };
   const houseWords=code=>HOUSE_WORDS[code]||HOUSE_WORDS[STABLES];
   const rows=x=>Array.isArray(x)?x:(x?.rows||[]);
@@ -234,9 +235,9 @@
       return {ok:true,mount:item,before,name:clean};
     }
 
-    return {BARN,STABLES,KENNEL,GREENHOUSE,PIGSTY,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,rollSurvival,capturable,admit,release,
+    return {BARN,STABLES,KENNEL,GREENHOUSE,WALLOW,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,rollSurvival,capturable,admit,release,
       remove,applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 
-  return {createStableRules,BARN,STABLES,KENNEL,GREENHOUSE,PIGSTY,isMount,cleanName,houseWords};
+  return {createStableRules,BARN,STABLES,KENNEL,GREENHOUSE,WALLOW,isMount,cleanName,houseWords};
 });

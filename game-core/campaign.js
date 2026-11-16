@@ -1128,7 +1128,7 @@
         bodyguardPay:bodyguardPayBonus(state),stablePlaces:stableRules?stableRules.places(state):0,
         kennelPlaces:stableRules?stableRules.places(state,stableRules.KENNEL):0,
         greenhousePlaces:stableRules?.GREENHOUSE?stableRules.places(state,stableRules.GREENHOUSE):0,
-        pigstyPlaces:stableRules?.PIGSTY?stableRules.places(state,stableRules.PIGSTY):0};
+        wallowPlaces:stableRules?.WALLOW?stableRules.places(state,stableRules.WALLOW):0};
     }
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ne peut pas partir en mission tant que son

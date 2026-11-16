@@ -1487,7 +1487,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 /* Sans pack : un cadre provisoire autour de la bande (en haut comme en bas). */
 .game-bottom-bar:not(.has-art) .hud-bar-art,.game-top-bar:not(.has-art) .hud-bar-art{top:calc(var(--hb-top) - var(--hb-B) * .22);height:calc(var(--hb-B) * 1.44);box-sizing:border-box;border:1px solid #b58a45;border-radius:calc(var(--hb-B) * .2);
   background:linear-gradient(180deg,rgba(255,214,150,.05),transparent 45%),linear-gradient(180deg,#3b2a1b,#15100c 70%,#15100c);box-shadow:inset 0 0 0 calc(var(--hb-B) * .12) #2e231c,inset 0 0 0 calc(var(--hb-B) * .13) #b58c5399}
-.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--ht-B);left:calc(var(--ht-B) * .5);right:calc(var(--ht-B) * var(--ht-marge) + var(--hb-k) * var(--hb-ri,0) * var(--ht-embout));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--ht-u) * .35);pointer-events:auto}
+.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--ht-B);left:calc(var(--ht-B) * var(--ht-gauche,.5));right:calc(var(--ht-B) * var(--ht-marge) + var(--hb-k) * var(--hb-ri,0) * var(--ht-embout));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--ht-u) * .35);pointer-events:auto}
 .hud-top-side{display:flex;align-items:center;min-width:0}
 .hud-top-side--left{flex:1 1 auto;gap:calc(var(--ht-u) * .45)}
 .hud-top-side--right{flex:none;gap:calc(var(--ht-u) * .3)}
@@ -1543,6 +1543,14 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-ornament[hidden]{display:none}
 .hud-places{position:absolute;right:calc(50% + var(--hb-B) * var(--bb-pictos-droite));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
 .hud-actions{position:absolute;left:calc(50% + var(--hb-B) * var(--bb-pictos-gauche));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
+/* Les barres au kit graphique de la culture (hud-kit-ui.js ; les Elfes noirs, planche d'Idan du 2026-11-16) : les pièces
+   du kit dans la couche .hud-kit de chaque barre, sous les textes, le bouton et les pictos, à la place de la barre du
+   pack ; le bouton Jour suivant du kit, à sa taille (le dessin remplit le bouton), décalé de --bb-bouton-dx. */
+.hud-kit{position:absolute;inset:0;pointer-events:none}
+.hud-kit-piece{position:absolute;display:block;max-width:none}
+.has-kit .hud-bar-art{display:none}
+.game-bottom-bar.has-kit .hud-play{margin-left:calc(var(--hb-B) * var(--bb-bouton-dx,0))}
+.game-bottom-bar.has-kit .hud-play-img{width:100%;height:100%}
 /* Le bouton du lieu, à droite des pictos (Idan, 2026-11-14) : caché là où il n'y a rien ; un rond sombre provisoire, en
    attendant son dessin (« on va le designer ce bouton pour qu'il soit joli »). Son menu s'ouvre vers le haut, calé à droite. */
 .hud-context{position:relative;flex:none;width:calc(var(--hb-B) * var(--bb-picto));height:calc(var(--hb-B) * var(--bb-picto))}

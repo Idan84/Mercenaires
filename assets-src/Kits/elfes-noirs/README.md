@@ -22,9 +22,9 @@ culture (`prototype-web/assets/pictos/culture-elfes-noirs.webp`), à la place de
 | `ornement-chaine.png` | `Ornement_droit_2.png` | 2172 × 724 | Chaîne suspendue : « la gravité le pousse à être plutôt en haut, mais il peut se mettre sur un angle. » |
 | `ornement-chaine-torsadee.png` | `Ornement_droit_3.png` | 189 × 405 | Chaîne torsadée : « se pose sur une barre, peu importe le sens, et peut vraiment se répéter. » |
 | `ornement-titre.png` | `ornement_svg.png` | 2752 × 1536 | Ornement de titre (fouet, chaînes, épines) ; trop fin à 12 px : le jeu n'en garde que la pointe de lance. |
-| `embleme-fin-de-barre.png` | `embleme_droit.png` | 1402 × 1122 | Bout de la barre (Idan : « Le bout de la barre c'est emblème_droit »). Pas encore utilisé : barres du camp, étape suivante. |
-| `rond-central.png` | `rond_central.png` | 2752 × 1536 | Couronne du bouton du jour suivant (barre du bas). Pas encore utilisé. |
-| `bouton-jour-suivant.png` | `boutton_play.png` | 669 × 670 | Bouton du jour suivant (barre du bas). Pas encore utilisé. |
+| `embleme-fin-de-barre.png` | `embleme_droit.png` | 1402 × 1122 | Bout de la barre du haut du camp (Idan : « Le bout de la barre c'est emblème_droit »). |
+| `rond-central.png` | `rond_central.png` | 2752 × 1536 | Rond central de la barre du bas du camp, autour du bouton Jour suivant. |
+| `bouton-jour-suivant.png` | `boutton_play.png` | 669 × 670 | Bouton Jour suivant de la barre du bas du camp. |
 
 ## Mesures (originaux, en pixels)
 
@@ -37,3 +37,5 @@ en répétition de motif ») ; reprises dans `data/reference/culture-kits.json`.
 - **Bordure** : sangle épaisse de 238 (liseré de 12 de chaque côté), clous en x = 152, 419, 685 (pas 267) ; cellule
   d'un clou découpée de x = 285 à 552.
 - **Raccord en T** : barre épaisse de 93 (y 250–343), clous au pas de 95,7 ; tige centrée en x = 830 (782–877).
+- **Rond central** : recadré sur son dessin (x 14 à 2738, y 34 à 1480) ; trou du bouton centré en (50,02 % ; 50,80 %)
+  de l'image recadrée, diamètre 23,64 % de sa largeur. **Emblème** : recadré de x 47 à 1356 (toute la hauteur).

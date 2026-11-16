@@ -314,4 +314,19 @@ function fitHoverCard(root){
   }
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,originPhrase};
+// Où poser la fiche à côté de ce qu'on survole (anchor : son rectangle à l'écran ; view : l'écran ; card : la fiche).
+// À droite s'il y a la place, sinon à gauche, sinon du côté le plus large, la fiche rapetissant pour y tenir (jusqu'à
+// minScale) ; à la hauteur du survol, sans sortir de l'écran ; plus petite aussi si l'écran est trop petit pour elle.
+// margin : la place des ornements du cadre qui débordent. Logique pure, sans page web (tests, portage).
+function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},gap=12,margin=30,minScale=.6}){
+  let scale=Math.min(1,(view.h-2*margin)/card.h,(view.w-2*margin)/card.w);
+  const right=view.w-margin-anchor.right-gap,left=anchor.left-gap-margin;
+  const side=right>=card.w*scale?"right":left>=card.w*scale?"left":right>=left?"right":"left";
+  scale=Math.min(scale,Math.max(minScale,(side==="right"?right:left)/card.w));
+  const w=card.w*scale,h=card.h*scale;
+  const x=side==="right"?Math.min(anchor.right+gap,view.w-margin-w):Math.max(anchor.left-gap-w,margin);
+  const y=Math.min(Math.max(margin,(anchor.top+anchor.bottom-h)/2),view.h-margin-h);
+  return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
+}
+
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};

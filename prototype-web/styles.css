@@ -2559,13 +2559,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-steed>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
 .hc-steed-portrait{display:grid;place-items:center;width:88px;height:88px;margin:0;box-sizing:border-box;border:2px solid #8a6a40;background:rgba(93,68,41,.12);box-shadow:inset 0 0 12px rgba(93,68,41,.3)}
 .hc-steed-portrait>span{padding:0 6px;font:italic 500 15px/1.1 var(--police-texte);text-align:center;color:var(--encre-2)}
-/* Les écoles : les pictos d’Idan (assets/pictos/ecole-<slug>.webp), sans plaque (« Retire le école de magie »). */
-.hc-magic{display:grid;justify-items:center;gap:8px}
-.hc-schools{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));width:100%;row-gap:10px}
-.hc-school{position:relative;display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px}
-.hc-school:nth-child(3n+1)::before{display:none}
-.hc-school>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
-.hc-school .picto{width:56px;height:56px;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
+/* Les écoles : les pictos d’Idan (assets/pictos/ecole-<slug>.webp), seuls, sans plaque ni nom (« Retire le école de
+   magie » ; « Pictos seuls en 48 px avec la possibilité de les rétrécir pour tout rentrer ») : une ligne, 48 px chacun ;
+   s'ils ne tiennent pas dans la largeur, ils rétrécissent tous d'autant. La fente au milieu de l'écart. */
+.hc-magic{display:grid;justify-items:center;width:100%}
+.hc-schools{--ecart:10px;display:grid;grid-template-columns:repeat(var(--n,1),minmax(0,48px));justify-content:center;column-gap:var(--ecart);width:100%}
+.hc-school{position:relative;display:grid;place-items:center;min-width:0}
+.hc-school+.hc-school::before{left:calc(var(--ecart) / -2 - 1.5px)}
+.hc-school .picto{width:100%;height:auto;max-width:48px;aspect-ratio:1;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
 
 /* Le choix de l'escouade, d'après la maquette de Chatty (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») :
    sur le panneau des missions assombri, la mission en grand ; à gauche, les mercenaires au camp sur le parchemin de la

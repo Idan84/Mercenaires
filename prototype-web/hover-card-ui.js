@@ -312,9 +312,10 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
     .map(value=>`<span class="hc-kit-item"><i>${esc(value)}</i></span>`).join("");
   // Dessous, deux colonnes (Idan, 2026-11-16 : « Les pictos d'écoles de magie à gauche, l'avatar de la monture à droite ») ;
   // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp), sans plaque « Écoles
-  // de magie » (Idan, 2026-11-16 : « Retire le école de magie »).
-  const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
-  const magic=schools?`<div class="hc-magic"><div class="hc-schools" style="--n:${Math.min(3,d.schools.length)}">${schools}</div></div>`:"";
+  // de magie » (Idan, 2026-11-16 : « Retire le école de magie ») ni nom : « Pictos seuls en 48 px avec la possibilité de les
+  // rétrécir pour tout rentrer » (une seule ligne, styles.css).
+  const schools=d.schools.map(name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`).join("");
+  const magic=schools?`<div class="hc-magic"><div class="hc-schools" style="--n:${d.schools.length}">${schools}</div></div>`:"";
   const steed=d.mount?`<div class="hc-steed">${hoverMountPortrait(d.mount)}<span>${esc(d.mount.name)}</span></div>`:"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");

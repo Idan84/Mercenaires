@@ -574,6 +574,12 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(hoverSrc, /<div class="hc-kit">\$\{kit\}<\/div>\s*\$\{foot\}\s*<\/div>/);
   assert.match(css, /\.hc-foot\.is-2\{grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/);
   assert.doesNotMatch(hoverSrc + css, /hc-rule/, "plus de filet : les fentes du parchemin");
+  // Les écoles : les pictos seuls, 48 px, sur une ligne, qui rétrécissent pour tout faire tenir (Idan, 2026-11-16).
+  assert.match(hoverSrc, /`<span class="hc-school" role="img" aria-label="\$\{esc\(name\)\}">\$\{renderPicto\("school",name,\{size:"md"\}\)\}<\/span>`/, "pictos seuls, sans nom");
+  assert.match(hoverSrc, /<div class="hc-schools" style="--n:\$\{d\.schools\.length\}">/, "toutes les écoles, sur une ligne");
+  assert.match(css, /\.hc-schools\{[^}]*grid-template-columns:repeat\(var\(--n,1\),minmax\(0,48px\)\);/);
+  assert.match(css, /\.hc-school \.picto\{width:100%;height:auto;max-width:48px;aspect-ratio:1;/);
+  assert.doesNotMatch(hoverSrc, /Écoles de magie/, "« Retire le école de magie »");
   assert.doesNotMatch(hoverSrc, /"Set [12]"|\["Armure",/, "« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »");
   assert.match(css, /\.hc-kit\{display:grid;grid-auto-columns:minmax\(0,1fr\);grid-auto-flow:column\}/);
   assert.match(css, /\.hc-sep\{[^}]*height:34px;margin:8px 0 5px;/, "la couronne descendue sous la tête, de l\'air dessous");

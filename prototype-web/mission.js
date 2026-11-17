@@ -2717,7 +2717,6 @@ function missionChargeCheck(unit,target){
   if(missionHiddenFrom(target,unit)) return no("on ne le voit pas");
   const e=game.mission.engine,charge=e.chargeData(unit,target);
   if(!charge.valid){
-    if(charge.straight===false) return no("pas en ligne droite : la charge suit une colonne ou une ligne");
     if(charge.travel==null) return no(e.axialDistance(unit,target)<2?"déjà au contact":"il ne peut pas charger");
     return no(charge.travel<charge.min?`trop près : il faut au moins ${charge.min} cases de course (ici ${charge.travel})`
       :`trop loin : au plus ${charge.max} cases de course (ici ${charge.travel})`);

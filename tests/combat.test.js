@@ -311,13 +311,21 @@ const charge=combat.chargeData(charger,chargeTarget);
 assert.equal(charge.path.length,charge.travel);
 assert.deepEqual(charge.path[0],{q:1,r:0});
 assert.deepEqual(charge.path[charge.path.length-1],charge.destination);
-// Cases carrées (doc 04) : la charge part en ligne droite, sur une colonne ou une ligne ; la dernière case au contact. Hors
-// d'une ligne droite, pas de charge (la charge en diagonale : à préciser avec Idan).
+// Cases carrées (doc 04) : sur une colonne ou une ligne, la charge va tout droit ; en biais (Idan, 2026-11-17 : « 2 pour la
+// diagonale »), elle va de case en case par les côtés, au plus près de la ligne droite. La course se compte en losange, et
+// le chargeur finit collé à la cible par un côté.
 {
   const down=combat.chargeData(charger,unit(b,0,4));
   assert.deepEqual(down.path,[{q:0,r:1},{q:0,r:2},{q:0,r:3}]);
   assert.equal(combat.axialDistance(down.destination,{q:0,r:4}),1);
-  assert.equal(combat.chargeData(charger,unit(b,3,2)).valid,false,"hors d'une ligne droite");
+  const slant=combat.chargeData(charger,unit(b,3,2));
+  assert.equal(slant.travel,4,"en biais : 3 + 2 cases jusqu'à la cible, la dernière à son contact");
+  assert.equal(slant.path.length,4);
+  for(let i=0,prev={q:0,r:0};i<slant.path.length;prev=slant.path[i++]) assert.equal(combat.axialDistance(prev,slant.path[i]),1,"un pas par un côté");
+  assert.equal(combat.axialDistance(slant.destination,{q:3,r:2}),1,"collé à la cible par un côté");
+  assert.equal(Math.abs(slant.step.q)+Math.abs(slant.step.r),1);
+  const diag=combat.chargeData(charger,unit(b,3,3));
+  assert.ok(diag.path.every(c=>Math.abs(c.q-c.r)<=1),"une vraie diagonale : un escalier régulier, collé à la ligne droite");
   assert.equal(combat.axialDistance({q:0,r:0},{q:0,r:0}),0);
 }
 

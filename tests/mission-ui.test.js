@@ -80,14 +80,20 @@ function newMission(){
   return game.mission;
 }
 
-// 1. La charge : cases carrées (doc 04), en ligne droite sur une colonne ou une ligne, de 1 à 2 fois le mouvement de base ;
-// hors d'une ligne droite, pas de charge (la diagonale : à préciser avec Idan).
+// 1. La charge : cases carrées (doc 04), de 1 à 2 fois le mouvement de base ; en ligne droite sur une colonne ou une ligne,
+// ou en biais (Idan, 2026-11-17 : « 2 pour la diagonale »), case par case par les côtés, collé à la cible à l'arrivée.
 let m=newMission();
 let u=at(m.activeUnit,2,4);
 const base=engine.movementBase(u);
 const foe=m.enemies[0];
-const slanted=api.missionCells().find(c=>c.q!==u.q&&c.r!==u.r&&(at(foe,c.q,c.r),engine.chargeData(u,foe).valid));
-assert.equal(slanted,undefined,"pas de charge en biais");
+const slanted=api.missionCells().find(c=>c.q!==u.q&&c.r!==u.r&&(at(foe,c.q,c.r),api.missionChargeIfClear(u,foe)));
+assert.ok(slanted,"une charge en biais");
+at(foe,slanted.q,slanted.r);
+{
+  const biais=api.missionChargeIfClear(u,foe);
+  assert.equal(biais.travel,engine.axialDistance(u,foe)-1,"la course se compte en losange");
+  assert.equal(engine.axialDistance(biais.destination,foe),1,"il finit collé à la cible par un côté");
+}
 const straight=api.missionCells().find(c=>{
   if(c.r!==u.r) return false;
   at(foe,c.q,c.r);
@@ -299,4 +305,4 @@ assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/);
 assert.match(css,/\.mission-panel\{[^}]*height:calc\(100dvh - 16px\)/);
 assert.doesNotMatch(css,/body\[data-screen="mission"\] \.app-shell\{[^}]*74px/);
 
-console.log("Écran de combat : charge en biais, portée et zone en surbrillance, approche au corps à corps, rythme du tour ennemi, aperçu des sorts — OK");
+console.log("Écran de combat : charge en ligne et en biais, portée et zone en surbrillance, approche au corps à corps, rythme du tour ennemi, aperçu des sorts — OK");

@@ -38,10 +38,12 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   cartes `game-core/mission-terrain.js`, écran `prototype-web/mission.js`) ; q = la colonne, r = la ligne ; distance en
   losange ; 4 voisines ; lignes de vue case par case, en diagonale quand il le faut ; grandes créatures 1×2, 2×2, 3×3,
   sens 0 à 3 (est, nord, ouest, sud) ; encerclement sur des côtés opposés ; cône 1-3-3 droit devant ; enceinte des camps
-  en carré. Le décor, la couverture et l'altitude d'avant restent branchés en attendant l'étape B. La charge part en
-  ligne droite sur une colonne ou une ligne : la charge en diagonale reste à préciser (sur quelle case finit-elle, au
-  contact par un côté ?).
-- **B, le terrain du nouveau modèle** (à faire) : les cases et les arêtes des étapes 1 à 4, l'Esquive à la place de la
+  en carré. Le décor, la couverture et l'altitude d'avant restent branchés en attendant l'étape B.
+- **La charge en biais** (Idan, 2026-11-17 : « 2 pour la diagonale ») : la charge part dans n'importe quelle direction.
+  Sur une colonne ou une ligne, elle va tout droit ; en biais, elle va de case en case par les côtés, au plus près de la
+  ligne droite (un escalier). La course se compte en losange, et le chargeur finit collé à la cible par un côté. Un
+  personnage sur l'escalier barre la charge, comme sur une ligne droite.
+- **B, le terrain du nouveau modèle** (en cours) : les cases et les arêtes des étapes 1 à 4, l'Esquive à la place de la
   couverture, la charge qui double l'Esquive, sans altitude ; les paysages en cases et arêtes.
 - **C, les personnages et les sorts** (à faire) : la vue bloquée par les personnages (étape 3), les sorts en ligne droite.
 - **D, l'IA, la Mission Test, la mise en ligne** (à faire).
@@ -63,8 +65,9 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   remplace (voir « Le modèle de la case » ci-dessous).
 - **Sorts** : les zones en rayon en losange ; les sorts en ligne, les cônes et les murs **seulement en ligne droite**,
   sans diagonale (« ça oblige à bien se placer »).
-- **Charge** : dans les **8 directions**, en ligne stricte (une diagonale coûte 2 PM par case), sans contourner d'obstacle ;
-  les arêtes qu'elle franchit en diagonale restent à préciser. L'Esquive du chargé compte double (ci-dessous).
+- **Charge** : dans toute direction, sans contourner d'obstacle ; en biais, de case en case par les côtés, au plus près
+  de la ligne droite (« 2 pour la diagonale ») : elle franchit donc les arêtes comme un déplacement. La course se compte
+  en losange. L'Esquive du chargé compte double (ci-dessous).
 - **Grosses créatures** : cheval 1×2, mammouth, tricératops et **cerbère 2×2**, énorme 3×3. Une créature qui fait plus
   d'une case se déplace par rapport à sa **tête** : elle va dans la direction choisie depuis la case de sa tête.
 - **Carte** : 36 × 25 cases, comme aujourd'hui ; la taille se règle avec l'équilibrage.
@@ -113,8 +116,7 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   un coin n'est bloquée que si les deux arêtes de ce coin bloquent la vue.
 - **Les personnages bloquent la vue, pas la discrétion** : « On ne peut pas viser à l'arc le mec n° 4 d'une file
   indienne si on est en ligne droite. En fait, il agit comme une arête » (voir l'étape 3).
-- **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas ») ; les
-  arêtes que franchit une charge en diagonale.
+- **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas »).
 
 ### Étape 1 : les cases (Idan, 2026-11-17, V1)
 

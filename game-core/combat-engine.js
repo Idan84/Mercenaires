@@ -1438,6 +1438,18 @@
       return true;
     }
 
+    // La ligne de cases la plus droite de a vers b, sans diagonale (un pas par un côté à chaque fois) : un escalier en
+    // biais, d'axialDistance(a, b) pas. Elle commence par a et finit par b.
+    function squareWalk(a,b){
+      const nq=Math.abs(b.q-a.q),nr=Math.abs(b.r-a.r),sq=Math.sign(b.q-a.q),sr=Math.sign(b.r-a.r),cells=[{q:a.q,r:a.r}];
+      let q=a.q,r=a.r;
+      for(let iq=0,ir=0;iq<nq||ir<nr;){
+        if((0.5+iq)/nq<(0.5+ir)/nr){ q+=sq;iq++; } else { r+=sr;ir++; }
+        cells.push({q,r});
+      }
+      return cells;
+    }
+
     function chargeData(attacker,defender){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       if(!isMeleeWeapon(weapon)) return {valid:false};
@@ -1453,9 +1465,10 @@
       const distance=axialDistance(attacker,defender);
       if(distance<2) return {valid:false};
       const aim=footprint(defender).reduce((best,c)=>!best||hexDistance(attacker,c)<hexDistance(attacker,best)?c:best,null);
-      // Cases carrées : en ligne droite, sur une colonne ou une ligne (la charge en diagonale : à préciser avec Idan).
-      if(aim.q!==attacker.q&&aim.r!==attacker.r) return {valid:false,straight:false};
-      const path=hexLine(attacker,aim).slice(1,-1);
+      // Cases carrées (Idan, 2026-11-17 : « 2 pour la diagonale ») : dans n'importe quelle direction ; en biais, la course
+      // va de case en case par les côtés (squareWalk), au plus près de la ligne droite : elle se compte en losange, et le
+      // chargeur finit collé à la cible par un côté.
+      const path=squareWalk(attacker,aim).slice(1,-1);
       const destination=path[path.length-1];
       const step={q:aim.q-destination.q,r:aim.r-destination.r};
 

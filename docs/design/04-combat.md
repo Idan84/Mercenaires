@@ -77,14 +77,15 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
     **négatif** (« neige par exemple ou marais.. c'est une bonne idée »).
 - **Un mur a de l'épaisseur** : c'est une case (100 PM, bloque la vue), comme la montagne et le gros rocher (« L'un
   construit par dame nature, l'autre par les humains (ou les nains !) »).
-- **Une arête est partagée par les deux cases qu'elle sépare, avec deux faces**, dedans et dehors (« Partagée deux
-  faces » ; « Quand on est plaqué contre une muraille... Le côté où on est plaqué change pas ») :
-  - **franchir** : des PM en plus, de dehors vers dedans et de dedans vers dehors (« c'est le principe d'un mur avec
-    meurtrière à escalader ») ; passer d'une case à l'autre coûte le PM de la case d'arrivée plus le malus de l'arête
-    dans ce sens ;
-  - **voir** : de dehors vers dedans, et de dedans vers dehors ;
-  - **Esquive** : une pour celui de dedans, une pour celui de dehors, plaqué contre ;
-  - **corps à corps à travers** : possible ou non (« on ne tape pas au cac à travers une meurtrière »).
+- **Une arête est partagée par les deux cases qu'elle sépare.** Elle a 4 réglages, les mêmes des deux côtés sauf la vue
+  (Idan : « Le seul cas en fait, c'est la vue bloquée ou non en fonction du sens. On peut peut-être tout simplifier ? ») :
+  - **la franchir** : des PM en plus ; passer d'une case à l'autre coûte le PM de la case d'arrivée plus ce malus ;
+  - **l'Esquive**, la même des deux côtés (« Le mec est à l'intérieur du camp, l'autre est plaqué contre la muraille, il
+    le touchera pas ») ;
+  - **la ligne de vue** : laisse voir, bloque la vue, ou **un seul sens** : on voit du côté défendu vers l'extérieur,
+    pas l'inverse (la meurtrière, la palissade d'un camp) ;
+  - **le corps à corps à travers** : possible ou non (« on ne tape pas au cac à travers une meurtrière » ; la palissade :
+    « c'est du bois plein. On fait le tour »).
 - **L'Esquive remplace la couverture** : celle de la case et celle de l'arête comptent contre les **tirs**, les **sorts
   qui volent** comme une flèche (« Pas un sort dans ligne de vue par exemple ») et la **charge** ; pas contre un coup
   normal au corps à corps. Elle passe par la formule du toucher : face à une attaque à 50 %, +20 d'Esquive la ramène à
@@ -125,13 +126,11 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 
 ### Étape 2 : les arêtes (Idan, 2026-11-17, V1)
 
-« Dedans », c'est le côté défendu quand l'arête n'a de sens que d'un côté (la palissade d'un camp, la muraille).
-
-| Arête | Où | Franchir dehors → dedans / dedans → dehors | Voir dedans / dehors | Esquive dedans / dehors | Corps à corps à travers | Notes |
+| Arête | Où | Franchir | Esquive | Vue | Corps à corps à travers | Notes |
 |---|---|---|---|---|---|---|
-| Muret | champs, fermes, ruines | +0,5 / +0,5 | oui / oui | +30 / +30 | possible | mi-hauteur : « On se baisse, on se relève pour tirer » |
-| Palissade | enceinte des camps | +2 / +2 | non / oui | +60 / à régler | à régler | hauteur d'homme : « Ça se franchit avec une bonne traction » |
-| Muraille avec meurtrière | châteaux, remparts, forts | +4 / +4 | non / oui | +100 / à régler | impossible | elle s'escalade ; différente de la case Mur |
+| Muret | champs, fermes, ruines | +0,5 | +30 | laisse voir | possible | mi-hauteur : « On se baisse, on se relève pour tirer » |
+| Palissade | enceinte des camps | +2 | +60 | un seul sens | impossible | hauteur d'homme : « Ça se franchit avec une bonne traction » ; du bois plein, on fait le tour |
+| Muraille avec meurtrière | châteaux, remparts, forts | +4 | +100 | un seul sens | impossible | elle s'escalade ; différente de la case Mur |
 
 ## Initiative & ordre interne V1
 

@@ -48,13 +48,65 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   coin, si rien n'est sur la diagonale elle-même (« si rien n'est dans la diago, ça passe »).
 - **Couverture** (« différencier obstacles de déplacement et couvertures ») : un **obstacle** (arbre, rocher) est sur la
   case, il définit la ligne de vue et le déplacement ; une **couverture** est posée sur une **arête** entre deux cases.
-  Le détail (directions couvertes, ralentir ou bloquer, la liste des décors) : à définir.
+  Le détail : voir « Remise à plat : la case » ci-dessous.
 - **Sorts** : les zones en rayon en losange ; les sorts en ligne, les cônes et les murs **seulement en ligne droite**,
   sans diagonale (« ça oblige à bien se placer »).
 - **Charge** : dans les **8 directions**, en ligne stricte (une diagonale coûte 2 PM par case), sans contourner d'obstacle.
 - **Grosses créatures** : cheval 1×2, mammouth, tricératops et **cerbère 2×2**, énorme 3×3. Une créature qui fait plus
   d'une case se déplace par rapport à sa **tête** : elle va dans la direction choisie depuis la case de sa tête.
 - **Carte** : 36 × 25 cases, comme aujourd'hui ; la taille se règle avec l'équilibrage.
+
+### Remise à plat : la case (Idan, 2026-11-17)
+
+> « On retire l'altitude pour l'instant. Trop complexe à gérer en phase 1. » « On va séparer la fonction de l'obstacle
+> de sa représentation graphique. Une maison sera bien plus grande qu'une case et on pourra rentrer dedans. » « En gros,
+> une case est définie par 4 arêtes (NSOE) et sa surface. » Travaillé étape par étape dans l'artefact « Grille de
+> combat » : 1 les sols, 2 les arêtes, 3 les personnages, 4 les objets du décor.
+
+- **Phase 1 sans altitude** : collines, falaises, camps en hauteur et ±10 au toucher sortent de la grille carrée. La
+  section « Altitude » plus bas décrit le jeu actuel ; elle pourra revenir en phase 2.
+- **La règle d'un côté, le dessin de l'autre** : un sol, une arête ou un objet peut avoir plusieurs dessins. Une maison
+  est un plan de plusieurs cases (ses murs, sa porte, ses fenêtres, son sol), et l'on entre dedans.
+- **Une case = une surface + 4 arêtes** (nord, sud, est, ouest).
+  - La **surface** : le coût pour y entrer (PM), la couverture à distance, et un bonus pour **Se cacher**, une action
+    rapide à venir (« La nature de la case pourrait effectivement ajouter un bonus de discrétion »).
+  - L'**arête** : malus de déplacement, ligne de vue, couverture à distance, couverture au corps à corps ; les trois
+    dernières sont « très liées... On ne voit pas et on passe pas à travers un mur ».
+- **Rien d'infranchissable pour qui vole ou nage** : « Juste une valeur de déplacement de 100 PM ». Ceux qui volent
+  ignorent les malus de déplacement des surfaces et des arêtes.
+- **Diagonales** : une arête ne couvre pas la diagonale à elle seule. Un tir pile en diagonale (du nord-est, par
+  exemple) est couvert si les arêtes nord **et** est de la case le couvrent, ou si l'arête nord se prolonge sur la case
+  voisine à l'est ; un tir de biais regarde l'arête qui fait face au tireur. Une ligne de vue qui passe pile par un coin
+  n'est bloquée que si les deux arêtes de ce coin bloquent la vue.
+- **Les personnages bloquent la vue, pas la discrétion** : « On ne peut pas viser à l'arc le mec n° 4 d'une file
+  indienne si on est en ligne droite. En fait, il agit comme une arête » (étape 3).
+- **La forêt n'existe pas** : « Ce sont juste des arbres les uns à côté des autres ! La surface sur une forêt, c'est
+  juste de la terre » ; ce sont les arbres qui gênent (étape 4). Le Déplacement sylvain sera revu à cette étape.
+- **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas ») ; la
+  charge à travers une arête qui ralentit (à voir).
+
+### Étape 1 : les sols (Idan, 2026-11-17)
+
+Huit sols de règle, chacun avec plusieurs dessins possibles (« C'est une variation graphique mais la même chose »). Le
+coût se compte au quart de point (voir « Fractions de PM » ci-dessus).
+
+| Sol | Dessins, où | PM | Couverture à distance | Se cacher | Capacités de terrain |
+|---|---|---|---|---|---|
+| Terrain par défaut | terre, herbe rase, champs, chemins, camps ; le sol d'une forêt | 1 | aucune | — | |
+| Végétation souple | buissons, blé haut, champ de tournesols | 1,5 | aucune | +30 | |
+| Plancher, dallage | intérieur des bâtiments ; la route | 0,75 | aucune | — | |
+| Boue, marais | marais, bords de rivière | 2 | aucune | — | |
+| Eau peu profonde | gués, mares, torrents | 2 | aucune | — | Déplacement aquatique : 1 PM et +30 ; Respiration aquatique : couverture partielle |
+| Éboulis, pierraille | gorges, carrières, pieds de falaise | 2 | partielle | +30 | |
+| Eau profonde | rivières, lacs | 100 | aucune | — | Respiration aquatique : 1 PM et couverture totale ; vol : 1 PM |
+| Gouffre, vide | gorges, ruines effondrées | 100 | aucune | — | vol : 1 PM ; la nage n'aide pas |
+
+- **Les sorts changent des cases en un sol qui existe**, pour quelques tours et avec leur propre dessin (« c'est pas un
+  type de sol, mais une transformation en sol type Gouffre, vide pendant un certain nombre de tours et avec un
+  graphisme spécifique ») :
+  - la **Flaque de magma** fait du Gouffre (« Le vol permet justement de passer sans soucis ») ;
+  - le **Bourbier** ferait une large zone de Boue au lieu d'immobiliser une case (« C'est peut-être plus simple ») ; la
+    taille de la zone se réglera avec le passage des sorts aux cases carrées.
 
 ## Initiative & ordre interne V1
 

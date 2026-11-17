@@ -99,7 +99,7 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   ou adjacente protège ») ; un tir de biais regarde l'arête qui fait face au tireur. Une ligne de vue qui passe pile par
   un coin n'est bloquée que si les deux arêtes de ce coin bloquent la vue.
 - **Les personnages bloquent la vue, pas la discrétion** : « On ne peut pas viser à l'arc le mec n° 4 d'une file
-  indienne si on est en ligne droite. En fait, il agit comme une arête » (étape 3).
+  indienne si on est en ligne droite. En fait, il agit comme une arête » (voir l'étape 3).
 - **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas ») ; les
   arêtes que franchit une charge en diagonale.
 
@@ -131,6 +131,27 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 | Muret | champs, fermes, ruines | +0,5 | +30 | laisse voir | possible | mi-hauteur : « On se baisse, on se relève pour tirer » |
 | Palissade | enceinte des camps | +2 | +60 | un seul sens | impossible | hauteur d'homme : « Ça se franchit avec une bonne traction » ; du bois plein, on fait le tour |
 | Muraille avec meurtrière | châteaux, remparts, forts | +4 | +100 | un seul sens | impossible | elle s'escalade ; différente de la case Mur |
+
+### Étape 3 : les personnages (Idan, 2026-11-17, V1)
+
+> « En gros, un ennemi bloque ses alliés. Un allié ne bloque pas sa ligne de vue. Un plus petit ne bloque pas la ligne
+> de vue par-dessus lui. » « La vraie règle pour les alliés, c'est un allié devant permet de tirer mais un allié à 10
+> cases au cac d'un ennemi, bah on peut pas tirer... »
+
+- **On ne traverse la case de personne**, allié ou ennemi.
+- **Ligne de vue** (tirs et sorts) :
+  - un **ennemi** cache ceux qui sont derrière lui ;
+  - un **allié collé au tireur** (les 8 cases autour de lui) ne gêne pas ; un **allié plus loin** sur la ligne empêche de
+    tirer ;
+  - **un plus petit ne cache pas un plus grand** (« Même logique avec un Gobelin devant un humain ou un humain devant
+    un Ogre ! ») : on compare le **gabarit**, comme pour les montures (gobelin 0,5, humain 1, ogre 2…), pour les alliés
+    comme pour les ennemis ;
+  - **au sol** ou **en vol**, un personnage ne cache rien ;
+  - une **grosse créature** cache sur toutes ses cases ;
+  - un **personnage caché** bloque la vue, sans qu'on sache pourquoi (on y reviendra avec le brouillard de guerre).
+- **Un personnage ne donne pas d'Esquive** à celui qui est derrière lui.
+- **Arme d'hast** : elle frappe par-dessus un allié collé ou un personnage au sol, pas par-dessus un ennemi.
+- **Le tir raté** peut toujours toucher quelqu'un dans le couloir de tir (« Approximation projectile V1 »).
 
 ## Initiative & ordre interne V1
 

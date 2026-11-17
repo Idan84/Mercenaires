@@ -139,7 +139,7 @@ const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), 
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,"
   + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,missionUnits,missionUnitAtCell,"
-  + "missionUnitsWithMounts,settleMissionMounts,missionAimed,performMissionAttack,checkMissionEnd};")
+  + "missionUnitsWithMounts,settleMissionMounts,missionAimed,performMissionAttack,checkMissionEnd,missionChargeIfClear,performMissionCharge};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic, () => rules);
 api.setMissionMapSize({cols: 30, rows: 15});
 const cavalier = (code = "thief_rider", people = "Humain") => {
@@ -245,6 +245,19 @@ for (let i = 0; i < 12; i++) {
 assert.equal(over, 12, "chaque combat se termine");
 assert.ok(charges > 0, "le cavalier charge : " + charges);
 assert.ok(horseHits > 0, "le cheval prend des coups : " + horseHits);
+// Le cheval frappe aussi en charge (Idan : « La monture frappe également ») : une charge en ligne droite sur une cible qui
+// tient (sans peur, beaucoup de PV) ; le cheval frappe juste après son cavalier. Cases carrées : les charges suivent une
+// colonne ou une ligne, plus rares en combat entier, d'où une scène fixe.
+for (let i = 0; i < 10 && !horseCharges; i++) {
+  m = newMission([cavalier()], 1);
+  const rider = m.enemies[0], foe = m.players[0];
+  for (const u of [rider, rider.mount]) Object.assign(u, {q: 18, r: 7, facing: 2, attackAvailable: true});
+  Object.assign(foe, {q: 6, r: 7, hp: 5000, frenzy: true});
+  const charge = api.missionChargeIfClear(rider, foe);
+  assert.ok(charge, "une charge en ligne droite");
+  api.performMissionCharge(rider, foe, charge);
+  horseCharges += m.log.filter(l => /^Destrier de Cavalier.* charge /.test(l.message)).length;
+}
 assert.ok(horseCharges > 0, "le cheval frappe aussi en charge (Idan : « La monture frappe également ») : " + horseCharges);
 
 console.log(JSON.stringify({ok: true, destrier: {pv: 270, deplacement: 8}, combats: over, charges, coupsSurLeCheval: horseHits, chevauxSeuls: alones}, null, 2));

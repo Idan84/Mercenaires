@@ -227,11 +227,14 @@ function hideMissionUnit(){
 // ciblable qu'au contact, mais de sa case on voit dehors si rien d'autre ne coupe la ligne (« s'il est à l'orée de la
 // forêt »). Une arête qui bloque la vue, ou « un seul sens » vue de l'extérieur (la palissade, la meurtrière : on voit du côté
 // défendu vers l'extérieur). Par un coin, la ligne n'est coupée que si les deux détours le sont.
-function missionDecorBlocksSight(a,b){
-  if(!game.mission?.decor?.length) return false;
+function missionDecorBlocksSight(a,b,blockers=null){
+  if(!game.mission?.decor?.length&&!blockers?.size) return false;
   const e=game.mission.engine,grid=missionGrid(),map=missionGridMap();
-  const blocks=c=>Boolean(missionGridCell(c.q,c.r)?.bloque_vue);
-  if(e.axialDistance(a,b)>1&&blocks(b)) return true;
+  const decorBlocks=c=>Boolean(missionGridCell(c.q,c.r)?.bloque_vue);
+  const blocks=c=>decorBlocks(c)||Boolean(blockers?.has(missionKey(c.q,c.r)));
+  // Dans une case qui bloque la vue, on n'est ciblable qu'au contact ; le personnage qui se tient sur la case visée ne la
+  // cache pas, lui (seules les cases entre les deux comptent pour les personnages).
+  if(e.axialDistance(a,b)>1&&decorBlocks(b)) return true;
   const edge=(x,y)=>Boolean(grid?.edgeBlocksSight(map,x,y));
   const step=(x,y)=>{
     if(x.q===y.q||x.r===y.r) return edge(x,y);
@@ -298,19 +301,48 @@ function missionStormAt(q,r){
   const e=game.mission?.engine;
   return (game.mission?.storms||[]).find(s=>e&&e.axialDistance(s.center,{q,r})<=s.radius)||null;
 }
-// Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
-// les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
-function missionLineOfSight(a,b){
+// Ligne de vue (doc 04 et 12) : le décor (cases et arêtes), le Brouillard et le Blizzard la coupent ; les personnages aussi,
+// pour les tirs et les sorts (doc 04, « Étape 3 : les personnages »). options.viewer : celui qui regarde, quand a est une
+// case (l'IA qui cherche d'où tirer) ; options.units:false : sans les personnages (le repérage : « Les personnages bloquent
+// la vue, pas la discrétion »).
+function missionLineOfSight(a,b,{viewer=null,units=true}={}){
   if(!a||!b) return true;
+  const blockers=units?missionSightBlockers(viewer||(a.character?a:null),b.character?b:null):null;
   // Une grande créature : on la voit si on voit une de ses cases (et elle voit depuis n'importe laquelle).
   if(missionLarge(a)||missionLarge(b)){
     const from=missionLarge(a)?missionFootprint(a):[a],to=missionLarge(b)?missionFootprint(b):[b];
-    return from.some(x=>to.some(y=>missionCellLineOfSight(x,y)));
+    return from.some(x=>to.some(y=>missionCellLineOfSight(x,y,blockers)));
   }
-  return missionCellLineOfSight(a,b);
+  return missionCellLineOfSight(a,b,blockers);
 }
-function missionCellLineOfSight(a,b){
-  if(missionDecorBlocksSight(a,b)) return false;
+// Les cases des personnages qui coupent la ligne de vue de viewer vers target (Idan, 2026-11-17 : « En gros, un ennemi bloque
+// ses alliés. Un allié ne bloque pas sa ligne de vue. Un plus petit ne bloque pas la ligne de vue par-dessus lui. » ; « un
+// allié devant permet de tirer mais un allié à 10 cases au cac d'un ennemi, bah on peut pas tirer ») :
+// - un ennemi de celui qui regarde cache ceux qui sont derrière lui ; un personnage caché aussi (sans qu'on sache pourquoi) ;
+// - un allié collé à celui qui regarde (les 8 cases autour) ne gêne pas ; plus loin sur la ligne, il empêche de tirer ;
+// - un plus petit ne cache pas un plus grand (le gabarit, comme pour les montures), allié comme ennemi ;
+// - au sol ou en vol, il ne cache rien ; une grosse créature cache sur toutes ses cases.
+function missionSightBlockers(viewer,target){
+  const m=game.mission,e=m?.engine;
+  const keys=new Set();
+  if(!e) return keys;
+  const near=viewer?missionFootprint(viewer):[];
+  const targetSize=target?.character?Number(e.bodySize?.(target))||1:1;
+  for(const u of missionUnits()){
+    if(!u.alive||u.offMap||u===viewer||u===target||u.raised||(viewer?.id&&u.id===viewer.id)) continue;
+    if(viewer&&(u===viewer.mount||u.rider===viewer)) continue;
+    if(target&&(u===target.mount||u.rider===target)) continue;
+    if(u.prone||missionFlies(u)) continue;
+    if((Number(e.bodySize?.(u))||1)<targetSize) continue;
+    const cells=missionFootprint(u);
+    const ally=viewer&&u.team===viewer.team;
+    if(ally&&cells.some(c=>near.some(n=>Math.max(Math.abs(c.q-n.q),Math.abs(c.r-n.r))<=1))) continue;
+    for(const c of cells) keys.add(missionKey(c.q,c.r));
+  }
+  return keys;
+}
+function missionCellLineOfSight(a,b,blockers=null){
+  if(missionDecorBlocksSight(a,b,blockers)) return false;
   if(!game.mission?.fog?.length&&!game.mission?.blizzards?.length) return true;
   return game.mission.engine.hexLineSides(a,b).some(line=>!line.some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r)));
 }
@@ -386,7 +418,7 @@ function resolveMissionDetection(){
   for(const observer of missionUnits()){
     if(!observer.alive||observer.offMap) continue;
     for(const target of missionOpponents(observer)){
-      if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target)) continue;
+      if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target,{units:false})) continue;
       const r=e.rollDetection(observer,target,e.axialDistance(observer,target),missionHideBonus(target)+missionTerrainStealth(target));
       if(!r.spotted) continue;
       target.camouflaged=false;
@@ -4743,7 +4775,7 @@ function missionAiKeepFormation(unit,path){
     out=out.slice(0,keep);
   }
   if(unit.camouflaged&&out.length&&(unit.aiAmbush||0)<missionAiConstant("combat.ai.ambush_turns",2)){
-    const seen=c=>foes.some(o=>missionLineOfSight(o,missionAt(unit,c)));
+    const seen=c=>foes.some(o=>missionLineOfSight(o,missionAt(unit,c),{units:false}));
     const end=out[out.length-1],strike=(Number(e.movementBase(unit))||0)+1;
     if(!seen({q:unit.q,r:unit.r})&&seen(end)&&cellDist(end)>strike){
       let keep=out.length;
@@ -4805,7 +4837,8 @@ function enemyMoveToShoot(unit,target){
   for(const path of missionReachablePaths(unit,budget).values()){
     if(!path.length) continue;
     const end=path[path.length-1];
-    if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(end,target)) continue;
+    const there={...unit,q:end.q,r:end.r,facing:end.facing??unit.facing};
+    if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(there,target)) continue;
     const risk=missionPathOpportunityCount(unit,path);
     // Se cacher (IA commune, Idan, 2026-11-07) : à risque égal, la case où le terrain lui donne le plus d'Esquive face à sa
     // cible (grille carrée).
@@ -5117,8 +5150,20 @@ function missionUsableHands(u,target){
   const e=game.mission.engine;
   if(missionHiddenFrom(target,u)) return [];
   const distance=e.axialDistance(u,target);
-  // Au contact, pas de corps à corps à travers une palissade ou une meurtrière (grille carrée, doc 04).
-  return e.usableHands(u,distance).filter(h=>h.mode==="ranged"?missionLineOfSight(u,target):distance!==1||!e.meleeReach||e.meleeReach(u,target));
+  // Au contact, pas de corps à corps à travers une palissade ou une meurtrière (grille carrée, doc 04) ; à 2 cases (arme
+  // d'hast, fouet), pas par-dessus un ennemi debout.
+  return e.usableHands(u,distance).filter(h=>h.mode==="ranged"?missionLineOfSight(u,target)
+    :distance===1?!e.meleeReach||e.meleeReach(u,target):distance!==2||missionReachOver(u,target));
+}
+// L'arme d'hast (doc 04, étape 3 : « elle frappe par-dessus un allié collé ou un personnage au sol, pas par-dessus un
+// ennemi ») : entre les deux, en ligne droite la case du milieu ; en diagonale, les deux cases du coin (bloqué si les deux le
+// sont). Pour une grande créature, rien ne change.
+function missionReachOver(u,target){
+  if(missionLarge(u)||missionLarge(target)) return true;
+  const dq=target.q-u.q,dr=target.r-u.r;
+  const between=dq===0||dr===0?[[{q:u.q+Math.sign(dq),r:u.r+Math.sign(dr)}]]:[[{q:u.q+dq,r:u.r}],[{q:u.q,r:u.r+dr}]];
+  const enemyAt=c=>missionUnits().some(x=>x.alive&&!x.offMap&&!x.prone&&x.team!==u.team&&x!==target&&missionOccupies(x,c.q,c.r));
+  return between.some(path=>!path.some(enemyAt));
 }
 function missionCanAttack(u,target,mode){
   return missionUsableHands(u,target).some(h=>h.mode===mode);
@@ -5130,7 +5175,7 @@ function missionCanAttack(u,target,mode){
 // les ennemis aussi). Il y passe à la place de son attaque, et son activation s'arrête là. Bonus : game-core/combat-engine.js
 // (SENTINEL).
 function missionUnseen(unit){
-  return Boolean(unit.camouflaged)||!missionOpponents(unit).some(o=>!o.offMap&&missionLineOfSight(o,unit));
+  return Boolean(unit.camouflaged)||!missionOpponents(unit).some(o=>!o.offMap&&missionLineOfSight(o,unit,{units:false}));
 }
 function missionCanStandSentinel(unit){
   return Boolean(unit?.alive&&!unit.fleeing&&unit.attackAvailable&&!unit.sentinel&&missionHeldModes(unit).has("ranged")&&missionUnseen(unit));

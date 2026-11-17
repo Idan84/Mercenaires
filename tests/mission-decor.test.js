@@ -392,6 +392,71 @@ for(const code of ["palissade","muraille_meurtriere"]){
   assert.equal(engine.threatens(target,{q:7,r:3}),true,code+" : sur les autres côtés, si");
 }
 
+// 9 ter. Les personnages et la ligne de vue (doc 04, étape 3 ; Idan, 2026-11-17 : « En gros, un ennemi bloque ses alliés. Un
+// allié ne bloque pas sa ligne de vue. Un plus petit ne bloque pas la ligne de vue par-dessus lui. » ; « un allié devant
+// permet de tirer mais un allié à 10 cases au cac d'un ennemi, bah on peut pas tirer »). Les tirs et les sorts ; pas le
+// repérage (« Les personnages bloquent la vue, pas la discrétion »).
+m=newMission();
+{
+  const [archer,friend]=m.players,[aim,other]=m.enemies;
+  at(archer,1,4);at(aim,8,4);at(friend,0,0);at(other,12,0);
+  for(const u of [...m.players,...m.enemies]) u.camouflaged=false;
+  assert.equal(api.missionLineOfSight(archer,aim),true,"la ligne est libre");
+  at(other,5,4);
+  assert.equal(api.missionLineOfSight(archer,aim),false,"un ennemi cache ceux qui sont derrière lui");
+  assert.equal(api.missionLineOfSight(archer,aim,{units:false}),true,"pas pour le repérage");
+  assert.equal(api.missionCanAttack(archer,aim,"ranged"),false,"pas de tir");
+  assert.equal(api.missionCanAttack(archer,other,"ranged"),true,"on tire sur celui de devant");
+  other.prone=true;
+  assert.equal(api.missionLineOfSight(archer,aim),true,"au sol, il ne cache rien");
+  other.prone=false;other.character.flies=true;
+  assert.equal(api.missionLineOfSight(archer,aim),true,"en vol, non plus");
+  delete other.character.flies;other.character.gabarit=0.5;
+  assert.equal(api.missionLineOfSight(archer,aim),true,"un plus petit ne cache pas un plus grand");
+  aim.character.gabarit=0.5;
+  assert.equal(api.missionLineOfSight(archer,aim),false,"de même taille, si");
+  delete other.character.gabarit;delete aim.character.gabarit;
+  other.camouflaged=true;
+  assert.equal(api.missionLineOfSight(archer,aim),false,"un personnage caché bloque aussi (sans qu'on sache pourquoi)");
+  other.camouflaged=false;
+  at(other,12,0);
+  at(friend,2,4);
+  assert.equal(api.missionLineOfSight(archer,aim),true,"un allié collé au tireur ne gêne pas");
+  at(friend,2,3);
+  assert.equal(api.missionLineOfSight(archer,aim),true,"collé en diagonale non plus");
+  at(friend,6,4);
+  assert.equal(api.missionLineOfSight(archer,aim),false,"un allié plus loin sur la ligne empêche de tirer");
+  assert.equal(api.missionLineOfSight(friend,aim),true,"lui, collé à l'ennemi, le voit");
+  // Une ligne qui frôle un coin : un personnage d'un seul côté ne la coupe pas.
+  at(friend,0,0);at(archer,3,4);at(aim,5,3);at(other,4,4);
+  assert.equal(api.missionLineOfSight(archer,aim),true,"frôler ne bloque pas");
+  // Les sorts : comme les tirs.
+  at(archer,1,4);at(aim,8,4);at(other,5,4);
+  archer.character.skills.magic.Feu=60;archer.character.mana=200;archer.character.stats["Réserve de mana"]=200;
+  archer.character.spells=[{code:"fire_bolt",name:"Trait de feu",school:"Feu",mastery:40}];
+  assert.equal(api.missionMagic().canCast(archer,aim,"fire_bolt",{lineOfSight:api.missionLineOfSight(archer,aim)}).ok,false,"un sort ne passe pas non plus");
+}
+// L'arme d'hast : par-dessus un allié collé ou un personnage au sol, pas par-dessus un ennemi debout.
+m=newMission();
+{
+  const [, pikeman]=m.players,[aim,other]=m.enemies;
+  arm(pikeman.character,"Hallebarde");
+  at(pikeman,3,4);at(aim,5,4);at(other,12,0);at(m.players[0],3,0);
+  assert.equal(api.missionCanAttack(pikeman,aim,"melee"),true,"à 2 cases, en ligne droite");
+  at(m.players[0],4,4);
+  assert.equal(api.missionCanAttack(pikeman,aim,"melee"),true,"par-dessus un allié collé");
+  at(m.players[0],3,0);at(other,4,4);
+  assert.equal(api.missionCanAttack(pikeman,aim,"melee"),false,"pas par-dessus un ennemi debout");
+  other.prone=true;
+  assert.equal(api.missionCanAttack(pikeman,aim,"melee"),true,"par-dessus un ennemi au sol");
+  other.prone=false;
+  at(aim,4,5);at(other,4,4);
+  assert.equal(api.missionCanAttack(pikeman,aim,"melee"),true,"en diagonale : par l'autre côté du coin");
+  at(m.players[0],3,5);m.players[0].team="enemy";
+  assert.equal(api.missionCanAttack(pikeman,aim,"melee"),false,"les deux côtés du coin tenus par l'ennemi");
+  m.players[0].team="player";
+}
+
 // 10. L'IA contourne le décor : un mur entre elle et sa cible, elle passe par le trou au lieu de s'y coller.
 m=newMission([{q:5,r:2,code:"mur"},{q:5,r:3,code:"mur"},{q:5,r:4,code:"mur"},{q:5,r:5,code:"mur"},{q:5,r:6,code:"mur"}]);
 const walker=at(m.enemies[0],7,4),aim=at(m.players[1],2,4);

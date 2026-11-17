@@ -74,7 +74,8 @@ assert.deepEqual(api.missionAiSpellCodes(mage), ["fire_bolt"], "une fiche avec s
 delete mage.character.aiSpells;
 
 // 2. La zone : sur un ennemi, au moins deux ennemis dedans, aucun allié.
-const f1 = fighter("enemy", 7, 5), f2 = fighter("enemy", 8, 5), lone = fighter("enemy", 7, 9);
+// (Le second pas pile derrière le premier : un ennemi cache ceux qui sont derrière lui, doc 04 étape 3.)
+const f1 = fighter("enemy", 7, 5), f2 = fighter("enemy", 8, 7), lone = fighter("enemy", 7, 9);
 battle([mage], [f1, f2]);
 assert.ok([f1, f2].includes(api.missionAiZoneTarget(mage, "fireball", [f1, f2])), "deux ennemis groupés : la Boule de feu part");
 battle([mage], [lone]);

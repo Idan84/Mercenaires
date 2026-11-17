@@ -403,6 +403,22 @@ assert.equal(out.fog.cells.length,5);
 assert.ok(out.fog.cells.some(c=>c.q===3&&c.r===0),"centré sur la case visée");
 assert.equal(out.fog.cells.filter(c=>c.r===0).length,1,"en travers : une seule case sur la ligne du lanceur");
 assert.deepEqual(magic.wallCells({q:0,r:0},{q:0,r:3},5),[{q:-2,r:3},{q:-1,r:3},{q:0,r:3},{q:1,r:3},{q:2,r:3}]);
+// Cases carrées (doc 04 : « les sorts en ligne, les cônes et les murs seulement en ligne droite, sans diagonale ») : la
+// ligne et le cône partent d'une case voisine par un côté (portée 1 : jamais en diagonale), droit devant ; le mur suit
+// toujours une colonne ou une ligne, même visé en biais.
+for(const code of ["tsunami","electric_arc","fiery_breath"]){
+  assert.equal(magic.range(archmage,code),1,code+" : portée 1, même pour un archimage");
+  assert.match(magic.canCast(caster,{q:1,r:1},code).reason,/hors de portée/,code+" : pas en diagonale");
+}
+for(const d of [{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}]){
+  const line=magic.lineCells({q:0,r:0},d,4),fan=magic.coneCells({q:0,r:0},d,3);
+  assert.ok(line.every((c,k)=>c.q===d.q*(k+1)&&c.r===d.r*(k+1)),"la ligne, droit devant");
+  assert.ok(fan.every(c=>d.q?Math.sign(c.q)===d.q&&Math.abs(c.r)<=1:Math.sign(c.r)===d.r&&Math.abs(c.q)<=1),"le cône, droit devant");
+}
+for(const center of [{q:3,r:3},{q:2,r:-3},{q:-3,r:1}]){
+  const wall=magic.wallCells({q:0,r:0},center,5);
+  assert.ok(wall.every(c=>c.q===center.q)||wall.every(c=>c.r===center.r),"le mur : une colonne ou une ligne");
+}
 // Ligne de vue : les cases traversées, extrémités comprises.
 assert.deepEqual(combat.hexLine({q:0,r:0},{q:3,r:0}),[{q:0,r:0},{q:1,r:0},{q:2,r:0},{q:3,r:0}]);
 assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,3,"cases carrées : une case par pas, en diagonale quand il le faut");

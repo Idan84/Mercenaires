@@ -36,6 +36,8 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
 - **Déplacement** : une diagonale coûte **2 PM** ; on ne passe pas en diagonale entre deux obstacles qui se touchent par
   le coin. Les valeurs de PM et de portée restent celles d'aujourd'hui ; l'équilibrage vient après.
+- **Demi-points** (Idan, 2026-11-17 : option A) : une case peut coûter un demi-point (1 ; 1,5 ; 2…), pour garder
+  « 1 PM = 1 case normale ». Le reste qui ne suffit pour entrer dans aucune case est perdu à la fin du tour.
 - **Corps à corps** : le contact, ce sont les **4 cases** des côtés (attaques d'opportunité, encerclement, descendre de
   sa monture).
 - **Armes d'hast et fouet** (portée 1–2) : le contact, plus les **4 diagonales**, plus **2 cases en ligne droite**.

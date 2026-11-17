@@ -198,11 +198,27 @@ function missionTerrainDodge(from,target,{charge=false,aerial=false}={}){
   const cells=target.character&&missionLarge(target)?missionFootprint(target):[{q:target.q,r:target.r}];
   return Math.min(...cells.map(c=>grid.dodge(map,c,origin,{skills,charge,aerial})));
 }
-// Le « Se cacher » de sa case (doc 04 : un bonus de Discrétion quand on s'y cache ; végétation souple, éboulis +30, eau
-// peu profonde +10) : il compte pour celui qui est camouflé, au repérage.
+// Se cacher (Idan, 2026-11-17 : « Se cacher, c'est une action rapide. On choisit de se cacher au lieu de boire une potion.
+// Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré ») : au repérage,
+// + combat.stealth.hide_bonus, plus le « Se cacher » de la case où il est (végétation souple, éboulis +30 ; eau peu
+// profonde +10), tant qu'on ne l'a pas repéré.
+function missionCanHide(u){ return Boolean(u?.alive&&!u.offMap&&u.camouflaged&&!u.hiding&&u.quickAvailable!==false); }
 function missionHideBonus(unit){
-  const cell=unit?missionGridCell(unit.q,unit.r):null;
-  return Number(cell?.se_cacher)||0;
+  if(!unit?.hiding||!unit.camouflaged) return 0;
+  const cell=missionGridCell(unit.q,unit.r);
+  return (Number(missionEngine()?.HIDE_BONUS)||10)+(Number(cell?.se_cacher)||0);
+}
+function missionHide(u){
+  if(!missionCanHide(u)) return false;
+  u.hiding=true;u.quickAvailable=false;
+  missionFx(u,"Caché");
+  missionLog(u.character.name+" se cache (Discrétion +"+missionHideBonus(u)+" au repérage).","info");
+  return true;
+}
+function hideMissionUnit(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||m.phase!=="player"||m.over||!missionHide(u)) return;
+  renderMission();
 }
 // Vue (Idan, 2026-11-06 : « Derrière une forêt, on voit pas » ; dedans, « oui » : on n'y est vu qu'au contact).
 // Altitude : une case entre les deux dont le sommet (sa hauteur, + 1 si son décor bloque la vue) dépasse les deux personnages
@@ -4229,6 +4245,9 @@ function missionForcedMove(unit,out,caster){
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
     if(missionDecorBlocksMove(c.q,c.r,unit)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
+    // Une palissade ou une meurtrière l'arrête comme un mur (Idan, 2026-11-17 : « oui ») ; un muret, non.
+    const edge=missionGrid()?.edge(missionGridMap(),{q:unit.q,r:unit.r},c);
+    if(edge&&edge.row.corps_a_corps===false){ obstacle=edge.row.article||edge.row.nom; break; }
     unit.q=c.q;unit.r=c.r;moved++;
     missionFx(unit,"","",c);
   }
@@ -5187,6 +5206,7 @@ function missionActionAvailability(){
     mountMelee:Boolean(horse?.attackAvailable&&missionHeldModes(horse).has("melee")),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
+    hide:missionCanHide(u),
     secondMove:missionCanSecondMove(u),
     dismount:Boolean(horse)&&u.quickAvailable!==false&&missionDismountCells(u).length>0,
     remount:Boolean(missionRemountable(u)),
@@ -5608,7 +5628,7 @@ function renderMission(){
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],["mission-mount-attack-btn","mountMelee"],
     ["mission-dismount-btn","dismount"],["mission-remount-btn","remount"],
-    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-hide-btn","hide"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -5620,7 +5640,7 @@ function renderMission(){
   $("mission-move-btn").classList.toggle("is-second",secondOnly);
   $("mission-move-btn").title=secondOnly?"Renoncer à l’attaque pour un second mouvement":"";
   $("mission-charge-btn").title=availability.chargeNone
-    ?`Personne à charger : il faut une course de ${e.movementBase(u)} à ${2*e.movementBase(u)} cases en ligne droite, sans personne ni obstacle`:"";
+    ?`Personne à charger : il faut une course de ${e.movementBase(u)} à ${2*e.movementBase(u)} cases, tout droit ou en biais, sans personne ni obstacle`:"";
   // « Attaquer à deux mains » : seulement avec une arme « Au choix » tenue seule.
   const twoHandsBtn=$("mission-two-hands-btn");
   if(twoHandsBtn){
@@ -6055,6 +6075,7 @@ function initializeMissionUi(){
   $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
   $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
+  $("mission-hide-btn").addEventListener("click",hideMissionUnit);
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-auto-btn").addEventListener("click",autoResolveMission);

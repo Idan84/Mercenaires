@@ -53,15 +53,18 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
     et ses arêtes.
   - **B3** : l'Esquive du terrain à la place de la couverture (tirs, sorts qui volent, charge × 2 sauf aérienne) ; la vue
     par les cases et les arêtes ; pas de corps à corps à travers une palissade ou une meurtrière (ni coup, ni zone de
-    menace, ni charge) ; le « Se cacher » de la case compte au repérage pour qui est camouflé (en attendant l'action « Se
-    cacher ») ; l'IA qui se place pour tirer cherche la meilleure Esquive du terrain.
+    menace, ni charge) ; l'IA qui se place pour tirer cherche la meilleure Esquive du terrain.
   - **B4** : plus d'altitude (ni relief, ni falaises, ni camp en hauteur) ; les paysages des contrats posent leurs murets,
     tombes, caisses et palissades en lignes d'arêtes et leurs maisons en plan (des murs autour d'un plancher, une porte) ;
     l'enceinte des camps est une ligne d'arêtes Palissade (ou Muret au cimetière) défendue de l'intérieur, celle du château
     en ruine un anneau de cases Mur.
-  - **À confirmer avec Idan** : la charge est refusée à travers une palissade (« pas de corps à corps à travers ») ; un volant
-    passe au-dessus d'un mur sans pouvoir s'y arrêter ; le « Se cacher » au repérage avant l'action. Un déplacement forcé
-    (repousser, attirer) ignore encore les arêtes.
+  - **Décidé ensuite** (Idan, 2026-11-17) : pas de charge à travers une palissade (« oui ») ; un volant passe au-dessus d'un
+    mur sans pouvoir s'y arrêter (« oui ») ; un déplacement forcé (repousser, attirer) s'arrête contre une palissade ou une
+    meurtrière comme contre un mur (« oui » ; par-dessus un muret, il passe).
+  - **Se cacher** (Idan, 2026-11-17 : « Se cacher, c'est une action rapide. On choisit de se cacher au lieu de boire une
+    potion. Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré ») : le bouton
+    « Se cacher », pour qui est encore camouflé et a son action rapide ; au repérage, **+10** de Discrétion
+    (`combat.stealth.hide_bonus`) plus le « Se cacher » de la case où il est, tant qu'on ne l'a pas repéré.
 - **C, les personnages et les sorts** (à faire) : la vue bloquée par les personnages (étape 3), les sorts en ligne droite.
 - **D, l'IA, la Mission Test, la mise en ligne** (à faire).
 
@@ -103,7 +106,7 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   dedans.
 - **Une case** a :
   - sa **vitesse de déplacement** : les PM pour y entrer, au quart de point ;
-  - un **bonus de Discrétion** quand on s'y cache (« Se cacher », une action rapide à venir) ;
+  - un **bonus de Discrétion** quand on s'y cache (« Se cacher », une action rapide : avancement B, plus haut) ;
   - **bloque la vue**, oui ou non. Dedans, on n'est **ciblable qu'au contact** ; de sa case, on voit et on tire dehors
     si aucune autre case qui bloque la vue n'est entre soi et la cible (« s'il est à l'orée de la forêt ») ;
   - un **bonus d'Esquive** pour celui qui s'y tient, parfois sous condition (Respiration aquatique), et qui peut être

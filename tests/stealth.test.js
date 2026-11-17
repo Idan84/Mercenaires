@@ -44,7 +44,8 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,startMissionCamouflage,resolveMissionDetection,"
   +"missionUsableHands,missionChargeIfClear,missionPathOpportunityCount,nearestMissionTarget,renderMissionRoster,missionMagic,"
   +"targetableMissionCells,setMissionMode,teachMissionTestSpells,missionKey,handleMissionHexClick,resetMissionActivation,"
-  +"missionShownToPlayer,missionUnitAt,missionAlert,moveMissionUnitAlongPath,enemyMoveToward,missionAiWatch};")
+  +"missionShownToPlayer,missionUnitAt,missionAlert,moveMissionUnitAlongPath,enemyMoveToward,missionAiWatch,"
+  +"missionHide,missionCanHide,missionHideBonus,missionActionAvailability};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -191,4 +192,42 @@ assert.deepEqual([slow.secondMove,slow.attackAvailable],[true,false]);
 assert.ok(logged(/renonce à attaquer pour un second mouvement/));
 assert.ok(engine.axialDistance(slow,g1)<6,"il a avancé");
 
-console.log("Discrétion : camouflage, repérage, cibles invisibles, attaques non détectées — OK");
+// Se cacher (Idan, 2026-11-17 : « Se cacher, c'est une action rapide. On choisit de se cacher au lieu de boire une potion.
+// Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré »).
+{
+  m=newMission();
+  const [hider]=m.players;
+  for(const u of [...m.players,...m.enemies]) u.camouflaged=true;
+  Object.assign(hider,{q:3,r:4,quickAvailable:true,hiding:false});
+  m.decor=[{q:3,r:4,code:"buissons"}];
+  assert.equal(engine.HIDE_BONUS,10);
+  assert.equal(api.missionHideBonus(hider),0,"pas encore caché");
+  assert.equal(api.missionCanHide(hider),true);
+  assert.equal(api.missionHide(hider),true);
+  assert.deepEqual([hider.hiding,hider.quickAvailable],[true,false],"son action rapide");
+  assert.equal(api.missionHideBonus(hider),40,"+10, plus les buissons (végétation souple, +30)");
+  assert.ok(logged(/se cache \(Discrétion \+40 au repérage\)/));
+  assert.equal(api.missionHide(hider),false,"une seule fois");
+  m.decor=[];
+  assert.equal(api.missionHideBonus(hider),10,"à découvert : +10");
+  // Au repérage, le bonus compte.
+  const realDetect=engine.rollDetection,bonuses=[];
+  engine.rollDetection=(o,t,d,c)=>{ if(t===hider) bonuses.push(c); return realDetect(o,t,d,c); };
+  m.decor=[{q:3,r:4,code:"eau_peu_profonde"}];
+  for(const e of m.enemies){ e.q=6; e.r=4; break; }
+  api.resolveMissionDetection();
+  engine.rollDetection=realDetect;
+  assert.ok(bonuses.includes(20),"dans l'eau peu profonde : +10 +10");
+  // Repéré : plus de cachette, et on ne peut plus se cacher.
+  hider.camouflaged=false;hider.quickAvailable=true;
+  assert.equal(api.missionHideBonus(hider),0);
+  const spotted=m.players[1];
+  Object.assign(spotted,{camouflaged:false,quickAvailable:true,hiding:false});
+  assert.equal(api.missionCanHide(spotted),false,"déjà repéré : il ne peut pas se cacher");
+  m.activeUnit=spotted;
+  assert.equal(api.missionActionAvailability().hide,false);
+  Object.assign(spotted,{camouflaged:true,quickAvailable:false});
+  assert.equal(api.missionCanHide(spotted),false,"action rapide déjà prise (une potion)");
+}
+
+console.log("Discrétion : camouflage, repérage, cibles invisibles, attaques non détectées, se cacher — OK");

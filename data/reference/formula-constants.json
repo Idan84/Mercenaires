@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 476,
+  "row_count": 477,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2376,6 +2376,14 @@
       "description": "Bonus de Discrétion de l'éclaireur, caché comme derrière une couverture totale (Idan, 2026-11-09). La couverture du décor est remplacée par l'Esquive du terrain (grille carrée, Idan, 2026-11-17).",
       "formule": "Repérage",
       "valeur": 60,
+      "version": "V1"
+    },
+    {
+      "nom": "Repérage — se cacher",
+      "code": "combat.stealth.hide_bonus",
+      "description": "Se cacher (Idan, 2026-11-17 : « Se cacher, c'est une action rapide. On choisit de se cacher au lieu de boire une potion. Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré ») : ce bonus de Discrétion, plus le « Se cacher » de sa case (combat-cells.json), tant qu'on ne l'a pas repéré.",
+      "formule": "Repérage",
+      "valeur": 10,
       "version": "V1"
     },
     {

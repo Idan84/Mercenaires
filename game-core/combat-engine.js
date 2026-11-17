@@ -105,6 +105,8 @@
       max:constant("combat.stealth.max",95),
       // L'éclaireur se cache comme derrière une couverture totale (Idan, 2026-11-09) : + scoutCover à sa Discrétion.
       scoutCover:constant("combat.stealth.cover_total",60),
+      // Se cacher (Idan, 2026-11-17) : action rapide, s'il n'est pas encore repéré ; + hide, plus le « Se cacher » de sa case.
+      hide:constant("combat.stealth.hide_bonus",10),
       scoutDistance:constant("combat.scout.distance",8)
     };
     const POISON={
@@ -1514,7 +1516,7 @@
       SENTINEL,
       CHARGE_FALL,
       ALTITUDE,
-      SCOUT_COVER:STEALTH.scoutCover,resolveScouting,
+      SCOUT_COVER:STEALTH.scoutCover,HIDE_BONUS:STEALTH.hide,resolveScouting,
       detectionChance,
       rollDetection,
       spellWoundChance,

@@ -239,15 +239,21 @@ at(blade,8,4);
 api.performMissionAttack(blade,foe,"melee",1);
 assert.equal(seen[0].r.terrainDodge,undefined,"pas au corps à corps");
 engine.resolveAttack=realResolve;
-// Repérage : caché dans les buissons (végétation souple, « Se cacher » +30), plus de Discrétion.
+// Repérage : qui s'est caché (action « Se cacher » : +10) dans les buissons (végétation souple, « Se cacher » +30) gagne
+// +40 de Discrétion ; camouflé sans s'être caché, rien de plus.
 m=newMission([{q:7,r:4,code:"buissons"}]);
 at(m.enemies[0],7,4);
 const realDetect=engine.rollDetection,bonuses=[];
-engine.rollDetection=(o,t,d,c)=>{ bonuses.push(c); return realDetect(o,t,d,c); };
+engine.rollDetection=(o,t,d,c)=>{ if(t===m.enemies[0]) bonuses.push(c); return realDetect(o,t,d,c); };
 for(const x of [...m.players,...m.enemies]) x.camouflaged=true;
 api.resolveMissionDetection();
+assert.ok(bonuses.length&&bonuses.every(b=>b===0),"camouflé, sans s'être caché : rien de plus");
+bonuses.length=0;
+for(const x of [...m.players,...m.enemies]) x.camouflaged=true;
+m.enemies[0].hiding=true;
+api.resolveMissionDetection();
 engine.rollDetection=realDetect;
-assert.ok(bonuses.includes(30),"+30 dans les buissons");
+assert.ok(bonuses.includes(40),"caché dans les buissons : +10 +30");
 
 // 6. La charge : elle traverse un décor lent, avec plus de chute ; pas un décor infranchissable ; l'Esquive du terrain du
 // chargé compte double (« Je charge face à la palissade, il a 120 d'esquive ») ; pas de coup à travers une palissade.
@@ -308,6 +314,16 @@ const pushed=at(m.enemies[0],3,4);
 api.missionForcedMove(pushed,{move:{kind:"repousse",cells:[{q:4,r:4},{q:5,r:4}]}},m.players[0]);
 assert.deepEqual([pushed.q,pushed.r],[3,4]);
 assert.ok(m.log.some(x=>/heurte aussitôt le mur/.test(x.message)));
+// Une palissade l'arrête comme un mur (Idan, 2026-11-17 : « oui ») ; par-dessus un muret, il passe.
+m=newMission([{q:4,r:4,side:2,code:"palissade"}]);
+const fenced=at(m.enemies[0],3,4);
+api.missionForcedMove(fenced,{move:{kind:"repousse",cells:[{q:4,r:4},{q:5,r:4}]}},m.players[0]);
+assert.deepEqual([fenced.q,fenced.r],[3,4]);
+assert.ok(m.log.some(x=>/heurte aussitôt la palissade/.test(x.message)));
+m=newMission([{q:4,r:4,side:2,code:"muret"}]);
+const hopped=at(m.enemies[0],3,4);
+api.missionForcedMove(hopped,{move:{kind:"repousse",cells:[{q:4,r:4},{q:5,r:4}]}},m.players[0]);
+assert.deepEqual([hopped.q,hopped.r],[5,4],"par-dessus un muret");
 
 // 8. La Mission Test pose quelques groupes de décor entre les lignes de déploiement : des cases, et des lignes d'arêtes
 // (le muret, les caisses, la tombe) ; la case dit ce qu'elle fait.

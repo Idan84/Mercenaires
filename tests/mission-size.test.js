@@ -121,7 +121,7 @@ m = newMission("enorme", 1, {decor: [{q: 9, r: 5, code: "marais"}]});
 beast = m.enemies[0];
 beast.q = 9; beast.r = 4;
 const step = [{q: 9, r: 4}];
-const marsh = reference.terrainDecors.rows.find(d => d.code === "marais").cout_mouvement;
+const marsh = reference.combatCells.rows.find(c => c.code === "boue").pm; // le marais dessine de la boue (grille carrée)
 beast.q = 10; beast.r = 4;
 assert.equal(api.missionPathCost([{q: 9, r: 4}], beast), marsh, "la case la plus lente qu'elle couvre");
 

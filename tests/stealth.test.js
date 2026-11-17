@@ -23,7 +23,7 @@ const files={
   baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",
   startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
   alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json",
-  terrainDecors:"terrain-decors.json"
+  terrainDecors:"terrain-decors.json",combatCells:"combat-cells.json",combatEdges:"combat-edges.json",terrainSkills:"terrain-skills.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 // Tirages : force (toujours la même valeur) si posé, sinon la file, sinon une suite fixe.

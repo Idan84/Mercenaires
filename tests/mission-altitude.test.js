@@ -26,7 +26,8 @@ const files={
   baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",
   startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
   alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json",
-  summonArchetypes:"summon-archetypes.json",terrainDecors:"terrain-decors.json"
+  summonArchetypes:"summon-archetypes.json",terrainDecors:"terrain-decors.json",
+  combatCells:"combat-cells.json",combatEdges:"combat-edges.json",terrainSkills:"terrain-skills.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 let seed=47;
@@ -109,7 +110,7 @@ u.movementRemaining=5;
 assert.equal(api.moveMissionUnitAlongPath(u,[{q:2,r:4},{q:3,r:4}]),2);
 assert.equal(u.movementRemaining,1,"monter deux niveaux coûte 4");
 m=newMission([{q:2,r:4,h:1}],[{q:2,r:4,code:"foret"}]);
-assert.equal(api.missionStepCost({q:2,r:4},{q:1,r:4}),3,"forêt (2) en montée (+1)");
+assert.equal(api.missionStepCost({q:2,r:4},{q:1,r:4}),2.5,"forêt (1,5) en montée (+1)");
 // Le chemin le moins cher contourne la falaise.
 m=newMission([{q:2,r:4,h:2}]);
 u=m.players[0];

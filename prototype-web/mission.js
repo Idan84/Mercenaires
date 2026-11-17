@@ -68,31 +68,60 @@ function occupiedMissionKeys(except=null){
 // Décor (doc 04 ; Idan, 2026-11-06 ; terrain-decors.json) : m.decor = [{q, r, code}]. Trois réglages par décor : le
 // passage (coût de mouvement de la case : 1, 2, 3 ou 4 ; null : infranchissable), la vue, la couverture.
 function missionDecorRow(code){ return (game.referenceData?.terrainDecors?.rows||[]).find(d=>d.code===code)||null; }
+// Grille carrée (doc 04, « Le modèle de la case » ; game-core/combat-grid.js, porté par le moteur : engine.grid) : m.decor
+// mêle les cases ({q, r, code}) et les arêtes ({q, r, side, code} : entre la case et sa voisine du côté side, 0 est,
+// 1 nord, 2 ouest, 3 sud ; (q, r) est le côté défendu). Le code est un décor (son dessin) ou directement une case.
+const missionIsEdge=d=>d?.side!=null;
 function missionDecorAt(q,r){
-  const cell=(game.mission?.decor||[]).find(d=>d.q===q&&d.r===r);
-  return cell?missionDecorRow(cell.code):null;
+  const cell=(game.mission?.decor||[]).find(d=>d.q===q&&d.r===r&&!missionIsEdge(d));
+  return cell?missionDecorRow(cell.code)||missionGrid()?.cellRow(cell.code)||null:null;
 }
+const MISSION_GRID_MAPS=new WeakMap();
+function missionGrid(){ return game.mission?.engine?.grid||null; }
+function missionGridMap(){
+  const m=game.mission,grid=missionGrid();
+  if(!m||!grid) return null;
+  const decor=m.decor||[],known=MISSION_GRID_MAPS.get(m);
+  if(known&&known.decor===decor&&known.size===decor.length) return known.map;
+  const map=grid.createMap({decor:decor.filter(d=>!missionIsEdge(d)),edges:decor.filter(missionIsEdge)});
+  MISSION_GRID_MAPS.set(m,{decor,size:decor.length,map});
+  return map;
+}
+// Ses capacités de terrain (terrain-skills.json) ; monté, celles de sa monture.
+function missionTerrainSkills(unit){
+  const e=missionEngine();
+  return unit?.character&&e?.terrainSkillsOf?e.terrainSkillsOf(e.mountOf?.(unit)||unit):[];
+}
+// La case de la grille (sa règle, combat-cells.json) : le Terrain par défaut sans décor.
+function missionGridCell(q,r){ return missionGrid()?.cell(missionGridMap(),{q,r})||null; }
 // Capacités de terrain (doc 04 ; Idan, 2026-11-09 ; terrain-skills.json) : ce que celui qui est (ou entre) sur la case y
 // gagne (coût, Discrétion, couverture). Monté, il se déplace et se cache comme sa monture.
 function missionTerrainEffect(unit,c){
   if(!unit?.character||!c) return null;
-  const cell=(game.mission?.decor||[]).find(d=>d.q===c.q&&d.r===c.r),e=missionEngine();
+  const cell=(game.mission?.decor||[]).find(d=>d.q===c.q&&d.r===c.r&&!missionIsEdge(d)),e=missionEngine();
   return cell&&e?.terrainEffect?e.terrainEffect(e.mountOf?.(unit)||unit,cell.code):null;
 }
+// Une case trop chère pour y entrer à pied (100 PM : le mur, la montagne, le gouffre, l'eau profonde sans Respiration
+// aquatique ; Idan : « Juste une valeur de déplacement de 100 PM »).
 function missionDecorBlocksMove(q,r,unit=null){
-  const d=missionDecorAt(q,r);
-  return Boolean(d)&&d.cout_mouvement==null&&missionTerrainEffect(unit,{q,r})?.cost==null;
+  const grid=missionGrid();
+  return grid?grid.blocksMove(missionGridMap(),{q,r},{skills:missionTerrainSkills(unit)}):false;
 }
-// Points de mouvement du décor pour entrer dans la case (Idan : « vitesse réduite : mouvement à moitié / tiers / quart »).
+// Points de mouvement pour entrer dans la case, au quart de point (combat-cells.json ; ses capacités de terrain), sans
+// l'arête franchie (missionStepCost).
 function missionDecorCost(c,unit=null){
-  const d=missionDecorAt(c.q,c.r);
-  if(!d) return 1;
-  const own=missionTerrainEffect(unit,c)?.cost;
-  if(own!=null) return Math.max(1,own);
-  return d.cout_mouvement==null?Infinity:Math.max(1,Number(d.cout_mouvement)||1);
+  const grid=missionGrid();
+  if(!grid) return 1;
+  const pm=grid.stepCost(missionGridMap(),null,c,{skills:missionTerrainSkills(unit)});
+  return pm>=grid.IMPASSABLE?Infinity:pm;
 }
+// Le malus de l'arête entre deux cases voisines (0 sans arête).
+function missionEdgePm(a,b){ return a&&b?Number(missionGrid()?.edge(missionGridMap(),a,b)?.row.pm)||0:0; }
 // Discrétion gagnée sur sa case (Déplacement aquatique, Déplacement sylvain : +30 tant qu'il y est).
-function missionTerrainStealth(unit){ return unit?missionTerrainEffect(unit,{q:unit.q,r:unit.r})?.discretion||0:0; }
+function missionTerrainStealth(unit){
+  const grid=missionGrid(),cell=unit?missionGridCell(unit.q,unit.r):null;
+  return grid&&cell?grid.skillEffect(missionTerrainSkills(unit),cell.code).discretion:0;
+}
 // Altitude (doc 04 ; Idan, 2026-11-06 : « vas-y pour l'altitude ») : m.relief = [{q, r, h}], une hauteur de 0 à 3 par case.
 function missionHeightAt(q,r){ return (game.mission?.relief||[]).find(c=>c.q===q&&c.r===r)?.h||0; }
 function missionUnitHeight(u){ return u?missionHeightAt(u.q,u.r):0; }
@@ -106,8 +135,10 @@ function missionFlies(unit){
 // Un pas de from à c : le décor, plus la montée (+ climbCost par niveau ; descendre est gratuit) ; un écart de cliff niveaux
 // ou plus est une falaise, infranchissable dans les deux sens. Un volant (unit) : 1.
 function missionStepCost(c,from=null,unit=null){
-  if(missionFlies(unit)) return 1;
-  const decor=missionDecorCost(c,unit);
+  const grid=missionGrid();
+  if(missionFlies(unit)) return grid?grid.stepCost(missionGridMap(),from,c,{flies:true}):1;
+  const cell=missionDecorCost(c,unit);
+  const decor=Number.isFinite(cell)?cell+missionEdgePm(from,c):cell;
   if(!from||!game.mission?.relief?.length) return decor;
   const rise=missionHeightAt(c.q,c.r)-missionHeightAt(from.q,from.r),alt=missionAltitude();
   if(Math.abs(rise)>=alt.cliff) return Infinity;
@@ -124,12 +155,13 @@ function missionLargeStep(mover,cur,next,blocked){
   for(const facing of new Set(facings)){
     const cells=e.footprintAt(next.q,next.r,size,facing);
     if(!cells.every(c=>validMissionHex(c.q,c.r)&&!blocked.has(missionKey(c.q,c.r)))) continue;
-    if(flyer) return {cost:1,facing};
+    if(flyer) return {cost:missionStepCost(next,cur,mover),facing};
     const heights=cells.map(c=>missionHeightAt(c.q,c.r));
     if(Math.max(...heights)-Math.min(...heights)>=alt.cliff) continue;
     const rise=missionHeightAt(next.q,next.r)-missionHeightAt(cur.q,cur.r);
     if(Math.abs(rise)>=alt.cliff) continue;
-    const decor=Math.max(...cells.map(c=>missionDecorCost(c,mover)));
+    // Sa tête franchit l'arête (« elle va dans la direction choisie depuis la case de sa tête »), le corps suit.
+    const decor=Math.max(...cells.map(c=>missionDecorCost(c,mover)))+missionEdgePm(cur,next);
     if(!Number.isFinite(decor)) continue;
     return {cost:decor+Math.max(0,rise)*alt.climbCost,facing};
   }
@@ -152,12 +184,25 @@ function missionPathCost(path,start=null){
   for(const c of path||[]){ total+=missionStepCost(c,prev,unit); prev=c; }
   return total;
 }
-// « Forêt : mouvement ½, bloque la vue, couverture partielle ».
-const MISSION_DECOR_PACE={2:"½",3:"⅓",4:"¼"};
-function missionDecorLabel(d){
-  const parts=[d.cout_mouvement==null?"infranchissable":MISSION_DECOR_PACE[d.cout_mouvement]?"mouvement "+MISSION_DECOR_PACE[d.cout_mouvement]:"",
-    d.bloque_vue?"bloque la vue":"",d.couverture&&d.couverture!=="sans"?"couverture "+d.couverture:""].filter(Boolean);
-  return d.nom+(parts.length?" : "+parts.join(", "):"");
+// Au survol d'une case (grille carrée) : « Buissons (Végétation souple) : 1,5 PM · Muret à l'est : +0,5 PM ».
+const missionPm=n=>String(Math.round(Number(n)*100)/100).replace(".",",");
+const MISSION_SIDE_NAMES=["à l’est","au nord","à l’ouest","au sud"];
+function missionCellLabel(q,r){
+  const grid=missionGrid(),map=missionGridMap();
+  if(!grid) return "";
+  const parts=[],cell=grid.cell(map,{q,r}),decor=missionDecorAt(q,r);
+  if(cell.code!=="terrain"){
+    const name=decor&&decor.nom!==cell.nom?decor.nom+" ("+cell.nom+")":cell.nom;
+    parts.push(name+" : "+(cell.pm>=grid.IMPASSABLE?"infranchissable à pied ("+missionPm(cell.pm)+" PM)":missionPm(cell.pm)+" PM")+(cell.bloque_vue?", bloque la vue":""));
+  }
+  grid.SIDES.forEach((d,i)=>{
+    const edge=grid.edge(map,{q,r},{q:q+d.q,r:r+d.r});
+    if(!edge) return;
+    const shown=missionDecorRow(edge.decor),name=shown&&shown.nom!==edge.row.nom?shown.nom+" ("+edge.row.nom+")":edge.row.nom;
+    const view=edge.row.vue==="bloque"?", bloque la vue":edge.row.vue==="sens"?(edge.defended.q===q&&edge.defended.r===r?", on voit dehors":", on ne voit pas dedans"):"";
+    parts.push(name+" "+MISSION_SIDE_NAMES[i]+" : +"+missionPm(edge.row.pm)+" PM"+view+(edge.row.corps_a_corps===false?", pas de corps à corps à travers":""));
+  });
+  return parts.join(" · ");
 }
 // Couverture (Idan, 2026-11-06 : « Au tir et en défense de charge ») : le décor collé à la cible sur la ligne qui vient de
 // from (pas la case de from : un muret collé au tireur ne le gêne pas), ou la case de la cible elle-même ; la meilleure.
@@ -214,13 +259,26 @@ function generateMissionDecor(){
   const wall=game.referenceData?.missionLandscapes?.enceinte?.decor;
   // Les tonneaux restent à la cave (La Cave, generateCellarDecor).
   const rows=(game.referenceData?.terrainDecors?.rows||[]).filter(row=>row.code!==wall&&row.code!==CELLAR_DECOR);
+  // Grille carrée : les cases qu'aucun décor ne dessine encore (le plancher) s'y ajoutent, avec leur couleur.
+  const drawn=new Set(rows.map(row=>row.case).filter(Boolean));
+  for(const c of game.referenceData?.combatCells?.rows||[]) if(c.code!=="terrain"&&!drawn.has(c.code)) rows.push({code:c.code,case:c.code});
   if(!rows.length) return [];
   const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
   const isInner=c=>inner.some(x=>x.q===c.q&&x.r===c.r);
-  const decor=[],taken=new Set(),groups=4+Math.floor(Math.random()*3);
+  const decor=[],taken=new Set(),edges=new Set(),groups=4+Math.floor(Math.random()*3);
   for(let i=0;i<groups;i++){
     const row=rows[Math.floor(Math.random()*rows.length)],size=1+Math.floor(Math.random()*4);
     let cell=inner[Math.floor(Math.random()*inner.length)];
+    // Une arête (le muret, les caisses, la tombe : doc 04, étape 4) : une ligne de size arêtes le long d'un bord.
+    if(row.arete){
+      const side=Math.floor(Math.random()*4),along=side%2===0?{q:0,r:1}:{q:1,r:0};
+      for(let n=0;n<size&&cell&&isInner(cell);n++){
+        const d=HEX_DIRS[side],k=[missionKey(cell.q,cell.r),missionKey(cell.q+d.q,cell.r+d.r)].sort().join("|");
+        if(!edges.has(k)&&validMissionHex(cell.q+d.q,cell.r+d.r)){ edges.add(k); decor.push({q:cell.q,r:cell.r,side,code:row.code}); }
+        cell={q:cell.q+along.q,r:cell.r+along.r};
+      }
+      continue;
+    }
     for(let n=0;n<size&&cell;n++){
       const key=missionKey(cell.q,cell.r);
       if(!taken.has(key)){ taken.add(key); decor.push({q:cell.q,r:cell.r,code:row.code}); }
@@ -1834,7 +1892,12 @@ function generateCellarDecor(engine,units){
     let cell=cells[Math.floor(Math.random()*cells.length)];
     for(let n=0,size=1+Math.floor(Math.random()*3);n<size&&cell;n++){
       const key=missionKey(cell.q,cell.r);
-      if(!taken.has(key)){ taken.add(key); decor.push({q:cell.q,r:cell.r,code:CELLAR_DECOR}); }
+      // Grille carrée : les tonneaux dessinent une arête (un muret, doc 04 étape 4), sur un côté de la case.
+      if(!taken.has(key)){
+        taken.add(key);
+        const side=[0,1,2,3].find(i=>{ const d=HEX_DIRS[(i+n)%4]; return validMissionHex(cell.q+d.q,cell.r+d.r); });
+        decor.push({q:cell.q,r:cell.r,side:side==null?0:(side+n)%4,code:CELLAR_DECOR});
+      }
       const next=missionNeighbors(cell).filter(c=>far(c)&&edge(c)&&!taken.has(missionKey(c.q,c.r)));
       cell=next[Math.floor(Math.random()*next.length)];
     }
@@ -2742,7 +2805,8 @@ function missionChargeCheck(unit,target){
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
   const flyer=missionFlies(unit);
-  const slowSteps=flyer?0:charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h,unit)-1),0);
+  // Grille carrée : chaque pas compte sa case et l'arête franchie (un muret : +0,5).
+  const slowSteps=flyer?0:charge.path.reduce((acc,h)=>({prev:h,total:acc.total+Math.max(0,missionDecorCost(h,unit)+missionEdgePm(acc.prev,h)-1)}),{prev:{q:unit.q,r:unit.r},total:0}).total;
   // Altitude (Idan, 2026-11-06) : pas de falaise sur la ligne, et pas de charge qui monte de plus d'un niveau (un volant
   // survole tout).
   if(game.mission?.relief?.length&&!flyer){
@@ -5465,14 +5529,23 @@ function renderMission(){
     :m.phase==="deploy"?"Déploiement · rapport de l’éclaireur":"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
   $("mission-actions")?.classList?.toggle("deploying",m.phase==="deploy"&&!m.over);
   $("mission-active").textContent=u
-    ?"Actif : "+u.character.name+" · Mouvement "+u.movementRemaining+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
+    ?"Actif : "+u.character.name+" · Mouvement "+missionPm(u.movementRemaining)+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
     :"";
 
   // Décor (Idan : « des couleurs pour commencer ») : une couche de cases colorées sous les cases cliquables.
   let decorTiles="";
   for(const d of m.decor||[]){
-    const row=missionDecorRow(d.code),p=missionHexPixel(d.q,d.r);
-    if(row) decorTiles+=`<span class="hex-decor${row.cout_mouvement==null?" blocking":""}" data-decor="${esc(row.code)}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px;--decor:${row.couleur}"></span>`;
+    const p=missionHexPixel(d.q,d.r),s=MISSION_MAP.size;
+    if(missionIsEdge(d)){
+      const edge=missionGrid()?.edgeRow(d.code);
+      if(!edge) continue;
+      const side=((Number(d.side)||0)%4+4)%4,flat=side%2===1,color=missionDecorRow(d.code)?.couleur||edge.couleur;
+      const x=side===0?p.x+s:side===2?p.x-s:p.x,y=side===3?p.y+s:side===1?p.y-s:p.y;
+      decorTiles+=`<span class="grid-edge${flat?" flat":""}${edge.vue==="sens"?" one-way":""}" data-edge="${esc(edge.code)}" data-side="${side}" style="left:${x}px;top:${y}px;--edge:${color}"></span>`;
+      continue;
+    }
+    const row=missionDecorRow(d.code)||missionGrid()?.cellRow(d.code);
+    if(row) decorTiles+=`<span class="hex-decor${missionDecorBlocksMove(d.q,d.r)?" blocking":""}" data-decor="${esc(row.code)}" style="left:${p.x-s}px;top:${p.y-s}px;--decor:${row.couleur}"></span>`;
   }
   // Altitude : une couche par-dessus le décor, un peu plus claire à chaque niveau, avec son chiffre.
   let reliefTiles="";
@@ -5487,8 +5560,8 @@ function renderMission(){
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"||m.phase==="deploy"?"reachable":missionSpellMode()?"spell-target":"targetable");
     else if(inRange.has(key)) classes.push("in-range");
-    const decor=missionDecorAt(q,r),level=missionHeightAt(q,r);
-    const about=[decor?missionDecorLabel(decor):"",level?"altitude "+level:""].filter(Boolean).join(" · ");
+    const level=missionHeightAt(q,r);
+    const about=[missionCellLabel(q,r),level?"altitude "+level:""].filter(Boolean).join(" · ");
     if(about) title=` title="${esc(about.charAt(0).toUpperCase()+about.slice(1))}"`;
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }

@@ -109,8 +109,8 @@ game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference}),prog
   decor:[{q:5,r:4,code:"foret"},{q:6,r:4,code:"eau_peu_profonde"},{q:7,r:4,code:"eau_profonde"}]};
 const [man,elf,siren,fae]=squad,[foe]=foes;
 const forest={q:5,r:4},shallow={q:6,r:4},deep={q:7,r:4};
-assert.deepEqual([api.missionStepCost(forest,null,man),api.missionStepCost(forest,null,elf)],[2,1],"pas de malus en forêt");
-assert.deepEqual([api.missionStepCost(shallow,null,man),api.missionStepCost(shallow,null,siren)],[3,1],"pas de malus dans l'eau peu profonde");
+assert.deepEqual([api.missionStepCost(forest,null,man),api.missionStepCost(forest,null,elf)],[1.5,1],"pas de malus en forêt (grille carrée : 1,5 pour les autres)");
+assert.deepEqual([api.missionStepCost(shallow,null,man),api.missionStepCost(shallow,null,siren)],[2,1],"pas de malus dans l'eau peu profonde (2 pour les autres)");
 assert.equal(api.missionStepCost(deep,null,man),Infinity);
 assert.equal(api.missionStepCost(deep,null,siren),1,"il traverse l'eau profonde");
 assert.ok(api.occupiedMissionKeys(man).has(api.missionKey(7,4)),"l'eau profonde bloque les autres");
@@ -122,7 +122,7 @@ assert.equal(api.missionStepCost(deep,null,fae),1);
 assert.equal(api.missionFlies(man),false);
 // Monté, il se déplace comme sa monture.
 elf.mount={alive:true,offMap:false,character:{name:"Destrier"}};
-assert.equal(api.missionStepCost(forest,null,elf),2,"à cheval, la forêt freine le cheval");
+assert.equal(api.missionStepCost(forest,null,elf),1.5,"à cheval, la forêt freine le cheval");
 fae.mount={alive:true,offMap:false,character:{name:"Destrier"}};
 assert.equal(api.missionFlies(fae),false,"à cheval, il ne vole pas");
 delete elf.mount;delete fae.mount;

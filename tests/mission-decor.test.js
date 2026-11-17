@@ -26,7 +26,8 @@ const files={
   baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",
   startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
   alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json",
-  summonArchetypes:"summon-archetypes.json",terrainDecors:"terrain-decors.json"
+  summonArchetypes:"summon-archetypes.json",terrainDecors:"terrain-decors.json",
+  combatCells:"combat-cells.json",combatEdges:"combat-edges.json",terrainSkills:"terrain-skills.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 let seed=31,forced=null;
@@ -60,7 +61,7 @@ const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack});
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,shortestMissionPath,missionReachablePaths,"
   +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,missionChargeCheck,performMissionAttack,missionForcedMove,"
-  +"generateMissionDecor,missionDecorLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
+  +"generateMissionDecor,missionCellLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
   +"missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
   +"missionMagic,missionSpellPreviewRows,targetableMissionCells,renderMission,missionActionAvailability";
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
@@ -103,36 +104,50 @@ function newMission(decor=[]){
 const key=c=>api.missionKey(c.q,c.r);
 const has=(path,c)=>path.some(x=>x.q===c.q&&x.r===c.r);
 
-// 3. Le passage : une case lente coûte 2, 3 ou 4 ; une case infranchissable ne se traverse pas.
-// Cases carrées : à travers le marais (3 + 1), ou le détour par l'herbe (4 cases) : à coût égal, le moins de cases.
+// 3. Le passage, grille carrée (doc 04, « Étape 1 : les cases » ; Idan, 2026-11-17, V1) : le PM de la case d'arrivée, au
+// quart de point (le marais 2, la forêt 1,5) ; un mur (100 PM) ne se traverse pas ; une arête ajoute son malus.
+// À travers le marais (2 + 1), ou le détour par l'herbe (4 cases) : le marais.
 let m=newMission([{q:2,r:4,code:"marais"}]);
 let u=m.players[0];
 let route=api.shortestMissionPath(u,{q:3,r:4},u);
-assert.equal(has(route,{q:2,r:4}),true,"marais (3 + 1) contre détour (4) : à coût égal, le plus court en cases");
+assert.equal(has(route,{q:2,r:4}),true,"marais (2 + 1) contre détour (4) : le marais");
 assert.equal(route.length,2);
 m=newMission([{q:2,r:4,code:"foret"}]);
 u=m.players[0];
 route=api.shortestMissionPath(u,{q:3,r:4},u);
-assert.ok(has(route,{q:2,r:4})&&route.length===2,"forêt (2 + 1) contre détour (4) : la forêt");
-const reach=api.missionReachablePaths(u,2);
-assert.ok(reach.has("2,4"),"la forêt : 2 points pour y entrer");
+assert.ok(has(route,{q:2,r:4})&&route.length===2,"forêt (1,5 + 1) contre détour (4) : la forêt");
+assert.ok(!api.missionReachablePaths(u,1.25).has("2,4"),"la forêt : 1,5 point pour y entrer");
+assert.ok(api.missionReachablePaths(u,1.5).has("2,4"));
 u.movementRemaining=5;
 assert.equal(api.moveMissionUnitAlongPath(u,[{q:2,r:4}]),1);
-assert.equal(u.movementRemaining,3,"un pas en forêt coûte 2");
+assert.equal(u.movementRemaining,3.5,"un pas en forêt coûte 1,5");
 m=newMission([{q:2,r:4,code:"mur"}]);
 u=m.players[0];
 assert.equal(api.shortestMissionPath(u,{q:2,r:4},u),null,"on n'entre pas dans un mur");
 assert.equal(has(api.shortestMissionPath(u,{q:3,r:4},u),{q:2,r:4}),false);
 assert.equal(api.missionCellFree({q:2,r:4}),false);
+// Un muret, une arête (étape 4 : le muret, les caisses, la tombe) : +0,5 pour le franchir, dans les deux sens.
+m=newMission([{q:1,r:4,side:0,code:"muret"}]);
+u=m.players[0];
+u.movementRemaining=5;
+assert.equal(api.moveMissionUnitAlongPath(u,[{q:2,r:4}]),1);
+assert.equal(u.movementRemaining,3.5,"le muret : 1 + 0,5");
+assert.equal(api.moveMissionUnitAlongPath(u,[{q:1,r:4}]),1);
+assert.equal(u.movementRemaining,2,"retour par-dessus : encore 1,5");
+// Le plancher (0,75) : une case sans décor dessiné, posée par son code.
+m=newMission([{q:2,r:4,code:"plancher"},{q:3,r:4,code:"plancher"}]);
+u=m.players[0];
+u.movementRemaining=1.5;
+assert.ok(api.missionReachablePaths(u,1.5).has("3,4"),"deux planchers pour 1,5 point");
 // Un clic au-delà du mouvement restant ne bouge pas (son attaque déjà faite : plus de second mouvement).
 m=newMission([{q:2,r:4,code:"marais"}]);
 u=m.players[0];
-u.movementRemaining=2;
+u.movementRemaining=1.75;
 u.attackAvailable=false;
 api.setMissionMode("move");
 api.handleMissionHexClick(2,4);
-assert.deepEqual([u.q,u.r],[1,4],"le marais coûte 3");
-u.movementRemaining=3;
+assert.deepEqual([u.q,u.r],[1,4],"le marais coûte 2");
+u.movementRemaining=2;
 api.setMissionMode("move");
 api.handleMissionHexClick(2,4);
 assert.deepEqual([u.q,u.r,u.movementRemaining],[2,4,0]);
@@ -215,11 +230,15 @@ at(foe,1+base+1,4);
 m.decor=[{q:3,r:4,code:"marais"}];
 let charge=api.missionChargeIfClear(charger,foe);
 assert.ok(charge,"elle traverse le marais");
-assert.equal(charge.slowSteps,2,"un pas au tiers : 3 − 1");
-m.decor=[{q:3,r:4,code:"muret"}];
-assert.equal(api.missionChargeIfClear(charger,foe),null,"pas à travers un muret");
+assert.equal(charge.slowSteps,1,"un pas dans le marais : 2 − 1");
+m.decor=[{q:2,r:4,side:0,code:"muret"}];
+charge=api.missionChargeIfClear(charger,foe);
+assert.ok(charge,"elle saute un muret (une arête)");
+assert.equal(charge.slowSteps,0.5,"le muret : + 0,5");
+m.decor=[{q:3,r:4,code:"mur"}];
+assert.equal(api.missionChargeIfClear(charger,foe),null,"pas à travers un mur");
 // Pourquoi (Idan, 2026-11-14 : « j'arrive pas à charger ») : la raison, montrée au survol en mode charge.
-assert.equal(api.missionChargeCheck(charger,foe).reason,"un décor infranchissable sur la ligne (muret)");
+assert.equal(api.missionChargeCheck(charger,foe).reason,"un décor infranchissable sur la ligne (mur)");
 m.decor=[];
 const archer=m.players[0],home={q:archer.q,r:archer.r};
 at(archer,3,4);
@@ -231,24 +250,23 @@ at(foe,2,4);
 assert.equal(api.missionChargeCheck(charger,foe).reason,"déjà au contact");
 at(foe,1+base+1,4);
 assert.equal(api.missionChargeCheck(charger,foe).reason,null);
-m.decor=[{q:3,r:4,code:"muret"}];
 const last=api.missionChargeIfClear((m.decor=[],charger),foe).destination;
 m.decor=[{q:last.q,r:last.r,code:"buissons"}];
 charge=api.missionChargeIfClear(charger,foe);
 assert.equal(charge.cover,"partielle","la cible derrière les buissons");
-assert.equal(charge.slowSteps,1);
+assert.equal(charge.slowSteps,0.5,"les buissons (végétation souple) : 1,5 − 1");
 seen.length=0;
 engine.resolveAttack=(x,y,o)=>{ const r=realResolve(x,y,o); seen.push({o,r}); return r; };
 at(charger,charge.destination.q,charge.destination.r); // au bout de la course
-forced=0.05; // D100 = 6 : sous les 2 + 5 % de chute
+forced=0.03; // D100 = 4 : sous les 2 + 0,5 × 5 % de chute
 api.performMissionAttack(charger,foe,"melee",1,charge);
 forced=null;
 engine.resolveAttack=realResolve;
-assert.equal(seen[0].o.chargeSlowSteps,1);
+assert.equal(seen[0].o.chargeSlowSteps,0.5);
 assert.equal(seen[0].o.cover,"partielle");
 assert.equal(seen[0].r.chargeFall,true,"pieds dans le tapis");
-assert.equal(seen[0].r.pFall,7);
-assert.ok(m.log.some(x=>/terrain difficile : 7 %, jet 6/.test(x.message)));
+assert.equal(seen[0].r.pFall,4.5);
+assert.ok(m.log.some(x=>/terrain difficile : 5 %, jet 4/.test(x.message)));
 
 // 7. Un déplacement forcé s'arrête contre un décor infranchissable.
 m=newMission([{q:4,r:4,code:"mur"}]);
@@ -257,21 +275,35 @@ api.missionForcedMove(pushed,{move:{kind:"repousse",cells:[{q:4,r:4},{q:5,r:4}]}
 assert.deepEqual([pushed.q,pushed.r],[3,4]);
 assert.ok(m.log.some(x=>/heurte aussitôt le mur/.test(x.message)));
 
-// 8. La Mission Test pose quelques groupes de décor entre les lignes de déploiement ; la case dit ce qu'elle fait.
+// 8. La Mission Test pose quelques groupes de décor entre les lignes de déploiement : des cases, et des lignes d'arêtes
+// (le muret, les caisses, la tombe) ; la case dit ce qu'elle fait.
 m=newMission();
+const cellCodes=new Set(reference.combatCells.rows.map(c=>c.code));
+let edgesSeen=0;
 for(let i=0;i<20;i++){
   const decor=api.generateMissionDecor();
   assert.ok(decor.length>=4);
-  assert.equal(new Set(decor.map(key)).size,decor.length,"une case, un décor");
+  const cells=decor.filter(d=>d.side==null),edges=decor.filter(d=>d.side!=null);
+  edgesSeen+=edges.length;
+  assert.equal(new Set(cells.map(key)).size,cells.length,"une case, un décor");
+  const edgeKey=d=>{ const n=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}][d.side]; return [key(d),key({q:d.q+n.q,r:d.r+n.r})].sort().join("|"); };
+  assert.equal(new Set(edges.map(edgeKey)).size,edges.length,"une arête, un décor");
   for(const d of decor){
     const col=api.missionColumn(d.q,d.r);
     assert.ok(col>2&&col<10,"pas sur les colonnes de déploiement");
-    assert.ok(row(d.code));
+    if(d.side!=null) assert.ok(row(d.code)?.arete,d.code+" : une arête");
+    else assert.ok(row(d.code)?.case||cellCodes.has(d.code),d.code+" : une case");
   }
 }
-assert.equal(api.missionDecorLabel(row("foret")),"Forêt : mouvement ½, bloque la vue, couverture partielle");
-assert.equal(api.missionDecorLabel(row("gros_rocher")),"Gros rocher : infranchissable, couverture totale");
-assert.equal(api.missionDecorLabel(row("marais")),"Marais : mouvement ⅓");
+assert.ok(edgesSeen>0,"des arêtes");
+m=newMission([{q:2,r:4,code:"foret"},{q:2,r:4,side:0,code:"muret"},{q:4,r:4,code:"gros_rocher"},{q:5,r:4,code:"marais"},{q:6,r:4,side:3,code:"palissade"}]);
+assert.equal(api.missionCellLabel(2,4),"Forêt : 1,5 PM, bloque la vue · Muret à l’est : +0,5 PM");
+assert.equal(api.missionCellLabel(3,4),"Muret à l’ouest : +0,5 PM");
+assert.equal(api.missionCellLabel(4,4),"Gros rocher (Mur, montagne, rocher) : infranchissable à pied (100 PM), bloque la vue");
+assert.equal(api.missionCellLabel(5,4),"Marais (Boue, marais, neige) : 2 PM");
+assert.equal(api.missionCellLabel(6,4),"Palissade au sud : +2 PM, on voit dehors, pas de corps à corps à travers");
+assert.equal(api.missionCellLabel(6,5),"Palissade au nord : +2 PM, on ne voit pas dedans, pas de corps à corps à travers");
+assert.equal(api.missionCellLabel(9,9),"");
 assert.match(source,/game\.mission\.decor=generateMissionDecor\(\);/);
 // Un motif dessiné par décor, sur sa couleur (Idan : « Tu peux faire mieux que juste de la couleur ? »).
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
@@ -344,16 +376,16 @@ assert.equal(stuck,0,"combats bloqués : "+stuck);
 m=newMission([{q:2,r:4,code:"marais"}]);
 u=m.players[0];
 assert.equal(m.mode,"move","Déplacer, choisi d'office au début de son tour");
-u.movementRemaining=2;
+u.movementRemaining=1.5;
 api.setMissionMode("move");
 const targets=api.targetableMissionCells();
 assert.ok(targets.has("2,4"),"la seconde zone se clique aussi");
 api.renderMission();
 const zone=c=>(elements["mission-map"].innerHTML.match(new RegExp(`<button class="([^"]*)" data-hex-q="${c[0]}" data-hex-r="${c[1]}"`))||[])[1]||"";
-assert.match(zone([2,4]),/reachable second-move/,"le marais (3) : la seconde zone, en violet");
+assert.match(zone([2,4]),/reachable second-move/,"le marais (2) : la seconde zone, en violet");
 assert.ok(/reachable/.test(zone([1,3]))&&!/second-move/.test(zone([1,3])),"une case à 1 : la première zone");
 api.handleMissionHexClick(2,4);
-assert.deepEqual([u.q,u.r,u.movementRemaining,u.attackAvailable,u.secondMove],[2,4,2+engine.movementBase(u)-3,false,true],"le second mouvement, au prix de l'attaque");
+assert.deepEqual([u.q,u.r,u.movementRemaining,u.attackAvailable,u.secondMove],[2,4,1.5+engine.movementBase(u)-2,false,true],"le second mouvement, au prix de l'attaque");
 assert.equal(m.mode,null);
 // Le premier fait : Déplacer devient « Second mouvement » ; plus de bouton à part.
 Object.assign(u,{movementRemaining:0,attackAvailable:true,secondMove:false});
@@ -365,4 +397,4 @@ assert.equal(api.missionActionAvailability().move,false,"ni mouvement ni attaque
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(!html.includes("mission-second-move-btn"),"le bouton Second mouvement a disparu");
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\.hex-cell\.reachable\.second-move\{background:/);
-console.log("Décor : passage (coût, infranchissable), vue (mur, forêt, au contact), couverture (tir, charge, sorts qui volent, repérage), chute de charge, IA (contourne, va chercher), Mission Test — OK");
+console.log("Décor : passage (PM au quart, arêtes, infranchissable), vue (mur, forêt, au contact), couverture (tir, charge, sorts qui volent, repérage), chute de charge, IA (contourne, va chercher), Mission Test — OK");

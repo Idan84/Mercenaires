@@ -1,10 +1,12 @@
 "use strict";
 
 (function(root,factory){
-  const api=factory();
+  // La grille carrée (game-core/combat-grid.js) : les cases et les arêtes du décor.
+  const grid=typeof module!=="undefined"&&module.exports?require("./combat-grid.js"):root.MercenairesCombatGrid;
+  const api=factory(grid);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCombat=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(){
+})(typeof globalThis!=="undefined"?globalThis:this,function(CombatGrid){
   const PHYSICAL_TYPES=[
     {name:"tranchant",weapon:"puissance_tranchante_base",armor:"resistance_tranchant"},
     {name:"perforant",weapon:"puissance_perforante_base",armor:"resistance_perforant"},
@@ -25,6 +27,8 @@
     const heightOf=typeof options.heightOf==="function"?options.heightOf:null;
     const rows={};
     for(const [name,payload] of Object.entries(reference||{})) rows[name]=payload?.rows||[];
+    // Grille carrée (doc 04, « Le modèle de la case ») : le coût d'un pas, l'Esquive du terrain, la vue des arêtes.
+    const grid=CombatGrid?CombatGrid.createCombatGrid({reference}):null;
 
     const weapons=rows.weapons||[];
     const armors=rows.baseArmors||[];
@@ -1498,7 +1502,7 @@
       stealthOf,
       mentalStat,
       mountChargeForce,
-      aerialCharger,terrainSkillsOf,terrainEffect,skillFlies,
+      aerialCharger,terrainSkillsOf,terrainEffect,skillFlies,grid,
       AERIAL,
       mountHitChance,
       rollShotTarget,

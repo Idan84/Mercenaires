@@ -152,7 +152,7 @@ const end=approach.path[approach.path.length-1],before=m.log.length;
 api.handleMissionHexClick(target.q,target.r);
 const said=m.log.slice(before).map(x=>x.message);
 const name=x=>x.character.name;
-assert.equal(said[0],name(u)+" s’approche de "+name(target)+" (2 hex).");
+assert.equal(said[0],name(u)+" s’approche de "+name(target)+" (2 cases).");
 assert.ok(said[1].startsWith(name(u)+" attaque "+name(target)+" avec Épée courte"),said[1]);
 assert.equal(api.missionKey(u.q,u.r),key(end),"il frappe depuis la fin du chemin");
 

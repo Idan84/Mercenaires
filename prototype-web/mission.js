@@ -10,6 +10,8 @@ const MISSION_MAP={cols:13,rows:9,size:30,spawnRows:[3,4,5],spawnInset:2};
 function setMissionMapSize({cols=13,rows=9}={}){ MISSION_MAP.cols=cols; MISSION_MAP.rows=rows; }
 function missionColumn(q){ return q; }
 function missionAxial(col,r){ return {q:col,r}; }
+// Le journal compte en cases (grille carrée) : « 1 case », « 3 cases ».
+function missionCases(n){ return n+" case"+(Math.abs(n)>1?"s":""); }
 function missionCells(){
   const cells=[];
   for(let r=0;r<MISSION_MAP.rows;r++) for(let col=0;col<MISSION_MAP.cols;col++) cells.push(missionAxial(col,r));
@@ -3007,7 +3009,7 @@ function applyMissionFlee(unit,source){
 function missionFollowFleePath(unit,path,verb){
   if(!path?.length){ missionLog(unit.character.name+" ne trouve aucune issue.","move"); return; }
   const moved=moveMissionUnitAlongPath(unit,path);
-  if(moved) missionLog(unit.character.name+" "+verb+" de "+moved+" hex.","move");
+  if(moved) missionLog(unit.character.name+" "+verb+" de "+missionCases(moved)+".","move");
 }
 
 // Ennemi actif = vivant et pas En Fuite (décision Idan, Issue #8).
@@ -3046,7 +3048,7 @@ function missionAiStandBy(unit){
   const path=threats.some(o=>e.axialDistance(unit,o)<=1)?missionBestPath(unit,budget,cell=>missionMinDistance(cell,threats))
     :unit.master?.alive&&!unit.master.offMap&&e.axialDistance(unit,unit.master)>2?missionBestPath(unit,budget,cell=>-e.axialDistance(cell,unit.master)):[];
   const moved=path.length?moveMissionUnitAlongPath(unit,path):0;
-  if(moved) missionLog(unit.character.name+" se tient à l’écart ("+moved+" hex).","move");
+  if(moved) missionLog(unit.character.name+" se tient à l’écart ("+missionCases(moved)+").","move");
 }
 function missionBestPath(unit,budget,score,forbidden=null){
   let best=[],bestScore=score({q:unit.q,r:unit.r});
@@ -3191,7 +3193,7 @@ function handleMissionHexClick(q,r){
       m.mode=null;
       if(second) missionTakeSecondMove(u);
       const moved=moveMissionUnitAlongPath(u,path);
-      if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
+      if(moved) missionLog(u.character.name+" se déplace de "+missionCases(moved)+".","move");
       if(missionActiveUnitLost()) return;
       renderMission();
     }
@@ -3242,7 +3244,7 @@ function handleMissionHexClick(q,r){
     const approach=missionCanAttack(u,victim,"melee")?null:missionMeleeApproach(u,victim);
     if(approach){
       const moved=moveMissionUnitAlongPath(u,approach.path);
-      if(moved) missionLog(u.character.name+" s’approche de "+victim.character.name+" ("+moved+" hex).","move");
+      if(moved) missionLog(u.character.name+" s’approche de "+victim.character.name+" ("+missionCases(moved)+").","move");
       if(missionActiveUnitLost()) return;
       if(!victim.alive||!missionCanAttack(u,victim,"melee")){ m.mode=null; renderMission(); return; }
       resolvePlayerMissionAttack(u,victim,"melee",m.engine.axialDistance(u,victim));
@@ -4506,7 +4508,7 @@ function missionAiSpell(unit){
       }
       if(best){
         const moved=moveMissionUnitAlongPath(unit,best.path);
-        if(moved) missionLog(unit.character.name+" se place pour lancer "+spell.nom+" ("+moved+" hex).","move");
+        if(moved) missionLog(unit.character.name+" se place pour lancer "+spell.nom+" ("+missionCases(moved)+").","move");
         if(!unit.alive||game.mission.over) return true;
         target=missionAiSpellTarget(unit,code,spell,opponents);
       }
@@ -4749,7 +4751,7 @@ function enemyMoveToward(unit,target,{second=true}={}){
   if(best.path.length) best.path=missionAiKeepFormation(unit,best.path);
   if(best.path.length){
     const moved=moveMissionUnitAlongPath(unit,best.path);
-    if(moved) missionLog(unit.character.name+" avance de "+moved+" hex.","move");
+    if(moved) missionLog(unit.character.name+" avance de "+missionCases(moved)+".","move");
   }
 }
 // IA commune, premier jet (Idan, 2026-11-07) : se regrouper et se cacher, avant le contact.
@@ -4821,7 +4823,7 @@ function missionAiRetreat(unit){
   // Déjà au plus loin : il reste là (avant, il revenait au combat puis reculait, tour après tour).
   if(!best){ missionLog(ch.name+" reste en retrait pour souffler.","move"); return true; }
   const moved=moveMissionUnitAlongPath(unit,best.path);
-  if(moved) missionLog(ch.name+" recule de "+moved+" hex pour souffler.","move");
+  if(moved) missionLog(ch.name+" recule de "+missionCases(moved)+" pour souffler.","move");
   return moved>0;
 }
 
@@ -4847,7 +4849,7 @@ function enemyMoveToShoot(unit,target){
   }
   if(!best) return false;
   const moved=moveMissionUnitAlongPath(unit,best.path);
-  if(moved) missionLog(unit.character.name+" se place pour tirer ("+moved+" hex).","move");
+  if(moved) missionLog(unit.character.name+" se place pour tirer ("+missionCases(moved)+").","move");
   return moved>0;
 }
 

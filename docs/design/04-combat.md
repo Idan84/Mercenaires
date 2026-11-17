@@ -21,11 +21,37 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 
 ## Grille, activation & mouvement V1
 
-- Grille **hexagonale**.
+- Grille **hexagonale**, jusqu'au passage aux cases carrées (section suivante : décidé, à coder).
 - En V1, un personnage standard occupe **1 hexagone**.
 - [Activation hexagonale V1](/design/#doc=formulas/activation-hexagonale-v1.md) : une activation fournit **Mouvement + Action rapide + Attaque**, dans l'ordre choisi ; le mouvement est fractionnable et l'Attaque peut être remplacée par un second Mouvement.
 - [Mouvement hexagonal V1](/design/#doc=formulas/mouvement-hexagonal-v1.md) : `MouvementBase` est calculé à partir de Vitesse combat effective, Endurance et Volonté.
 - [Portée d'arme V1](/design/#doc=formulas/portee-d-arme-v1.md) : une arme de mêlée standard vaut implicitement 1–1 ; les armes d'hast configurées 1–2 utilisent toujours le pipeline CAC.
+
+## Passage aux cases carrées (Idan, 2026-11-17 : décidé, à coder)
+
+> « On passe en carrés / top view. » « Pour le déplacement, une diagonale c'est 2 PM. » « Globalement, on se rapproche de
+> Dofus dans la logique. » Le moteur, le terrain et l'écran de combat restent en hexagones tant que ce chantier n'est pas
+> codé ; une vue isométrique viendra ensuite (« une carte serrée à la X-COM où l'on découvre ses adversaires »).
+
+- **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
+- **Déplacement** : une diagonale coûte **2 PM** ; on ne passe pas en diagonale entre deux obstacles qui se touchent par
+  le coin. Les valeurs de PM et de portée restent celles d'aujourd'hui ; l'équilibrage vient après.
+- **Corps à corps** : le contact, ce sont les **4 cases** des côtés (attaques d'opportunité, encerclement, descendre de
+  sa monture).
+- **Armes d'hast et fouet** (portée 1–2) : le contact, plus les **4 diagonales**, plus **2 cases en ligne droite**.
+- **Frappe dans le dos** : 4 sens (nord, sud, est, ouest) ; le dos, c'est la case derrière lui et ses deux coins.
+- **Encerclement** : deux adversaires sur des côtés opposés (pris en tenaille).
+- **Tir** : la portée en losange ; la ligne de vue passe en diagonale, même entre deux obstacles qui se touchent par le
+  coin, si rien n'est sur la diagonale elle-même (« si rien n'est dans la diago, ça passe »).
+- **Couverture** (« différencier obstacles de déplacement et couvertures ») : un **obstacle** (arbre, rocher) est sur la
+  case, il définit la ligne de vue et le déplacement ; une **couverture** est posée sur une **arête** entre deux cases.
+  Le détail (directions couvertes, ralentir ou bloquer, la liste des décors) : à définir.
+- **Sorts** : les zones en rayon en losange ; les sorts en ligne, les cônes et les murs **seulement en ligne droite**,
+  sans diagonale (« ça oblige à bien se placer »).
+- **Charge** : dans les **8 directions**, en ligne stricte (une diagonale coûte 2 PM par case), sans contourner d'obstacle.
+- **Grosses créatures** : cheval 1×2, mammouth, tricératops et **cerbère 2×2**, énorme 3×3. Une créature qui fait plus
+  d'une case se déplace par rapport à sa **tête** : elle va dans la direction choisie depuis la case de sa tête.
+- **Carte** : 36 × 25 cases, comme aujourd'hui ; la taille se règle avec l'équilibrage.
 
 ## Initiative & ordre interne V1
 

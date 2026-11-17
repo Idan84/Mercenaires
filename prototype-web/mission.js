@@ -94,13 +94,6 @@ function missionTerrainSkills(unit){
 }
 // La case de la grille (sa règle, combat-cells.json) : le Terrain par défaut sans décor.
 function missionGridCell(q,r){ return missionGrid()?.cell(missionGridMap(),{q,r})||null; }
-// Capacités de terrain (doc 04 ; Idan, 2026-11-09 ; terrain-skills.json) : ce que celui qui est (ou entre) sur la case y
-// gagne (coût, Discrétion, couverture). Monté, il se déplace et se cache comme sa monture.
-function missionTerrainEffect(unit,c){
-  if(!unit?.character||!c) return null;
-  const cell=(game.mission?.decor||[]).find(d=>d.q===c.q&&d.r===c.r&&!missionIsEdge(d)),e=missionEngine();
-  return cell&&e?.terrainEffect?e.terrainEffect(e.mountOf?.(unit)||unit,cell.code):null;
-}
 // Une case trop chère pour y entrer à pied (100 PM : le mur, la montagne, le gouffre, l'eau profonde sans Respiration
 // aquatique ; Idan : « Juste une valeur de déplacement de 100 PM »).
 function missionDecorBlocksMove(q,r,unit=null){
@@ -204,44 +197,46 @@ function missionCellLabel(q,r){
   });
   return parts.join(" · ");
 }
-// Couverture (Idan, 2026-11-06 : « Au tir et en défense de charge ») : le décor collé à la cible sur la ligne qui vient de
-// from (pas la case de from : un muret collé au tireur ne le gêne pas), ou la case de la cible elle-même ; la meilleure.
-// shot : un tir (ou un sort qui vole) ; d'au moins un niveau plus haut, il passe par-dessus la couverture partielle.
-function missionCoverLevel(from,target,options={}){
-  // Une grande créature se couvre mal : la couverture de sa case la plus exposée.
-  if(missionLarge(target)){
-    const rank={totale:2,partielle:1};
-    return missionFootprint(target).map(c=>missionCellCover(from,c,options)).reduce((a,b)=>(rank[b]||0)<(rank[a]||0)?b:a,"totale");
-  }
-  return missionCellCover(from,target,options);
+// L'Esquive du terrain (grille carrée, doc 04 ; Idan, 2026-11-17 : « On vire tout le système de couverture ») : celle de
+// la case de la cible et de l'arête qui fait face à from (combat-grid.js, dodge), avec ses capacités de terrain
+// (Respiration aquatique). Elle compte contre les tirs, les sorts qui volent et la charge (charge : double, sauf aérienne).
+// Une grande créature se couvre mal : l'Esquive de sa case la plus exposée.
+function missionTerrainDodge(from,target,{charge=false,aerial=false}={}){
+  const grid=missionGrid();
+  if(!grid||!from||!target) return 0;
+  const map=missionGridMap(),skills=target.character?missionTerrainSkills(target):[];
+  const origin={q:from.q,r:from.r};
+  const cells=target.character&&missionLarge(target)?missionFootprint(target):[{q:target.q,r:target.r}];
+  return Math.min(...cells.map(c=>grid.dodge(map,c,origin,{skills,charge,aerial})));
 }
-function missionCellCover(from,target,{shot=false}={}){
-  if(!game.mission?.decor?.length||!from||!target) return null;
-  const above=shot&&missionHeightAt(from.q,from.r)>=missionHeightAt(target.q,target.r)+1;
-  const line=game.mission.engine.hexLine(from,target),before=line[line.length-2];
-  const cells=[{q:target.q,r:target.r}];
-  if(before&&!(before.q===from.q&&before.r===from.r)) cells.push(before);
-  let best=null;
-  for(const c of cells){
-    // Respiration aquatique : la couverture qu'il trouve sur sa propre case (l'eau profonde : totale).
-    const own=c===cells[0]?missionTerrainEffect(target,c)?.cover:null;
-    const decor=missionDecorAt(c.q,c.r)?.couverture;
-    const level=[own,decor].includes("totale")?"totale":[own,decor].includes("partielle")?"partielle":null;
-    if(level==="totale") return "totale";
-    if(level==="partielle"&&!above) best="partielle";
-  }
-  return best;
+// Le « Se cacher » de sa case (doc 04 : un bonus de Discrétion quand on s'y cache ; végétation souple, éboulis +30, eau
+// peu profonde +10) : il compte pour celui qui est camouflé, au repérage.
+function missionHideBonus(unit){
+  const cell=unit?missionGridCell(unit.q,unit.r):null;
+  return Number(cell?.se_cacher)||0;
 }
 // Vue (Idan, 2026-11-06 : « Derrière une forêt, on voit pas » ; dedans, « oui » : on n'y est vu qu'au contact).
 // Altitude : une case entre les deux dont le sommet (sa hauteur, + 1 si son décor bloque la vue) dépasse les deux personnages
 // coupe la vue ; plus haut, on voit par-dessus.
+// Grille carrée (doc 04, « Le modèle de la case ») : une case qui bloque la vue (la forêt, le mur) ; dedans, on n'est
+// ciblable qu'au contact, mais de sa case on voit dehors si rien d'autre ne coupe la ligne (« s'il est à l'orée de la
+// forêt »). Une arête qui bloque la vue, ou « un seul sens » vue de l'extérieur (la palissade, la meurtrière : on voit du côté
+// défendu vers l'extérieur). Par un coin, la ligne n'est coupée que si les deux détours le sont.
 function missionDecorBlocksSight(a,b){
   if(!game.mission?.decor?.length&&!game.mission?.relief?.length) return false;
-  const e=game.mission.engine,blocks=c=>Boolean(missionDecorAt(c.q,c.r)?.bloque_vue);
-  if(e.axialDistance(a,b)>1&&(blocks(a)||blocks(b))) return true;
+  const e=game.mission.engine,grid=missionGrid(),map=missionGridMap();
+  const blocks=c=>Boolean(missionGridCell(c.q,c.r)?.bloque_vue);
+  if(e.axialDistance(a,b)>1&&blocks(b)) return true;
   const eye=Math.max(missionHeightAt(a.q,a.r),missionHeightAt(b.q,b.r));
+  const edge=(x,y)=>Boolean(grid?.edgeBlocksSight(map,x,y));
+  const step=(x,y)=>{
+    if(x.q===y.q||x.r===y.r) return edge(x,y);
+    const m1={q:y.q,r:x.r},m2={q:x.q,r:y.r};
+    return (edge(x,m1)||edge(m1,y))&&(edge(x,m2)||edge(m2,y));
+  };
   // La ligne qui frôle le coin d'un décor (Idan, 2026-11-14 : « Frôler ne bloque pas ») : coupée seulement des deux côtés.
-  return e.hexLineSides(a,b).every(line=>line.slice(1,-1).some(c=>missionHeightAt(c.q,c.r)+(blocks(c)?1:0)>eye));
+  return e.hexLineSides(a,b).every(line=>line.slice(1,-1).some(c=>missionHeightAt(c.q,c.r)+(blocks(c)?1:0)>eye)
+    ||line.some((c,i)=>i>0&&step(line[i-1],c)));
 }
 // Mission Test (altitude) : 1 à 3 collines, centrées entre les deux lignes de déploiement, de hauteur 1 à 3 ; chaque case
 // prend la plus haute des collines, moins sa distance au sommet : deux cases voisines ne diffèrent jamais de plus d'un niveau
@@ -391,7 +386,7 @@ function resolveMissionDetection(){
     if(!observer.alive||observer.offMap) continue;
     for(const target of missionOpponents(observer)){
       if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target)) continue;
-      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),e.coverDiscretion(missionCoverLevel(observer,target))+missionTerrainStealth(target));
+      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),missionHideBonus(target)+missionTerrainStealth(target));
       if(!r.spotted) continue;
       target.camouflaged=false;
       missionAlert(observer.team,target);
@@ -1287,7 +1282,7 @@ function startMissionFromSelection(){
     rules.applyArchetype(enemyChars[2],troll,{idPrefix:"test-troll",name:"Troll géant"});
     enemyChars[2].taille=Math.random()<0.5?"grande":"enorme";
   }
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
@@ -1361,7 +1356,7 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   const offer=e.offer;
   setMissionMapSize(missionRules().mapSize(offer));
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=placeMissionArmy(chosen.map((c,i)=>makeMissionUnit(c,"player",i%3)),"player");
@@ -1541,7 +1536,7 @@ function startCaptainDuel(mercenaryId,{request=null,desertion=false}={}){
   if(!check.ok){ if(typeof tavernLog==="function") tavernLog(check.reason,"warn"); return false; }
   const C=rules.duelRules.constants,copy=duelCopy();
   setMissionMapSize({cols:C.cols,rows:C.rows});
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const me=makeMissionUnit(check.captain,"player",0,{noMount:true});
@@ -1683,7 +1678,7 @@ function startMutinyFight(){
   const allies=mutiny.rally(c).filter(a=>a.joins).map(a=>c.company.roster.find(m=>m.id===a.id)).filter(Boolean);
   const C=rules.duelRules.constants,copy=mutinyFightCopy();
   setMissionMapSize({cols:C.cols,rows:C.rows});
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const left=Math.floor((MISSION_MAP.cols-C.distance)/2);
@@ -1803,7 +1798,7 @@ function startUsurerFight(kind){
   setMissionMapSize(missionRules().mapSize({code:"cleanup"}));
   const offer=usurerArmy();
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const me=makeMissionUnit(captain,"player",0,{noMount:true});
@@ -1908,7 +1903,7 @@ function generateCellarDecor(engine,units){
 function buildCellarMission(a,b,{simulation=false}={}){
   const C=cellarRulesOf()?.constants||{cols:9,rows:9,distance:2};
   setMissionMapSize({cols:C.cols,rows:C.rows});
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight,gridMap:missionGridMap});
   const left=makeMissionUnit(a,"player",0,{noMount:true}),right=makeMissionUnit(b,"enemy",0,{noMount:true});
   for(const u of [left,right]) Object.assign(u,{isCaptain:false,isLieutenant:false});
   const row=Math.floor(MISSION_MAP.rows/2),col=Math.floor((MISSION_MAP.cols-C.distance)/2);
@@ -2542,7 +2537,7 @@ function logMissionAttackLines(a,d,result,kind){
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"")
-    +(result.cover?" (couverture "+result.cover+")":"")
+    +(result.terrainDodge?" (Esquive du terrain "+(result.terrainDodge>0?"+":"")+result.terrainDodge+")":"")
     +(result.aerialCharge?" (charge aérienne : × 1,2)":result.againstAerialCharge?" (contre une charge aérienne : toucher ÷ 2)":"")
     +(result.heightDiff>0?" (d’en haut)":result.heightDiff<0?" (vers le haut)":"")
     // Squelettes : dégâts tranchants × 0,5, contondants × 1,5 (character.damageTypeFactors).
@@ -2801,6 +2796,8 @@ function missionChargeCheck(unit,target){
   }
   // Un volant survole le décor, mais ne finit pas sa charge dessus.
   const last=charge.path[charge.path.length-1];
+  // Le coup de la charge passe l'arête entre la case d'arrivée et la cible : pas à travers une palissade ni une meurtrière.
+  if(last&&e.meleeReach&&!e.meleeReach({q:last.q,r:last.r},target)) return no("pas de corps à corps à travers "+(missionGrid()?.edge(missionGridMap(),last,e.footprint(target).find(c=>e.hexDistance(c,last)===1)||target)?.row.article||"l’arête"));
   if(last&&missionDecorBlocksMove(last.q,last.r,unit)) return no("arrivée sur un décor infranchissable ("+String(missionDecorAt(last.q,last.r)?.nom||"décor").toLowerCase()+")");
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
@@ -2818,7 +2815,10 @@ function missionChargeCheck(unit,target){
     }
     if(climb>1) return no("la course monte de plus d’un niveau");
   }
-  return {charge:{...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target),...(aerial?{aerial:true}:{})},reason:null};
+  // L'Esquive du chargé (doc 04 : « Je charge face à la palissade, il a 120 d'esquive ») : sa case et l'arête qui fait face à
+  // la case d'arrivée du chargeur, doublées ; la charge aérienne y échappe.
+  const dodge=missionTerrainDodge(last||{q:unit.q,r:unit.r},target,{charge:true,aerial});
+  return {charge:{...charge,slowSteps,dodge,...(aerial?{aerial:true}:{})},reason:null};
 }
 // Ce qui barre la ligne de la charge : un personnage, le bourbier, une flaque de magma, un décor, le bord de la carte.
 function missionChargeBarrier(unit,h){
@@ -2887,7 +2887,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
       const result=e.resolveAttack(attacker,target,{
         mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
         chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel,aerialCharge:Boolean(charging&&charge.aerial),
-        chargeSlowSteps:charging?charge.slowSteps||0:0,cover:h.mode==="ranged"?missionCoverLevel(attacker,target,{shot:true}):charging?charge.cover:null
+        chargeSlowSteps:charging?charge.slowSteps||0:0,terrainDodge:h.mode==="ranged"?missionTerrainDodge(attacker,target):charging?charge.dodge||0:0
       });
       first=first||result;
       logMissionAttack(attacker,target,result,charging?"charge":"attack");
@@ -3374,9 +3374,9 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
     missionLog(spell.nom+" sur "+target.character.name+", à cheval : "+(shot.mount?"le cheval":"le cavalier")+" est dans la ligne ("+missionPercent(shot.p)+" pour le cheval, jet "+shot.roll+").","info");
     target=shot.target;
   }
-  // Un sort qui vole comme une flèche : la couverture de la cible compte (Idan, 2026-11-06).
+  // Un sort qui vole comme une flèche : l'Esquive du terrain de la cible compte (doc 04).
   const out=magic.cast(caster,target,code,{units:missionUnitsWithMounts(),cellFree:missionCellFree(spell.cible==="mort"?{q:target.q,r:target.r}:target),lineOfSight:missionLineOfSight(caster,target),
-    cover:spell.toucher==="distance"&&target?.character?missionCoverLevel(caster,target,{shot:true}):null,
+    terrainDodge:spell.toucher==="distance"&&target?.character?missionTerrainDodge(caster,target):0,
     heightDiff:target?.character?missionUnitHeight(caster)-missionUnitHeight(target):0,
     destination:extra.destination,destinationFree:extra.destination?missionCellFree(extra.destination):undefined,
     second:extra.second,secondLineOfSight:extra.second?missionLineOfSight(caster,extra.second):true});
@@ -3473,7 +3473,7 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
     effect=removed.length>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : fin "+removed.map(x=>LABELS[x]).join(", ")+".","magic");
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
-    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.cover?", couverture "+out.cover:"")+")";
+    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.terrainDodge?", Esquive du terrain "+(out.terrainDodge>0?"+":"")+out.terrainDodge:"")+")";
     effect=false;
     if(out.deflected){
       missionLog(name+" lance "+spell.nom+on+detail+" : le projectile est dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
@@ -4303,7 +4303,7 @@ function handleMissionTwoStepSpell(spell,q,r,clicked){
 }
 // Crachat de venin (doc 12) : le tir de venin, par l'action rapide de celui qui a reçu le sort ; s'il blesse, il empoisonne.
 function spitMissionVenom(unit,target){
-  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),cover:missionCoverLevel(unit,target,{shot:true}),
+  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),terrainDodge:missionTerrainDodge(unit,target),
     heightDiff:missionUnitHeight(unit)-missionUnitHeight(target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   unit.quickAvailable=false;
@@ -4312,7 +4312,7 @@ function spitMissionVenom(unit,target){
     missionLog(name+" crache du venin sur "+foe+" : dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
     return out;
   }
-  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.cover?", couverture "+out.cover:"")+")";
+  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.terrainDodge?", Esquive du terrain "+(out.terrainDodge>0?"+":"")+out.terrainDodge:"")+")";
   if(!out.hit){ missionLog(name+" crache du venin sur "+foe+" : raté"+aim+".","miss"); return out; }
   const hit=missionElementalHit(target,"poison",out.amount,unit);
   missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+hit.damage+" PV de poison"+missionProtectionNote(hit)+".","damage");
@@ -4822,8 +4822,9 @@ function enemyMoveToShoot(unit,target){
     const end=path[path.length-1];
     if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(end,target)) continue;
     const risk=missionPathOpportunityCount(unit,path);
-    // Se cacher (IA commune, Idan, 2026-11-07) : à risque égal, la case la mieux couverte face à sa cible.
-    const cover={totale:2,partielle:1}[missionCoverLevel(target,missionAt(unit,end),{shot:true})]||0;
+    // Se cacher (IA commune, Idan, 2026-11-07) : à risque égal, la case où le terrain lui donne le plus d'Esquive face à sa
+    // cible (grille carrée).
+    const cover=missionTerrainDodge(target,{...missionAt(unit,end),character:unit.character,team:unit.team});
     if(!best||risk<best.risk||(risk===best.risk&&cover>best.cover)) best={path,risk,cover};
   }
   if(!best) return false;
@@ -5130,7 +5131,9 @@ function missionHeldModes(u){
 function missionUsableHands(u,target){
   const e=game.mission.engine;
   if(missionHiddenFrom(target,u)) return [];
-  return e.usableHands(u,e.axialDistance(u,target)).filter(h=>h.mode!=="ranged"||missionLineOfSight(u,target));
+  const distance=e.axialDistance(u,target);
+  // Au contact, pas de corps à corps à travers une palissade ou une meurtrière (grille carrée, doc 04).
+  return e.usableHands(u,distance).filter(h=>h.mode==="ranged"?missionLineOfSight(u,target):distance!==1||!e.meleeReach||e.meleeReach(u,target));
 }
 function missionCanAttack(u,target,mode){
   return missionUsableHands(u,target).some(h=>h.mode===mode);
@@ -5856,11 +5859,11 @@ function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden,from=
   return hands.map(h=>e.withHand(u,h.hand,()=>{
     const item=e.activeWeaponItem(u),weapon=e.weaponTemplate(item);
     const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
-    const cover=h.mode==="ranged"?missionCoverLevel(u,target,{shot:true}):charge&&h.mode==="melee"?charge.cover:null;
+    const terrainDodge=h.mode==="ranged"?missionTerrainDodge(from,target):charge&&h.mode==="melee"?charge.dodge||0:0;
     const heightDiff=missionHeightAt(from.q,from.r)-missionUnitHeight(target);
     // Charge aérienne (doc 04) : Toucher, Blesser et dégâts × 1,2.
     const factor=charge?.aerial&&h.mode==="melee"?Number(e.AERIAL?.bonus)||1:1;
-    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,heightDiff,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover,heightDiff,factor}),
+    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,terrainDodge,heightDiff,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,terrainDodge,heightDiff,factor}),
       ...(factor!==1?{aerial:true}:{})};
     if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
     if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
@@ -5904,7 +5907,7 @@ function renderMissionHoverCard(q,r){
         +(row.approach?`<dt>Approche</dt><dd>${row.approach.steps} case${row.approach.steps>1?"s":""}</dd>`
           +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
-        +(row.cover?`<dt>Couverture</dt><dd>${row.cover}</dd>`:"")
+        +(row.terrainDodge?`<dt>Esquive du terrain</dt><dd>${row.terrainDodge>0?"+":""}${row.terrainDodge}</dd>`:"")
         +(row.heightDiff?`<dt>Hauteur</dt><dd>${row.heightDiff>0?"d’en haut":"vers le haut"}${Math.abs(row.heightDiff)>1?` (${Math.abs(row.heightDiff)} niveaux)`:""}</dd>`:"")
         +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
         +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
@@ -5946,9 +5949,9 @@ function missionSpellPreviewRows(u,code,q,r){
   const target=s.cible==="soi"?u:unit,foe=target&&target.team!==u.team?target:null;
   const rows=[`<dt>Réussite</dt>${missionOdds(magic.castChance(u,code).p)}`,`<dt>Coût</dt><dd>${magic.manaCost(u,code)} mana</dd>`];
   if(s.toucher==="distance"&&foe){
-    const cover=missionCoverLevel(u,foe,{shot:true}),heightDiff=missionUnitHeight(u)-missionUnitHeight(foe);
-    if(cover) rows.push(`<dt>Couverture</dt><dd>${cover}</dd>`);
-    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{cover,heightDiff}))}`);
+    const terrainDodge=missionTerrainDodge(u,foe),heightDiff=missionUnitHeight(u)-missionUnitHeight(foe);
+    if(terrainDodge) rows.push(`<dt>Esquive du terrain</dt><dd>${terrainDodge>0?"+":""}${terrainDodge}</dd>`);
+    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{terrainDodge,heightDiff}))}`);
   }
   if(s.deviation_max) rows.push(`<dt>Précision</dt>${missionOdds(magic.precisionChance(u,code,e.axialDistance(u,{q,r})))}`);
   const range=magic.effectRange(u,code);

@@ -43,7 +43,7 @@ const $=id=>elements[id]||(elements[id]=element());
 const game={campaign:null,captain,referenceData:reference};
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,shortestMissionPath,missionReachablePaths,"
-  +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,performMissionAttack,missionForcedMove,"
+  +"moveMissionUnitAlongPath,missionLineOfSight,missionChargeIfClear,performMissionAttack,missionForcedMove,"
   +"generateMissionRelief,generateMissionDecor,missionHeightAt,missionUnitHeight,missionStepCost,missionPathCost,setMissionMode,"
   +"handleMissionHexClick,missionAttackPreview,missionColumn,missionKey,missionNeighbors,startMissionCamouflage,autoResolveMission,"
   +"missionMagic,missionSpellPreviewRows,resolveMissionSpell";
@@ -176,34 +176,18 @@ assert.equal(api.missionLineOfSight(shooter,foe),true,"d'un niveau plus haut, on
 m.relief=[{q:1,r:4,h:1},{q:4,r:4,h:1}];
 assert.equal(api.missionLineOfSight(shooter,foe),false,"une forêt sur la colline (1 + 1) cache encore la cible");
 
-// 6. La couverture : d'au moins un niveau plus haut, un tir passe par-dessus la couverture partielle, pas la totale ; au
-// corps à corps et pour le repérage, rien ne change.
-m=newMission([],[{q:7,r:4,code:"buissons"}]);
-[shooter,foe]=[m.players[0],m.enemies[0]];
-at(foe,7,4);
-assert.equal(api.missionCoverLevel(shooter,foe,{shot:true}),"partielle");
-m.relief=[{q:1,r:4,h:1}];
-assert.equal(api.missionCoverLevel(shooter,foe,{shot:true}),null,"d'en haut, par-dessus les buissons");
-assert.equal(api.missionCoverLevel(shooter,foe),"partielle","hors tir (repérage), les buissons comptent");
-m.decor=[{q:6,r:4,code:"gros_rocher"}];
-assert.equal(api.missionCoverLevel(shooter,foe,{shot:true}),"totale","le gros rocher protège toujours");
-m.relief=[{q:1,r:4,h:1},{q:7,r:4,h:1}];
-m.decor=[{q:7,r:4,code:"buissons"}];
-assert.equal(api.missionCoverLevel(shooter,foe,{shot:true}),"partielle","à la même hauteur, la couverture compte");
-// Les sorts qui volent : la hauteur et la couverture vue d'en haut.
-m=newMission([{q:1,r:4,h:1}],[{q:7,r:4,code:"buissons"}]);
-const mage=m.players[0],prey=at(m.enemies[0],7,4);
+// 6. Les sorts qui volent : la hauteur compte (la couverture est remplacée par l'Esquive du terrain, grille carrée).
+let m6=newMission([{q:1,r:4,h:1}],[]);
+const mage=m6.players[0],prey=at(m6.enemies[0],7,4);
 mage.character.spells=[{code:"fire_bolt",mastery:40}];
 const magic=api.missionMagic();
 assert.match(api.missionSpellPreviewRows(mage,"fire_bolt",prey.q,prey.r),/<dt>Toucher<\/dt>/);
-assert.doesNotMatch(api.missionSpellPreviewRows(mage,"fire_bolt",prey.q,prey.r),/Couverture/,"d'en haut, pas de couverture partielle");
 assert.ok(magic.hitChance(mage,prey,"fire_bolt",{heightDiff:1})>magic.hitChance(mage,prey,"fire_bolt"));
 const realCast=magic.cast,casts=[];
 magic.cast=(c,t,code,o)=>{ casts.push(o); return realCast(c,t,code,o); };
 api.resolveMissionSpell(mage,prey,"fire_bolt");
 magic.cast=realCast;
 assert.equal(casts[0]?.heightDiff,1,"le sort part d'un niveau plus haut");
-assert.equal(casts[0]?.cover,null);
 
 // 7. La charge : pas de falaise sur la ligne, et elle ne monte pas de plus d'un niveau ; la descente ne gêne pas.
 m=newMission();

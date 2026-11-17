@@ -34,7 +34,7 @@ assert.equal(constant("combat.scout.distance"),8);
 const unitOf=(stats)=>({character:{stats,skills:{martial:{}},items:[],equipment:{slots:{}}},activeSet:1});
 const scout30=unitOf({Perception:50,"Discrétion":30}),scout80=unitOf({Perception:70,"Discrétion":80});
 const guard=unitOf({Perception:60,"Discrétion":30}),sharp=unitOf({Perception:90,"Discrétion":20}),sneaky=unitOf({Perception:40,"Discrétion":90});
-const chance=(o,t)=>Math.round(engine.detectionChance(o,t,8,engine.coverDiscretion("totale"))*10)/10;
+const chance=(o,t)=>Math.round(engine.detectionChance(o,t,8,engine.SCOUT_COVER)*10)/10;
 assert.equal(chance(guard,scout30),1.8,"un garde ordinaire contre un éclaireur peu discret : 1,8 %");
 assert.equal(chance(guard,scout80),0.1,"contre un éclaireur discret : le plancher");
 assert.ok(chance(sharp,scout30)>chance(guard,scout30),"un ennemi qui a l'œil le repère plus souvent");

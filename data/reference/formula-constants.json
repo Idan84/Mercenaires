@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 479,
+  "row_count": 476,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2243,22 +2243,6 @@
       "version": "V1"
     },
     {
-      "nom": "Couverture partielle — Toucher",
-      "code": "combat.cover.partial_hit_factor",
-      "description": "Décor (doc 04 ; Idan, 2026-11-06) : trois réglages par décor (passage, vue, couverture ; terrain-decors.json). Derrière une couverture partielle (le décor sur la ligne de tir, collé à la cible, ou sa propre case), la chance de toucher au tir, en charge et des sorts qui volent comme une flèche est multipliée par ce facteur (doc 90 : ×0,5).",
-      "formule": "Couverture",
-      "valeur": 0.5,
-      "version": "V1"
-    },
-    {
-      "nom": "Couverture totale — Toucher",
-      "code": "combat.cover.total_hit_factor",
-      "description": "Décor (doc 04 ; Idan, 2026-11-06) : trois réglages par décor (passage, vue, couverture ; terrain-decors.json). Derrière une couverture totale (on le voit, on peut le viser, mais il est protégé), la chance de toucher au tir, en charge et des sorts qui volent comme une flèche est multipliée par ce facteur (doc 90 : ×0,25).",
-      "formule": "Couverture",
-      "valeur": 0.25,
-      "version": "V1"
-    },
-    {
       "nom": "Charge — chute par pas lent",
       "code": "combat.charge.fall_per_slow_step",
       "description": "Décor (doc 04 ; Idan, 2026-11-06) : trois réglages par décor (passage, vue, couverture ; terrain-decors.json). Une charge peut traverser un décor lent, mais « pieds dans le tapis » : chaque case lente de la course ajoute cette valeur × (coût de mouvement − 1) % de chute (½ : +5, ⅓ : +10, ¼ : +15). Chiffre proposé par JC3, validé par Idan (« oui »).",
@@ -2387,17 +2371,9 @@
       "version": "V1"
     },
     {
-      "nom": "Repérage — couverture partielle",
-      "code": "combat.stealth.cover_partial",
-      "description": "Bonus de Discrétion derrière une couverture partielle (Idan : « un bonus de discrétion important ») ; servira avec le décor.",
-      "formule": "Repérage",
-      "valeur": 30,
-      "version": "V1"
-    },
-    {
-      "nom": "Repérage — couverture totale",
+      "nom": "Repérage — l'éclaireur caché",
       "code": "combat.stealth.cover_total",
-      "description": "Bonus de Discrétion derrière une couverture totale ; servira avec le décor.",
+      "description": "Bonus de Discrétion de l'éclaireur, caché comme derrière une couverture totale (Idan, 2026-11-09). La couverture du décor est remplacée par l'Esquive du terrain (grille carrée, Idan, 2026-11-17).",
       "formule": "Repérage",
       "valeur": 60,
       "version": "V1"

@@ -25,6 +25,8 @@
     const random=options.random||Math.random;
     // Altitude (doc 04 ; Idan, 2026-11-06) : options.heightOf(unit) = la hauteur de sa case (0 à 3), donnée par la carte.
     const heightOf=typeof options.heightOf==="function"?options.heightOf:null;
+    // Grille carrée : options.gridMap() = la carte des cases et des arêtes (combat-grid.js, createMap), donnée par l'écran.
+    const gridMapOf=typeof options.gridMap==="function"?options.gridMap:()=>null;
     const rows={};
     for(const [name,payload] of Object.entries(reference||{})) rows[name]=payload?.rows||[];
     // Grille carrée (doc 04, « Le modèle de la case ») : le coût d'un pas, l'Esquive du terrain, la vue des arêtes.
@@ -101,8 +103,8 @@
       scale:constant("combat.stealth.scale",15),
       min:constant("combat.stealth.min",5),
       max:constant("combat.stealth.max",95),
-      partialCover:constant("combat.stealth.cover_partial",30),
-      totalCover:constant("combat.stealth.cover_total",60),
+      // L'éclaireur se cache comme derrière une couverture totale (Idan, 2026-11-09) : + scoutCover à sa Discrétion.
+      scoutCover:constant("combat.stealth.cover_total",60),
       scoutDistance:constant("combat.scout.distance",8)
     };
     const POISON={
@@ -111,17 +113,12 @@
       min:constant("combat.poison.resist_min",5),
       max:constant("combat.poison.resist_max",95)
     };
-    // Décor (doc 04 ; Idan, 2026-11-06) : derrière une couverture partielle ou totale, le Toucher au tir et en charge est
-    // multiplié par ce facteur ; une case lente traversée par une charge ajoute fallPerSlowStep × (coût − 1) % de chute.
-    const COVER={
-      partielle:constant("combat.cover.partial_hit_factor",0.5),
-      totale:constant("combat.cover.total_hit_factor",0.25)
-    };
+    // Décor (doc 04 ; Idan, 2026-11-06) : une case lente traversée par une charge ajoute fallPerSlowStep × (coût − 1) % de
+    // chute. (La couverture est remplacée par l'Esquive du terrain : grille carrée, Idan, 2026-11-17.)
     const CHARGE_FALL={
       base:constant("combat.charge.base_fall_probability",2),
       perSlowStep:constant("combat.charge.fall_per_slow_step",5)
     };
-    const coverHitFactor=level=>COVER[level]??1;
     // Altitude : + hitPerLevel au Toucher par niveau au-dessus de la cible, autant de moins par niveau en dessous.
     const ALTITUDE={
       hitPerLevel:constant("combat.altitude.hit_per_level",10),
@@ -177,20 +174,7 @@
         ||(s.invocations||[]).includes(c.archetype)
         ||(s.ascendances||[]).some(a=>a.nom===c.ascendance&&(Number(c.ascendanceLevel)||0)>=(Number(a.niveau_min)||1)));
     }
-    // Ce qu'elles lui donnent sur une case de ce décor : cost (remplace le coût du décor ; undefined : celui du décor), le
-    // plus bas ; discretion, les bonus additionnés ; cover, la meilleure couverture.
-    function terrainEffect(unit,decorCode){
-      const out={cost:undefined,discretion:0,cover:null},rank={partielle:1,totale:2};
-      if(!decorCode) return out;
-      for(const s of terrainSkillsOf(unit)){
-        const d=s.decors?.[decorCode];
-        if(!d) continue;
-        if(d.cout_mouvement!=null) out.cost=out.cost==null?Number(d.cout_mouvement):Math.min(out.cost,Number(d.cout_mouvement));
-        out.discretion+=Number(d.discretion)||0;
-        if(d.couverture&&(rank[d.couverture]||0)>(rank[out.cover]||0)) out.cover=d.couverture;
-      }
-      return out;
-    }
+    // Ce qu'elles lui donnent, case par case (grille carrée : terrain-skills.json, cases) : combat-grid.js, skillEffect.
     // Il vole par lui-même (le sang féerique) ; monté, c'est sa monture qui compte.
     function skillFlies(unit){ return !mountOf(unit)&&terrainSkillsOf(unit).some(s=>s.vol===true); }
     const MOUNT_SHARED=["Courage","Volonté"];
@@ -229,8 +213,6 @@
     // Plus facile à toucher : + SIZE.hit[taille] au Toucher (corps à corps, tir, sorts qui visent).
     function sizeHitBonus(defender){ return Number(SIZE.hit[sizeOf(defender)])||0; }
     const heightDiffOf=(attacker,defender)=>heightOf?(Number(heightOf(attacker))||0)-(Number(heightOf(defender))||0):0;
-    // Le bonus de Discrétion d'une couverture, pour le repérage (doc 04 : +30 partielle, +60 totale).
-    const coverDiscretion=level=>level==="totale"?STEALTH.totalCover:level==="partielle"?STEALTH.partialCover:0;
     // Mode sentinelle (Idan, 2026-11-06) : le tir de sentinelle gagne en précision (au Toucher) et enchaîne comme au corps à
     // corps (Enchaînement de tirs : diviseur par N au lieu de 1,5 × N).
     const SENTINEL={
@@ -711,7 +693,7 @@
     // Discrétion et camouflage (doc 04 ; Idan, 2026-10-28) : un personnage que l'ennemi n'a jamais vu est camouflé
     // (unit.camouflaged) ; au début de chaque tour, chaque personnage tente de repérer chaque ennemi encore camouflé dans sa
     // ligne de vue : P = 100 / (1 + e^(−Δ/15)), Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance, de 5 à 95 %.
-    // cover : le bonus de couverture (STEALTH.partialCover, STEALTH.totalCover), quand le décor existera.
+    // cover : un bonus de Discrétion (grille carrée : le « Se cacher » de sa case ; l'éclaireur : STEALTH.scoutCover).
     // Un cavalier (Idan, 2026-11-07 : « Quand un cavalier est sur une monture, c'est la discrétion minimale des deux qui est
     // prise en compte. ( Dur de se camoufler sur un dragon) ») : la plus basse du cavalier et de sa monture.
     function stealthOf(unit){
@@ -740,7 +722,7 @@
     function resolveScouting(scout,enemies=[]){
       const alone={character:scout?.character,activeSet:scout?.activeSet||1},d=STEALTH.scoutDistance,capture=[];
       for(const foe of enemies){
-        const r=rollDetection(foe,alone,d,STEALTH.totalCover);
+        const r=rollDetection(foe,alone,d,STEALTH.scoutCover);
         capture.push({foe,...r});
         if(r.spotted) return {captured:true,by:foe,capture,looks:[],spotted:[]};
       }
@@ -848,9 +830,12 @@
           delta-=40*(distance-free)/(range.max-free);
         }
       }
-      // Couverture (doc 04 ; Idan, 2026-11-06) : context.cover, « partielle » ou « totale », au tir et en défense de charge.
+      // Esquive du terrain (grille carrée, doc 04 ; Idan, 2026-11-17 : « On vire tout le système de couverture ») :
+      // context.terrainDodge, l'Esquive de la case et de l'arête de la cible (déjà doublée en charge), s'ajoute à la sienne :
+      // face à une attaque à 50 %, +20 la ramène à 32 % environ, +40 à 20 % ; jamais sous 10 %.
+      delta-=Number(context.terrainDodge)||0;
       // context.factor : la charge aérienne (× 1,2 pour le chargeur, × 0,5 pour la contre-charge), au plus 100 %.
-      return Math.min(100,clamp(logistic(delta),10,90)*coverHitFactor(context.cover)*(Number(context.factor)||1));
+      return Math.min(100,clamp(logistic(delta),10,90)*(Number(context.factor)||1));
     }
 
     // Charge à cheval (Idan, 2026-11-07) : la moitié de la Force du cheval s'ajoute à celle du cavalier.
@@ -1056,21 +1041,21 @@
 
       // Tir de sentinelle (Idan, 2026-11-06) : + SENTINEL.precision au Toucher.
       const sentinel=mode==="ranged"&&Boolean(options.sentinel);
-      // Couverture : au tir, et contre une charge (options.cover : « partielle » ou « totale »).
-      const cover=(mode==="ranged"||chargePower>0)&&COVER[options.cover]?options.cover:null;
+      // Esquive du terrain : au tir, et contre une charge (options.terrainDodge, celle de sa case et de son arête).
+      const terrainDodge=mode==="ranged"||chargePower>0?Number(options.terrainDodge)||0:0;
       const heightDiff=options.heightDiff??heightDiffOf(attacker,defender);
       // Charge aérienne (doc 04 ; Idan, 2026-11-09) : options.aerialCharge, une arme qui frappe dans la charge (Toucher,
       // Blesser et dégâts × AERIAL.bonus) ; options.againstAerialCharge, une contre-charge contre elle (Toucher × AERIAL.counter).
       const aerial=mode==="melee"&&Boolean(options.aerialCharge);
       const hitFactor=(aerial?AERIAL.bonus:1)*(options.againstAerialCharge?AERIAL.counter:1);
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{}),...(heightDiff?{heightDiff}:{}),
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(terrainDodge?{terrainDodge}:{}),...(heightDiff?{heightDiff}:{}),
         ...(aerial?{aerialCharge:true}:{}),...(options.againstAerialCharge?{againstAerialCharge:true}:{})};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
         if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
       }
-      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover,heightDiff,factor:hitFactor});
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,terrainDodge,heightDiff,factor:hitFactor});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
@@ -1239,7 +1224,18 @@
     // attaques d'opportunités ? » ; « oui »).
     function threatens(unit,hex){
       if(!unit?.alive||unit.fleeing) return false;
-      return usableHands(unit,axialDistance(unit,hex)).some(h=>h.mode==="melee");
+      const distance=axialDistance(unit,hex);
+      if(distance===1&&!meleeReach(unit,hex)) return false;
+      return usableHands(unit,distance).some(h=>h.mode==="melee");
+    }
+    // Au contact, on frappe à travers l'arête qui sépare les deux (grille carrée : pas à travers une palissade ni une
+    // meurtrière, « on ne tape pas au cac à travers une meurtrière » ; « du bois plein. On fait le tour »). Une grande
+    // créature frappe si l'une de ses cases au contact le peut.
+    function meleeReach(a,b){
+      const map=gridMapOf();
+      if(!grid||!map) return true;
+      const from=a?.character?footprint(a):[a],to=b?.character?footprint(b):[b];
+      return from.some(x=>to.some(y=>hexDistance(x,y)===1&&grid.meleeThrough(map,x,y)));
     }
 
     // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
@@ -1502,7 +1498,7 @@
       stealthOf,
       mentalStat,
       mountChargeForce,
-      aerialCharger,terrainSkillsOf,terrainEffect,skillFlies,grid,
+      aerialCharger,terrainSkillsOf,skillFlies,grid,meleeReach,
       AERIAL,
       mountHitChance,
       rollShotTarget,
@@ -1516,11 +1512,9 @@
       POISON,
       STEALTH,
       SENTINEL,
-      COVER,
       CHARGE_FALL,
       ALTITUDE,
-      coverHitFactor,
-      coverDiscretion,resolveScouting,
+      SCOUT_COVER:STEALTH.scoutCover,resolveScouting,
       detectionChance,
       rollDetection,
       spellWoundChance,

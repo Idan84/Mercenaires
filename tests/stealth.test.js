@@ -68,7 +68,7 @@ const chance=(o,t,d,c=0)=>Math.round(engine.detectionChance(o,t,d,c)*10)/10;
 assert.equal(chance(archer,sneaky,3),95,"à 3 cases, on le voit (95 % au plus)");
 assert.equal(chance(archer,sneaky,8),95);
 assert.equal(chance(lancer,sneaky,12),59.9);
-assert.equal(chance(archer,sneaky,8,engine.STEALTH.partialCover),56.6,"couverture partielle : +30 de Discrétion, qui compte double");
+assert.equal(chance(archer,sneaky,8,30),56.6,"caché dans la végétation souple (Se cacher +30, grille carrée) : +30 de Discrétion, qui compte double");
 assert.equal(chance(lancer,unitOf({},{Discrétion:200}),20),0.1,"jamais moins de 0,1 %");
 assert.equal(chance(unitOf({Perception:60}),unitOf({},{Discrétion:100}),5),1.3,"40 points d'avance : 1,3 % (16 % avant)");
 // Avancée cachée (Illusion) : la Discrétion du bonus compte.

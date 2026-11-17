@@ -57,25 +57,31 @@ const element=()=>({textContent:"",innerHTML:"",disabled:false,title:"",style:{}
 const elements={};
 const $=id=>elements[id]||(elements[id]=element());
 const game={campaign:null,captain,referenceData:reference};
-const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack});
+let api=null;
+const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack,gridMap:()=>api?.missionGridMap()});
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,shortestMissionPath,missionReachablePaths,"
-  +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,missionChargeCheck,performMissionAttack,missionForcedMove,"
+  +"moveMissionUnitAlongPath,missionLineOfSight,missionChargeIfClear,missionChargeCheck,performMissionAttack,missionForcedMove,"
   +"generateMissionDecor,missionCellLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
-  +"missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
+  +"missionTerrainDodge,missionGridMap,missionCanAttack,missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
   +"missionMagic,missionSpellPreviewRows,targetableMissionCells,renderMission,missionActionAvailability";
-const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
+api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
   "MercenairesMagic",source+"\nreturn {"+EXPOSED+"};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
-// 2. Le moteur : le Toucher × 0,5 ou × 0,25 derrière une couverture ; la chute de charge augmente avec les pas lents.
+// 2. Le moteur : l'Esquive du terrain (grille carrée, doc 04 ; Idan, 2026-11-17 : « On vire tout le système de
+// couverture ») s'ajoute à celle de la cible dans la formule du toucher, jamais sous 10 % ; la chute de charge augmente
+// avec les pas lents.
 const units=[2,3].map(id=>generator.createMercenary({id,captain}));
 const a={character:units[0],activeSet:1,q:0,r:0},b={character:units[1],activeSet:1,q:5,r:0};
 const plain=engine.hitProbability(a,b,"ranged",5);
-assert.equal(engine.hitProbability(a,b,"ranged",5,{cover:"partielle"}),plain*0.5);
-assert.equal(engine.hitProbability(a,b,"ranged",5,{cover:"totale"}),plain*0.25);
-assert.equal(engine.hitProbability(a,b,"ranged",5,{cover:"sans"}),plain);
-assert.deepEqual([engine.coverDiscretion("partielle"),engine.coverDiscretion("totale"),engine.coverDiscretion(null)],[30,60,0]);
+const logit=p=>-20*Math.log(80/(p-10)-1);
+const shifted=d=>10+80/(1+Math.exp(-(logit(plain)-d)/20));
+assert.ok(plain>10&&plain<90,"un tir ni sûr ni impossible");
+assert.ok(Math.abs(engine.hitProbability(a,b,"ranged",5,{terrainDodge:30})-shifted(30))<1e-9,"+30 d'Esquive, comme 30 points d'Esquive en plus");
+assert.ok(Math.abs(engine.hitProbability(a,b,"ranged",5,{terrainDodge:500})-10)<1e-9,"jamais sous 10 %");
+assert.ok(engine.hitProbability(a,b,"ranged",5,{terrainDodge:-20})>plain,"une Esquive négative (la neige) aide le tireur");
+assert.equal(engine.COVER,undefined,"plus de couverture");
 assert.deepEqual([engine.CHARGE_FALL.base,engine.CHARGE_FALL.perSlowStep],[2,5]);
 
 const at=(unit,q,r)=>{ unit.q=q; unit.r=r; return unit; };
@@ -152,7 +158,8 @@ api.setMissionMode("move");
 api.handleMissionHexClick(2,4);
 assert.deepEqual([u.q,u.r,u.movementRemaining],[2,4,0]);
 
-// 4. La vue : un mur ou une forêt coupe la ligne de vue ; un gros rocher, non. Dans la forêt, on n'est vu qu'au contact.
+// 4. La vue, grille carrée : un mur, une montagne, un rocher (une case Mur) ou une forêt coupe la ligne de vue. Dans la
+// forêt, on n'est ciblable qu'au contact ; de sa case, on voit dehors (« s'il est à l'orée de la forêt »).
 m=newMission([{q:4,r:4,code:"mur"}]);
 let [shooter,foe]=[m.players[0],m.enemies[0]];
 at(foe,7,4);
@@ -160,59 +167,81 @@ assert.equal(api.missionLineOfSight(shooter,foe),false,"derrière un mur");
 m=newMission([{q:4,r:4,code:"gros_rocher"}]);
 [shooter,foe]=[m.players[0],m.enemies[0]];
 at(foe,7,4);
-assert.equal(api.missionLineOfSight(shooter,foe),true,"un gros rocher laisse voir");
+assert.equal(api.missionLineOfSight(shooter,foe),false,"un gros rocher (une case Mur, montagne, rocher) bloque la vue");
 m=newMission([{q:4,r:4,code:"foret"}]);
 [shooter,foe]=[m.players[0],m.enemies[0]];
 at(foe,7,4);
 assert.equal(api.missionLineOfSight(shooter,foe),false,"derrière une forêt, on ne voit pas");
 at(foe,4,4);
 assert.equal(api.missionLineOfSight(shooter,foe),false,"dans la forêt, invisible de loin");
+assert.equal(api.missionLineOfSight(foe,shooter),true,"mais lui, à l'orée de la forêt, voit dehors");
 at(shooter,3,4);
 assert.equal(api.missionLineOfSight(shooter,foe),true,"au contact, on le voit");
+m=newMission([{q:4,r:4,code:"foret"},{q:5,r:4,code:"foret"}]);
+[shooter,foe]=[at(m.players[0],1,4),at(m.enemies[0],5,4)];
+assert.equal(api.missionLineOfSight(foe,shooter),false,"du fond de la forêt, une autre case de forêt cache la vue");
 // La ligne qui frôle le coin d'un mur (Idan, 2026-11-14 : « Frôler ne bloque pas ») : de (3,4) à (5,3), elle passe pile entre
-// (4,4) et (4,3) ; un mur d'un côté ou de l'autre ne la coupe pas, les deux, si (avant : un seul côté comptait, toujours le
-// même, et un mur collé au tireur coupait plus de tirs d'un côté que de l'autre).
+// (4,4) et (4,3) ; un mur d'un côté ou de l'autre ne la coupe pas, les deux, si.
 for(const [walls,seen,label] of [[[[4,4]],true,"un mur d'un côté"],[[[4,3]],true,"ou de l'autre"],[[[4,4],[4,3]],false,"les deux côtés"]]){
   m=newMission(walls.map(([q,r])=>({q,r,code:"mur"})));
   [shooter,foe]=[at(m.players[0],3,4),at(m.enemies[0],5,3)];
   assert.equal(api.missionLineOfSight(shooter,foe),seen,label);
   assert.equal(api.missionLineOfSight(foe,shooter),seen,label+" : dans les deux sens");
 }
+// Les arêtes : le muret laisse voir ; la palissade et la meurtrière, un seul sens (du côté défendu vers l'extérieur).
+m=newMission([{q:5,r:4,side:2,code:"muret"}]);
+[shooter,foe]=[at(m.players[0],1,4),at(m.enemies[0],7,4)];
+assert.equal(api.missionLineOfSight(shooter,foe),true,"par-dessus un muret, on voit");
+for(const code of ["palissade","muraille_meurtriere"]){
+  m=newMission([{q:5,r:4,side:2,code}]);
+  [shooter,foe]=[at(m.players[0],1,4),at(m.enemies[0],7,4)];
+  assert.equal(api.missionLineOfSight(foe,shooter),true,code+" : de l'intérieur, on voit dehors");
+  assert.equal(api.missionLineOfSight(shooter,foe),false,code+" : de l'extérieur, on ne voit pas dedans");
+}
 
-// 5. La couverture : le décor collé à la cible sur la ligne de tir, ou sa propre case ; pas celui collé au tireur.
-m=newMission([{q:6,r:4,code:"gros_rocher"},{q:2,r:4,code:"muret"}]);
+// 5. L'Esquive du terrain (doc 04) : celle de la case de la cible et de l'arête qui lui fait face, contre les tirs ; pas
+// l'arête collée au tireur (elle le protège, lui) ; pas au corps à corps.
+m=newMission([{q:7,r:4,side:2,code:"muret"},{q:1,r:4,side:0,code:"muret"}]);
 [shooter,foe]=[m.players[0],m.enemies[0]];
 at(foe,7,4);
-assert.equal(api.missionCoverLevel(shooter,foe),"totale","derrière le gros rocher");
-assert.equal(api.missionCoverLevel(foe,shooter),"partielle","le muret collé à l'archer le protège du tir de l'ennemi");
-m.decor=[{q:2,r:4,code:"muret"}];
-assert.equal(api.missionCoverLevel(shooter,foe),null,"mais il ne gêne pas son propre tir");
-m.decor=[{q:6,r:4,code:"gros_rocher"},{q:2,r:4,code:"muret"}];
+assert.equal(api.missionTerrainDodge(shooter,foe),30,"derrière le muret : +30");
+assert.equal(api.missionTerrainDodge(foe,shooter),30,"le muret collé à l'archer le protège du tir de l'ennemi");
+m.decor=[{q:1,r:4,side:0,code:"muret"}];
+assert.equal(api.missionTerrainDodge(shooter,foe),0,"mais il ne gêne pas son propre tir");
+m.decor=[{q:7,r:4,side:2,code:"muret"}];
 at(foe,7,2);
-assert.equal(api.missionCoverLevel(shooter,foe),null,"de biais, le rocher n'est plus sur la ligne");
-m=newMission([{q:7,r:4,code:"buissons"}]);
+assert.equal(api.missionTerrainDodge(shooter,foe),0,"le muret est resté en (7,4)");
+m.decor=[{q:7,r:2,side:2,code:"muret"}];
+assert.equal(api.missionTerrainDodge(shooter,foe),30,"de biais, l'arête qui fait face au tireur");
+at(foe,7,4);
+m.decor=[{q:7,r:4,code:"foret"}];
+at(shooter,6,4);
+assert.equal(api.missionTerrainDodge(shooter,foe),30,"dans la forêt : +30");
+at(shooter,1,4);
+m=newMission([{q:7,r:4,side:2,code:"muret"}]);
 [shooter,foe]=[m.players[0],m.enemies[0]];
 at(foe,7,4);
-assert.equal(api.missionCoverLevel(shooter,foe),"partielle","dans les buissons");
-// Le tir passe la couverture au moteur ; l'aperçu l'affiche.
+// Le tir passe l'Esquive du terrain au moteur ; le journal et l'aperçu l'affichent.
 const seen=[];
 const realResolve=engine.resolveAttack;
 engine.resolveAttack=(x,y,o)=>{ const r=realResolve(x,y,o); seen.push({o,r}); return r; };
 api.performMissionAttack(shooter,foe,"ranged",engine.axialDistance(shooter,foe));
-assert.equal(seen[0].o.cover,"partielle");
-assert.equal(seen[0].r.cover,"partielle");
-assert.equal(seen[0].r.pHit,engine.hitProbability(shooter,foe,"ranged",seen[0].r.distance,{cover:"partielle"}));
-assert.ok(m.log.some(x=>/\(couverture partielle\)/.test(x.message)),"le journal le dit");
+assert.equal(seen[0].o.terrainDodge,30);
+assert.equal(seen[0].r.terrainDodge,30);
+assert.equal(seen[0].r.pHit,engine.hitProbability(shooter,foe,"ranged",seen[0].r.distance,{terrainDodge:30}));
+assert.ok(m.log.some(x=>/\(Esquive du terrain \+30\)/.test(x.message)),"le journal le dit");
 api.setMissionMode("ranged");
-assert.equal(api.missionAttackPreview(shooter,foe)[0].cover,"partielle");
-// Au corps à corps (hors charge), pas de couverture.
+assert.equal(api.missionAttackPreview(shooter,foe)[0].terrainDodge,30);
+// Au corps à corps (hors charge), pas d'Esquive du terrain.
 seen.length=0;
 const blade=m.players[1];
-at(blade,6,4);
+at(blade,8,4);
 api.performMissionAttack(blade,foe,"melee",1);
-assert.equal(seen[0].r.cover,undefined,"pas au corps à corps");
+assert.equal(seen[0].r.terrainDodge,undefined,"pas au corps à corps");
 engine.resolveAttack=realResolve;
-// Repérage : la couverture donne de la Discrétion.
+// Repérage : caché dans les buissons (végétation souple, « Se cacher » +30), plus de Discrétion.
+m=newMission([{q:7,r:4,code:"buissons"}]);
+at(m.enemies[0],7,4);
 const realDetect=engine.rollDetection,bonuses=[];
 engine.rollDetection=(o,t,d,c)=>{ bonuses.push(c); return realDetect(o,t,d,c); };
 for(const x of [...m.players,...m.enemies]) x.camouflaged=true;
@@ -220,8 +249,8 @@ api.resolveMissionDetection();
 engine.rollDetection=realDetect;
 assert.ok(bonuses.includes(30),"+30 dans les buissons");
 
-// 6. La charge : elle traverse un décor lent, avec plus de chute ; pas un décor infranchissable ; la cible derrière une
-// couverture est protégée.
+// 6. La charge : elle traverse un décor lent, avec plus de chute ; pas un décor infranchissable ; l'Esquive du terrain du
+// chargé compte double (« Je charge face à la palissade, il a 120 d'esquive ») ; pas de coup à travers une palissade.
 m=newMission();
 const charger=at(m.players[1],1,4);
 foe=m.enemies[0];
@@ -251,10 +280,15 @@ assert.equal(api.missionChargeCheck(charger,foe).reason,"déjà au contact");
 at(foe,1+base+1,4);
 assert.equal(api.missionChargeCheck(charger,foe).reason,null);
 const last=api.missionChargeIfClear((m.decor=[],charger),foe).destination;
-m.decor=[{q:last.q,r:last.r,code:"buissons"}];
+m.decor=[{q:last.q,r:last.r,code:"buissons"},{q:last.q,r:last.r,side:0,code:"muret"}];
 charge=api.missionChargeIfClear(charger,foe);
-assert.equal(charge.cover,"partielle","la cible derrière les buissons");
+assert.equal(charge.dodge,60,"derrière un muret (+30), en charge : double");
 assert.equal(charge.slowSteps,0.5,"les buissons (végétation souple) : 1,5 − 1");
+m.decor=[{q:last.q,r:last.r,side:0,code:"palissade"}];
+assert.equal(api.missionChargeIfClear(charger,foe),null,"pas de charge à travers une palissade");
+assert.equal(api.missionChargeCheck(charger,foe).reason,"pas de corps à corps à travers la palissade");
+m.decor=[{q:last.q,r:last.r,code:"buissons"},{q:last.q,r:last.r,side:0,code:"muret"}];
+charge=api.missionChargeIfClear(charger,foe);
 seen.length=0;
 engine.resolveAttack=(x,y,o)=>{ const r=realResolve(x,y,o); seen.push({o,r}); return r; };
 at(charger,charge.destination.q,charge.destination.r); // au bout de la course
@@ -263,7 +297,7 @@ api.performMissionAttack(charger,foe,"melee",1,charge);
 forced=null;
 engine.resolveAttack=realResolve;
 assert.equal(seen[0].o.chargeSlowSteps,0.5);
-assert.equal(seen[0].o.cover,"partielle");
+assert.equal(seen[0].o.terrainDodge,60);
 assert.equal(seen[0].r.chargeFall,true,"pieds dans le tapis");
 assert.equal(seen[0].r.pFall,4.5);
 assert.ok(m.log.some(x=>/terrain difficile : 5 %, jet 4/.test(x.message)));
@@ -309,25 +343,38 @@ assert.match(source,/game\.mission\.decor=generateMissionDecor\(\);/);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
 for(const d of decors.rows) assert.match(css,new RegExp('\\.hex-decor\\[data-decor="'+d.code+'"\\]\\{background-image:url\\("data:image/svg\\+xml,'),d.code);
 assert.match(source,/data-decor="\$\{esc\(row\.code\)\}"/);
-// 9. Les sorts qui volent comme une flèche (Idan, 2026-11-06 : « oui pour les sorts qui volent ») : la couverture compte.
-m=newMission([{q:7,r:4,code:"buissons"}]);
+// 9. Les sorts qui volent comme une flèche (Idan, 2026-11-06 : « oui pour les sorts qui volent ») : l'Esquive du terrain compte.
+m=newMission([{q:7,r:4,side:2,code:"muret"}]);
 const mage=m.players[0],prey=at(m.enemies[0],7,4);
 mage.character.skills.magic.Feu=60;
 mage.character.stats["Réserve de mana"]=200;mage.character.mana=200;
 mage.character.spells=[{code:"fire_bolt",name:"Trait de feu",school:"Feu",mastery:40}];
 const magic=api.missionMagic();
 const bare=magic.hitChance(mage,prey,"fire_bolt");
-assert.equal(magic.hitChance(mage,prey,"fire_bolt",{cover:"partielle"}),bare*0.5);
-assert.equal(magic.hitChance(mage,prey,"fire_bolt",{cover:"totale"}),bare*0.25);
-forced=0.01; // le sort réussit (sinon pas de couverture à lire)
+assert.ok(magic.hitChance(mage,prey,"fire_bolt",{terrainDodge:30})<bare);
+forced=0.01; // le sort réussit (sinon pas de toucher à lire)
 const out=api.resolveMissionSpell(mage,prey,"fire_bolt");
 forced=null;
 assert.ok(out.ok,out.reason);
-assert.equal(out.cover,"partielle");
-assert.equal(out.pHit,bare*0.5);
-assert.match(api.missionSpellPreviewRows(mage,"fire_bolt",prey.q,prey.r),/<dt>Couverture<\/dt><dd>partielle<\/dd>/);
+assert.equal(out.terrainDodge,30);
+assert.equal(out.pHit,magic.hitChance(mage,prey,"fire_bolt",{terrainDodge:30}));
+assert.match(api.missionSpellPreviewRows(mage,"fire_bolt",prey.q,prey.r),/<dt>Esquive du terrain<\/dt><dd>\+30<\/dd>/);
 // Un sort de zone, non (pas de cible visée comme une flèche).
 assert.equal(reference.spells.rows.find(x=>x.code==="fireball").toucher===undefined||reference.spells.rows.find(x=>x.code==="fireball").toucher===null,true);
+
+// 9 bis. Le corps à corps à travers une arête (doc 04) : par-dessus un muret, oui ; à travers une palissade ou une
+// meurtrière, non (« on ne tape pas au cac à travers une meurtrière » ; « du bois plein. On fait le tour »), ni la zone de
+// menace (pas d'attaque d'opportunité à travers).
+m=newMission([{q:7,r:4,side:2,code:"muret"}]);
+const swordsman=at(m.players[1],6,4),target=at(m.enemies[0],7,4);
+assert.equal(api.missionCanAttack(swordsman,target,"melee"),true,"par-dessus un muret");
+assert.equal(engine.threatens(target,{q:6,r:4}),true);
+for(const code of ["palissade","muraille_meurtriere"]){
+  m.decor=[{q:7,r:4,side:2,code}];
+  assert.equal(api.missionCanAttack(swordsman,target,"melee"),false,code+" : pas à travers");
+  assert.equal(engine.threatens(target,{q:6,r:4}),false,code+" : pas de menace à travers");
+  assert.equal(engine.threatens(target,{q:7,r:3}),true,code+" : sur les autres côtés, si");
+}
 
 // 10. L'IA contourne le décor : un mur entre elle et sa cible, elle passe par le trou au lieu de s'y coller.
 m=newMission([{q:5,r:2,code:"mur"},{q:5,r:3,code:"mur"},{q:5,r:4,code:"mur"},{q:5,r:5,code:"mur"},{q:5,r:6,code:"mur"}]);
@@ -397,4 +444,4 @@ assert.equal(api.missionActionAvailability().move,false,"ni mouvement ni attaque
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(!html.includes("mission-second-move-btn"),"le bouton Second mouvement a disparu");
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\.hex-cell\.reachable\.second-move\{background:/);
-console.log("Décor : passage (PM au quart, arêtes, infranchissable), vue (mur, forêt, au contact), couverture (tir, charge, sorts qui volent, repérage), chute de charge, IA (contourne, va chercher), Mission Test — OK");
+console.log("Décor : passage (PM au quart, arêtes, infranchissable), vue (mur, forêt, au contact, arêtes un seul sens), Esquive du terrain (tir, charge × 2, sorts qui volent), Se cacher au repérage, corps à corps à travers une arête, chute de charge, IA (contourne, va chercher), Mission Test — OK");

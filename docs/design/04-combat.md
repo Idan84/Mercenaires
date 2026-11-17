@@ -153,6 +153,30 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **Arme d'hast** : elle frappe par-dessus un allié collé ou un personnage au sol, pas par-dessus un ennemi.
 - **Le tir raté** peut toujours toucher quelqu'un dans le couloir de tir (« Approximation projectile V1 »).
 
+### Étape 4 : les objets du décor (Idan, 2026-11-17, V1)
+
+> « Pour moi, soit c'est juste graphique... Soit c'est une arête, non ? » « On ajoutera surtout des objets avec le
+> graphisme et le générateur de carte graphique. Là, l'idée c'est d'avoir une jouabilité moche ! »
+
+Un objet du décor est le **dessin d'une case** des étapes 1 et 2, ou **une arête**. Les décors d'aujourd'hui :
+
+| Décor d'aujourd'hui | Devient |
+|---|---|
+| Buissons, Blé haut | case Végétation souple |
+| Forêt | case Forêt |
+| Marais | case Boue, marais, neige |
+| Eau peu profonde, Eau profonde, Éboulis | leur case |
+| Gros rocher, Mur | case Mur / Montagne / Rocher |
+| Gouffre | case Gouffre, vide, lave |
+| Muret, Tombe, Caisses, Tonneaux | arête Muret |
+| Palissade | arête Palissade |
+| Maison | un plan : des cases Mur autour de cases Plancher ; la porte est une case Plancher dans le mur, avec son dessin (s'ouvrir et se fermer : plus tard) |
+
+- **La fenêtre** : à voir ; plutôt qu'une case mur, une case de sol avec une arête muret (« on peut retirer la case mur
+  et mettre une case sol + muret ? »).
+- **Les paysages** (Vieille carrière, Cimetière, Château en ruine…) suivent ce tableau ; sans altitude, ils perdent leurs
+  collines, leurs rampes et le camp en hauteur.
+
 ## Initiative & ordre interne V1
 
 [Initiative interne d'équipe V1](/design/#doc=formulas/initiative-interne-d-equipe-v1.md) est calculée **avant la mission** et visible pendant la préparation.

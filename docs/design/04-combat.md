@@ -34,8 +34,8 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 > codé ; une vue isométrique viendra ensuite (« une carte serrée à la X-COM où l'on découvre ses adversaires »).
 
 - **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
-- **Déplacement** : une diagonale coûte **2 PM** ; on ne passe pas en diagonale entre deux obstacles qui se touchent par
-  le coin. Les valeurs de PM et de portée restent celles d'aujourd'hui ; l'équilibrage vient après.
+- **Déplacement en ligne droite seulement** (Idan : « On ne se déplace qu'en ligne droite ») : une case en diagonale,
+  c'est deux pas. Les valeurs de PM et de portée restent celles d'aujourd'hui ; l'équilibrage vient après.
 - **Fractions de PM** (Idan, 2026-11-17 : option A, puis « 0,75 pour des routes et du plancher ») : une case peut
   coûter un quart de point près (0,75 ; 1 ; 1,5…), pour garder « 1 PM = 1 case normale ». Le reste qui ne suffit pour
   entrer dans aucune case est perdu à la fin du tour.
@@ -46,67 +46,92 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **Encerclement** : deux adversaires sur des côtés opposés (pris en tenaille).
 - **Tir** : la portée en losange ; la ligne de vue passe en diagonale, même entre deux obstacles qui se touchent par le
   coin, si rien n'est sur la diagonale elle-même (« si rien n'est dans la diago, ça passe »).
-- **Couverture** (« différencier obstacles de déplacement et couvertures ») : un **obstacle** (arbre, rocher) est sur la
-  case, il définit la ligne de vue et le déplacement ; une **couverture** est posée sur une **arête** entre deux cases.
-  Le détail : voir « Remise à plat : la case » ci-dessous.
+- **Plus de couverture** (Idan : « On vire tout le système de couverture ») : l'Esquive des cases et des arêtes la
+  remplace (voir « Le modèle de la case » ci-dessous).
 - **Sorts** : les zones en rayon en losange ; les sorts en ligne, les cônes et les murs **seulement en ligne droite**,
   sans diagonale (« ça oblige à bien se placer »).
-- **Charge** : dans les **8 directions**, en ligne stricte (une diagonale coûte 2 PM par case), sans contourner d'obstacle.
+- **Charge** : dans les **8 directions**, en ligne stricte (une diagonale coûte 2 PM par case), sans contourner d'obstacle ;
+  les arêtes qu'elle franchit en diagonale restent à préciser. L'Esquive du chargé compte double (ci-dessous).
 - **Grosses créatures** : cheval 1×2, mammouth, tricératops et **cerbère 2×2**, énorme 3×3. Une créature qui fait plus
   d'une case se déplace par rapport à sa **tête** : elle va dans la direction choisie depuis la case de sa tête.
 - **Carte** : 36 × 25 cases, comme aujourd'hui ; la taille se règle avec l'équilibrage.
 
-### Remise à plat : la case (Idan, 2026-11-17)
+### Le modèle de la case (Idan, 2026-11-17)
 
 > « On retire l'altitude pour l'instant. Trop complexe à gérer en phase 1. » « On va séparer la fonction de l'obstacle
-> de sa représentation graphique. Une maison sera bien plus grande qu'une case et on pourra rentrer dedans. » « En gros,
-> une case est définie par 4 arêtes (NSOE) et sa surface. » Travaillé étape par étape dans l'artefact « Grille de
-> combat » : 1 les sols, 2 les arêtes, 3 les personnages, 4 les objets du décor.
+> de sa représentation graphique. » Puis, en reprenant tout : « un mur prend une case complète, il a de l'épaisseur !
+> Contrairement à une palissade » ; « On vire tout le système de couverture ». Travaillé étape par étape dans
+> l'artefact « Grille de combat » : 1 les cases, 2 les arêtes, 3 les personnages, 4 les objets du décor.
 
 - **Phase 1 sans altitude** : collines, falaises, camps en hauteur et ±10 au toucher sortent de la grille carrée. La
   section « Altitude » plus bas décrit le jeu actuel ; elle pourra revenir en phase 2.
-- **La règle d'un côté, le dessin de l'autre** : un sol, une arête ou un objet peut avoir plusieurs dessins. Une maison
-  est un plan de plusieurs cases (ses murs, sa porte, ses fenêtres, son sol), et l'on entre dedans.
-- **Une case = une surface + 4 arêtes** (nord, sud, est, ouest).
-  - La **surface** : le coût pour y entrer (PM), la couverture à distance, et un bonus pour **Se cacher**, une action
-    rapide à venir (« La nature de la case pourrait effectivement ajouter un bonus de discrétion »).
-  - L'**arête** : malus de déplacement, ligne de vue, couverture à distance, couverture au corps à corps ; les trois
-    dernières sont « très liées... On ne voit pas et on passe pas à travers un mur ».
+- **La règle d'un côté, le dessin de l'autre** : une case ou une arête peut avoir plusieurs dessins (« C'est une
+  variation graphique mais la même chose »). Une maison est un plan de plusieurs cases (murs, plancher), et l'on entre
+  dedans.
+- **Une case** a :
+  - sa **vitesse de déplacement** : les PM pour y entrer, au quart de point ;
+  - un **bonus de Discrétion** quand on s'y cache (« Se cacher », une action rapide à venir) ;
+  - **bloque la vue**, oui ou non. Dedans, on n'est **ciblable qu'au contact** ; de sa case, on voit et on tire dehors
+    si aucune autre case qui bloque la vue n'est entre soi et la cible (« s'il est à l'orée de la forêt ») ;
+  - un **bonus d'Esquive** pour celui qui s'y tient, parfois sous condition (Respiration aquatique), et qui peut être
+    **négatif** (« neige par exemple ou marais.. c'est une bonne idée »).
+- **Un mur a de l'épaisseur** : c'est une case (100 PM, bloque la vue), comme la montagne et le gros rocher (« L'un
+  construit par dame nature, l'autre par les humains (ou les nains !) »).
+- **Une arête est partagée par les deux cases qu'elle sépare, avec deux faces**, dedans et dehors (« Partagée deux
+  faces » ; « Quand on est plaqué contre une muraille... Le côté où on est plaqué change pas ») :
+  - **franchir** : des PM en plus, de dehors vers dedans et de dedans vers dehors (« c'est le principe d'un mur avec
+    meurtrière à escalader ») ; passer d'une case à l'autre coûte le PM de la case d'arrivée plus le malus de l'arête
+    dans ce sens ;
+  - **voir** : de dehors vers dedans, et de dedans vers dehors ;
+  - **Esquive** : une pour celui de dedans, une pour celui de dehors, plaqué contre ;
+  - **corps à corps à travers** : possible ou non (« on ne tape pas au cac à travers une meurtrière »).
+- **L'Esquive remplace la couverture** : celle de la case et celle de l'arête comptent contre les **tirs**, les **sorts
+  qui volent** comme une flèche (« Pas un sort dans ligne de vue par exemple ») et la **charge** ; pas contre un coup
+  normal au corps à corps. Elle passe par la formule du toucher : face à une attaque à 50 %, +20 d'Esquive la ramène à
+  32 % environ, +40 à 20 % ; jamais sous 10 %.
+- **Charge** : l'Esquive de la case et de l'arête du chargé compte **double** (« Je charge face à la palissade, il a 120
+  d'esquive. Au tour d'après, il n'a que 60 » ; « Je charge dans l'eau une sirène... C'est pas top »). La **charge
+  aérienne** y échappe (« la charge aérienne est très cool ! »).
 - **Rien d'infranchissable pour qui vole ou nage** : « Juste une valeur de déplacement de 100 PM ». Ceux qui volent
-  ignorent les malus de déplacement des surfaces et des arêtes.
-- **Diagonales** : une arête ne couvre pas la diagonale à elle seule. Un tir pile en diagonale (du nord-est, par
-  exemple) est couvert si les arêtes nord **et** est de la case le couvrent, ou si l'arête nord se prolonge sur la case
-  voisine à l'est ; un tir de biais regarde l'arête qui fait face au tireur. Une ligne de vue qui passe pile par un coin
-  n'est bloquée que si les deux arêtes de ce coin bloquent la vue.
+  ignorent les malus de déplacement des cases et des arêtes, et passent au-dessus des murs et des montagnes (1 PM).
+- **Diagonales** : une arête ne protège pas la diagonale à elle seule (« Elle protège si une autre arête de la même case
+  ou adjacente protège ») ; un tir de biais regarde l'arête qui fait face au tireur. Une ligne de vue qui passe pile par
+  un coin n'est bloquée que si les deux arêtes de ce coin bloquent la vue.
 - **Les personnages bloquent la vue, pas la discrétion** : « On ne peut pas viser à l'arc le mec n° 4 d'une file
   indienne si on est en ligne droite. En fait, il agit comme une arête » (étape 3).
-- **La forêt n'existe pas** : « Ce sont juste des arbres les uns à côté des autres ! La surface sur une forêt, c'est
-  juste de la terre » ; ce sont les arbres qui gênent (étape 4). Le Déplacement sylvain sera revu à cette étape.
-- **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas ») ; la
-  charge à travers une arête qui ralentit (à voir).
+- **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas ») ; les
+  arêtes que franchit une charge en diagonale.
 
-### Étape 1 : les sols (Idan, 2026-11-17)
+### Étape 1 : les cases (Idan, 2026-11-17, V1)
 
-Huit sols de règle, chacun avec plusieurs dessins possibles (« C'est une variation graphique mais la même chose »). Le
-coût se compte au quart de point (voir « Fractions de PM » ci-dessus).
+| Case | Dessins, où | PM | Se cacher | Vue | Esquive | Capacités de terrain, notes |
+|---|---|---|---|---|---|---|
+| Terrain par défaut | terre, herbe rase, champs, chemins, camps | 1 | — | laisse voir | — | |
+| Végétation souple | buissons, blé haut, champ de tournesols | 1,5 | +30 | laisse voir | — | vol : 1 PM |
+| Forêt | | 1,5 | — | bloque | +30 | Déplacement sylvain : sans malus et +30 de Discrétion, comme aujourd'hui |
+| Plancher, dallage, route | intérieur des bâtiments ; la route | 0,75 | — | laisse voir | — | |
+| Boue, marais, neige | marais, bords de rivière | 2 | — | laisse voir | — | vol : 1 PM |
+| Eau peu profonde | gués, mares, torrents | 2 | +10 | laisse voir | +25 avec Respiration aquatique | Déplacement aquatique : 1 PM et +30 de Discrétion ; vol : 1 PM |
+| Eau profonde | rivières, lacs | 100 | — | laisse voir | +80 avec Respiration aquatique | Déplacement aquatique : 2 PM ; Respiration aquatique : 1 PM ; vol : 1 PM |
+| Éboulis, pierraille | gorges, carrières, pieds de falaise | 2 | +30 | laisse voir | — | vol : 1 PM ; des murets en forme de rochers pourront s'y ajouter |
+| Gouffre, vide, lave | gorges, ruines effondrées | 100 | — | laisse voir | — | vol : 1 PM |
+| Mur, montagne, rocher | maisons, château, temples, remparts ; montagnes | 100 | — | bloque | — | vol : 1 PM (par-dessus) |
 
-| Sol | Dessins, où | PM | Couverture à distance | Se cacher | Capacités de terrain |
-|---|---|---|---|---|---|
-| Terrain par défaut | terre, herbe rase, champs, chemins, camps ; le sol d'une forêt | 1 | aucune | — | |
-| Végétation souple | buissons, blé haut, champ de tournesols | 1,5 | aucune | +30 | |
-| Plancher, dallage | intérieur des bâtiments ; la route | 0,75 | aucune | — | |
-| Boue, marais | marais, bords de rivière | 2 | aucune | — | |
-| Eau peu profonde | gués, mares, torrents | 2 | aucune | — | Déplacement aquatique : 1 PM et +30 ; Respiration aquatique : couverture partielle |
-| Éboulis, pierraille | gorges, carrières, pieds de falaise | 2 | partielle | +30 | |
-| Eau profonde | rivières, lacs | 100 | aucune | — | Respiration aquatique : 1 PM et couverture totale ; vol : 1 PM |
-| Gouffre, vide | gorges, ruines effondrées | 100 | aucune | — | vol : 1 PM ; la nage n'aide pas |
-
-- **Les sorts changent des cases en un sol qui existe**, pour quelques tours et avec leur propre dessin (« c'est pas un
+- **Les sorts changent des cases en une case qui existe**, pour quelques tours et avec leur propre dessin (« c'est pas un
   type de sol, mais une transformation en sol type Gouffre, vide pendant un certain nombre de tours et avec un
-  graphisme spécifique ») :
-  - la **Flaque de magma** fait du Gouffre (« Le vol permet justement de passer sans soucis ») ;
-  - le **Bourbier** ferait une large zone de Boue au lieu d'immobiliser une case (« C'est peut-être plus simple ») ; la
-    taille de la zone se réglera avec le passage des sorts aux cases carrées.
+  graphisme spécifique ») : la **Flaque de magma** fait du Gouffre (la lave) ; le **Bourbier** ferait une large zone de
+  Boue au lieu d'immobiliser une case (« C'est peut-être plus simple »), la taille de la zone se réglera avec le passage
+  des sorts aux cases carrées.
+
+### Étape 2 : les arêtes (Idan, 2026-11-17, V1)
+
+« Dedans », c'est le côté défendu quand l'arête n'a de sens que d'un côté (la palissade d'un camp, la muraille).
+
+| Arête | Où | Franchir dehors → dedans / dedans → dehors | Voir dedans / dehors | Esquive dedans / dehors | Corps à corps à travers | Notes |
+|---|---|---|---|---|---|---|
+| Muret | champs, fermes, ruines | +0,5 / +0,5 | oui / oui | +30 / +30 | possible | mi-hauteur : « On se baisse, on se relève pour tirer » |
+| Palissade | enceinte des camps | +2 / +2 | non / oui | +60 / à régler | à régler | hauteur d'homme : « Ça se franchit avec une bonne traction » |
+| Muraille avec meurtrière | châteaux, remparts, forts | +4 / +4 | non / oui | +100 / à régler | impossible | elle s'escalade ; différente de la case Mur |
 
 ## Initiative & ordre interne V1
 

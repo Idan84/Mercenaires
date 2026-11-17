@@ -676,7 +676,7 @@ assert.deepEqual(magic.stormStrike({...out.storm,critical:true}).dice,8,"coup cr
 // École de la Télékinésie (Idan, 2026-10-28) : dégâts contondants qui passent par l'armure.
 assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.action,x.cible]),[
   ["attraction","principale","ennemi"],["projection","principale","ennemi"],
-  ["telekinetic_move","rapide","allie_ou_ennemi"],["clash","principale","ennemi"],
+  ["telekinetic_move","rapide","allie_ou_ennemi"],["clash","rapide","ennemi"],
   ["force_field","principale","allie_ou_soi"],["stone_throw","rapide","ennemi"],
   // Idan, 2026-10-31 : la Télékinésie passe à 10 sorts.
   ["weapon_throw","principale","ennemi"],["shockwave","principale","soi"],["leap","rapide","case_vide"],["crush","principale","ennemi"]]);

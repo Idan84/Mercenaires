@@ -65,6 +65,8 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
     potion. Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré ») : le bouton
     « Se cacher », pour qui est encore camouflé et a son action rapide ; au repérage, **+10** de Discrétion
     (`combat.stealth.hide_bonus`) plus le « Se cacher » de la case où il est, tant qu'on ne l'a pas repéré.
+    Il se déplace caché (Idan, 2026-11-17 : « Non, il se déplace caché ;) ») : le +10 le suit, le bonus de case est celui de
+    la case où il se trouve.
 - **C, les personnages et les sorts (fait)** :
   - **C1** : les personnages coupent la ligne de vue des tirs et des sorts selon l'étape 3 (un ennemi cache ceux qui sont
     derrière lui ; un allié collé au tireur, dans les 8 cases autour, ne gêne pas, plus loin il empêche de tirer ; un plus
@@ -72,6 +74,9 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
     caché bloque aussi). Pas au repérage (« Les personnages bloquent la vue, pas la discrétion »). L'arme d'hast frappe à
     2 cases par-dessus un allié collé ou un personnage au sol, pas par-dessus un ennemi debout (en diagonale : par l'un ou
     l'autre côté du coin).
+    Le personnage qui se tient sur la case visée (un sort de zone) ne la cache pas. L'**Entrechoc** demande de voir les
+    deux ennemis, donc côte à côte vus du lanceur ; il passe en **action rapide** (Idan, 2026-11-17 : « On garde ça, mais
+    comme il est bien dur à lancer, on va le passer en action rapide »).
   - **C2** : les sorts en ligne et en cône partent d'une case voisine par un côté (portée 1), droit devant ; le mur suit une
     colonne ou une ligne. C'était déjà vrai depuis A ; un test le garde.
 - **D, l'IA, la Mission Test, la mise en ligne** (à faire).

@@ -882,6 +882,7 @@ queue.push(0,0.99,0.5,0.5,0,0,0,0);
 api.handleMissionHexClick(wet.q,wet.r);
 assert.ok(distant.hp<distant.pvMax&&wet.hp<wet.pvMax);
 assert.ok(logged(/lance Entrechoc sur .* et .* — .* PV contondants .* ; .* PV contondants/));
+assert.deepEqual([u.quickAvailable,u.attackAvailable],[false,true],"Entrechoc : action rapide (Idan, 2026-11-17)");
 // Lancer de pierre : un tir de fronde, pas au contact.
 reset();
 wet.hp=wet.pvMax;

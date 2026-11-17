@@ -22,7 +22,7 @@
     {"source": "Enceinte", "key": "enceinte"},
     {"source": "Décor de l'enceinte (sinon la palissade)", "key": "enceinte_decor"}
   ],
-  "row_count": 15,
+  "row_count": 16,
   "rows": [
     {
       "faction": "Gobelins",
@@ -216,6 +216,19 @@
       "taille": [2, 5],
       "decors": {"eboulis": 4, "gros_rocher": 3, "buissons": 3, "eau_peu_profonde": 1},
       "collines": [1, 3],
+      "hauteur_collines": 1,
+      "camp_hauteur": 0,
+      "rampes": [0, 0],
+      "zone_libre": 4
+    },
+    {
+      "faction": "Tricératops",
+      "enceinte": false,
+      "nom": "Jungle",
+      "groupes": [22, 30],
+      "taille": [2, 5],
+      "decors": {"foret": 6, "buissons": 3, "marais": 2, "eau_peu_profonde": 2, "gros_rocher": 1},
+      "collines": [0, 2],
       "hauteur_collines": 1,
       "camp_hauteur": 0,
       "rampes": [0, 0],

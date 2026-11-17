@@ -481,6 +481,12 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   (1D12, contondant 50), doublées en charge ; gabarit 3 : **tout le monde le monte, les ogres aussi** ; **3 cases** sur la
   carte (taille « grande », + 10 pour le toucher) ; au tir, la monture est visée à 3 ÷ (3 + le cavalier) : 75 % sous un
   humain (67 % sur un destrier), 60 % sous un ogre ; neutre ; « à dos de mammouth ».
+- **Tricératops** (Idan, 2026-11-17 : « C'est une forteresse sur pattes ! En gros, je verrai le profil du mammouth en
+  mieux » ; « Courage : 40 » ; plus gros que le mammouth) : Force 140, Constitution 150 (**524 PV**), **Résistance
+  physique 14** (la plus haute du jeu), Vitesse 25 (**4 cases**, comme le mammouth), Courage 40, Armes naturelles 45 ; les
+  **Cornes** (1D12, perforant 70), doublées en charge ; **gabarit 4** : tout le monde le monte, et au tir la monture est
+  visée à 4 ÷ (4 + le cavalier) : **80 % sous un humain**, 67 % sous un ogre ; 3 cases sur la carte (taille « grande » :
+  le moteur fait 1, 2, 3 ou 7 cases) ; il craint le froid ; neutre ; « à dos de tricératops ».
 - **Les papillons** (Idan, 2026-11-09), qui **volent** tous :
   - **télépathe** (« le drone de repérage ») : Discrétion **300**, Perception 90, Vitesse 110 ; **il n'attaque pas**
     (`attaque` null : pas d'arme) ; personne ne le monte ;

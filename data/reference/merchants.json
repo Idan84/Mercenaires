@@ -1412,6 +1412,10 @@
         {
           "type": "manual",
           "ecole": "Invocation"
+        },
+        {
+          "type": "mount",
+          "objet": "Tricératops"
         }
       ],
       "repliques": {

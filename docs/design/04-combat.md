@@ -79,7 +79,11 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
     comme il est bien dur à lancer, on va le passer en action rapide »).
   - **C2** : les sorts en ligne et en cône partent d'une case voisine par un côté (portée 1), droit devant ; le mur suit une
     colonne ou une ligne. C'était déjà vrai depuis A ; un test le garde.
-- **D, l'IA, la Mission Test, la mise en ligne** (à faire).
+- **D, l'IA, la Mission Test, la mise en ligne** (en cours) : l'IA joue sur la grille carrée sans rien changer à ses
+  règles : elle franchit une palissade (+2 PM) pour frapper, un tireur dont un allié bouche la ligne se décale pour tirer,
+  ses zones et ses sorts suivent la nouvelle ligne de vue. Vérifié en simulation (combats automatiques sur les camps à
+  enceinte et sur la Mission Test, aucun blocage, aucun combat sans fin). Le journal compte en cases. Reste à trancher :
+  l'IA utilise-t-elle « Se cacher » ? Puis la mise en ligne, quand Idan valide.
 
 - **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
 - **Déplacement en ligne droite seulement** (Idan : « On ne se déplace qu'en ligne droite ») : une case en diagonale,

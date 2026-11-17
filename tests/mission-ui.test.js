@@ -80,21 +80,23 @@ function newMission(){
   return game.mission;
 }
 
-// 1. La charge : une ligne droite d'hexagones dans n'importe quelle direction, de 1 à 2 fois le mouvement de base.
+// 1. La charge : cases carrées (doc 04), en ligne droite sur une colonne ou une ligne, de 1 à 2 fois le mouvement de base ;
+// hors d'une ligne droite, pas de charge (la diagonale : à préciser avec Idan).
 let m=newMission();
 let u=at(m.activeUnit,2,4);
 const base=engine.movementBase(u);
 const foe=m.enemies[0];
-const slanted=api.missionCells().find(c=>{
-  const dq=c.q-u.q,dr=c.r-u.r;
-  if(!dq||!dr||dq+dr===0) return false; // pas sur un des six axes
+const slanted=api.missionCells().find(c=>c.q!==u.q&&c.r!==u.r&&(at(foe,c.q,c.r),engine.chargeData(u,foe).valid));
+assert.equal(slanted,undefined,"pas de charge en biais");
+const straight=api.missionCells().find(c=>{
+  if(c.r!==u.r) return false;
   at(foe,c.q,c.r);
   return engine.chargeData(u,foe).valid&&engine.chargeData(u,foe).travel===base;
 });
-assert.ok(slanted,"une case de charge hors des six axes");
-at(foe,slanted.q,slanted.r);
+assert.ok(straight,"une case de charge en ligne droite");
+at(foe,straight.q,straight.r);
 let charge=api.missionChargeIfClear(u,foe);
-assert.ok(charge,"la charge en biais");
+assert.ok(charge,"la charge en ligne droite");
 assert.equal(charge.path.length,base);
 assert.equal(engine.axialDistance(charge.destination,foe),1,"il finit au contact");
 // Un personnage sur la ligne l'empêche ; un bourbier aussi ; une fois dégagée, elle repasse.

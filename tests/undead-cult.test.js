@@ -239,7 +239,7 @@ const home = {q: caster.q, r: caster.r};
 api.enemyMissionAct(caster);
 assert.deepEqual({q: caster.q, r: caster.r}, home, "il reste derrière ses squelettes");
 const near = m.players[1];
-const free = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]].map(([dq, dr]) => ({q: caster.q + dq, r: caster.r + dr}))
+const free = [[-1, 0], [0, -1], [1, 0], [0, 1]].map(([dq, dr]) => ({q: caster.q + dq, r: caster.r + dr}))
   .find(c => !m.enemies.some(u => u.alive && u.q === c.q && u.r === c.r));
 near.q = free.q; near.r = free.r;
 const before = m.log.length;

@@ -346,7 +346,7 @@ assert.ok(out.wall.cells.some(c=>c.q===2&&c.r===0),"centré sur la case visée")
 const cone=magic.coneCells({q:0,r:0},{q:1,r:0},3);
 assert.equal(cone.length,7);
 assert.deepEqual(cone.slice(0,1),[{q:1,r:0}]);
-assert.ok(cone.every(c=>Math.max(Math.abs(c.q),Math.abs(c.r),Math.abs(c.q+c.r))<=3&&c.q>0),"devant le lanceur");
+assert.ok(cone.every(c=>c.q>=1&&c.q<=3&&Math.abs(c.r)<=1),"devant le lanceur, en ligne droite");
 assert.match(magic.canCast(caster,{q:0,r:0},"fiery_breath").reason,/case voisine/);
 assert.match(magic.canCast(caster,{q:2,r:0},"fiery_breath").reason,/hors de portée/);
 queue=[0,0.99,0.5,0.5];
@@ -405,7 +405,7 @@ assert.equal(out.fog.cells.filter(c=>c.r===0).length,1,"en travers : une seule c
 assert.deepEqual(magic.wallCells({q:0,r:0},{q:0,r:3},5),[{q:-2,r:3},{q:-1,r:3},{q:0,r:3},{q:1,r:3},{q:2,r:3}]);
 // Ligne de vue : les cases traversées, extrémités comprises.
 assert.deepEqual(combat.hexLine({q:0,r:0},{q:3,r:0}),[{q:0,r:0},{q:1,r:0},{q:2,r:0},{q:3,r:0}]);
-assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,4);
+assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,3,"cases carrées : une case par pas, en diagonale quand il le faut");
 assert.deepEqual(combat.hexLine({q:2,r:2},{q:2,r:2}),[{q:2,r:2}]);
 // La ligne qui frôle (Idan, 2026-11-14 : « Frôler ne bloque pas ») : pile entre deux cases, une ligne de chaque côté ;
 // sinon, deux fois la même.

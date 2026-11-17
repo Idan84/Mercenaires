@@ -104,16 +104,16 @@ const key=c=>api.missionKey(c.q,c.r);
 const has=(path,c)=>path.some(x=>x.q===c.q&&x.r===c.r);
 
 // 3. Le passage : une case lente coûte 2, 3 ou 4 ; une case infranchissable ne se traverse pas.
-// À travers le marais (3 + 1), ou le détour par l'herbe (3 cases) : le détour ; à coût égal, le moins de cases.
+// Cases carrées : à travers le marais (3 + 1), ou le détour par l'herbe (4 cases) : à coût égal, le moins de cases.
 let m=newMission([{q:2,r:4,code:"marais"}]);
 let u=m.players[0];
 let route=api.shortestMissionPath(u,{q:3,r:4},u);
-assert.equal(has(route,{q:2,r:4}),false,"le détour par l’herbe coûte moins que le marais");
-assert.equal(route.length,3);
+assert.equal(has(route,{q:2,r:4}),true,"marais (3 + 1) contre détour (4) : à coût égal, le plus court en cases");
+assert.equal(route.length,2);
 m=newMission([{q:2,r:4,code:"foret"}]);
 u=m.players[0];
 route=api.shortestMissionPath(u,{q:3,r:4},u);
-assert.ok(has(route,{q:2,r:4})&&route.length===2,"forêt (2 + 1) contre détour (3) : à coût égal, le plus court en cases");
+assert.ok(has(route,{q:2,r:4})&&route.length===2,"forêt (2 + 1) contre détour (4) : la forêt");
 const reach=api.missionReachablePaths(u,2);
 assert.ok(reach.has("2,4"),"la forêt : 2 points pour y entrer");
 u.movementRemaining=5;

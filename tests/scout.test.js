@@ -141,7 +141,7 @@ assert.match(ui,/\.sort\(\(a,b\)=>discretion\(b\)-discretion\(a\)\)/,"les plus d
 // 4. Revenu : le rapport (la carte, les ennemis vus), puis le déploiement libre sur la bande de 4 cases, ou la retraite.
 assert.equal(reference.formulaConstants.rows.find(r=>r.code==="combat.deploy.band").valeur,4);
 api.setMissionMapSize({cols:36,rows:25});
-const at=(col,r)=>({q:col-((r-(r&1))>>1),r});
+const at=(col,r)=>({q:col,r}); // cases carrées : q = la colonne
 assert.deepEqual([at(3,12),at(4,12),at(32,12),at(31,12),at(18,3),at(18,4),at(18,21),at(18,20)].map(c=>api.missionDeployBand(c)),
   [true,false,true,false,true,false,true,false],"la bande : 4 cases sur chaque bord");
 m=newMission();

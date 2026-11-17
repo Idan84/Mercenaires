@@ -1,16 +1,15 @@
 "use strict";
 
-const HEX_DIRS=[
-  {q:1,r:0},{q:1,r:-1},{q:0,r:-1},
-  {q:-1,r:0},{q:-1,r:1},{q:0,r:1}
-];
-// Carte rectangulaire en coordonnées « offset » (lignes impaires décalées) ; la logique reste en axial (q, r).
-const MISSION_MAP={cols:13,rows:9,size:34,spawnRows:[3,4,5],spawnInset:2};
+// Cases carrées (doc 04, « Passage aux cases carrées », Idan, 2026-11-17) : q = la colonne, r = la ligne ; on se déplace
+// en ligne droite, vers les 4 cases voisines (est, nord, ouest, sud). Les noms « hex » viennent des hexagones d'avant.
+const HEX_DIRS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+// Carte rectangulaire ; size : la demi-largeur d'une case, en pixels.
+const MISSION_MAP={cols:13,rows:9,size:30,spawnRows:[3,4,5],spawnInset:2};
 // Taille de la carte : 13 × 9 pour la Mission Test, plus grande pour un contrat ou une chasse (doc 17 : 36 × 25, le camp au
 // centre ; Idan, 2026-11-09).
 function setMissionMapSize({cols=13,rows=9}={}){ MISSION_MAP.cols=cols; MISSION_MAP.rows=rows; }
-function missionColumn(q,r){ return q+((r-(r&1))>>1); }
-function missionAxial(col,r){ return {q:col-((r-(r&1))>>1),r}; }
+function missionColumn(q){ return q; }
+function missionAxial(col,r){ return {q:col,r}; }
 function missionCells(){
   const cells=[];
   for(let r=0;r<MISSION_MAP.rows;r++) for(let col=0;col<MISSION_MAP.cols;col++) cells.push(missionAxial(col,r));
@@ -121,7 +120,7 @@ function missionStepCost(c,from=null,unit=null){
 function missionLargeStep(mover,cur,next,blocked){
   const e=game.mission.engine,size=e.sizeOf(mover),flyer=missionFlies(mover),alt=missionAltitude();
   const dir=HEX_DIRS.findIndex(d=>cur.q+d.q===next.q&&cur.r+d.r===next.r);
-  const facings=size==="longue"?[dir]:size==="grande"?[cur.facing??mover.facing??0,0,1,2,3,4,5]:[0];
+  const facings=size==="longue"?[dir]:size==="grande"?[cur.facing??mover.facing??0,0,1,2,3]:[0];
   for(const facing of new Set(facings)){
     const cells=e.footprintAt(next.q,next.r,size,facing);
     if(!cells.every(c=>validMissionHex(c.q,c.r)&&!blocked.has(missionKey(c.q,c.r)))) continue;
@@ -444,7 +443,7 @@ function shortestMissionPath(start,end,except=null){
 
 function missionHexPixel(q,r){
   const s=MISSION_MAP.size;
-  return {x:44+Math.sqrt(3)*s*(q+r/2),y:44+1.5*s*r};
+  return {x:44+2*s*q,y:44+2*s*r};
 }
 
 // noMount : sans sa monture (le Défi du capitaine : « sans monture »).
@@ -507,7 +506,7 @@ function attachMissionMount(unit){
   const mount={id:unit.id+"-mount",character:horse,team:unit.team,isCaptain:false,isLieutenant:false,hp:pvMax,pvMax,alive:true,
     activeSet:1,prone:false,acted:true,movementRemaining:0,attackAvailable:false,quickAvailable:false,fleeing:false,fleeTurn:0,
     offMap:false,damageTaken:0};
-  unit.facing=unit.facing??(unit.team==="player"?0:3);
+  unit.facing=unit.facing??(unit.team==="player"?0:2);
   if(!rides){
     Object.assign(mount,{rider:null,follows:unit.id,master:unit,acted:false,attackAvailable:true,quickAvailable:true,facing:unit.facing});
     unit.companion=mount;
@@ -2010,7 +2009,7 @@ function placeMissionArmy(units,team){
   // le chef au milieu, les autres autour de lui, au plus près d'abord.
   const chief=units[units.length-1],others=units.slice(0,-1);
   put(chief,Math.floor(cols/2),mid);
-  const away=c=>(Math.abs(c.q-chief.q)+Math.abs(c.r-chief.r)+Math.abs(c.q+c.r-chief.q-chief.r))/2;
+  const away=c=>Math.abs(c.q-chief.q)+Math.abs(c.r-chief.r);
   const ring=missionCells().filter(c=>away(c)>0).map((c,i)=>({c,i,d:away(c)})).sort((a,b)=>a.d-b.d||a.i-b.i);
   others.forEach((u,i)=>{ u.q=ring[i].c.q; u.r=ring[i].c.r; });
   return fitMissionLarge(units);
@@ -2718,6 +2717,7 @@ function missionChargeCheck(unit,target){
   if(missionHiddenFrom(target,unit)) return no("on ne le voit pas");
   const e=game.mission.engine,charge=e.chargeData(unit,target);
   if(!charge.valid){
+    if(charge.straight===false) return no("pas en ligne droite : la charge suit une colonne ou une ligne");
     if(charge.travel==null) return no(e.axialDistance(unit,target)<2?"déjà au contact":"il ne peut pas charger");
     return no(charge.travel<charge.min?`trop près : il faut au moins ${charge.min} cases de course (ici ${charge.travel})`
       :`trop loin : au plus ${charge.max} cases de course (ici ${charge.travel})`);
@@ -5338,8 +5338,8 @@ const MISSION_ZOOM={min:0.3,max:2.4,fitMax:1.3,step:1.2};
 const missionView={mission:null,scale:1,x:0,y:0,fitted:true,activeId:null,drag:null,dragged:false};
 
 function missionMapSize(){
-  return {width:Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+0.5)),
-    height:Math.ceil(88+1.5*MISSION_MAP.size*(MISSION_MAP.rows-1)+2*MISSION_MAP.size)};
+  return {width:Math.ceil(88+2*MISSION_MAP.size*MISSION_MAP.cols),
+    height:Math.ceil(88+2*MISSION_MAP.size*MISSION_MAP.rows)};
 }
 function missionStageSize(){
   const stage=$("mission-map").parentElement;

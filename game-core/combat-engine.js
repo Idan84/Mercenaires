@@ -125,16 +125,20 @@
       cliff:constant("combat.altitude.cliff",2),
       max:constant("combat.altitude.max",3)
     };
-    // Taille (créatures sur plusieurs cases ; Idan, 2026-11-06 : tailles 1, 3 et 7 cases « Parfait », « Un cheval, deux
-    // cases », une grande créature plus facile à toucher « Oui ») : character.taille = normale (1 case), longue (2 cases :
-    // la tête et le corps derrière elle, dans le sens du déplacement, une monture), grande (3 cases en triangle) ou énorme
-    // (7 cases : une case et son anneau). unit.q, unit.r = sa case d'ancrage (la tête, la pointe, le centre) ; unit.facing =
-    // son sens (0 à 5). Toutes les distances se mesurent de case la plus proche à case la plus proche.
+    // Taille (créatures sur plusieurs cases ; Idan, 2026-11-06 : « Un cheval, deux cases », une grande créature plus facile
+    // à toucher « Oui » ; cases carrées, 2026-11-17 : « cheval 1×2 », « cerbère 2×2 », énorme 3×3, « Il se déplace par
+    // rapport à sa tête ») : character.taille = normale (1 case), longue (1×2 : la tête et le corps derrière elle, une
+    // monture), grande (2×2 : la tête, sa voisine à main gauche, et les deux cases derrière) ou énorme (3×3 : une case et les
+    // 8 autour). unit.q, unit.r = sa case d'ancrage (la tête, le centre) ; unit.facing = son sens (0 est, 1 nord, 2 ouest,
+    // 3 sud). Toutes les distances se mesurent de case la plus proche à case la plus proche.
     const SIZE={
       hit:{normale:0,longue:constant("combat.taille.toucher_longue",0),grande:constant("combat.taille.toucher_grande",10),
         enorme:constant("combat.taille.toucher_enorme",20)}
     };
-    const HEX_DIRS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
+    // Cases carrées (doc 04, « Passage aux cases carrées ») : q = la colonne, r = la ligne ; les 4 directions (est, nord,
+    // ouest, sud) et les 8 autour (avec les diagonales).
+    const HEX_DIRS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+    const AROUND=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1},{q:1,r:1}];
     const SIZES=["normale","longue","grande","enorme"];
     // Combat à cheval (Idan, 2026-11-07 ; doc 04) : unit.mount = son cheval, une unité à part entière (PV, effets), posée
     // sous lui (mêmes cases) tant qu'il le monte ; mount.rider = le cavalier. Le couple a la taille du cheval (un destrier :
@@ -207,10 +211,10 @@
     function isLarge(unit){ return sizeOf(unit)!=="normale"; }
     // Les cases d'une taille posée en (q, r) avec le sens facing.
     function footprintAt(q,r,size="normale",facing=0){
-      const f=((Number(facing)||0)%6+6)%6,d=HEX_DIRS[f],e=HEX_DIRS[(f+1)%6];
+      const f=((Number(facing)||0)%4+4)%4,d=HEX_DIRS[f],e=HEX_DIRS[(f+1)%4];
       if(size==="longue") return [{q,r},{q:q-d.q,r:r-d.r}];
-      if(size==="grande") return [{q,r},{q:q+d.q,r:r+d.r},{q:q+e.q,r:r+e.r}];
-      if(size==="enorme") return [{q,r},...HEX_DIRS.map(x=>({q:q+x.q,r:r+x.r}))];
+      if(size==="grande") return [{q,r},{q:q+e.q,r:r+e.r},{q:q-d.q,r:r-d.r},{q:q+e.q-d.q,r:r+e.r-d.r}];
+      if(size==="enorme") return [{q,r},...AROUND.map(x=>({q:q+x.q,r:r+x.r}))];
       return [{q,r}];
     }
     // Les cases d'un personnage (une case, ou son empreinte) ; d'une simple case, elle-même.
@@ -241,10 +245,8 @@
       max:constant("combat.shield.block.max_probability",80)
     };
 
-    function hexDistance(a,b){
-      const dq=a.q-b.q,dr=a.r-b.r;
-      return (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr))/2;
-    }
+    // Distance en losange (cases carrées) : une case en diagonale est à 2 cases. Le nom vient des hexagones.
+    function hexDistance(a,b){ return Math.abs(a.q-b.q)+Math.abs(a.r-b.r); }
     // Distance entre deux personnages ou cases : de case la plus proche à case la plus proche (une grande créature).
     function axialDistance(a,b){
       if(!isLarge(a)&&!isLarge(b)) return hexDistance(a,b);
@@ -252,17 +254,15 @@
       for(const x of footprint(a)) for(const y of footprint(b)) best=Math.min(best,hexDistance(x,y));
       return best;
     }
-    // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Un petit
-    // décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
+    // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Sur les
+    // cases carrées, la ligne avance d'une case par pas, en diagonale quand il le faut (« si rien n'est dans la diago, ça
+    // passe »). Un petit décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
     function hexLine(a,b,nudge={q:1e-6,r:1e-6}){
-      const n=axialDistance(a,b),cells=[];
+      const n=Math.max(Math.abs(b.q-a.q),Math.abs(b.r-a.r)),cells=[];
       for(let i=0;i<=n;i++){
         const t=n?i/n:0;
-        const x=a.q+(b.q-a.q)*t+nudge.q,z=a.r+(b.r-a.r)*t+nudge.r,y=-x-z;
-        let rx=Math.round(x),ry=Math.round(y),rz=Math.round(z);
-        const dx=Math.abs(rx-x),dy=Math.abs(ry-y),dz=Math.abs(rz-z);
-        if(dx>dy&&dx>dz) rx=-ry-rz; else if(dy<=dz) rz=-rx-ry;
-        cells.push({q:rx||0,r:rz||0}); // jamais −0 (une ligne poussée vers le négatif)
+        const x=a.q+(b.q-a.q)*t+(i&&i<n?nudge.q:0),y=a.r+(b.r-a.r)*t+(i&&i<n?nudge.r:0);
+        cells.push({q:Math.round(x)||0,r:Math.round(y)||0}); // jamais −0 (une ligne poussée vers le négatif)
       }
       return cells;
     }
@@ -1190,7 +1190,7 @@
 
     // Approximation projectile V1. Couloir de tir (Idan, 2026-10-08) : cône de 30° depuis le tireur, centré sur
     // l'axe tireur → cible, compté de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
-    function cartesian(h){ return {x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r}; }
+    function cartesian(h){ return {x:h.q,y:h.r}; }
     // maxRange : portée du tir (celle de l'arme active par défaut ; un sort comme Trait de feu donne la sienne).
     function inFiringCorridor(shooter,target,unit,maxRange=weaponRange(shooter).max){
       const reach=axialDistance(shooter,unit);
@@ -1266,11 +1266,15 @@
       return opponents.filter(o=>o!==target&&!inert(o)&&threatens(o,shooter));
     }
 
-    // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC,
-    // sur des cases de contact non adjacentes entre elles.
+    // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC. Cases carrées (doc 04, Idan,
+    // 2026-11-17 : « deux adversaires sur des côtés opposés », pris en tenaille) : l'un à l'est et l'autre à l'ouest de
+    // ses cases, ou l'un au nord et l'autre au sud.
     function isEncircled(target,opponents){
       const contact=opponents.filter(o=>axialDistance(o,target)===1&&threatens(o,target));
-      return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
+      const cells=footprint(target).length?footprint(target):[target];
+      const qs=cells.map(c=>c.q),rs=cells.map(c=>c.r),box={q0:Math.min(...qs),q1:Math.max(...qs),r0:Math.min(...rs),r1:Math.max(...rs)};
+      const has=side=>contact.some(o=>footprint(o.character?o:{q:o.q,r:o.r}).some(c=>side(c)));
+      return (has(c=>c.q<box.q0)&&has(c=>c.q>box.q1))||(has(c=>c.r<box.r0)&&has(c=>c.r>box.r1));
     }
 
     // Intimidation de l'adversaire, avec la Culotte d'Intimidation (Idan, 2026-10-24). Un couple (Idan, 2026-11-07 : « pour
@@ -1449,6 +1453,8 @@
       const distance=axialDistance(attacker,defender);
       if(distance<2) return {valid:false};
       const aim=footprint(defender).reduce((best,c)=>!best||hexDistance(attacker,c)<hexDistance(attacker,best)?c:best,null);
+      // Cases carrées : en ligne droite, sur une colonne ou une ligne (la charge en diagonale : à préciser avec Idan).
+      if(aim.q!==attacker.q&&aim.r!==attacker.r) return {valid:false,straight:false};
       const path=hexLine(attacker,aim).slice(1,-1);
       const destination=path[path.length-1];
       const step={q:aim.q-destination.q,r:aim.r-destination.r};

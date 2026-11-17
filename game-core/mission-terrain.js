@@ -2,7 +2,7 @@
 
 // Décor et relief des cartes de contrat (décor, étape 3 ; Idan, 2026-11-06 : « Oui pour les paysages », « camp en hauteur
 // oui ») : un paysage par faction (mission-landscapes.json), tiré au hasard à chaque combat. Module pur : la carte (colonnes,
-// lignes, en « offset » lignes impaires décalées, logique en axial q, r), les positions des deux camps, la faction ; il
+// lignes ; cases carrées, q la colonne, r la ligne), les positions des deux camps, la faction ; il
 // rend le décor ({q, r, code}) et le relief ({q, r, h}). L'écran de combat (prototype-web/mission.js) l'applique.
 // Données : mission-landscapes.json (paysages, enceinte), terrain-decors.json, formula-constants.json (combat.altitude.*).
 (function(root,factory){
@@ -11,11 +11,12 @@
   root.MercenairesMissionTerrain=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   const rows=x=>Array.isArray(x)?x:(x?.rows||[]);
-  const DIRS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
-  const column=(q,r)=>q+((r-(r&1))>>1);
-  const axial=(col,r)=>({q:col-((r-(r&1))>>1),r});
+  // Cases carrées (doc 04, « Passage aux cases carrées ») : q = la colonne, r = la ligne, 4 voisines, distance en losange.
+  const DIRS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+  const column=q=>q;
+  const axial=(col,r)=>({q:col,r});
   const key=c=>c.q+","+c.r;
-  const distance=(a,b)=>(Math.abs(a.q-b.q)+Math.abs(a.r-b.r)+Math.abs(a.q+a.r-b.q-b.r))/2;
+  const distance=(a,b)=>Math.abs(a.q-b.q)+Math.abs(a.r-b.r);
 
   function createMissionTerrain({reference,random=Math.random}={}){
     const data=reference?.missionLandscapes||{};
@@ -44,6 +45,8 @@
 
     function landscape(faction){ return landscapes.find(l=>l.faction===faction)||null; }
     const nearest=(c,list)=>Math.min(...list.map(e=>distance(c,e)));
+    // L'enceinte suit un carré autour du camp (cases carrées : des côtés droits, pas un losange en escalier).
+    const nearestSquare=(c,list)=>Math.min(...list.map(e=>Math.max(Math.abs(c.q-e.q),Math.abs(c.r-e.r))));
 
     // La carte : ses cases, leurs voisines.
     function grid(cols,rowCount){
@@ -62,7 +65,7 @@
       const wall={...(data.enceinte||{}),...(land.enceinte_decor?{decor:land.enceinte_decor}:{})};
       if(!land.enceinte||!decorRows.has(wall.decor)||!enemies.length) return null;
       const D=Number(wall.distance)||2,freeSquad=Number(data.zone_libre_escouade)||2;
-      const ring=map.cells.filter(c=>nearest(c,enemies)===D&&column(c.q,c.r)>2&&!players.some(p=>distance(p,c)<=freeSquad));
+      const ring=map.cells.filter(c=>nearestSquare(c,enemies)===D&&column(c.q,c.r)>2&&!players.some(p=>distance(p,c)<=freeSquad));
       if(!ring.length) return null;
       const inRing=new Set(ring.map(key)),open=new Set(),openings=[];
       const carve=anchor=>{

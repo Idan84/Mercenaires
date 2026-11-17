@@ -30,8 +30,21 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 ## Passage aux cases carrées (Idan, 2026-11-17 : décidé, à coder)
 
 > « On passe en carrés / top view. » « Pour le déplacement, une diagonale c'est 2 PM. » « Globalement, on se rapproche de
-> Dofus dans la logique. » Le moteur, le terrain et l'écran de combat restent en hexagones tant que ce chantier n'est pas
-> codé ; une vue isométrique viendra ensuite (« une carte serrée à la X-COM où l'on découvre ses adversaires »).
+> Dofus dans la logique. » Une vue isométrique viendra ensuite (« une carte serrée à la X-COM où l'on découvre ses
+> adversaires »).
+
+**Avancement du code** (Idan, 2026-11-17 : « Tu lances le chantier et tu fais fonctionner le jeu en carré ? ») :
+- **A, la géométrie (fait)** : cases carrées partout (moteur `game-core/combat-engine.js`, sorts `game-core/magic.js`,
+  cartes `game-core/mission-terrain.js`, écran `prototype-web/mission.js`) ; q = la colonne, r = la ligne ; distance en
+  losange ; 4 voisines ; lignes de vue case par case, en diagonale quand il le faut ; grandes créatures 1×2, 2×2, 3×3,
+  sens 0 à 3 (est, nord, ouest, sud) ; encerclement sur des côtés opposés ; cône 1-3-3 droit devant ; enceinte des camps
+  en carré. Le décor, la couverture et l'altitude d'avant restent branchés en attendant l'étape B. La charge part en
+  ligne droite sur une colonne ou une ligne : la charge en diagonale reste à préciser (sur quelle case finit-elle, au
+  contact par un côté ?).
+- **B, le terrain du nouveau modèle** (à faire) : les cases et les arêtes des étapes 1 à 4, l'Esquive à la place de la
+  couverture, la charge qui double l'Esquive, sans altitude ; les paysages en cases et arêtes.
+- **C, les personnages et les sorts** (à faire) : la vue bloquée par les personnages (étape 3), les sorts en ligne droite.
+- **D, l'IA, la Mission Test, la mise en ligne** (à faire).
 
 - **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
 - **Déplacement en ligne droite seulement** (Idan : « On ne se déplace qu'en ligne droite ») : une case en diagonale,

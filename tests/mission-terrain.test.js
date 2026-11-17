@@ -92,7 +92,7 @@ for (const row of lands.rows) {
     assert.equal(new Set(out.decor.map(key)).size, out.decor.length, "une case, un décor");
     // L'enceinte : la palissade, ou le décor du paysage (les murets du cimetière).
     const wallCode = row.enceinte_decor || lands.enceinte.decor;
-    const pales = row.enceinte ? out.decor.filter(d => d.code === wallCode && Math.min(...spots.enemies.map(e => Terrain.distance(e, d))) === lands.enceinte.distance) : [];
+    const pales = row.enceinte ? out.decor.filter(d => d.code === wallCode && Math.min(...spots.enemies.map(e => Math.max(Math.abs(e.q - d.q), Math.abs(e.r - d.r)))) === lands.enceinte.distance) : [];
     for (const d of out.decor) {
       assert.ok(row.decors[d.code] || (row.enceinte && d.code === wallCode), row.faction + " : " + d.code);
       assert.ok(Terrain.column(d.q, d.r) > 2, "pas sur les colonnes de l'escouade");
@@ -102,7 +102,8 @@ for (const row of lands.rows) {
     for (const c of out.relief) assert.ok(Number.isInteger(c.h) && c.h >= 1 && c.h <= 3);
     // L'enceinte : la palissade à 2 cases de l'ennemi le plus proche ; 2 ou 3 ouvertures de 2 cases, la première face à
     // l'escouade ; rien devant une ouverture ; pas d'enceinte dans la clairière.
-    const nearest = c => Math.min(...spots.enemies.map(e => Terrain.distance(e, c)));
+    // Cases carrées : l'enceinte suit un carré autour du camp (des côtés droits).
+    const nearest = c => Math.min(...spots.enemies.map(e => Math.max(Math.abs(e.q - c.q), Math.abs(e.r - c.r))));
     if (row.enceinte) {
       s.walled = (s.walled || 0) + 1;
       assert.ok(pales.length > 0, row.faction + " : une enceinte");
@@ -185,7 +186,7 @@ api.setMissionMapSize({cols, rows});
   const chief = camp[camp.length - 1];
   assert.deepEqual([Terrain.column(chief.q, chief.r), chief.r], [18, 12], "le chef au centre de la carte");
   assert.ok(camp.slice(0, -1).every(u => Terrain.distance(u, chief) <= 2), "les autres autour de lui");
-  assert.equal(camp.slice(0, -1).filter(u => Terrain.distance(u, chief) === 1).length, 6, "le premier cercle plein");
+  assert.equal(camp.slice(0, -1).filter(u => Terrain.distance(u, chief) === 1).length, 4, "le premier cercle plein (4 cases carrées)");
   const squad = api.placeMissionArmy([1, 2, 3].map(i => api.makeMissionUnit(generator.createMercenary({id: 4950 + i, captain}), "player", i % 3)), "player");
   assert.ok(squad.every(u => Terrain.column(u.q, u.r) === 1), "l'escouade sur le bord gauche");
 }

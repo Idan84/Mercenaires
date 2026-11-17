@@ -294,30 +294,29 @@
       const s=spell(code);
       return clamp(num(s?.precision_base,100)+num(s?.precision_part_maitrise,0)*mastery(caster,code)-num(s?.precision_par_case,0)*distance,10,95);
     }
-    const HEX_DIRECTIONS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
-    const cartesian=h=>({x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r});
+    // Cases carrées (doc 04) : les 4 directions (est, nord, ouest, sud) ; q = la colonne, r = la ligne.
+    const HEX_DIRECTIONS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+    const cartesian=h=>({x:h.q,y:h.r});
     // Ligne (Tsunami) : de la case visée, voisine du lanceur, droit devant sur length cases.
     function lineCells(caster,target,length){
       const dir={q:target.q-caster.q,r:target.r-caster.r};
       return Array.from({length},(_,k)=>({q:target.q+dir.q*k,r:target.r+dir.r*k}));
     }
-    // Cône (Souffle ardent ; Idan, 2026-10-31, chiffres de JC3) : du lanceur vers la case voisine visée, toutes les cases à
-    // length cases au plus dont la direction s'écarte de 30° au plus de l'axe : 1 case, puis 3, puis 3.
+    // Cône (Souffle ardent ; Idan, 2026-10-31, chiffres de JC3 : 1 case, puis 3, puis 3) : du lanceur vers la case voisine
+    // visée, droit devant sur length cases ; la première rangée fait 1 case, les suivantes 3 (cases carrées : « les cônes
+    // seulement en ligne droite »).
     function coneCells(caster,target,length){
-      const a=cartesian(caster),b=cartesian(target),vx=b.x-a.x,vy=b.y-a.y,norm=Math.hypot(vx,vy)||1,cells=[];
-      for(let dq=-length;dq<=length;dq++) for(let dr=Math.max(-length,-dq-length);dr<=Math.min(length,-dq+length);dr++){
-        if(!dq&&!dr) continue;
-        const c=cartesian({q:dq,r:dr}),cos=(c.x*vx+c.y*vy)/(Math.hypot(c.x,c.y)*norm);
-        if(cos>=Math.cos(Math.PI/6)-1e-9) cells.push({q:caster.q+dq,r:caster.r+dr});
-      }
-      return cells.sort((x,y)=>combat.axialDistance(caster,x)-combat.axialDistance(caster,y));
+      const dir={q:Math.sign(target.q-caster.q),r:Math.sign(target.r-caster.r)},side={q:-dir.r,r:dir.q},cells=[];
+      for(let k=1;k<=length;k++) for(let o=k===1?0:-1;o<=(k===1?0:1);o++)
+        cells.push({q:caster.q+dir.q*k+side.q*o,r:caster.r+dir.r*k+side.r*o});
+      return cells;
     }
     // Mur (Brouillard) : length cases centrées sur la case visée, le long de l'axe de la grille le plus en travers de la
     // direction du lanceur (sur sa propre case : le premier axe).
     function wallCells(caster,center,length){
       const a=cartesian(caster),b=cartesian(center),vx=b.x-a.x,vy=b.y-a.y,norm=Math.hypot(vx,vy)||1;
       const across=d=>{ const c=cartesian(d); return Math.abs((c.x*vx+c.y*vy)/(Math.hypot(c.x,c.y)*norm)); };
-      const axis=HEX_DIRECTIONS.slice(0,3).reduce((best,d)=>across(d)<across(best)-1e-9?d:best);
+      const axis=HEX_DIRECTIONS.slice(0,2).reduce((best,d)=>across(d)<across(best)-1e-9?d:best);
       const from=-Math.floor((length-1)/2);
       return Array.from({length},(_,k)=>({q:center.q+axis.q*(from+k),r:center.r+axis.r*(from+k)}));
     }
@@ -606,7 +605,7 @@
             const distance=combat.axialDistance(caster,aimed),p=precisionChance(caster,code,distance),precisionRoll=d100();
             precision={p,roll:precisionRoll,ok:precisionRoll<=p};
             if(!precision.ok){
-              const steps=die(num(s.deviation_max,1)),dir=HEX_DIRECTIONS[die(6)-1];
+              const steps=die(num(s.deviation_max,1)),dir=HEX_DIRECTIONS[die(4)-1];
               center={q:aimed.q+dir.q*steps,r:aimed.r+dir.r*steps};
               precision.deviation=steps;
             }

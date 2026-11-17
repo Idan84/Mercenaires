@@ -124,8 +124,23 @@
     // Peut-on frapper au corps à corps de a vers b (voisines) à travers leur arête ?
     function meleeThrough(map,a,b){ return edge(map,a,b)?.row.corps_a_corps!==false; }
 
+    // Une maison (doc 04, étape 4 : « un plan : des cases Mur autour de cases Plancher ; la porte est une case Plancher dans le
+    // mur ») : un rectangle de width × height cases dont le coin nord-ouest est origin ; le tour en wall (le décor qui dessine
+    // le mur), le dedans et la porte en floor. door : l'indice de la porte parmi les cases du tour qui ne sont pas des coins.
+    function housePlan(origin,width,height,{wall="maison",floor="plancher",door=0}={}){
+      const cells=[],edgeCells=[];
+      for(let dr=0;dr<height;dr++) for(let dq=0;dq<width;dq++){
+        const c={q:origin.q+dq,r:origin.r+dr},border=dq===0||dr===0||dq===width-1||dr===height-1;
+        const corner=(dq===0||dq===width-1)&&(dr===0||dr===height-1);
+        cells.push({...c,code:border?wall:floor});
+        if(border&&!corner) edgeCells.push(cells.length-1);
+      }
+      if(edgeCells.length) cells[edgeCells[((Number(door)||0)%edgeCells.length+edgeCells.length)%edgeCells.length]].code=floor;
+      return cells;
+    }
+
     return {SIDES,IMPASSABLE,cellRow,edgeRow,createMap,cell,edge,skillEffect,stepCost,blocksMove,cellDodge,edgeDodge,dodge,
-      facingEdgeGroups,edgeBlocksSight,meleeThrough};
+      facingEdgeGroups,edgeBlocksSight,meleeThrough,housePlan};
   }
 
   return {createCombatGrid,SIDES,edgeKey,sideBetween};

@@ -59,25 +59,25 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "MercenairesMissionTerrain", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,"
-  + "selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,"
+  + "selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionGridMap,"
   + "missionReachablePaths,missionPathCost,moveMissionUnitAlongPath,missionCellFree,missionUnitAtCell,missionLineOfSight,"
   + "missionForcedMove,fitMissionLarge,enemyMissionAct,missionFootprint,missionExitPath};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic, Terrain, () => rules);
 api.setMissionMapSize({cols: 20, rows: 11});
 const troll = () => rules.applyArchetype(generator.createMercenary({id: ++uid, captain, forcedPeople: "Ogre", forcedCulture: "Ogres des montagnes"}),
   rules.archetype("troll"), {idPrefix: "t" + uid, name: "Troll géant"});
-function newMission(size, mercs = 2, {decor = [], relief = []} = {}) {
+function newMission(size, mercs = 2, {decor = []} = {}) {
   const t = troll(); t.taille = size;
   const squad = Array.from({length: mercs}, () => generator.createMercenary({id: ++uid, captain}));
   const players = api.placeMissionArmy(squad.map((c, i) => api.makeMissionUnit(c, "player", i % 3)), "player");
   const enemies = api.placeMissionArmy([api.makeMissionUnit(t, "enemy", 0)], "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor, relief};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor};
   for (const u of [...players, ...enemies]) u.camouflaged = false;
   return game.mission;
 }

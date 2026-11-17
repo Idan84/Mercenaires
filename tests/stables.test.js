@@ -112,11 +112,11 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: state, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,"
-  + "placeMissionArmy,missionUnitHeight,settleMissionMounts,missionCapturedMounts,admitMissionMounts};")
+  + "placeMissionArmy,missionGridMap,settleMissionMounts,missionCapturedMounts,admitMissionMounts};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => missionRulesApi, () => rules);
 api.setMissionMapSize({cols: 30, rows: 15});
@@ -128,7 +128,7 @@ function riders(n) {
   const players = api.placeMissionArmy([api.makeMissionUnit(generator.createMercenary({id: ++uid, captain}), "player", 0)], "player");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: []};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: []};
   return game.mission;
 }
 // Trois cavaliers : un cheval à peine tombé (il vit), un cheval très blessé (le jet de mort), un cheval parti avec son

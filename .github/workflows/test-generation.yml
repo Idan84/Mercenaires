@@ -144,7 +144,6 @@ jobs:
       - run: node tests/mission-ui.test.js
       - run: node tests/mission-sentinel.test.js
       - run: node tests/mission-decor.test.js
-      - run: node tests/mission-altitude.test.js
       - run: node tests/mission-terrain.test.js
       - run: node tests/undead-cult.test.js
       - run: node tests/blood-court.test.js

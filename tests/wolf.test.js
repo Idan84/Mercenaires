@@ -115,11 +115,11 @@ const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: state, captain, referenceData: reference};
 let api = null;
 const rules = Missions.createMissionRules({reference, random});
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,"
-  + "placeMissionArmy,missionUnitHeight,missionUnits,deployMissionCompanions,missionCapturedMounts,admitMissionMounts,missionOwnMounts,"
+  + "placeMissionArmy,missionGridMap,missionUnits,deployMissionCompanions,missionCapturedMounts,admitMissionMounts,missionOwnMounts,"
   + "missionLooseMount,missionRemountable,missionDismountCells};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => rules, () => campaign);
@@ -136,7 +136,7 @@ const players = api.placeMissionArmy([goblin, human].map((c, i) => api.makeMissi
 const enemies = api.placeMissionArmy(foes.map((c, i) => api.makeMissionUnit(c, "enemy", i)), "enemy");
 game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
   players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-  activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: []};
+  activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: []};
 const [goblinUnit, humanUnit] = players;
 assert.ok(goblinUnit.mount && goblinUnit.mount.character.name === third.petName, "le gobelin part sur son loup, qui porte son nom");
 assert.equal(humanUnit.mount, undefined, "l'humain ne le monte pas");

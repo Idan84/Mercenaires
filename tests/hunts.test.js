@@ -169,11 +169,11 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: state, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,"
-  + "placeMissionArmy,missionUnitHeight,selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,missionCapturedMounts,"
+  + "placeMissionArmy,missionGridMap,selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,missionCapturedMounts,"
   + "contractResultLines};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => rules, () => campaign);
@@ -188,7 +188,7 @@ for (const code of ["hunt_wolves", "hunt_wolves", "hunt_unicorn", "hunt_unicorn"
   const enemies = api.placeMissionArmy(rules.buildEnemies(o).map((c, i) => api.makeMissionUnit(c, "enemy", i % 3)), "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: [], contract: o};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], contract: o};
   api.startMissionCamouflage(); api.selectNextMissionPlayer(); api.autoResolveMission();
   if (game.mission.over) over++;
   if (game.mission.winner === "player") { wins++; game.campaign = state; captured += api.missionCapturedMounts(game.mission).length; game.campaign = null; }

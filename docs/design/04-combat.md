@@ -43,8 +43,25 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
   Sur une colonne ou une ligne, elle va tout droit ; en biais, elle va de case en case par les côtés, au plus près de la
   ligne droite (un escalier). La course se compte en losange, et le chargeur finit collé à la cible par un côté. Un
   personnage sur l'escalier barre la charge, comme sur une ligne droite.
-- **B, le terrain du nouveau modèle** (en cours) : les cases et les arêtes des étapes 1 à 4, l'Esquive à la place de la
-  couverture, la charge qui double l'Esquive, sans altitude ; les paysages en cases et arêtes.
+- **B, le terrain du nouveau modèle (fait)** : les cases et les arêtes des étapes 1, 2 et 4 (`combat-cells.json`,
+  `combat-edges.json` ; chaque décor de `terrain-decors.json` dessine une case ou une arête ; module pur
+  `game-core/combat-grid.js`, porté par le moteur : `engine.grid`). Sur la carte, `m.decor` mêle les cases `{q, r, code}`
+  et les arêtes `{q, r, side, code}` (side 0 est, 1 nord, 2 ouest, 3 sud ; (q, r) est le côté défendu).
+  - **B1** : les données et le module (coût d'un pas, Esquive, vue, corps à corps à travers).
+  - **B2** : le déplacement (PM au quart de point, arêtes franchies ; mouvement affiché « 3,5/5 ») ; les arêtes dessinées en
+    trait épais sur le bord des cases (un seul sens : une ombre du côté défendu) ; le survol d'une case dit son PM, sa vue
+    et ses arêtes.
+  - **B3** : l'Esquive du terrain à la place de la couverture (tirs, sorts qui volent, charge × 2 sauf aérienne) ; la vue
+    par les cases et les arêtes ; pas de corps à corps à travers une palissade ou une meurtrière (ni coup, ni zone de
+    menace, ni charge) ; le « Se cacher » de la case compte au repérage pour qui est camouflé (en attendant l'action « Se
+    cacher ») ; l'IA qui se place pour tirer cherche la meilleure Esquive du terrain.
+  - **B4** : plus d'altitude (ni relief, ni falaises, ni camp en hauteur) ; les paysages des contrats posent leurs murets,
+    tombes, caisses et palissades en lignes d'arêtes et leurs maisons en plan (des murs autour d'un plancher, une porte) ;
+    l'enceinte des camps est une ligne d'arêtes Palissade (ou Muret au cimetière) défendue de l'intérieur, celle du château
+    en ruine un anneau de cases Mur.
+  - **À confirmer avec Idan** : la charge est refusée à travers une palissade (« pas de corps à corps à travers ») ; un volant
+    passe au-dessus d'un mur sans pouvoir s'y arrêter ; le « Se cacher » au repérage avant l'action. Un déplacement forcé
+    (repousser, attirer) ignore encore les arêtes.
 - **C, les personnages et les sorts** (à faire) : la vue bloquée par les personnages (étape 3), les sorts en ligne droite.
 - **D, l'IA, la Mission Test, la mise en ligne** (à faire).
 
@@ -371,6 +388,11 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 
 ## Décor (Idan, 2026-11-06)
 
+> **Remplacé par la grille carrée** (« Le modèle de la case » et ses étapes 1 à 4, plus haut ; avancement B). Le passage
+> (coûts 2, 3, 4), la vue des décors et la couverture décrits ci-dessous sont ceux de l'ancien jeu en hexagones ; restent
+> vrais : la chute de charge sur un terrain lent (+5 % par point de PM au-delà de 1, l'arête comprise), le motif dessiné de
+> chaque décor, les paysages par faction, l'enceinte (en arêtes), le garde-fou et l'IA.
+
 « Franchissable / infranchissable. Couverture : sans / partiel / totale » ; « je distinguerais ligne de vue et couverture. Le
 mec est derrière un gros rocher, on le voit, on peut le viser, mais il est protégé. Derrière une forêt, on voit pas » ; « il
 peut y avoir une subtilité dans franchissable : vitesse réduite ». Données : `terrain-decors.json` ; code :
@@ -462,6 +484,13 @@ Données : `terrain-skills.json` (qui les a, ce qu'elles donnent par décor) ; c
 1 lointain ancêtre, 2 lignée proche, **3 bâtard**. Sur la fiche (onglet Compétences), elles s'affichent avec les
 **Aptitudes** ; au survol, ce qu'elles donnent.
 
+Grille carrée (doc 04, « Étape 1 : les cases » ; Idan, 2026-11-17, V1) : ce qu'elles donnent est rangé **par case**
+(`terrain-skills.json`, `cases`), sur la case où il est : le PM (le plus bas), la Discrétion et l'Esquive (qui s'ajoutent).
+Déplacement aquatique : **1 PM** et **+30** de Discrétion dans l'eau peu profonde, **2 PM** dans l'eau profonde ;
+Respiration aquatique : **1 PM** et **+80 d'Esquive** dans l'eau profonde, **+25** dans l'eau peu profonde ; Déplacement
+sylvain : **1 PM** et **+30** de Discrétion en forêt. Les points ci-dessous (« 1 point au lieu de 3 », « couverture ») sont
+ceux de l'ancien jeu.
+
 - **Vol** — **sang féerique, sang divin ou sang de dragon bâtard** (dès la création) : il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du
   décor) et **charge par les airs** (charge aérienne, comme le pégase). À cheval, c'est la monture qui compte : il ne vole pas.
 - **Déplacement aquatique** — **tous les Reptiliens, tous les sangs de sirène, les crocodiles invoqués** : pas de malus de
@@ -477,6 +506,11 @@ Données : `terrain-skills.json` (qui les a, ce qu'elles donnent par décor) ; c
   déplace et se cache comme sa monture (le cheval d'un elfe sylvain paie la forêt).
 
 ## Altitude (Idan, 2026-11-06)
+
+> **Retirée en phase 1** (Idan, 2026-11-17 : « On retire l'altitude pour l'instant. Trop complexe à gérer en phase 1 ») :
+> plus de relief dans la Mission Test, plus de collines, de rampes ni de camp en hauteur dans les paysages ; ce qui suit
+> décrit l'ancien jeu et pourra revenir en phase 2. Reste : le cavalier compte comme un niveau plus haut au corps à corps
+> (`combat.altitude.hit_per_level`, « Combat à cheval »).
 
 « Je voudrais aussi qu'on bosse l'altitude » ; « l'idée, c'est de faire des cartes à la Mordheim / X-Com à terme » ; puis,
 sur la proposition ci-dessous : « Oui, ça me va, vas-y pour l'altitude ». Première étape, à la Battle Brothers : **une

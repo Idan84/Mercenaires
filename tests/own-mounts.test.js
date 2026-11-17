@@ -56,11 +56,11 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: state, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,"
-  + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,missionUnits,checkMissionEnd,"
+  + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionGridMap,missionUnits,checkMissionEnd,"
   + "missionMountOf,settleOwnMissionMounts,endMissionActivation,missionActionAvailability,performMissionAttack,missionUnitAtCell,"
   + "enemyMissionAct,missionMagic,handleMissionHexClick,renderMissionSpellBar,setMissionMode,missionSpellUnit,targetableMissionCells,"
   + "missionReactors,useMissionPotion,performMissionAttack,dismountMission,remountMission,missionDismountCells,missionLooseMount,"
@@ -73,7 +73,7 @@ function newMission(squad, foes) {
   const enemies = api.placeMissionArmy(foes.map((c, i) => api.makeMissionUnit(c, "enemy", i % 3)), "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: []};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: []};
   for (const u of [...players, ...enemies]) u.camouflaged = false;
   return game.mission;
 }

@@ -55,7 +55,7 @@ const fighter = (team, q, r, extra = {}) => {
 const battle = (players, enemies) => {
   game.mission = {engine, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, engine), enemyOrder: api.sortMissionInitiative(enemies, engine),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: []};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: []};
   return game.mission;
 };
 

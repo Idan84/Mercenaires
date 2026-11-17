@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "terrain-decors",
-  "description": "Décor des cartes de combat (doc 04 ; Idan, 2026-11-06 : « Franchissable / infranchissable. Couverture : sans / partiel / totale » ; « je distinguerais ligne de vue et couverture » ; « vitesse réduite : mouvement à moitié / tiers / quart »). Trois réglages indépendants par décor. cout_mouvement : points de mouvement pour entrer dans la case (1 normal, 2 à moitié, 3 au tiers, 4 au quart ; null : infranchissable). bloque_vue : on ne voit pas à travers (et, dedans, on n'est vu qu'au contact). couverture : sans, partielle ou totale (Toucher × combat.cover.*, Discrétion + combat.stealth.cover_*), au tir et en défense de charge. article : le nom dans une phrase (« heurte le muret ») ; couleur : affichage provisoire de la case (Idan : « des couleurs pour commencer »).",
+  "description": "Décor des cartes de combat (doc 04 ; Idan, 2026-11-06 : « Franchissable / infranchissable. Couverture : sans / partiel / totale » ; « je distinguerais ligne de vue et couverture » ; « vitesse réduite : mouvement à moitié / tiers / quart »). Trois réglages indépendants par décor. cout_mouvement : points de mouvement pour entrer dans la case (1 normal, 2 à moitié, 3 au tiers, 4 au quart ; null : infranchissable). bloque_vue : on ne voit pas à travers (et, dedans, on n'est vu qu'au contact). couverture : sans, partielle ou totale (Toucher × combat.cover.*, Discrétion + combat.stealth.cover_*), au tir et en défense de charge. article : le nom dans une phrase (« heurte le muret ») ; couleur : affichage provisoire de la case (Idan : « des couleurs pour commencer »). Grille carrée (doc 04, « Étape 4 : les objets du décor » ; Idan, 2026-11-17 : « soit c'est juste graphique... Soit c'est une arête ») : chaque décor est le dessin d'une case (case, combat-cells.json) ou d'une arête (arete, combat-edges.json). La maison deviendra un plan de cases Mur et Plancher ; en attendant, une case Mur. Les anciens réglages (cout_mouvement, bloque_vue, couverture) restent le temps du passage.",
   "columns": [
     {
       "source": "Code",
@@ -30,6 +30,14 @@
     {
       "source": "Couleur",
       "key": "couleur"
+    },
+    {
+      "source": "Case (règle)",
+      "key": "case"
+    },
+    {
+      "source": "Arête (règle)",
+      "key": "arete"
     }
   ],
   "row_count": 16,
@@ -41,7 +49,9 @@
       "cout_mouvement": 2,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#6f8f3a"
+      "couleur": "#6f8f3a",
+      "case": "vegetation_souple",
+      "arete": null
     },
     {
       "code": "foret",
@@ -50,7 +60,9 @@
       "cout_mouvement": 2,
       "bloque_vue": true,
       "couverture": "partielle",
-      "couleur": "#2f5a2a"
+      "couleur": "#2f5a2a",
+      "case": "foret",
+      "arete": null
     },
     {
       "code": "ble_haut",
@@ -59,7 +71,9 @@
       "cout_mouvement": 2,
       "bloque_vue": true,
       "couverture": "sans",
-      "couleur": "#c9b04a"
+      "couleur": "#c9b04a",
+      "case": "vegetation_souple",
+      "arete": null
     },
     {
       "code": "marais",
@@ -68,7 +82,9 @@
       "cout_mouvement": 3,
       "bloque_vue": false,
       "couverture": "sans",
-      "couleur": "#4f6b5a"
+      "couleur": "#4f6b5a",
+      "case": "boue",
+      "arete": null
     },
     {
       "code": "eau_peu_profonde",
@@ -77,7 +93,9 @@
       "cout_mouvement": 3,
       "bloque_vue": false,
       "couverture": "sans",
-      "couleur": "#5f8fb0"
+      "couleur": "#5f8fb0",
+      "case": "eau_peu_profonde",
+      "arete": null
     },
     {
       "code": "eboulis",
@@ -86,7 +104,9 @@
       "cout_mouvement": 3,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#8a7f70"
+      "couleur": "#8a7f70",
+      "case": "eboulis",
+      "arete": null
     },
     {
       "code": "muret",
@@ -95,7 +115,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#9b8f7a"
+      "couleur": "#9b8f7a",
+      "case": null,
+      "arete": "muret"
     },
     {
       "code": "caisses",
@@ -104,7 +126,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#8b6a43"
+      "couleur": "#8b6a43",
+      "case": null,
+      "arete": "muret"
     },
     {
       "code": "gros_rocher",
@@ -113,7 +137,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "totale",
-      "couleur": "#6e6a64"
+      "couleur": "#6e6a64",
+      "case": "mur",
+      "arete": null
     },
     {
       "code": "mur",
@@ -122,7 +148,9 @@
       "cout_mouvement": null,
       "bloque_vue": true,
       "couverture": "totale",
-      "couleur": "#4a4440"
+      "couleur": "#4a4440",
+      "case": "mur",
+      "arete": null
     },
     {
       "code": "maison",
@@ -131,7 +159,9 @@
       "cout_mouvement": null,
       "bloque_vue": true,
       "couverture": "totale",
-      "couleur": "#6b4a36"
+      "couleur": "#6b4a36",
+      "case": "mur",
+      "arete": null
     },
     {
       "code": "gouffre",
@@ -140,7 +170,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "sans",
-      "couleur": "#1d1a18"
+      "couleur": "#1d1a18",
+      "case": "gouffre",
+      "arete": null
     },
     {
       "code": "eau_profonde",
@@ -149,7 +181,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "sans",
-      "couleur": "#2f5f86"
+      "couleur": "#2f5f86",
+      "case": "eau_profonde",
+      "arete": null
     },
     {
       "code": "palissade",
@@ -158,7 +192,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#6e5434"
+      "couleur": "#6e5434",
+      "case": null,
+      "arete": "palissade"
     },
     {
       "code": "tombe",
@@ -167,7 +203,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#5d5a52"
+      "couleur": "#5d5a52",
+      "case": null,
+      "arete": "muret"
     },
     {
       "code": "tonneaux",
@@ -176,7 +214,9 @@
       "cout_mouvement": null,
       "bloque_vue": false,
       "couverture": "partielle",
-      "couleur": "#7a5532"
+      "couleur": "#7a5532",
+      "case": null,
+      "arete": "muret"
     }
   ]
 }

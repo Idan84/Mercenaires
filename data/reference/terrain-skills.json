@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "terrain-skills",
-  "description": "Capacités de terrain (doc 04 ; Idan, 2026-11-09 : « J'ai oublié les sangs de fées qui ont aussi vol et charge au niveau 3 » ; « les mercenaires de sang divin ou sang de dragon de niveau 3 : on leur ajoute Vol + Charge aérienne à la création » ; « On ajoute aussi quelques compétences : Déplacement aquatique, Respiration aquatique, Déplacement sylvain »). Qui les a : un peuple (peuples), une culture (cultures), un sang à partir d'un niveau (ascendances : niveau 1 lointain ancêtre, 2 lignée proche, 3 bâtard), une invocation (invocations : son archétype). Ce qu'elles donnent : vol (comme les chauves-souris) et charge_aerienne (« toujours » : seul ; pas monté sur une bête qui ne vole pas) ; par décor (decors), sur la case où il est : cout_mouvement (remplace celui du décor ; une case infranchissable devient franchissable), discretion (bonus au repérage tant qu'il y est), couverture (la couverture qu'il y trouve). Plusieurs capacités : le coût le plus bas, les bonus de Discrétion s'ajoutent, la meilleure couverture. Monté, il se déplace et se cache comme sa monture.",
+  "description": "Capacités de terrain (doc 04 ; Idan, 2026-11-09 : « J'ai oublié les sangs de fées qui ont aussi vol et charge au niveau 3 » ; « les mercenaires de sang divin ou sang de dragon de niveau 3 : on leur ajoute Vol + Charge aérienne à la création » ; « On ajoute aussi quelques compétences : Déplacement aquatique, Respiration aquatique, Déplacement sylvain »). Qui les a : un peuple (peuples), une culture (cultures), un sang à partir d'un niveau (ascendances : niveau 1 lointain ancêtre, 2 lignée proche, 3 bâtard), une invocation (invocations : son archétype). Ce qu'elles donnent : vol (comme les chauves-souris) et charge_aerienne (« toujours » : seul ; pas monté sur une bête qui ne vole pas) ; par décor (decors), sur la case où il est : cout_mouvement (remplace celui du décor ; une case infranchissable devient franchissable), discretion (bonus au repérage tant qu'il y est), couverture (la couverture qu'il y trouve). Plusieurs capacités : le coût le plus bas, les bonus de Discrétion s'ajoutent, la meilleure couverture. Monté, il se déplace et se cache comme sa monture. Grille carrée (doc 04, « Étape 1 : les cases » ; Idan, 2026-11-17, V1) : par case (cases, combat-cells.json), sur la case où il est : pm (remplace celui de la case), discretion, esquive (s'ajoute à celle de la case). Déplacement aquatique : 1 PM et +30 de Discrétion dans l'eau peu profonde, 2 PM dans l'eau profonde ; Respiration aquatique : 1 PM et +80 d'Esquive dans l'eau profonde, +25 d'Esquive dans l'eau peu profonde ; Déplacement sylvain : 1 PM et +30 de Discrétion en forêt. Les réglages par décor (decors) restent le temps du passage.",
   "columns": [
     {
       "source": "Code",
@@ -42,6 +42,10 @@
     {
       "source": "Par décor",
       "key": "decors"
+    },
+    {
+      "source": "Par case",
+      "key": "cases"
     }
   ],
   "row_count": 4,
@@ -52,23 +56,60 @@
       "description": "Il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du décor) et charge par les airs (charge aérienne). Pas à cheval.",
       "peuples": [],
       "cultures": [],
-      "ascendances": [{"nom": "Sang féerique", "niveau_min": 3}, {"nom": "Sang divin", "niveau_min": 3}, {"nom": "Sang de dragon", "niveau_min": 3}],
+      "ascendances": [
+        {
+          "nom": "Sang féerique",
+          "niveau_min": 3
+        },
+        {
+          "nom": "Sang divin",
+          "niveau_min": 3
+        },
+        {
+          "nom": "Sang de dragon",
+          "niveau_min": 3
+        }
+      ],
       "invocations": [],
       "vol": true,
       "charge_aerienne": "toujours",
-      "decors": {}
+      "decors": {},
+      "cases": {}
     },
     {
       "code": "deplacement_aquatique",
       "nom": "Déplacement aquatique",
       "description": "Pas de malus de déplacement dans l'eau peu profonde, et Discrétion +30 tant qu'il y est.",
-      "peuples": ["Reptilien"],
+      "peuples": [
+        "Reptilien"
+      ],
       "cultures": [],
-      "ascendances": [{"nom": "Sang de sirène", "niveau_min": 1}],
-      "invocations": ["crocodile"],
+      "ascendances": [
+        {
+          "nom": "Sang de sirène",
+          "niveau_min": 1
+        }
+      ],
+      "invocations": [
+        "crocodile"
+      ],
       "vol": false,
       "charge_aerienne": null,
-      "decors": {"eau_peu_profonde": {"cout_mouvement": 1, "discretion": 30}}
+      "decors": {
+        "eau_peu_profonde": {
+          "cout_mouvement": 1,
+          "discretion": 30
+        }
+      },
+      "cases": {
+        "eau_peu_profonde": {
+          "pm": 1,
+          "discretion": 30
+        },
+        "eau_profonde": {
+          "pm": 2
+        }
+      }
     },
     {
       "code": "respiration_aquatique",
@@ -76,23 +117,61 @@
       "description": "Il traverse l'eau profonde, normalement infranchissable, sans malus ; couverture totale sur une case d'eau profonde, partielle sur une case d'eau peu profonde.",
       "peuples": [],
       "cultures": [],
-      "ascendances": [{"nom": "Sang de sirène", "niveau_min": 3}],
+      "ascendances": [
+        {
+          "nom": "Sang de sirène",
+          "niveau_min": 3
+        }
+      ],
       "invocations": [],
       "vol": false,
       "charge_aerienne": null,
-      "decors": {"eau_profonde": {"cout_mouvement": 1, "couverture": "totale"}, "eau_peu_profonde": {"couverture": "partielle"}}
+      "decors": {
+        "eau_profonde": {
+          "cout_mouvement": 1,
+          "couverture": "totale"
+        },
+        "eau_peu_profonde": {
+          "couverture": "partielle"
+        }
+      },
+      "cases": {
+        "eau_profonde": {
+          "pm": 1,
+          "esquive": 80
+        },
+        "eau_peu_profonde": {
+          "esquive": 25
+        }
+      }
     },
     {
       "code": "deplacement_sylvain",
       "nom": "Déplacement sylvain",
       "description": "Pas de malus de déplacement en forêt, et Discrétion +30 tant qu'il y est.",
       "peuples": [],
-      "cultures": ["Elfes sylvains", "Tribus de la jungle", "Gnomes des forêts", "Tribus des forêts anciennes"],
+      "cultures": [
+        "Elfes sylvains",
+        "Tribus de la jungle",
+        "Gnomes des forêts",
+        "Tribus des forêts anciennes"
+      ],
       "ascendances": [],
       "invocations": [],
       "vol": false,
       "charge_aerienne": null,
-      "decors": {"foret": {"cout_mouvement": 1, "discretion": 30}}
+      "decors": {
+        "foret": {
+          "cout_mouvement": 1,
+          "discretion": 30
+        }
+      },
+      "cases": {
+        "foret": {
+          "pm": 1,
+          "discretion": 30
+        }
+      }
     }
   ]
 }

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "name": "combat-edges",
+  "description": "Les arêtes de la grille de combat (doc 04, « Étape 2 : les arêtes » ; Idan, 2026-11-17, V1). Une arête est partagée par les deux cases qu'elle sépare, avec les mêmes réglages des deux côtés sauf la vue. pm : le malus pour la franchir, ajouté au PM de la case d'arrivée (qui vole l'ignore). esquive : le bonus d'Esquive de celui qui est derrière, contre les tirs, les sorts qui volent et la charge. vue : laisse (on voit à travers), bloque, ou sens (un seul sens : on voit du côté défendu vers l'extérieur, pas l'inverse). corps_a_corps : on peut frapper au corps à corps à travers (« on ne tape pas au cac à travers une meurtrière » ; la palissade : « c'est du bois plein. On fait le tour »). couleur : affichage provisoire.",
+  "columns": [
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Avec l'article",
+      "key": "article"
+    },
+    {
+      "source": "Franchir (PM)",
+      "key": "pm"
+    },
+    {
+      "source": "Esquive",
+      "key": "esquive"
+    },
+    {
+      "source": "Vue",
+      "key": "vue"
+    },
+    {
+      "source": "Corps à corps à travers",
+      "key": "corps_a_corps"
+    },
+    {
+      "source": "Où",
+      "key": "ou"
+    },
+    {
+      "source": "Couleur",
+      "key": "couleur"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "code": "muret",
+      "nom": "Muret",
+      "article": "le muret",
+      "pm": 0.5,
+      "esquive": 30,
+      "vue": "laisse",
+      "corps_a_corps": true,
+      "ou": "champs, fermes, ruines",
+      "couleur": "#9b8f7a"
+    },
+    {
+      "code": "palissade",
+      "nom": "Palissade",
+      "article": "la palissade",
+      "pm": 2,
+      "esquive": 60,
+      "vue": "sens",
+      "corps_a_corps": false,
+      "ou": "enceinte des camps",
+      "couleur": "#6e5434"
+    },
+    {
+      "code": "muraille_meurtriere",
+      "nom": "Muraille avec meurtrière",
+      "article": "la muraille",
+      "pm": 4,
+      "esquive": 100,
+      "vue": "sens",
+      "corps_a_corps": false,
+      "ou": "châteaux, remparts, forts",
+      "couleur": "#4a4440"
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "name": "combat-cells",
+  "description": "Les cases de la grille de combat (doc 04, « Le modèle de la case » et « Étape 1 : les cases » ; Idan, 2026-11-17, V1, travaillé dans l'artefact « Grille de combat »). La règle d'une case, séparée de son dessin (terrain-decors.json). pm : les points de mouvement pour y entrer, au quart de point (100 : « rien d'infranchissable », juste trop cher ; qui vole paie 1, les malus ne comptent pas pour lui). se_cacher : le bonus de Discrétion quand on s'y cache (« Se cacher », une action rapide à venir). bloque_vue : on ne voit pas à travers, et dedans on n'est ciblable qu'au contact. esquive : le bonus d'Esquive de celui qui s'y tient, contre les tirs, les sorts qui volent et la charge (négatif possible). Les bonus sous condition (Respiration aquatique, Déplacement aquatique, Déplacement sylvain) sont dans terrain-skills.json (cases). dessins : ce que la case représente. couleur : affichage provisoire (null : le fond de la carte). Une case sans décor est un Terrain par défaut.",
+  "columns": [
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Avec l'article",
+      "key": "article"
+    },
+    {
+      "source": "PM",
+      "key": "pm"
+    },
+    {
+      "source": "Se cacher",
+      "key": "se_cacher"
+    },
+    {
+      "source": "Bloque la vue",
+      "key": "bloque_vue"
+    },
+    {
+      "source": "Esquive",
+      "key": "esquive"
+    },
+    {
+      "source": "Dessins",
+      "key": "dessins"
+    },
+    {
+      "source": "Couleur",
+      "key": "couleur"
+    }
+  ],
+  "row_count": 10,
+  "rows": [
+    {
+      "code": "terrain",
+      "nom": "Terrain par défaut",
+      "article": "le terrain",
+      "pm": 1,
+      "se_cacher": 0,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "terre, herbe rase, champs, chemins, camps",
+      "couleur": null
+    },
+    {
+      "code": "vegetation_souple",
+      "nom": "Végétation souple",
+      "article": "la végétation",
+      "pm": 1.5,
+      "se_cacher": 30,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "buissons, blé haut, champ de tournesols",
+      "couleur": "#6f8f3a"
+    },
+    {
+      "code": "foret",
+      "nom": "Forêt",
+      "article": "la forêt",
+      "pm": 1.5,
+      "se_cacher": 0,
+      "bloque_vue": true,
+      "esquive": 30,
+      "dessins": "forêt",
+      "couleur": "#2f5a2a"
+    },
+    {
+      "code": "plancher",
+      "nom": "Plancher, dallage, route",
+      "article": "le plancher",
+      "pm": 0.75,
+      "se_cacher": 0,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "intérieur des bâtiments ; la route",
+      "couleur": "#a08a68"
+    },
+    {
+      "code": "boue",
+      "nom": "Boue, marais, neige",
+      "article": "la boue",
+      "pm": 2,
+      "se_cacher": 0,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "marais, bords de rivière",
+      "couleur": "#4f6b5a"
+    },
+    {
+      "code": "eau_peu_profonde",
+      "nom": "Eau peu profonde",
+      "article": "l’eau peu profonde",
+      "pm": 2,
+      "se_cacher": 10,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "gués, mares, torrents",
+      "couleur": "#5f8fb0"
+    },
+    {
+      "code": "eau_profonde",
+      "nom": "Eau profonde",
+      "article": "l’eau profonde",
+      "pm": 100,
+      "se_cacher": 0,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "rivières, lacs",
+      "couleur": "#2f5f86"
+    },
+    {
+      "code": "eboulis",
+      "nom": "Éboulis, pierraille",
+      "article": "les éboulis",
+      "pm": 2,
+      "se_cacher": 30,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "gorges, carrières, pieds de falaise",
+      "couleur": "#8a7f70"
+    },
+    {
+      "code": "gouffre",
+      "nom": "Gouffre, vide, lave",
+      "article": "le bord du gouffre",
+      "pm": 100,
+      "se_cacher": 0,
+      "bloque_vue": false,
+      "esquive": 0,
+      "dessins": "gorges, ruines effondrées",
+      "couleur": "#1d1a18"
+    },
+    {
+      "code": "mur",
+      "nom": "Mur, montagne, rocher",
+      "article": "le mur",
+      "pm": 100,
+      "se_cacher": 0,
+      "bloque_vue": true,
+      "esquive": 0,
+      "dessins": "maisons, château, temples, remparts ; montagnes ; gros rochers",
+      "couleur": "#4a4440"
+    }
+  ]
+}

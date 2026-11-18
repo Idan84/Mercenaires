@@ -188,6 +188,16 @@ Décision d'Idan du 2026-10-21. Les données sont dans `data/reference/character
 - **Kukri et Transmutation** (Idan, 2026-11-18 : « un +2 kukri au 2 fleuves et +1 seulement au royaume du soleil levant »,
   « +1 en transmutation aux 2 fleuves ») : le kukri, arme népalaise, passe aux Terres des Deux Fleuves (Matrice : Kukri +2,
   Transmutation +1) ; le Soleil Levant garde Kukri +1.
+- **Cultures humaines mieux différenciées** (Idan, 2026-11-18 : « Ton tableau me va bien. Fauconnerie et Discrétion ») :
+  chacune une arme signature à +2, un animal, un métier de camp et un vrai malus (Matrice de génération).
+
+  | Culture | Signature +2 | Animal +1 | Métier +1 | Malus −1 |
+  |---|---|---|---|---|
+  | Montagnes du Nord | Combat à deux mains | Canidés | Travail du bois (au lieu du Travail du cuir) | Intelligence |
+  | Tribus de la jungle | Lance (+1 → +2) | Félins | Alchimie | Résistance au froid |
+  | Cités libres | Estoc (+1 → +2) | — | Intendance (au lieu du Travail du cuir) | Perception |
+  | Royaumes du Soleil Levant | Katana | Rapaces | Médecine | Boucliers |
+  | Terres des Deux Fleuves | Sabre, Kukri | Bêtes à cornes (éléphants de guerre) | Enchantement | Discrétion |
 
 - **Autres peuples** : prénoms propres au peuple, pour les femmes et pour les hommes ; noms de famille propres à la culture.
 - **Capitaine** : son nom est saisi par le joueur et ne change jamais (sauf si le joueur le renomme).

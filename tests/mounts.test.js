@@ -98,7 +98,9 @@ assert.deepEqual([unicornChar.stats.Charisme, unicornChar.stats["Puissance magiq
 human.skills.martial["Discrétion"] = 35;
 assert.equal(engine.stealthOf(rider), 10, "à cheval : la plus basse des deux");
 assert.equal(engine.stealthOf({...rider, mount: null}), engine.statWithGear({...rider, mount: null}, "Discrétion"), "à pied : la sienne");
-assert.ok(engine.detectionChance(foot0(), rider, 3) > engine.detectionChance(foot0(), {...rider, mount: null}, 3), "plus facile à repérer à cheval");
+// Un guetteur à la Perception moyenne : un tirage trop perçant plafonnerait les deux chances.
+const watcher = foot0(); watcher.character.stats.Perception = 30;
+assert.ok(engine.detectionChance(watcher, rider, 3) > engine.detectionChance(watcher, {...rider, mount: null}, 3), "plus facile à repérer à cheval");
 // L'Intimidation d'un couple : la plus haute des deux (Idan : « Le gobelin sur le dragon... Bah, c'est pas l'intimidation du
 // Gobelin qui compte ! »).
 human.skills.social = {...human.skills.social, Intimidation: 10};

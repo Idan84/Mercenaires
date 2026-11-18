@@ -62,7 +62,7 @@ const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack,gri
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,shortestMissionPath,missionReachablePaths,"
   +"moveMissionUnitAlongPath,missionLineOfSight,missionChargeIfClear,missionChargeCheck,performMissionAttack,missionForcedMove,"
-  +"generateMissionDecor,missionCellLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
+  +"generateMissionDecor,missionDecorEnclosed,missionCellLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
   +"missionTerrainDodge,missionGridMap,missionCanAttack,missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
   +"missionMagic,missionSpellPreviewRows,targetableMissionCells,renderMission,missionActionAvailability";
 api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
@@ -346,6 +346,17 @@ for(let i=0;i<20;i++){
   }
 }
 assert.ok(edgesSeen>0,"des arêtes");
+// Garde-fou (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur (1 ennemi, coincé dans une muraille de
+// tous les côtés, il peut tirer et est presque invincible) ») : aucune case enfermée par des murs, une palissade ou une
+// muraille ; le tirage recommence.
+// (Le hasard reprend ensuite là où il en était : la suite du test en dépend.)
+const seedBefore=seed;
+for(let i=0;i<200;i++) assert.deepEqual(api.missionDecorEnclosed(api.generateMissionDecor()),[],"pas d'enceinte fermée");
+seed=seedBefore;
+const boxed=[0,1,2,3].map(side=>({q:6,r:4,side,code:"palissade"}));
+assert.deepEqual(api.missionDecorEnclosed(boxed),[{q:6,r:4}],"une case entourée de palissade");
+assert.deepEqual(api.missionDecorEnclosed(boxed.slice(1)),[],"une ouverture suffit");
+assert.deepEqual(api.missionDecorEnclosed([{q:5,r:4},{q:7,r:4},{q:6,r:3},{q:6,r:5}].map(c=>({...c,code:"mur"}))),[{q:6,r:4}],"ou de murs");
 m=newMission([{q:2,r:4,code:"foret"},{q:2,r:4,side:0,code:"muret"},{q:4,r:4,code:"gros_rocher"},{q:5,r:4,code:"marais"},{q:6,r:4,side:3,code:"palissade"}]);
 assert.equal(api.missionCellLabel(2,4),"Forêt : 1,5 PM, bloque la vue · Muret à l’est : +0,5 PM");
 assert.equal(api.missionCellLabel(3,4),"Muret à l’ouest : +0,5 PM");

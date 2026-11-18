@@ -67,6 +67,12 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
     (`combat.stealth.hide_bonus`) plus le « Se cacher » de la case où il est, tant qu'on ne l'a pas repéré.
     Il se déplace caché (Idan, 2026-11-17 : « Non, il se déplace caché ;) ») : le +10 le suit, le bonus de case est celui de
     la case où il se trouve.
+  - **Garde-fou du décor** (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur (1 ennemi, coincé dans
+    une muraille de tous les côtés, il peut tirer et est presque invincible) ») : chaque case où l'on peut se tenir se
+    rejoint à pied depuis l'escouade sans passer par un mur (une case infranchissable) ni franchir une palissade ou une
+    muraille ; un muret n'enferme pas (on frappe par-dessus). Sinon le décor est tiré à nouveau (cartes de contrat et
+    Mission Test ; `combat-grid.js`, `closedPockets`). Avant ce garde-fou, environ 1 Mission Test sur 80 avait une case
+    enfermée (une porte de maison bouchée par un rocher, par exemple).
 - **C, les personnages et les sorts (fait)** :
   - **C1** : les personnages coupent la ligne de vue des tirs et des sorts selon l'étape 3 (un ennemi cache ceux qui sont
     derrière lui ; un allié collé au tireur, dans les 8 cases autour, ne gêne pas, plus loin il empêche de tirer ; un plus
@@ -82,8 +88,9 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **D, l'IA, la Mission Test, la mise en ligne** (en cours) : l'IA joue sur la grille carrée sans rien changer à ses
   règles : elle franchit une palissade (+2 PM) pour frapper, un tireur dont un allié bouche la ligne se décale pour tirer,
   ses zones et ses sorts suivent la nouvelle ligne de vue. Vérifié en simulation (combats automatiques sur les camps à
-  enceinte et sur la Mission Test, aucun blocage, aucun combat sans fin). Le journal compte en cases. Reste à trancher :
-  l'IA utilise-t-elle « Se cacher » ? Puis la mise en ligne, quand Idan valide.
+  enceinte et sur la Mission Test, aucun blocage, aucun combat sans fin). Le journal compte en cases. L'IA en embuscade
+  prend « Se cacher » (Idan, 2026-11-18 : « oui »). Le garde-fou du décor (pas d'enceinte fermée). Mise en ligne : validée
+  par Idan le 2026-11-18 (« vas-y pour la mise en ligne »).
 
 - **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
 - **Déplacement en ligne droite seulement** (Idan : « On ne se déplace qu'en ligne droite ») : une case en diagonale,
@@ -617,8 +624,9 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
     coup de grace »). Les morts-vivants, les invocations, les leurres et le nécromancien ne reculent pas.
   - **Se cacher** : un tireur qui se place pour tirer prend, à risque égal, la case la mieux couverte face à sa cible ;
     encore camouflé et hors de vue, un combattant qui ne pourrait pas frapper au tour suivant n'entre pas dans la vue de
-    l'ennemi : il attend en embuscade, au plus **2 tours**. Un combattant repéré le reste jusqu'à la fin du combat
-    (Idan : « Non »).
+    l'ennemi : il attend en embuscade, au plus **2 tours**. En embuscade, il prend « Se cacher » avec son action
+    rapide (Idan, 2026-11-18 : « oui ») ; un ennemi caché ne se trahit pas dans le journal. Un combattant repéré le
+    reste jusqu'à la fin du combat (Idan : « Non »).
 - **Nécromancien** (Idan, 2026-11-06 : « B, vas-y ») : son **Armée d'os est déjà levée** au début du combat, autour de lui,
   sans mana ni jet (`sort_initial`) ; ensuite, mêmes règles qu'une invocation lancée (entretien, test de Charisme). Il reste
   **en retrait** (`en_retrait`) : tant que ses troupes tiennent, il n'avance que pour lancer un sort et ne frappe qu'un

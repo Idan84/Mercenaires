@@ -124,6 +124,28 @@
     // Peut-on frapper au corps à corps de a vers b (voisines) à travers leur arête ?
     function meleeThrough(map,a,b){ return edge(map,a,b)?.row.corps_a_corps!==false; }
 
+    // Garde-fou du décor (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur (1 ennemi, coincé dans une
+    // muraille de tous les côtés, il peut tirer et est presque invincible) ») : les cases où l'on peut se tenir qu'on
+    // n'atteint pas à pied depuis from sans passer par une case infranchissable ni franchir une arête qui interdit le corps à
+    // corps (la palissade, la muraille). Une carte de cols × rows ; vide : aucune enceinte fermée.
+    function closedPockets(map,{cols,rows:rowCount,from=[],skills=[]}={}){
+      const inside=c=>c.q>=0&&c.r>=0&&c.q<cols&&c.r<rowCount;
+      const standable=c=>!blocksMove(map,c,{skills});
+      const seen=new Set(),queue=[];
+      for(const c of from) if(inside(c)&&standable(c)&&!seen.has(key(c))){ seen.add(key(c)); queue.push(c); }
+      for(let i=0;i<queue.length;i++){
+        const cur=queue[i];
+        for(const d of SIDES){
+          const n={q:cur.q+d.q,r:cur.r+d.r},k=key(n);
+          if(seen.has(k)||!inside(n)||!standable(n)||!meleeThrough(map,cur,n)) continue;
+          seen.add(k);queue.push(n);
+        }
+      }
+      const out=[];
+      for(let r=0;r<rowCount;r++) for(let q=0;q<cols;q++) if(!seen.has(q+","+r)&&standable({q,r})) out.push({q,r});
+      return out;
+    }
+
     // Une maison (doc 04, étape 4 : « un plan : des cases Mur autour de cases Plancher ; la porte est une case Plancher dans le
     // mur ») : un rectangle de width × height cases dont le coin nord-ouest est origin ; le tour en wall (le décor qui dessine
     // le mur), le dedans et la porte en floor. door : l'indice de la porte parmi les cases du tour qui ne sont pas des coins.
@@ -140,7 +162,7 @@
     }
 
     return {SIDES,IMPASSABLE,cellRow,edgeRow,createMap,cell,edge,skillEffect,stepCost,blocksMove,cellDodge,edgeDodge,dodge,
-      facingEdgeGroups,edgeBlocksSight,meleeThrough,housePlan};
+      facingEdgeGroups,edgeBlocksSight,meleeThrough,closedPockets,housePlan};
   }
 
   return {createCombatGrid,SIDES,edgeKey,sideBetween};

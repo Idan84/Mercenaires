@@ -214,7 +214,8 @@ function missionHide(u){
   if(!missionCanHide(u)) return false;
   u.hiding=true;u.quickAvailable=false;
   missionFx(u,"Caché");
-  missionLog(u.character.name+" se cache (Discrétion +"+missionHideBonus(u)+" au repérage).","info");
+  // Un ennemi caché ne se trahit pas dans le journal (brouillard de guerre).
+  if(missionShownToPlayer(u)) missionLog(u.character.name+" se cache (Discrétion +"+missionHideBonus(u)+" au repérage).","info");
   return true;
 }
 function hideMissionUnit(){
@@ -247,8 +248,27 @@ function missionDecorBlocksSight(a,b,blockers=null){
   return e.hexLineSides(a,b).every(line=>line.slice(1,-1).some(blocks)
     ||line.some((c,i)=>i>0&&step(line[i-1],c)));
 }
-// Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement.
+// Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement. Garde-fou
+// (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur ») : on retire tant qu'une case où l'on peut se tenir
+// est enfermée (murs, palissade, muraille : combat-grid.js, closedPockets) ; au bout de 30 tirages, pas de décor.
+const MISSION_DECOR_TRIES=30;
 function generateMissionDecor(){
+  for(let i=0;i<MISSION_DECOR_TRIES;i++){
+    const decor=drawMissionDecor();
+    if(!missionDecorEnclosed(decor).length) return decor;
+  }
+  return [];
+}
+// Les cases enfermées par ce décor : celles qu'on n'atteint pas à pied depuis le bord ouest (où se déploie l'escouade, sans
+// décor) sans passer par un mur ni franchir une palissade ou une muraille.
+function missionDecorEnclosed(decor){
+  const grid=missionGrid();
+  if(!grid?.closedPockets) return [];
+  const map=grid.createMap({decor:decor.filter(d=>!missionIsEdge(d)),edges:decor.filter(missionIsEdge)});
+  const from=missionCells().filter(c=>missionColumn(c.q,c.r)===0);
+  return grid.closedPockets(map,{cols:MISSION_MAP.cols,rows:MISSION_MAP.rows,from});
+}
+function drawMissionDecor(){
   // La palissade sert à l'enceinte des camps de contrat (mission-landscapes.json), pas au hasard.
   const wall=game.referenceData?.missionLandscapes?.enceinte?.decor;
   // Les tonneaux restent à la cave (La Cave, generateCellarDecor).
@@ -4748,11 +4768,15 @@ function enemyMoveToward(unit,target,{second=true}={}){
     enemyMoveToward(unit,target,{second:false});
     return;
   }
+  const ambushBefore=unit.aiAmbush||0;
   if(best.path.length) best.path=missionAiKeepFormation(unit,best.path);
   if(best.path.length){
     const moved=moveMissionUnitAlongPath(unit,best.path);
     if(moved) missionLog(unit.character.name+" avance de "+missionCases(moved)+".","move");
   }
+  // Se cacher en embuscade (Idan, 2026-11-18 : « oui ») : celui qui s'arrête hors de vue pour attendre en embuscade prend
+  // « Se cacher » avec son action rapide, puisqu'il n'en fait rien d'autre.
+  if((unit.aiAmbush||0)>ambushBefore) missionHide(unit);
 }
 // IA commune, premier jet (Idan, 2026-11-07) : se regrouper et se cacher, avant le contact.
 // - Se regrouper : un combattant de mêlée n'avance pas à plus de combat.ai.cohesion_hexes cases devant le plus en retard

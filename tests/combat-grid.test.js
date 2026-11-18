@@ -135,4 +135,24 @@ const tomb=grid.createMap({edges:[{q:0,r:0,side:3,code:"tombe"}]});
 assert.equal(grid.edge(tomb,at(0,1),at(0,0)).row.code,"muret");
 assert.equal(grid.stepCost(tomb,at(0,0),at(0,1)),1.5);
 
+// Garde-fou du décor (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur (1 ennemi, coincé dans une
+// muraille de tous les côtés, il peut tirer et est presque invincible) ») : les cases qu'on n'atteint pas à pied sans
+// passer par un mur ni franchir une palissade ou une muraille.
+const ring=(code,open=-1)=>[0,1,2,3].filter(s=>s!==open).map(side=>({q:5,r:5,side,code}));
+const pockets=map=>grid.closedPockets(map,{cols:10,rows:10,from:[at(0,0)]});
+assert.deepEqual(pockets(grid.createMap({})),[],"sans décor, rien d'enfermé");
+assert.deepEqual(pockets(grid.createMap({edges:ring("palissade")})),[at(5,5)],"une case entourée de palissade");
+assert.deepEqual(pockets(grid.createMap({edges:ring("muraille_meurtriere")})),[at(5,5)],"ou de muraille");
+assert.deepEqual(pockets(grid.createMap({edges:ring("palissade",2)})),[],"une ouverture suffit");
+assert.deepEqual(pockets(grid.createMap({edges:ring("muret")})),[],"un muret n'enferme pas (on frappe par-dessus)");
+const rocks=[at(4,5),at(6,5),at(5,4),at(5,6)].map(c=>({...c,code:"gros_rocher"}));
+assert.deepEqual(pockets(grid.createMap({decor:rocks})),[at(5,5)],"entourée de rochers");
+assert.deepEqual(pockets(grid.createMap({decor:rocks.slice(1)})),[],"un rocher de moins, on passe");
+// Une maison : sa porte la laisse ouverte ; un rocher devant la porte la ferme.
+const house=grid.housePlan(at(3,3),4,4,{door:0});
+assert.deepEqual(pockets(grid.createMap({decor:house})),[]);
+const door=house.find(c=>c.code==="plancher"&&(c.q===3||c.q===6||c.r===3||c.r===6));
+const outside=[at(door.q,door.r-1),at(door.q,door.r+1),at(door.q-1,door.r),at(door.q+1,door.r)].find(c=>!house.some(h=>h.q===c.q&&h.r===c.r));
+assert.equal(pockets(grid.createMap({decor:[...house,{...outside,code:"mur"}]})).length,4+1,"le dedans (2 × 2) et la porte");
+
 console.log(JSON.stringify({ok:true,cases:cells.rows.length,aretes:edges.rows.length,decors:reference.terrainDecors.rows.length},null,2));

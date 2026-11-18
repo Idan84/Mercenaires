@@ -164,9 +164,18 @@
       }
       return enemies.every(e=>seen.has(key(e)));
     }
+    // Pas d'enceinte fermée (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur ») : chaque case où l'on
+    // peut se tenir se rejoint à pied depuis l'escouade sans franchir de mur, de palissade ni de muraille
+    // (combat-grid.js, closedPockets). Rend les cases enfermées.
+    function enclosed(map,{players,decor:placed=[]}){
+      if(!cells) return [];
+      const gridMap=cells.createMap({decor:placed.filter(d=>d.side==null),edges:placed.filter(d=>d.side!=null)});
+      return cells.closedPockets(gridMap,{cols:map.cols,rows:map.rows,from:players});
+    }
+    const playable=(map,spots)=>reachable(map,spots)&&!enclosed(map,spots).length;
 
     // La carte d'un contrat : le paysage de la faction ; jusqu'à « essais » tirages pour que tout le monde puisse se
-    // rejoindre, sinon l'enceinte seule si elle laisse passer, puis rien.
+    // rejoindre, sans enceinte fermée, sinon l'enceinte seule si elle laisse passer, puis rien.
     function generate({cols,rows:rowCount,faction,players=[],enemies=[]}){
       const land=landscape(faction);
       if(!land) return {landscape:null,decor:[]};
@@ -175,14 +184,14 @@
       for(let attempt=1;attempt<=(Number(data.essais)||30);attempt++){
         ring=enclosure(map,land,spots);
         const d=decor(map,land,spots,ring);
-        if(reachable(map,{players,enemies,decor:d}))
+        if(playable(map,{players,enemies,decor:d}))
           return {landscape:land.nom,decor:d,attempts:attempt,openings:ring?ring.openings:[]};
       }
-      if(ring&&reachable(map,{players,enemies,decor:ring.wall})) return {landscape:land.nom,decor:ring.wall,attempts:0,openings:ring.openings};
+      if(ring&&playable(map,{players,enemies,decor:ring.wall})) return {landscape:land.nom,decor:ring.wall,attempts:0,openings:ring.openings};
       return {landscape:land.nom,decor:[],attempts:0};
     }
 
-    return {landscape,generate,reachable,grid,enclosure};
+    return {landscape,generate,reachable,enclosed,grid,enclosure};
   }
 
   return {createMissionTerrain,column,axial,distance};

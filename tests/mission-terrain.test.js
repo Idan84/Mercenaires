@@ -132,6 +132,7 @@ for (const row of lands.rows) {
     } else assert.equal(out.decor.filter(d => d.code === lands.enceinte.decor).length, 0, row.faction + " : pas de palissade");
     assert.equal(out.relief, undefined, "plus de relief");
     assert.ok(terrain.reachable(map, {...spots, decor: out.decor}), "tout le monde peut se rejoindre");
+    assert.deepEqual(terrain.enclosed(map, {...spots, decor: out.decor}), [], row.faction + " : pas d'enceinte fermée (Idan, 2026-11-18)");
   }
   s.decor = Math.round(s.decor / 120);
 }
@@ -144,6 +145,11 @@ const spots = deploy(3, 5);
 assert.equal(terrain.reachable(map, {...spots, decor: wall}), false);
 const fence = map.cells.filter(c => Terrain.column(c.q, c.r) === 15).map(c => ({...c, side: 0, code: "palissade"}));
 assert.equal(terrain.reachable(map, {...spots, decor: fence}), true, "une palissade se franchit");
+// Mais elle n'enferme personne (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur ») : un ennemi entouré
+// de palissade sur ses quatre côtés est refusé, le tirage recommence.
+const boxed = [0, 1, 2, 3].map(side => ({...spots.enemies[0], side, code: "palissade"}));
+assert.equal(terrain.reachable(map, {...spots, decor: boxed}), true);
+assert.deepEqual(terrain.enclosed(map, {...spots, decor: boxed}), [{q: spots.enemies[0].q, r: spots.enemies[0].r}]);
 assert.deepEqual(terrain.generate({cols, rows, faction: "Inconnus", ...spots}), {landscape: null, decor: []});
 
 // 3. Les combats de contrat : le paysage de la faction, appliqué à la carte ; la Mission Test ne change pas.

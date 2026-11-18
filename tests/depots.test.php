@@ -33,6 +33,13 @@ check(depot_verifier_demande($familles, 'pictos', 'assets/taverne/fond.webp', 'r
 check(depot_verifier_demande($familles, 'pictos', '../../index.php', 'remplacer') !== null, 'chemin hors du catalogue');
 check(depot_verifier_demande($familles, 'inconnue', 'assets/pictos/peuple-orc.webp', 'remplacer') !== null, 'famille inconnue');
 check(depot_verifier_demande($familles, 'pictos', 'assets/pictos/peuple-orc.webp', 'effacer') !== null, 'type inconnu');
+// Une image attendue et absente (Idan, 2026-11-18 : les pictos bois et pierre) : son chemin suit un motif de la famille.
+check(depot_verifier_demande($familles, 'pictos-camp', 'assets/hud/picto-bois.webp', 'nouvelle') === null, 'nouvelle image attendue');
+check(depot_verifier_demande($familles, 'pictos-camp', 'assets/hud/picto-or.webp', 'nouvelle') !== null, 'nouvelle : existe déjà');
+check(depot_verifier_demande($familles, 'pictos-camp', 'assets/pictos/peuple-x.webp', 'nouvelle') !== null, 'nouvelle : hors des motifs');
+check(depot_verifier_demande($familles, 'pictos-camp', 'assets/hud/../../x.webp', 'nouvelle') !== null, 'nouvelle : chemin remontant');
+check(depot_verifier_demande($familles, 'taverne', 'assets/taverne/table1/nouvelle-table.webp', 'nouvelle') === null, 'nouvelle : motif à accolades');
+check(depot_verifier_demande($familles, 'taverne', 'assets/taverne/cave.webp', 'nouvelle') !== null, 'nouvelle : nom hors des accolades');
 
 // Le fichier : une vraie image avec la bonne extension ; un SVG sans script pour une image SVG ; 30 Mo au plus.
 $webp = $web . '/assets/pictos/peuple-orc.webp';

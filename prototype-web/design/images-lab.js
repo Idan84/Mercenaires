@@ -70,11 +70,21 @@ const ImagesLab=(()=>{
     return `<span class="badge missing">${s.missing} manquante${s.missing>1?"s":""}</span>`;
   }
 
-  function renderGroup(group){
+  // La famille du catalogue dont un motif couvre ce chemin (même lecture que scripts/build-images-index.js et depots.php) :
+  // une image attendue et absente peut alors être déposée (« nouvelle », Idan 2026-11-18).
+  const braces=p=>{const m=p.match(/\{([^{}]*)\}/);return m?m[1].split(",").flatMap(x=>braces(p.slice(0,m.index)+x+p.slice(m.index+m[0].length))):[p];};
+  const globRe=p=>new RegExp("^"+p.replace(/\*\*\/|\*|[.+?^${}()|[\]\\]/g,t=>t==="**/"?"(?:[^/]+/)*":t==="*"?"[^/]*":"\\"+t)+"$");
+  function familyFor(catalogue,url){
+    if(!url||url.startsWith("/")) return null;
+    return (catalogue?.rows||[]).find(r=>(r.motifs||[]).flatMap(braces).some(m=>globRe(m).test(url)))||null;
+  }
+  function renderGroup(group,catalogue){
     const missing=group.items.filter(i=>i.present===false),present=group.items.filter(i=>i.present===true);
     const unknown=group.items.filter(i=>i.present!==true&&i.present!==false);
+    const deposer=i=>{const row=!i.present&&i.planned!==false&&familyFor(catalogue,i.url);
+      return row?`<button type="button" class="img-new" data-nouvelle="${html(i.url)}" data-famille="${html(row.cle)}">Déposer</button>`:"";};
     const line=i=>`<li class="${i.present?"img-ok":"img-missing"}"><strong>${html(i.name)}</strong>`
-      +`${i.file?`<code>${html(i.file)}</code>`:""}${i.note?`<span>${html(i.note)}</span>`:""}</li>`;
+      +`${i.file?`<code>${html(i.file)}</code>`:""}${i.note?`<span>${html(i.note)}</span>`:""}${deposer(i)}</li>`;
     return `<div class="img-group"><h4>${html(group.name)} <small>${present.length} / ${group.items.length}</small></h4>`
       +(missing.length?`<ul class="img-list">${missing.map(line).join("")}</ul>`:'<p class="cov-note">Rien ne manque.</p>')
       +(unknown.length?`<p class="cov-note">${unknown.length} non vérifiée(s).</p>`:"")
@@ -93,7 +103,7 @@ const ImagesLab=(()=>{
         const s=data.summary.find(x=>x.key===section.key);
         return `<section class="cov-people" id="${anchor(section.key)}"><h3>${html(section.title)} ${badge(s)}</h3>`
           +`<p class="cov-note">Masters : <code>${html(section.master)}</code>${section.note?" — "+html(section.note):""}</p>`
-          +`<div class="cov-grid">${section.groups.map(renderGroup).join("")}</div></section>`;
+          +`<div class="cov-grid">${section.groups.map(g=>renderGroup(g,data.catalogue)).join("")}</div></section>`;
       }).join("");
   }
 
@@ -169,7 +179,7 @@ const ImagesLab=(()=>{
   function renderDepots(data){
     const nom=cle=>data.catalogue?.rows.find(r=>r.cle===cle)?.famille||cle;
     const items=(data.depots||[]).map(d=>`<li class="depot-item"><a href="/${html(d.fichier)}" target="_blank" rel="noopener"><img src="/${html(d.fichier)}" alt="" loading="lazy"></a>`
-      +`<div><strong>${d.type==="variante"?"Variante de":"Remplace"} ${html(fileName(d.cible))}</strong>`
+      +`<div><strong>${d.type==="variante"?"Variante de":d.type==="nouvelle"?"Nouvelle image :":"Remplace"} ${html(fileName(d.cible))}</strong>`
       +`<span>${html(nom(d.famille))} · ${dateFr(d.date)}${d.largeur?` · ${d.largeur} × ${d.hauteur} px`:""} · ${poids(d.octets)}</span>`
       +(d.note?`<span class="depot-note">« ${html(d.note)} »</span>`:"")+`<em>En attente : JC l'intègre</em></div></li>`).join("");
     return `<section class="cov-people" id="img-depots"><h3>Dépôts <small>${(data.depots||[]).length}</small></h3>`
@@ -210,7 +220,7 @@ const ImagesLab=(()=>{
       const r1=target.largeur/target.hauteur,r2=w/h;
       if(Math.abs(r2-r1)/r1>.03) notes.push({warn:true,text:`Proportions différentes : ${r1.toFixed(2).replace(".",",")} dans le jeu, ${r2.toFixed(2).replace(".",",")} pour ton fichier. Elle sera recadrée ou déformée : à vérifier.`});
     }
-    if(/\.jpe?g$/i.test(file.name)&&await hasAlpha("/"+target.chemin)) notes.push({warn:true,text:"L'image du jeu est transparente et ton JPEG ne l'est pas : un fond uni à retirer ?"});
+    if(target.largeur&&/\.jpe?g$/i.test(file.name)&&await hasAlpha("/"+target.chemin)) notes.push({warn:true,text:"L'image du jeu est transparente et ton JPEG ne l'est pas : un fond uni à retirer ?"});
     if(!notes.length) notes.push({text:"Taille et proportions cohérentes avec l'image du jeu."});
     return {block:false,notes,w,h};
   }
@@ -226,9 +236,10 @@ const ImagesLab=(()=>{
   function openDepot(data,row,target,type){
     if(!target) return;
     const dlg=depotDialog(),svg=/\.svg$/i.test(target.chemin);
-    dlg.innerHTML=`<form class="depot-form"><header class="img-dlg-head"><div><h3>${type==="variante"?"Ajouter une variante":"Remplacer"} : ${html(fileName(target.chemin))}</h3>`
+    const nouvelle=type==="nouvelle";
+    dlg.innerHTML=`<form class="depot-form"><header class="img-dlg-head"><div><h3>${type==="variante"?"Ajouter une variante":nouvelle?"Nouvelle image":"Remplacer"} : ${html(fileName(target.chemin))}</h3>`
       +`<p>${html(row.famille)}</p></div><button type="button" class="img-dlg-close" aria-label="Fermer">×</button></header>`
-      +`<div class="depot-compare"><figure><div class="depot-img"><img src="/${html(target.chemin)}" alt=""></div>`
+      +`<div class="depot-compare"><figure><div class="depot-img">${nouvelle?"<span>Pas encore d'image</span>":`<img src="/${html(target.chemin)}" alt="">`}</div>`
       +`<figcaption>Dans le jeu${target.largeur?` · ${target.largeur} × ${target.hauteur} px`:""}</figcaption></figure>`
       +`<figure><label class="depot-img depot-drop" for="depot-file"><span>Glisse ton fichier ici<br>ou clique pour le choisir</span></label>`
       +`<figcaption class="depot-new-caption">Ton fichier</figcaption></figure></div>`
@@ -277,6 +288,10 @@ const ImagesLab=(()=>{
   // Les boutons « Voir les N images » des cartes (design.js l'appelle après render).
   function wire(root,data){
     root.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>openFamily(data,b.dataset.cat));
+    root.querySelectorAll("[data-nouvelle]").forEach(b=>b.onclick=()=>{
+      const row=data.catalogue?.rows.find(r=>r.cle===b.dataset.famille);
+      if(row) openDepot(data,row,{chemin:b.dataset.nouvelle},"nouvelle");
+    });
   }
   return {compute,render,meta,anchor,catalogueNav,wire,renderFamily,renderDepots};
 })();

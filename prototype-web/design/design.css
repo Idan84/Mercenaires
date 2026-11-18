@@ -79,6 +79,9 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .img-list li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:5px 8px;border-radius:7px;font-size:.82rem}
 .img-list li.img-missing{background:#f8e3df}.img-list li.img-ok{background:#eaf3ea}
 .img-list code{font-size:.74rem;color:#6b6258}.img-list span{font-size:.74rem;color:#857b70}
+.img-list .img-new{margin-left:auto;border:1px solid #cfc5b8;background:#f7f2ea;border-radius:6px;padding:3px 8px;font-size:.74rem;font-weight:700;cursor:pointer;color:#26221d}
+.img-list .img-new:hover{background:#eee5d8}
+.depot-img>span{color:#cfc4b4;font-style:italic}
 .img-present{margin-top:6px}.img-present summary{cursor:pointer;font-size:.8rem;color:#3f7a4a;font-weight:700}.img-present .img-list{margin-top:6px}
 /* Onglets Bestiaire et Missions (Idan, 2026-11-01) : lecture seule des ennemis et des types de mission. */
 .best-line{margin-top:14px}.best-line-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}

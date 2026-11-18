@@ -1,6 +1,7 @@
 <?php
 // Blood & Wages — dépôts d'images depuis la Design Lab (Idan, 2026-11-16 : « faire les maj comme un grand »).
-// Un dépôt remplace une image du jeu ou en ajoute une variante (familles où le jeu tire au hasard). Le fichier est rangé
+// Un dépôt remplace une image du jeu, en ajoute une variante (familles où le jeu tire au hasard) ou apporte une image que
+// le jeu attend et n'a pas encore (« nouvelle » : son chemin suit un motif de la famille, Idan 2026-11-18). Le fichier est rangé
 // tel quel sur Hostinger, dans media/depots/<id>/, avec sa fiche depot.json ; media/depots/index.json les liste tous.
 // JC les intègre ensuite (conversion au format du jeu, master dans Git, mise en ligne) : rien n'entre dans le jeu ici.
 // Le point d'entrée est prototype-web/design/api/depot.php, derrière le mot de passe de la Design Lab.
@@ -8,7 +9,7 @@
 declare(strict_types=1);
 
 const DEPOT_MAX_OCTETS = 30 * 1024 * 1024;
-const DEPOT_TYPES = ['remplacer', 'variante'];
+const DEPOT_TYPES = ['remplacer', 'variante', 'nouvelle'];
 const DEPOT_RASTER = ['png' => IMAGETYPE_PNG, 'jpg' => IMAGETYPE_JPEG, 'webp' => IMAGETYPE_WEBP, 'gif' => IMAGETYPE_GIF];
 
 // Les familles du catalogue et leurs fichiers, tels que publiés avec le site (data/images.json, data/images-fichiers.json).
@@ -25,16 +26,56 @@ function depot_familles(string $site): array
         foreach ($fichiers['familles'][$row['cle']] ?? [] as $f) {
             $liste[$f['chemin']] = $f;
         }
-        $familles[$row['cle']] = ['nom' => $row['famille'], 'variantes' => !empty($row['variantes']), 'fichiers' => $liste];
+        $familles[$row['cle']] = ['nom' => $row['famille'], 'variantes' => !empty($row['variantes']), 'fichiers' => $liste,
+            'motifs' => array_values(array_filter((array) ($row['motifs'] ?? []), 'is_string'))];
     }
     return $familles;
 }
 
 // La demande : une famille connue, une image de cette famille, un type permis pour elle. null si tout va bien.
+// Un motif du catalogue (scripts/build-images-index.js) : {a,b} des variantes, « **/ » des dossiers, « * » un nom.
+function depot_motif_regex(string $motif): array
+{
+    if (preg_match('/\{([^{}]*)\}/', $motif, $m, PREG_OFFSET_CAPTURE)) {
+        $avant = substr($motif, 0, $m[0][1]);
+        $apres = substr($motif, $m[0][1] + strlen($m[0][0]));
+        return array_merge(...array_map(fn($part) => depot_motif_regex($avant . $part . $apres), explode(',', $m[1][0])));
+    }
+    $re = '';
+    for ($i = 0, $n = strlen($motif); $i < $n;) {
+        if (substr($motif, $i, 3) === '**/') { $re .= '(?:[^/]+/)*'; $i += 3; }
+        elseif ($motif[$i] === '*') { $re .= '[^/]*'; $i++; }
+        else { $re .= preg_quote($motif[$i], '#'); $i++; }
+    }
+    return ['#^' . $re . '$#'];
+}
+
+function depot_suit_un_motif(array $motifs, string $cible): bool
+{
+    foreach ($motifs as $motif) {
+        foreach (depot_motif_regex($motif) as $re) {
+            if (preg_match($re, $cible)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function depot_verifier_demande(array $familles, string $famille, string $cible, string $type): ?string
 {
     if (!isset($familles[$famille])) {
         return 'Famille inconnue : « ' . $famille . ' ».';
+    }
+    if ($type === 'nouvelle') {
+        if (isset($familles[$famille]['fichiers'][$cible])) {
+            return 'Cette image existe déjà : « Remplacer ».';
+        }
+        if (!preg_match('#^assets/[a-z0-9_-]+(?:/[a-z0-9_-]+)*\.(?:webp|png|jpg|svg)$#', $cible)
+            || !depot_suit_un_motif($familles[$famille]['motifs'], $cible)) {
+            return 'Cette image n\'est pas attendue dans la famille « ' . $familles[$famille]['nom'] . ' ».';
+        }
+        return null;
     }
     if (!isset($familles[$famille]['fichiers'][$cible])) {
         return 'Cette image n\'appartient pas à la famille « ' . $familles[$famille]['nom'] . ' ».';

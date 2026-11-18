@@ -91,6 +91,14 @@
         .map(name=>({name,file:folder+"/"+name,url:"assets/pictos/"+prefix+"-"+slug(name)+".webp"}))}))};
   }
 
+  // Pictos de la barre du haut du camp (doc 16) : bois et pierre attendus (Idan, 2026-11-18 : icônes à demander à Jean-Mi ;
+  // en attendant, le jeu écrit « Bois » et « Pierre »).
+  const HUD=[["Or","picto-or"],["Bois","picto-bois"],["Pierre","picto-pierre"],["Salaires","picto-salaires"],["Mercenaires","picto-mercenaires"]];
+  function hudSection(){
+    return {key:"hud",title:"Pictos de la barre du haut",master:"PNG transparent, 192 px de haut (affiché à 25 px) ; Hostinger media/hud-pack/",
+      groups:[{name:"Barre du haut",items:HUD.map(([name,file])=>({name,file:file+".webp",url:"assets/hud/"+file+".webp"}))}]};
+  }
+
   function sceneSection(){
     return {key:"scenes",title:"Décors",master:"assets-src/fonds/",groups:[{name:"Écrans",items:SCENES.map(s=>({...s}))}]};
   }
@@ -98,7 +106,7 @@
   // equipmentArt : ensemble des clés présentes (prototype-web/equipment-art.js, EQUIPMENT_ART).
   function listExpected(reference,{equipmentArt=new Set()}={}){
     const sections=[...spellSections(reference),enemySection(reference),summonSection(reference),
-      equipmentSection(reference),potionSection(reference),pictoSection(reference),sceneSection()];
+      equipmentSection(reference),potionSection(reference),pictoSection(reference),hudSection(),sceneSection()];
     for(const item of sections.flatMap(s=>s.groups.flatMap(g=>g.items))){
       if(item.planned===false) item.present=false;
       else if(item.key) item.present=equipmentArt.has(item.key);

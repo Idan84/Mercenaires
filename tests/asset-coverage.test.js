@@ -21,7 +21,10 @@ const equipmentArt=new Set([...artSource.matchAll(/^\s*"([^"]+)",?$/gm)].map(m=>
 
 const sections=Coverage.listExpected(reference,{equipmentArt});
 const byKey=Object.fromEntries(sections.map(s=>[s.key,s]));
-assert.deepEqual(sections.map(s=>s.key),["spells","frames","enemies","summons","equipment","potions","pictos","scenes"]);
+assert.deepEqual(sections.map(s=>s.key),["spells","frames","enemies","summons","equipment","potions","pictos","hud","scenes"]);
+// Bois et pierre (Idan, 2026-11-18) : pictos de la barre du haut attendus, à demander à Jean-Mi.
+assert.deepEqual(byKey.hud.groups[0].items.map(i=>i.file),["picto-or.webp","picto-bois.webp","picto-pierre.webp","picto-salaires.webp","picto-mercenaires.webp"]);
+assert.ok(byKey.hud.groups[0].items.every(i=>i.present===null&&i.url.startsWith("assets/hud/")));
 // Potions et fioles (Idan, 2026-10-29) : icônes à venir.
 assert.deepEqual(byKey.potions.groups[0].items.map(i=>i.file),["healing_potion.jpg","mana_potion.jpg","poison_vial.jpg"]);
 assert.ok(byKey.potions.groups[0].items.every(i=>i.present===false&&i.planned===false));

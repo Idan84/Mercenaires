@@ -204,3 +204,37 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .depot-item span{color:#81796e}
 .depot-item .depot-note{color:#3d362e;font-style:italic}
 .depot-item em{color:#a8641a;font-style:normal;font-weight:700}
+
+/* ---- Onglet Cultures (cultures-lab.js) : l'aperçu du jeu à gauche, les réglages du panneau à droite ---- */
+.viewer:has(.cul-editor){max-width:none}
+.cul-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px}
+.cul-head h3{margin:0;font-size:1.5rem;letter-spacing:-.03em}.cul-head p{margin:4px 0 0;font-size:.84rem}
+.cul-panneaux{display:flex;gap:4px;background:#e2dbd0;padding:4px;border-radius:10px}
+.cul-panneau{border:0;border-radius:7px;padding:8px 14px;background:transparent;color:#5d554b;font-weight:750;cursor:pointer}
+.cul-panneau[aria-selected="true"]{background:#733126;color:#fff}
+.cul-point{font-style:normal;color:#e0a24c;margin-left:6px;font-size:.7rem}
+.cul-outils{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+.cul-outils label{font-size:.84rem;color:#5d554b;font-weight:700}.cul-outils select{margin-left:6px;padding:6px 8px;border:1px solid #cfc5b8;border-radius:8px;background:#fff;font:inherit}
+.cul-actions{display:flex;flex-wrap:wrap;gap:6px}
+.cul-editor .btn{border:1px solid #cfc5b8;background:#f7f2ea;border-radius:8px;padding:7px 14px;font-weight:750;cursor:pointer;color:#26221d}
+.cul-editor .btn:hover{background:#eee5d8}.cul-editor .btn:disabled{opacity:.45;cursor:default}
+.cul-editor .btn.primary{background:#733126;border-color:#733126;color:#fff}.cul-editor .btn.primary:hover{background:#5e271e}
+.cul-statut{margin:10px 0 0;min-height:1.3em;font-size:.84rem;color:#5d554b}
+.cul-main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start;margin-top:12px}
+.cul-stage{position:sticky;top:12px;min-width:0}
+.cul-box{position:relative;overflow:hidden;border-radius:8px;background:#0d0a0b;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.cul-box iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none;background:#0d0a0b}
+.cul-cap{margin:6px 0 0;font-size:.76rem;color:#81796e}
+.cul-reglages{display:grid;gap:8px;max-height:calc(100vh - 40px);overflow:auto;padding-right:4px}
+.cul-groupe{background:#fff;border:1px solid #ddd5ca;border-radius:10px;padding:0 12px}
+.cul-groupe summary{cursor:pointer;padding:10px 0;font-weight:800;font-size:.9rem}
+.cul-groupe[open]{padding-bottom:10px}
+.cul-f{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;margin:8px 0;font-size:.8rem;color:#4a433b}
+.cul-f select{padding:5px 6px;border:1px solid #cfc5b8;border-radius:7px;background:#fff;font:inherit}
+.cul-regle{display:flex;align-items:center;gap:6px}.cul-regle input[type=range]{flex:1;min-width:0;accent-color:#733126}
+.cul-regle input[type=number]{width:70px;padding:3px 5px;border:1px solid #cfc5b8;border-radius:6px}.cul-regle small{width:18px;color:#81796e}
+.cul-oui{display:flex;align-items:center;gap:8px}
+.cul-sous{margin:14px 0 2px;font-size:.74rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:#a34434}
+.cul-note{margin:6px 0;font-size:.76rem;line-height:1.4;color:#81796e}
+.cul-miroir{margin:4px 0 6px;font-size:.76rem!important;padding:4px 10px!important}
+@media(max-width:1100px){.cul-main{grid-template-columns:minmax(0,1fr)}.cul-stage{position:static}.cul-reglages{max-height:none}}

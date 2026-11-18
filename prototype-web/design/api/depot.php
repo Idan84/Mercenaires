@@ -13,38 +13,8 @@ declare(strict_types=1);
 
 require dirname(__DIR__, 2) . '/api/lib/depots.php';
 
-function depot_repondre(int $code, array $corps): void
-{
-    http_response_code($code);
-    header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: no-store');
-    echo json_encode($corps, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    exit;
-}
-
-function depot_protege(string $site): bool
-{
-    foreach (['REMOTE_USER', 'REDIRECT_REMOTE_USER', 'PHP_AUTH_USER', 'AUTH_TYPE'] as $cle) {
-        if (!empty($_SERVER[$cle])) {
-            return true;
-        }
-    }
-    $htaccess = (string) @file_get_contents($site . '/design/.htaccess');
-    return stripos($htaccess, 'AuthType') !== false || getenv('DEPOT_LOCAL') === '1';
-}
-
 $site = dirname(__DIR__, 2);
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-    depot_repondre(405, ['ok' => false, 'erreur' => 'Dépôt : POST seulement.']);
-}
-if (!depot_protege($site)) {
-    depot_repondre(403, ['ok' => false, 'erreur' => 'Dépôt fermé : la Design Lab n\'est pas protégée par mot de passe.']);
-}
-$origine = $_SERVER['HTTP_ORIGIN'] ?? '';
-$hote = (string) preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? ''));
-if (($_SERVER['HTTP_X_DEPOT'] ?? '') !== '1' || ($origine !== '' && parse_url($origine, PHP_URL_HOST) !== $hote)) {
-    depot_repondre(403, ['ok' => false, 'erreur' => 'Dépôt refusé : la demande ne vient pas de la Design Lab.']);
-}
+depot_garder($site);
 
 if (($_POST['type'] ?? '') === 'reutiliser') {
     try {

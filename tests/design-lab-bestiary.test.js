@@ -76,5 +76,5 @@ assert.match(page,/<span class="mis-gender" title="Accord selon le genre">\{rent
 const index=fs.readFileSync(path.join(ROOT,"prototype-web/design/index.html"),"utf8");
 assert.match(index,/data-mode="bestiary"[^>]*>Bestiaire</);
 assert.match(index,/data-mode="missions"[^>]*>Missions</);
-assert.match(index,/<script src="\.\/bestiary-lab\.js"><\/script>\s*<script src="\.\/missions-lab\.js"><\/script>\s*<script src="\.\/design\.js">/);
+assert.match(index,/<script src="\.\/bestiary-lab\.js"><\/script>\s*<script src="\.\/missions-lab\.js"><\/script>\s*(?:<script src="\.\/cultures-lab\.js"><\/script>\s*)?<script src="\.\/design\.js">/);
 console.log("Design Lab, Bestiaire et Missions : "+enemies.length+" fiches, "+missions.types.length+" types de mission, variables expliquées — OK");

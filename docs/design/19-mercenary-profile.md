@@ -1,14 +1,13 @@
 # Titres des mercenaires
 
-> Décisions d'Idan du 2026-10-31 (version 2, qui remplace les facettes, points forts et points faibles). Étape codée :
-> notes des catégories et sous-catégories, attribution des titres, titres écrits (section 5 ; v3 du 2026-11-06). À venir : l'onglet **Conseils**
-> (l'intendant, façon adjoint de Football Manager, avec des erreurs volontaires).
+> Décisions d'Idan du 2026-10-31, revues les 2026-11-01 et 2026-11-06. À venir : l'onglet **Conseils** (l'intendant,
+> façon adjoint de Football Manager, avec des erreurs volontaires).
 
 ## 1 — Ce que voit le joueur
 
 Au-dessus du portrait 9:16 de la fiche, dans chaque onglet qui l'affiche : **un seul titre écrit**, qui fond ses **1 à 3
-rôles**, **sans étoiles** (v3, 2026-11-06 ; section 5), ou **Chair à canon**. Tout se recalcule avec l'équipement porté.
-On ne montre ni points faibles ni valeur de combat globale.
+rôles**, **sans étoiles** (§5), ou **Chair à canon**. Tout se recalcule avec l'équipement porté. On ne montre ni points
+faibles ni valeur de combat globale.
 
 ## 2 — Les 10 catégories et leurs sous-catégories
 
@@ -25,25 +24,33 @@ On ne montre ni points faibles ni valeur de combat globale.
 | Éclaireur | Vigie, Infiltrateur, Éclaireur magique, Poseur de pièges |
 | Meneur | Soutien de ses troupes, Démoralisateur, Stratège |
 
-Une action ne qualifie qu'une seule sous-catégorie (Idan) : protéger par la magie → Buffer Protecteur (déplacé du Healer le 2026-11-01 : un Soigneur doit soigner), par son corps →
-Tank Garde du corps ; le moral, ami ou ennemi → Meneur ; se soigner soi-même → Tank Auto-soigneur ; voir par la magie (le
-corbeau) → Éclaireur magique ; arrêter les charges → Tank Gardien de ligne (armes d'hast : toutes les armes de tir
-contre-chargent, ce n'est pas une spécialité). Ressusciteur, Garde du corps, Stratège,
-Summoner de support et Poseur de pièges (les pièges n'existent pas encore en combat ; 2026-11-01) attendent que le jeu le permette : ils ne sont jamais notés. DPS magiques dans la durée est noté depuis l'Embrasement (Feu), Source de mana depuis la Source vive (Eau ; 2026-11-01), Anti-mage depuis le Brouillage mental (Illusion ; 2026-11-01).
+Une action ne qualifie qu'une seule sous-catégorie (Idan) :
+
+- protéger par la magie → Buffer Protecteur ; par son corps → Tank Garde du corps ;
+- le moral, ami ou ennemi → Meneur ; se soigner soi-même → Tank Auto-soigneur ;
+- voir par la magie (le corbeau) → Éclaireur magique ;
+- arrêter les charges → Tank Gardien de ligne (armes d'hast ; toutes les armes de tir contre-chargent, ce n'est pas une
+  spécialité).
+
+Ressusciteur, Garde du corps, Stratège, Summoner de support et Poseur de pièges (pas encore de pièges en combat)
+attendent que le jeu le permette : jamais notés. DPS magiques dans la durée vient de l'Embrasement (Feu), Source de mana
+de la Source vive (Eau), Anti-mage du Brouillage mental (Illusion).
 
 ## 3 — Les notes
 
-- **Sous-catégorie** : la meilleure de ses sources (`mercenary-profile.json`, `sources`), mesurées avec les formules du
-  combat et l'équipement porté, contre un **étalon** jamais montré (caractéristiques médianes des recrues, maîtrise 35,
-  épée longue en gambison ou en armure de plates, arc). Exemples : Perce-armure = dégâts par tour contre l'armure de
-  plates ; Esquiveur = chance que l'étalon le manque ; Assassin = un coup en sortant du camouflage × chance de rester
-  caché ; Vigie = Perception. Les sorts et les créatures sont rangés par sous-catégorie dans les données (`sorts`,
-  `creatures`) ; Purge et Célérité n'en ont pas.
+Données : `data/reference/mercenary-profile.json`.
+
+- **Sous-catégorie** : la meilleure de ses sources, mesurées avec les formules du combat et l'équipement porté, contre
+  un **étalon** jamais montré (caractéristiques médianes des recrues, maîtrise 35, épée longue en gambison ou en armure
+  de plates, arc). Exemples : Perce-armure = dégâts par tour contre l'armure de plates ; Esquiveur = chance que l'étalon
+  le manque ; Assassin = un coup en sortant du camouflage × chance de rester caché ; Vigie = Perception. Les sorts et
+  les créatures sont rangés par sous-catégorie dans les données ; Purge et Célérité n'en ont pas.
 - **Ce qu'il ne sait pas faire n'est pas noté** (pas de sort de soin, pas d'arme de tir…).
-- **Échelle de la réputation** : pour chaque source, les recrues qui la pratiquent se répartissent dans les niveaux comme
-  leur réputation (≈ 2 % au niveau 1, 31 % au 2, 53 % au 3, 13 % au 4, 1 % au 5) ; au-delà, chaque niveau demande × 1,25.
+- **Échelle** : pour chaque source, les recrues qui la pratiquent se répartissent dans les niveaux selon une
+  **répartition fixe**, celle de la réputation des recrues avant l'accentuation du domaine (≈ 2 % au niveau 1, 31 % au
+  2, 53 % au 3, 13 % au 4, 1 % au 5) ; au-delà, chaque niveau demande × 1,25.
 - **Catégorie** : sa meilleure sous-catégorie, étalonnée à son tour de la même façon, pour qu'une catégorie mesurée chez
-  tous (Tank, Meneur, Éclaireur) ne sorte pas plus souvent qu'une autre parce qu'elle a plus de sources.
+  tous (Tank, Meneur, Éclaireur) ne sorte pas plus souvent parce qu'elle a plus de sources.
 
 ## 4 — Les titres
 
@@ -51,97 +58,77 @@ Summoner de support et Poseur de pièges (les pièges n'existent pas encore en c
 2. **Titre 1** : sa meilleure catégorie.
 3. **Titre 2**, puis **titre 3** : la catégorie suivante, si elle a au moins 4★ et **au plus 1★ de moins** que la
    précédente. En cas d'égalité, la mieux placée dans son niveau passe devant.
-4. **Spécificité** (v2) : un titre prend sa meilleure sous-catégorie si elle a **au moins 2★ de plus** que toutes les autres
-   (6★ contre 5★ : générique), ou s'il ne sait faire qu'elle (au moins 3★). Sinon il reste générique. Depuis la v3
-   (section 5), le titre écrit prend toujours le « comment » de sa meilleure sous-catégorie : la spécificité n'est plus
-   montrée (elle reste dans la mesure de l'étalonnage).
+4. **Spécificité** : une sous-catégorie qui a **au moins 2★ de plus** que toutes les autres (6★ contre 5★ : générique),
+   ou la seule qu'il sait faire (au moins 3★). Elle n'est plus montrée (elle reste dans la mesure de l'étalonnage) : le
+   titre écrit prend toujours le « comment » de sa meilleure sous-catégorie (§5).
 
-Les étoiles de chaque rôle servent à choisir ses rôles et le mot de niveau ; le joueur ne les voit plus (v3).
-
-Mesure d'origine (2026-10-31, 4 000 recrues) : 50 % de Chair à canon, 33 % un titre, 12 % deux, 5 % trois ; un titre sur trois est précisé
-(surtout Tank et Meneur : leurs sous-catégories varient indépendamment ; celles des DPS viennent de la même arme et se
-détachent rarement chez les recrues).
+Les étoiles de chaque rôle servent à choisir ses rôles et le mot de niveau ; le joueur ne les voit pas.
 
 ### Seulement ce qui agit, et le calage (Idan, 2026-11-01)
 
-« On peut pas dire que quelqu'un est un DPS magique s'il n'a aucun sort de dégâts » ; « un intimidateur en meneur, pourquoi
-pas, mais on doit vraiment sentir que c'est son rôle » ; « certains trucs sont trop surestimés ce qui fait qu'ils ont trois
-titres au début ».
+« On peut pas dire que quelqu'un est un DPS magique s'il n'a aucun sort de dégâts. »
 
 - **Un titre seulement pour ce qui agit** :
   - **Soigneur** : un sort qui soigne vraiment (PV ou états : Délivrance) ; les protections (armures de feu et de froid,
-    Peau de pierre, Peau d'écailles, Champ de protection, Robustesse de l'ours, Agilité du chat) passent au
-    **Renforceur · Protecteur** (« boucliers magiques ») ;
+    Peau de pierre, Peau d'écailles, Champ de protection, Robustesse de l'ours, Agilité du chat) vont au **Renforceur ·
+    Protecteur** (« boucliers magiques ») ;
   - **Meneur · Soutien de ses troupes** : l'aura compte seulement pour le **capitaine**, un **lieutenant** (la moitié) ou
     celui qui tient un **fouet** ; une recrue n'en a pas. Les sorts de moral comptent toujours ;
-  - **Meneur · Démoralisateur** : l'Intimidation agit en combat (−0,25 × Intimidation au Courage de l'ennemi) ; il reste ;
-  - **Poseur de pièges** : plus noté tant que les pièges n'existent pas.
-- **Calage** : les niveaux suivent une **répartition fixe** (`selection.repartition` : 2 / 31 / 53 / 13 / 1 % des
-  praticiens aux niveaux 1 à 5, la réputation des recrues avant le domaine), et non plus la réputation du moment, qui a
-  monté avec l'accentuation du domaine. Les **rôles que tout le monde pratique** (Tank, Éclaireur, Meneur : plus de 90 %
-  des recrues les pratiquent) ont une répartition plus exigeante (`selection.repartition_tous` : 4★ pour les 5 % du
-  haut).
-- **Domaine** : une catégorie hors du domaine du mercenaire demande **une étoile de plus** (`selection.domaines`,
-  `ecart_hors_domaine`) : un mage n'est « DPS au CAC » qu'à 5★.
-- **Domaine évolutif** (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps et le cadre suit cette évolution » ;
-  « on garde le frein, et un message dans le journal, mais on utilise le terme de combat rapproché ») : à chaque recalcul du
-  titre — **fin de mission** (expérience), **changement d'équipement** (échange, relance, réaménagement), **chaque matin**
-  au camp (entraînements, apprentissages) —, le domaine prend celui du **premier rôle du titre qui dit comment il se bat**
-  (`selection.domaine_par_role`) : DPS au CAC → Combat rapproché ; DPS à distance → Distance ; DPS magiques, Healer, Buffer,
-  Contrôleur, Summoner → Mage. Un Tank, un Éclaireur ou un Meneur **porté par ses sorts** compte Mage
-  (`selection.domaine_sorts`) ; sinon on passe au rôle suivant. Sans titre, ou sans rôle qui le dise, il ne change pas.
-  **Le frein reste** : hors de son domaine, un rôle demande une étoile de plus pour entrer dans le titre ; un mage passe au
-  combat rapproché quand l'épée a vraiment pris le dessus (exemple du test : un mage gnome en épée à deux mains, compétences
-  au maximum, n'y passe qu'avec +40 en Force, Dextérité et Vitesse : 5★ au CAC), et il faudra ensuite une étoile de plus à
-  sa magie pour revenir. À la génération, le titre suit le domaine tiré : personne ne change au premier matin. Le journal
-  de la compagnie le dit (« Malik passe au combat rapproché. », « … au combat à distance. », « … à la magie. »), le journal
-  du combat aussi en fin de mission. (Le picto de la fiche est retiré depuis le 2026-11-12.) Code : `titleDomain` (`game-core/mercenary-profile.js`),
-  `refreshMercenaryDomains` (`prototype-web/ui.js`).
-- **Cadre de combat** (Idan, 2026-11-06 : « un cadre de couleur pour nos personnages ? Archer / CAC / Magie » ; « combat
-  seulement », « on ne touche pas aux ennemis ») : en combat, l'anneau de nos personnages prend la couleur de leur domaine
-  du moment : **bleu** (combat rapproché), **vert** (distance), **violet** (magie), sur le pion, la barre d'ordre de jeu et
-  la liste de l'équipe. Le personnage actif reste doré ; les ennemis gardent leur rouge et leurs cadres de rang ; les
-  invocations gardent leur anneau.
-- **Mesure** (4000 recrues) : Chair à canon 65.8 %, un titre 28.4 %, deux 5.1 %, trois 0.7 %
-  (avant : 27 / 37 / 24 / 12 %). Titres par catégorie : DPS au CAC 9.2 %, DPS à distance 8.2 %, Tank 5 %, Éclaireur 4.9 %, Meneur 4.6 %, Contrôleur 2.6 %, DPS magiques 2.5 %, Buffer 2 %, Summoner 1.2 %, Healer 0.7 %.
-  Titre principal hors du domaine : 2 sur 655 (avant : 7 %). Capitaines : Meneur pour 11 % (aura nettement au-dessus de
-  la moyenne).
+  - **Meneur · Démoralisateur** : reste, car l'Intimidation agit en combat (−0,25 × Intimidation au Courage de
+    l'ennemi).
+- **Calage** : les **rôles que tout le monde pratique** (Tank, Éclaireur, Meneur : plus de 90 % des recrues) ont une
+  répartition plus exigeante : 4★ pour les 5 % du haut.
+- **Domaine** : une catégorie hors du domaine du mercenaire demande **une étoile de plus** : un mage n'est « DPS au
+  CAC » qu'à 5★.
+- **Domaine évolutif** (Idan, 2026-11-06) : à chaque recalcul du titre (**fin de mission**, **changement
+  d'équipement**, **chaque matin** au camp), le domaine devient celui du **premier rôle du titre qui dit comment il se
+  bat** : DPS au CAC → Combat rapproché ; DPS à distance → Distance ; DPS magiques, Healer, Buffer, Contrôleur,
+  Summoner → Mage. Un Tank, un Éclaireur ou un Meneur **porté par ses sorts** compte Mage ; sinon on passe au rôle
+  suivant. Sans titre, ou sans rôle qui le dise, il ne change pas.
+  - **Le frein reste** : hors de son domaine, un rôle demande une étoile de plus pour entrer dans le titre. Un mage gnome
+    en épée à deux mains, compétences au maximum, ne passe au combat rapproché qu'avec +40 en Force, Dextérité et
+    Vitesse (5★ au CAC) ; il faut ensuite une étoile de plus à sa magie pour revenir.
+  - À la génération, le titre suit le domaine tiré : personne ne change au premier matin.
+  - Le journal de la compagnie le dit (« Malik passe au combat rapproché. », « … au combat à distance. », « … à la
+    magie. »), le journal du combat aussi en fin de mission.
+- **Cadre de combat** (Idan, 2026-11-06) : en combat seulement, l'anneau de nos personnages prend la couleur de leur
+  domaine du moment : **bleu** (combat rapproché), **vert** (distance), **violet** (magie), sur le pion, la barre
+  d'ordre de jeu et la liste de l'équipe. Le personnage actif reste doré ; les ennemis gardent leur rouge et leurs
+  cadres de rang ; les invocations gardent leur anneau.
+- **Mesure** (4 000 recrues) : Chair à canon 65,8 %, un titre 28,4 %, deux 5,1 %, trois 0,7 %. Par catégorie : DPS au
+  CAC 9,2 %, DPS à distance 8,2 %, Tank 5 %, Éclaireur 4,9 %, Meneur 4,6 %, Contrôleur 2,6 %, DPS magiques 2,5 %,
+  Buffer 2 %, Summoner 1,2 %, Healer 0,7 %. Titre principal hors du domaine : 2 sur 655. Capitaines : Meneur pour 11 %
+  (aura nettement au-dessus de la moyenne).
 
 ## 5 — Les titres écrits (v3)
 
-Décisions d'Idan du 2026-11-06 (remplacent les titres écrits du 2026-11-01 : mot du rôle, petite ligne de spécialité, un
-titre par ligne avec ses étoiles). Données : `data/reference/mercenary-titles.json` ; code : `composeTitle`
-(`game-core/mercenary-profile.js`) ; affichage : `renderEvaluation` (`prototype-web/ui.js`).
+Décisions d'Idan du 2026-11-06 : « Ce qu'il fait sur le terrain × comment il le fait ». Données :
+`data/reference/mercenary-titles.json`.
 
-« Ce qu'il fait sur le terrain × comment il le fait » ; « l'idée du titre, c'est de faire un résumé de la fiche du
-personnage » ; « on ajoute surtout pas de petite ligne » ; « pas d'étoile » ; « le 3 titres c'est bien. On rajoute un
-niveau comme on avait déjà ».
-
-- **Un seul titre** : ses 1 à 3 rôles (section 4) fondus en un titre, **sans étoiles**, ou **Chair à canon**.
+- **Un seul titre** : ses 1 à 3 rôles (§4) fondus en un titre, **sans étoiles**, ou **Chair à canon**. Pas de petite
+  ligne de spécialité.
 - **Le comment** : l'**arme** qui porte le rôle (le set qui donne la meilleure valeur), le **style** quand aucune arme ne
   domine, l'**école** de son meilleur sort, ou la **sous-catégorie** qui a son propre mot (Assassin, Rempart, Rôdeur…).
   On y lit toujours l'arme ou l'école, et ce qu'il fait.
 - **L'écriture** : le nom de métier quand il dit l'arme (Épéiste, Lancier, Archer, Marteleur…), sinon un nom qui a du
   cachet suivi de l'arme (« Assommeur à la massue ») ; pour la magie, le nom de l'école quand il est transparent
   (Pyromancien, Hydromancien, Nécromancien, Illusionniste), sinon « Mage de [école] ».
-- **Plusieurs rôles** : rôle principal (son titre) + autres rôles (leur forme courte) + armes en complément ;
-  à trois rôles, « et » avant le dernier. Un rôle déjà dit n'est pas répété (« Mage de Foudre paralyseur » dit déjà ses
-  dégâts de Foudre). Exemples : *Archer éclaireur*, *Guérisseur à la hache de guerre*, *Guetteur insaisissable et
+- **Plusieurs rôles** : rôle principal (son titre) + autres rôles (leur forme courte) + armes en complément ; à trois
+  rôles, « et » avant le dernier. Un rôle déjà dit n'est pas répété (« Mage de Foudre paralyseur » dit déjà ses dégâts
+  de Foudre). Exemples : *Archer éclaireur*, *Guérisseur à la hache de guerre*, *Guetteur insaisissable et
   intimidateur*, *Assassin rôdeur à l'épée longue et à l'arc*.
-- **Le niveau** : le mot du rôle principal, aux paliers d'étoiles d'avant (4–5★, 6–8★, 9–10★, 11–14★, 15★), placé
-  **avant l'arme** ou **à la fin** selon le mot (`paliers_place`) : *Assommeur en herbe à la massue*, *Combattant à la
-  hache de guerre qu'on évite*, *Meneur au fouet à la grosse voix*.
-- **Sa monture équipée** (Idan, 2026-11-07 : « titre A » ; « Pour pas changer en permanence son titre et sa réputation : on
-  prend en compte la monture équipée. Si elle est pas équipée, mais equipable dans l'inventaire ( blessée quelques jours par
-  exemple, on change rien. ) ») : à la fin du titre, « à cheval », « à dos de licorne » (`mounts.json`, `titre`) :
-  *Lancier vétéran à cheval*, *Chair à canon à cheval*. Une monture au repos (blessée, fatiguée) reste équipée : le titre ne
-  bouge pas ; une monture dans l'inventaire ne compte pas. Le loup (Idan, 2026-11-07 : « Oui ») : « à dos de loup » pour un
-  petit qui le monte ; rien pour celui qui l'emmène à pied (il faut pouvoir la monter).
-- **Infobulle** : deux lignes sur le rôle principal (ou sa sous-catégorie), comme avant.
-- **Affichés au masculin pour tous** (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres ») : sur la
-  fiche complète comme sur la fiche au survol. La version féminine reste dans les données, sans servir.
-- **Masculin et féminin** (Idan, 2026-11-06 : « je te laisse faire la version féminine ») : *Archère éclaireuse*,
-  *Assommeuse dévastatrice à la massue*, *Cheffe de guerre*, *Mage de Foudre paralyseuse*, *Transmutatrice*. Restent
+- **Le niveau** : le mot du rôle principal, par paliers d'étoiles (4–5★, 6–8★, 9–10★, 11–14★, 15★), placé **avant
+  l'arme** ou **à la fin** selon le mot : *Assommeur en herbe à la massue*, *Combattant à la hache de guerre qu'on
+  évite*, *Meneur au fouet à la grosse voix*.
+- **Sa monture équipée** (Idan, 2026-11-07 : « Pour pas changer en permanence son titre et sa réputation : on prend en
+  compte la monture équipée ») : à la fin du titre, « à cheval », « à dos de licorne » (`mounts.json`) : *Lancier
+  vétéran à cheval*, *Chair à canon à cheval*. Une monture au repos (blessée, fatiguée) reste équipée : le titre ne
+  bouge pas ; une monture dans l'inventaire ne compte pas. Le loup : « à dos de loup » pour un petit qui le monte ; rien
+  pour celui qui l'emmène à pied (il faut pouvoir la monter).
+- **Infobulle** : deux lignes sur le rôle principal (ou sa sous-catégorie).
+- **Affichés au masculin pour tous** (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »), sur la
+  fiche complète comme au survol. La version féminine reste dans les données, sans servir : *Archère éclaireuse*,
+  *Assommeuse dévastatrice à la massue*, *Cheffe de guerre*, *Mage de Foudre paralyseuse*, *Transmutatrice* ; restent
   identiques : Épéiste, Samouraï, Coupe-jarret, Brise-plates, Bâtonniste, Rétiaire, Ambidextre, Duelliste, Mage de…,
   Télékinésiste, Illusionniste, Forgeflamme, Rempart, Insaisissable, Increvable, Augure.
 
@@ -199,8 +186,8 @@ niveau comme on avait déjà ».
 | Canon à main | Canonnier | au canon à main |
 
 Sous-catégories qui ont leur mot, avec l'arme en complément : **Assassin** (la dague va de soi : « Assassin », « Assassin
-au kukri ») ; **Empoisonneur** (« Empoisonneur à la sarbacane »). Les autres (perce-armure, de foules, charge, tir de loin)
-gardent le titre de l'arme.
+au kukri ») ; **Empoisonneur** (« Empoisonneur à la sarbacane »). Les autres (perce-armure, de foules, charge, tir de
+loin) gardent le titre de l'arme.
 
 ### Styles (aucune arme ne domine)
 
@@ -249,27 +236,17 @@ Le set tient deux armes différentes, ou l'autre set frappe au **même niveau** 
 
 En second rôle : l'école de dégâts (pyromancien, mage de Foudre…), guérisseur, entraveur (paralyseur, envoûteur,
 flétrisseur), renforceur (protecteur), leveur de morts, invocateur. Une école sans entrée prend le mot du rôle
-(Soigneur, Entraveur, Renforceur, Invocateur, Mage de guerre).
+(Soigneur, Entraveur, Renforceur, Invocateur, Mage de guerre). **Renforceur** plutôt que « de soutien », qui ne se
+compose pas (« Rôdeur guérisseur et de soutien »).
 
-- **Renforceur** plutôt que « de soutien » (brouillon) : « de soutien » ne se compose pas (« Rôdeur guérisseur et de
-  soutien »).
-- **Mesure** (4 000 recrues, 2026-11-06) : 234 titres différents ; Chair à canon 66 %, un rôle 28 %, deux 5 %, trois
-  0,9 %. Les plus fréquents : Intimidateur, Fendeur à la hache double, Canonnier, Insaisissable, Arquebusier, Marteleur,
-  Rempart, Archer, Arbalétrier, Guetteur, Mage de Foudre (« en herbe » pour presque tous : 4–5★).
+**Mesure** (4 000 recrues, 2026-11-06) : 234 titres différents ; Chair à canon 66 %, un rôle 28 %, deux 5 %, trois
+0,9 %. Les plus fréquents : Intimidateur, Fendeur à la hache double, Canonnier, Insaisissable, Arquebusier, Marteleur,
+Rempart, Archer, Arbalétrier, Guetteur, Mage de Foudre (« en herbe » pour presque tous : 4–5★).
 
-## 6 — Code et données
+## 6 — Étalonnage et garde-fous
 
-- `game-core/mercenary-profile.js` : sources, notes, rôles, titre écrit (`createProfileRules`, `evaluate`, `measure`,
-  `spellRole`, `composeTitle`) ; les sources d'arme se mesurent set par set (`SET_SOURCES`), pour dire quelle arme porte
-  le rôle.
-- `data/reference/mercenary-profile.json` : sélection, catégories, sources, sorts et créatures par sous-catégorie (à la
-  main) ; étalon, seuils et mesure (par le script).
-- `scripts/build-mercenary-profile.js` : étalonnage sur 4 000 recrues ; à relancer quand la génération, le combat, les
-  sorts ou les sous-catégories changent.
-- **Garde-fous** (Idan, 2026-10-31) : la publication bloque si un sort ou une créature n'a pas de rôle (`sorts`,
-  `creatures`, ou `sans_role` pour Purge et Célérité), et si l'étalonnage n'est plus celui que donnent les règles
-  (`node scripts/build-mercenary-profile.js --check`). L'équipement et la progression, eux, suivent tout seuls : les
-  mesures passent par les règles du combat.
-- `data/reference/mercenary-titles.json` : titres écrits (section 5) : armes, styles, rôles (écoles, sous-catégories,
-  variantes), mots de niveau et leur place, infobulles.
-- `prototype-web/ui.js` (`renderEvaluation`) ; tests : `tests/mercenary-profile.test.js`, `tests/mercenary-titles.test.js`.
+- L'étalonnage (étalon, seuils, mesure) se fait sur 4 000 recrues ; il est à refaire quand la génération, le combat, les
+  sorts ou les sous-catégories changent. L'équipement et la progression suivent tout seuls : les mesures passent par les
+  règles du combat.
+- **Garde-fous** (Idan, 2026-10-31) : la publication bloque si un sort ou une créature n'a pas de rôle (sauf Purge et
+  Célérité, sans rôle), ou si l'étalonnage n'est plus celui que donnent les règles.

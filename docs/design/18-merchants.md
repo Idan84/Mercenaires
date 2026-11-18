@@ -1,53 +1,40 @@
 # Marchands
 
-> Ouvert le 2026-10-30 (Idan / JC3). **Étape 2 en place (2026-10-31)** : le premier vrai marchand, **Thorval
-> Poudredefeu**, remplace le marchand test ; étal de 10 articles, affinité qui évolue, achat, revente, aide de
-> l'intendant, et « Rien que pour toi, capitaine ». Chiffres proposés par JC3 et validés par Idan (« Go »). Tous sont des
-> constantes `merchants.*` de `formula-constants.json`.
+> Décisions d'Idan des 2026-10-30 et 2026-10-31 ; chiffres validés par Idan (« Go »).
 
 ## 1 — L'idée (Idan, 2026-10-30)
 
-- **Chaque jour, un tirage** : pas de marchand, ou un marchand parmi la liste.
-- **Chaque marchand a de vraies caractéristiques** : les objets qu'il vend, et son **affinité avec le capitaine**.
-- Les prix dépendent de l'affinité ; **l'intendant aide**. Les tiers proposés **dépendent de la renommée**.
-- Ils sont **réticents à racheter les grandes quantités** (« le lot de 300 lances usées ») : les prix baissent avec la
-  quantité.
-- On pourra **négocier** ; on aura bien d'autres objets, et ils ne s'arrêtent pas au T4.
+Chaque jour, un tirage : pas de marchand, ou un marchand qui a ses objets et son **affinité avec le capitaine**. Les
+prix dépendent de l'affinité et de **l'intendant**, les tiers de la **renommée** ; il rachète mal les grandes quantités
+(« le lot de 300 lances usées »). Plus tard : négocier, d'autres objets, au-delà du T4.
 
 ## 2 — Le passage
 
 - Chaque matin, un marchand passe au camp avec une probabilité de **30 % + 4 % par étoile de renommée** (15 niveaux) :
   38 à 42 % pour une compagnie neuve, 54 % à 1 étoile d'argent, 90 % à 5 étoiles d'or. Il reste **la journée** et repart
-  le lendemain matin. Le marchand qui passe est tiré parmi la liste selon son `poids`.
+  le lendemain matin. Il est tiré dans la liste selon son poids.
 - La **notification du jour** annonce son arrivée ; le bouton **Marchand** du camp porte son nom (grisé sans marchand).
 
 ## 3 — Un marchand (Idan, 2026-10-31)
 
-- Un **nom fixe**, un **portrait** fait pour lui seul, une **culture** (son peuple et l'alignement par défaut de sa
-  culture), et la **liste des objets qu'il vend** : on ne trouve **jamais** autre chose chez lui, sauf l'objet « rien que
-  pour toi » (§9).
-- **Thorval Poudredefeu** : Nain, Nains du chaos, Chaotique neutre. Il vend **Pistolet, Tromblon, Canon à main,
-  Arquebuse**. Son portrait est à venir (`portrait` vide : l'écran montre ses initiales en attendant).
-- **Durgan Battefer** (Idan, 2026-10-31 ; nom de JC3) : Nain, Nains des montagnes, Neutre bon (l'alignement principal
-  des nains). Il vend **Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de
-  guerre, Hache de guerre**. Portrait à venir. Il hait les nains du chaos, et c'est réciproque (doc 02, « Cultures à
-  part »).
-- **Orvald Sans-Collier**, **Jiraya Senin** et **Ysolwen Chantesève** (Idan, 2026-10-31 ; noms d'Orvald et d'Ysolwen par
-  JC3) : leurs listes au §12.
-- **32 marchands, dont 16 marchandes : un par culture** (Idan, 2026-10-31 : « je te laisse faire ») ; les 27 derniers
-  (noms, listes, répliques) sont de JC3, assortis à leur culture (`idees_bonus` de `cultures.json`, armes et armures du
-  peuple). Chacun a l'alignement par défaut de sa culture et le même `poids`. Thorval reçoit en plus l'arbalète et la
-  bague de la Foudre (Nains du chaos : arbalètes, Foudre).
-- **Manuels de sorts** (doc 12) : chaque marchand d'une culture qui a une école de magie vend aussi **les manuels de cette
-  école** (une ligne de sa liste) ; les sorts à venir de l'école y entrent d'eux-mêmes.
-- **Objectifs** (Idan, 2026-10-31) : chaque objet vendu par **au moins deux marchands**, et chaque marchand vend **à peu
-  près le même nombre d'objets** (6 ou 7 lignes) ; les cristaux viendront ensuite. La liste est tenue au §12 ; les tests
-  bloquent si un objet ou une école de manuels a moins de deux marchands. Portraits à venir.
+- Un **nom fixe**, un **portrait** pour lui seul (sans portrait, l'écran montre ses initiales), une **culture** (son
+  peuple et l'alignement par défaut de sa culture) et la **liste des objets qu'il vend** : on ne trouve **jamais** autre
+  chose chez lui, sauf l'objet « rien que pour toi » (§9).
+- **32 marchands, dont 16 marchandes : un par culture**, tous au même poids. Leurs listes (§12) sont assorties à leur
+  culture (ses idées de bonus, les armes et armures du peuple).
+- **Thorval Poudredefeu** : Nain, Nains du chaos, Chaotique neutre ; Pistolet, Tromblon, Canon à main, Arquebuse, plus
+  l'arbalète et la bague de la Foudre (Nains du chaos : arbalètes, Foudre).
+- **Durgan Battefer** : Nain, Nains des montagnes, Neutre bon (l'alignement principal des nains). Il hait les nains du
+  chaos, et c'est réciproque (doc 02, « Cultures à part »).
+- **Manuels de sorts** (doc 12) : chaque marchand d'une culture qui a une école de magie vend aussi **les manuels de
+  cette école** (une ligne de sa liste) ; les sorts à venir de l'école y entrent d'eux-mêmes.
+- **Objectifs** : chaque objet vendu par **au moins deux marchands** (sauf les montures, §12 bis), et chaque marchand
+  vend **à peu près le même nombre d'objets** (6 ou 7 lignes) ; les cristaux viendront ensuite.
 
 ## 4 — L'étal
 
-- **10 articles par passage**, pour tous les marchands (`merchants.stock.size`). Chacun est tiré au hasard dans sa liste
-  (doublons possibles) et ne se vend qu'une fois.
+- **10 articles par passage**, pour tous les marchands. Chacun est tiré au hasard dans sa liste (doublons possibles) et
+  ne se vend qu'une fois.
 - **Tier** (pour l'instant T2 à T4) selon le niveau d'étoiles de la renommée (1 à 15) :
   T2 = 70 − 4 × niveau, T3 = 25 + 2 × niveau, T4 = 5 + 2 × niveau (en %, la somme fait 100).
 
@@ -59,15 +46,15 @@
 
 ## 5 — L'affinité avec le marchand
 
-- **Initiale** : comme celle d'un mercenaire avec le capitaine (doc 02 : peuple, culture, alignement). Exemples avec
-  Thorval : capitaine nain du chaos +100, humain chaotique neutre +44, humain neutre +22, orc loyal bon −71, nain des
-  montagnes chaotique neutre −29 (les Nains du chaos haïssent les autres nains : doc 02, « Cultures à part »).
+- **Initiale** : comme celle d'un mercenaire avec le capitaine (doc 02 : peuple, culture, alignement). Avec Thorval :
+  capitaine nain du chaos +100, humain chaotique neutre +44, humain neutre +22, orc loyal bon −71, nain des montagnes
+  chaotique neutre −29 (les Nains du chaos haïssent les autres nains).
 - **Acquise** : **+2 par article acheté** ; **−3 à chaque passage sans aucun achat ni aucune vente** (quand il repart).
-- Bornée de −100 à +100. **Elle n'est pas affichée.** Sauvegarde : `state.market.merchants[id].acquired`.
+- Bornée de −100 à +100. **Elle n'est pas affichée.**
 
 ## 6 — L'intendant
 
-Si l'affinité du marchand avec l'intendant (initiale) est d'au moins **+20**, l'intendant négocie : **1 % par tranche de
+Si l'affinité (initiale) du marchand avec l'intendant est d'au moins **+20**, l'intendant négocie : **1 % par tranche de
 10 points d'Intendance** (jusqu'à 10 %), en moins sur vos achats et en plus sur vos ventes. L'écran montre seulement son
 visage (« … négocie pour vous »).
 
@@ -89,28 +76,28 @@ Prix = valeur × **0,8** × (1 + **0,2** × Affinité / 100) × (1 + bonus de l'
   marchand).
 - Ce qu'il rachète disparaît.
 
-Ainsi, on gagne un peu en achetant un T3 ou un T4 là où l'affinité est bonne, pour le revendre à un autre marchand qui a
-cette arme dans sa liste, tant que la compagnie est jeune.
+Tant que la compagnie est jeune, on gagne un peu à acheter un T3 ou un T4 là où l'affinité est bonne pour le revendre
+à un marchand qui a cette arme dans sa liste.
 
-**Exemples** (compagnie neuve, capitaine humain chaotique neutre : affinité +44, sans intendant) : Pistolet T2 739 PO à l'achat,
-470 PO à la vente ; Tromblon T4 17 955 PO à l'achat, 15 667 PO à la vente (12 730 PO pour une compagnie à 1 étoile d'or ; qualité De luxe, × 2,5, depuis le 2026-11-01) ;
-10 épées longues T1 : environ 133 PO en tout (25 PO la première).
+**Exemples** (compagnie neuve, capitaine humain chaotique neutre : affinité +44, sans intendant) : Pistolet T2 739 PO à
+l'achat, 470 PO à la vente ; Tromblon T4 (qualité De luxe, × 2,5) 17 955 PO à l'achat, 15 667 PO à la vente (12 730 PO
+pour une compagnie à 1 étoile d'or) ; 10 épées longues T1 : environ 133 PO en tout (25 PO la première).
 
 ## 9 — « Rien que pour toi, capitaine » (Idan, 2026-10-31)
 
-- **Quand** : son affinité avec le capitaine est à **+100**, vérifiée pendant tout son passage (donc aussi juste après
-  l'achat qui l'y porte). Avec Thorval, un capitaine nain du chaos y est d'emblée (+100) ; il faut 28 achats à un humain
-  chaotique neutre (+44), 39 à un humain neutre (+22). S'il repart sans affaire (97), l'offre ne revient qu'une fois remonté à +100.
+- **Quand** : son affinité avec le capitaine est à **+100**, vérifiée pendant tout son passage (aussi juste après l'achat
+  qui l'y porte). Avec Thorval, un capitaine nain du chaos y est d'emblée ; il faut 28 achats à un humain
+  chaotique neutre (+44), 39 à un humain neutre (+22). S'il repart sans affaire (97), l'offre ne revient qu'une fois
+  remonté à +100.
 - **Une offre par passage**, qui reste jusqu'à son départ si on ne la prend pas tout de suite.
 - **L'objet** : jamais dans sa liste ; une famille d'équipement au hasard (arme, armure, casque, bottes, ceinture,
   amulette, cape, gants, culotte, bague ; pas de fiole), puis un objet de cette famille ; **T3 ou T4**, avec les chances
   de l'étal ramenées à ces tiers (compagnie neuve : environ 76 % de T3, 24 % de T4).
-- **Prix** : **50 %** de ce qu'il en demanderait normalement (à +100, 0,6 × la valeur) : un arc T3 à 720 PO au lieu de
-  1 440. Revendu à un marchand qui vend des arcs, c'est un bon bénéfice : il ne sait pas l'estimer.
-- **Dialogue** : le bouton **Parler**, à côté de son nom, s'allume ; sa réplique (`repliques.rien_que_pour_toi`, une
-  phrase tirée parmi ses variantes, `{objet}` et `{prix}`), la carte de l'objet, « Je prends (… PO) » ou « Pas
-  aujourd'hui ». Pas d'annonce dans la notification du jour : la surprise reste au camp.
-- Constantes `merchants.special.*` (affinité 100, prix 0,5, tier minimal 3) ; sauvegarde `state.market.visit.special`.
+- **Prix** : **50 %** de son prix normal (à +100, 0,6 × la valeur) : un arc T3 à 720 PO au lieu de 1 440. Revendu à un
+  marchand qui vend des arcs, c'est un bon bénéfice : il ne sait pas l'estimer.
+- **Dialogue** : le bouton **Parler**, à côté de son nom, s'allume ; sa réplique (une phrase tirée parmi ses variantes,
+  avec l'objet et le prix), la carte de l'objet, « Je prends (… PO) » ou « Pas aujourd'hui ». Pas d'annonce dans la
+  notification du jour : la surprise reste au camp.
 
 ## 10 — L'écran
 
@@ -118,23 +105,16 @@ Portrait et nom, la caisse ; onglets **Acheter** (l'étal, du plus cher au moins
 l'Intendance, deux objets identiques en une case « × 2 », ses armes d'abord avec un liseré doré) ; une case par objet,
 la carte d'objet au survol, le prix dessous.
 
-## 11 — Comment c'est fait
+## 11 — Données
 
-- Règles : `game-core/merchants.js` (`morning`, `visitOf`, `buy`, `sell`, `sellPrice`, `buybackPrice`, `tierChances`,
-  `stewardHelp`, `buySpecial`, `ensureSpecial`). Le marchand passe pendant le passage de la journée (`campaign.js`, `advanceOneDay`). Un article est
-  créé par `createItemByName` (`mercenary-generator.js` : type, nom, tier).
-- Données : `data/reference/merchants.json` (`nom`, `sexe`, `portrait`, `peuple`, `culture`, `alignement`, `poids`,
-  `vend`, `repliques`) et les constantes `merchants.*`.
-- Interface : `prototype-web/merchant-ui.js`.
-- Sauvegarde : `state.market.visit` (marchand, jour, étal, ventes du passage, affaire faite, objet « rien que pour
-  toi ») et
-  `state.market.merchants` (affinité acquise).
-- Tests : `tests/merchants.test.js`, `tests/merchant-ui.test.js`.
+Marchands (nom, sexe, portrait, peuple, culture, alignement, poids, liste, répliques) : `data/reference/merchants.json` ;
+chiffres : `data/reference/formula-constants.json`.
 
 ## 12 — Qui vend quoi (couverture)
 
-Liste tenue par `scripts/merchant-coverage.js` à partir de `merchants.json` et des référentiels d'objets ; la publication
-bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`). ⚠ : moins de deux marchands.
+Liste générée par `scripts/merchant-coverage.js` à partir de `merchants.json` et des référentiels d'objets ; la
+publication bloque si elle n'est plus à jour, et les tests si un objet ou une école de manuels a moins de deux
+marchands. ⚠ : moins de deux marchands.
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
@@ -286,28 +266,29 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 ## 12 bis — Les montures (Idan, 2026-11-07)
 
-> « On ajoute pour le marchand des humains des steppes, l'achat et la vente du cheval. Je te propose que la valeur d'un animal soit de 300 x coût d'entretien. On peut donc acheter et vendre des chevaux comme les autres biens. » « Le marchand elfe Sylvain en vend et en achète. »
+On achète et on vend des montures comme les autres biens. **Valeur = 300 × entretien** (`data/reference/mounts.json`),
+puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…) ; sans tier ni qualité, donc sans rareté.
+Un seul marchand par monture : l'exception à la règle des deux marchands.
 
-- **Amar Rathore** (Terres des Deux Fleuves) vend des **destriers** ; **Ysolwen Chantesève** (Elfes sylvains) des **licornes** (`merchants.json`, type `mount`). Un marchand chacune : l'exception à la règle des deux marchands (`scripts/merchant-coverage.js`).
-- **Valeur** = 300 × entretien (`economy.mount_value_per_upkeep`, `mounts.json`) : destrier **3 000 PO**, licorne **9 000 PO** ; puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…). Sans tier ni qualité : pas de rareté.
-- **Aymeric Belcomptoir** (Cités libres) vend des **pégases** (Idan, 2026-11-09 : « Il est vendu par le marchand humain des
-  cités libres ») : **12 000 PO** de valeur (40 PO d'entretien).
-- **Bruga Roc-Fendu** (Ogres des montagnes) vend des **cerbères** (10 500 PO de valeur, 35 PO d'entretien) ; **Kippa
-  Ressortdor** (Gnomes des villes) des **molosses de guerre** (1 500 PO, 5 PO) (Idan, 2026-11-09).
-- Les papillons (Idan, 2026-11-09) : **Callie Loincompas** (Explorateurs) le **papillon télépathe** (900 PO de valeur, 3 PO
-  d'entretien), **Jasper Bonnebourse** (Halflings des cités humaines) le **papillon vénéneux** (1 200 PO, 4 PO), **Dottie
-  Mielbruyère** (Halflings des villages isolés) le **papillon géant** (3 000 PO, 10 PO) ; ils logent à la Serre.
-- **Draz Crinsauvage** (Orcs des steppes) vend des **sangliers de combat** (Idan, 2026-11-16 : « Marchand, Orc des steppes ») :
-  4 500 PO de valeur (15 PO d'entretien) ; ils logent à la Souille.
-- **Hroska Crocs-de-Neige** (Tribus nordiques) vend des **mammouths de guerre** (Idan, 2026-11-16 : « Marchand Homme bête ») :
-  15 000 PO de valeur (50 PO d'entretien) ; 2 places à la Souille.
-- **Azhiss Kaal'Thesh** (Reptiliens des cités-temples) vend des **tricératops** (Idan, 2026-11-17 : « Vendu par le marchand
-  cité temple ») : 21 000 PO de valeur (70 PO d'entretien) ; 2 places à la Souille.
-- **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
-- **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
-- **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.
+- **Amar Rathore** (Terres des Deux Fleuves) : **destrier**, 3 000 PO.
+- **Ysolwen Chantesève** (Elfes sylvains) : **licorne**, 9 000 PO.
+- **Aymeric Belcomptoir** (Cités libres) : **pégase**, 12 000 PO (40 PO d'entretien ; 2026-11-09).
+- **Bruga Roc-Fendu** (Ogres des montagnes) : **cerbère**, 10 500 PO (35 PO ; 2026-11-09).
+- **Kippa Ressortdor** (Gnomes des villes) : **molosse de guerre**, 1 500 PO (5 PO ; 2026-11-09).
+- Les papillons, qui logent à la Serre (2026-11-09) : **Callie Loincompas** (Explorateurs) le **papillon télépathe**,
+  900 PO (3 PO) ; **Jasper Bonnebourse** (Halflings des cités humaines) le **papillon vénéneux**, 1 200 PO (4 PO) ;
+  **Dottie Mielbruyère** (Halflings des villages isolés) le **papillon géant**, 3 000 PO (10 PO).
+- **Draz Crinsauvage** (Orcs des steppes) : **sanglier de combat**, 4 500 PO (15 PO), loge à la Souille (2026-11-16).
+- **Hroska Crocs-de-Neige** (Tribus nordiques) : **mammouth de guerre**, 15 000 PO (50 PO), 2 places à la Souille
+  (2026-11-16).
+- **Azhiss Kaal'Thesh** (Reptiliens des cités-temples) : **tricératops**, 21 000 PO (70 PO), 2 places à la Souille
+  (2026-11-17).
+- **Fizzi Doigts-Légers** (Gobelins des villes) : **loup**, 3 000 PO (10 PO).
+- **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture
+  rejoint l'Intendance (onglet **Montures**).
+- **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus : on ne peut pas
+  la vendre.
 
 ## 13 — Étapes suivantes
 
-1. Les autres marchands (Idan prépare leurs personae).
-2. **Négociation**, sur le modèle de celle de la Taverne (doc 14 §9).
+- **Négociation**, sur le modèle de celle de la Taverne (doc 14 §9).

@@ -1,77 +1,60 @@
 # Missions One Shot
 
-> **Brouillon de travail**, ouvert le 2026-10-24 (discussion Idan / JC3). Rien n'est codé.
-
-Le jeu aura deux grands types de missions :
-
-- les **campagnes** : une histoire qui se suit, écrite par Idan ; elles auront leur propre document ;
-- les **one shot** : des missions presque procédurales, l'objet de cette page.
+Deux grands types de missions : les **campagnes**, une histoire écrite par Idan (leur document viendra), et les **one
+shot**, des missions presque procédurales, l'objet de cette page.
 
 ## 1 — Décidé (Idan, 2026-10-24)
 
-- **Plusieurs escouades en parallèle.** Chaque escouade est immobilisée pendant l'aller-retour (`2 × distance`, doc 10 §1) ; les salaires de toute la compagnie continuent de tomber.
-- **Taille d'escouade : jusqu'à 20 mercenaires**, au choix du joueur. Il doit cependant avoir une idée de ce qu'il faut envoyer (§4).
-- **Difficulté relative à la compagnie.** La mission a une menace fixe ; ce qui s'affiche est relatif : à la compagnie sur le tableau des contrats, à l'escouade choisie pendant sa composition.
-- **L'intendant affine la jauge de risque** : sans lui, l'estimation reste approximative (§4).
-- **Échec : rien du tout, plus une perte de renommée.** La prime de mission reste payée aux survivants sous contrat qui reviennent (doc 10 §8), sauf à ceux sortis de la carte en fuite (§8) : un échec coûte donc de l'or. C'est voulu.
-- **L'échec se définit par type de mission** : escouade anéantie ou en fuite, cible qui s'échappe, otages morts, convoi détruit… (§5).
-- **Combat automatique possible** pour les gros affrontements (20 contre 30) ; ses modalités restent à voir.
-  - **Premier pas (Idan, 2026-10-25 : « un mode simu pour tester rapidement les missions »)** : dans l'écran de combat, le bouton **Combat automatique** fait jouer votre équipe avec l'IA des ennemis (cible la plus proche, change d'arme, recharge, charge, attaque) jusqu'à la fin du combat, en 100 tours au plus ; le bilan de fin de mission est le même. Depuis le bêta-test (Idan, 2026-11-07), cette IA lance aussi nos sorts, se regroupe, recule et se met à couvert (doc 04, « IA commune ») ; le capitaine se bat comme les autres : un joueur fait toujours mieux.
-- **L'éclaireur est dans l'escouade** (Discrétion) : il révèle les ennemis au déploiement, et donne peut-être l'initiative. Un **brouillard de guerre** est prévu ; l'éclaireur aidera aussi contre lui.
-- **Tableau des contrats : 5 offres**, chacune valable de 3 à 6 jours.
-- **Des avis ouverts à tous** : une mission ne s'adresse pas à la compagnie du joueur, elle est ouverte à qui veut la prendre, et d'autres compagnies peuvent la prendre chaque jour, comme les candidats de la Taverne (un jour peut-être d'autres joueurs, en réseau).
-- **Le tableau est à la Taverne**, « Trouver une mission », là où se trouve la Mission Test.
-- **Une mission signée est réservée** : aucune autre compagnie ne peut plus la prendre. Plus tard peut-être : une escarmouche contre une bande rivale qui a pris la même mission.
-- **Les compagnies rivales ne sont qu'un nom** pour l'instant (« Les Loups de Vargh ont pris le contrat de Valombre. »).
-- **Vocabulaire** : la **récompense du contrat** est l'or versé par le commanditaire à la compagnie ; la **prime de mission** est ce que la compagnie verse à chaque mercenaire (doc 09).
-- **Archétypes d'ennemis fixes**, pour que le joueur puisse bâtir une stratégie. Beaucoup de lignes par faction (lanciers, frondeurs, archers, guerriers à l'épée et au bouclier, assassins discrets à la dague…), chacune sur quatre niveaux : par exemple **Lancier novice, Lancier, Lancier vétéran, Lancier d'élite**.
-- **Ordres de mission** : des textes écrits à l'avance, qui collent au type de mission et à la faction ; JC3 en propose, Idan corrige.
-- **Plus tard** : sonner la retraite ; les Morts-vivants.
+- **Plusieurs escouades en parallèle**, chacune immobilisée pendant l'aller-retour (`2 × distance`, doc 10 §1) ; les
+  salaires de toute la compagnie continuent de tomber.
+- **Escouade : jusqu'à 20 mercenaires**, au choix du joueur, qui doit avoir une idée de ce qu'il faut envoyer (§4).
+- **Difficulté relative à la compagnie** : la menace est fixe ; l'affichage est relatif à la compagnie au tableau, à
+  l'escouade pendant sa composition. L'intendant affine la jauge de risque (§4).
+- **Échec : rien du tout, plus une perte de renommée.** La prime reste payée aux survivants sous contrat qui reviennent
+  (doc 10 §8), sauf aux fuyards (§8) : un échec coûte de l'or, c'est voulu. L'échec dépend du type de mission (§5).
+- **Combat automatique** pour les gros affrontements (20 contre 30), modalités à voir. Déjà, le bouton **Combat
+  automatique** fait jouer votre équipe avec l'IA des ennemis (doc 04, « IA commune ») jusqu'à la fin, en 100 tours au
+  plus ; même bilan ; le capitaine se bat comme les autres. Un joueur fait toujours mieux.
+- **L'éclaireur est dans l'escouade** (Discrétion) : il révèle les ennemis au déploiement, et donne peut-être
+  l'initiative. Un **brouillard de guerre** est prévu ; l'éclaireur aidera contre lui.
+- **Tableau des contrats** à la Taverne (« Trouver une mission ») : offres valables 3 à 6 jours (cases : §18),
+  **ouvertes à tous** : d'autres compagnies peuvent les prendre chaque jour (un jour peut-être d'autres joueurs, en
+  réseau). Une mission signée est réservée. Les rivales ne sont qu'un nom (« Les Loups de Vargh ont pris le contrat de
+  Valombre. ») ; plus tard peut-être, une escarmouche contre une bande rivale qui a pris la même mission.
+- **Vocabulaire** : la **récompense du contrat** est l'or versé par le commanditaire à la compagnie ; la **prime de
+  mission**, ce que la compagnie verse à chaque mercenaire (doc 09).
+- **Archétypes d'ennemis fixes**, pour que le joueur puisse bâtir une stratégie : beaucoup de lignes par faction
+  (lanciers, frondeurs, archers, guerriers à l'épée et au bouclier, assassins à la dague…), chacune sur quatre niveaux
+  (**Lancier novice, Lancier, Lancier vétéran, Lancier d'élite**).
+- **Ordres de mission** : des textes écrits à l'avance, selon le type de mission et la faction (§9).
+- **Plus tard** : sonner la retraite.
 
 ## 1 bis — Le tableau chaque matin (proposition JC3, non validée)
 
-Sur le modèle du test « Engagé ailleurs » des candidats (doc 14 §3–4) :
-
-1. chaque offre passe un test **« Prise par une autre compagnie »** : une récompense élevée la rend plus attirante, une mission dangereuse moins ;
-2. on retire les offres prises et les offres expirées (le journal nomme la compagnie rivale) ;
-3. on remplit les places libres, jusqu'à 5 offres.
-
-Formule et constantes à définir.
+Comme le test « Engagé ailleurs » des candidats (doc 14 §3–4) : chaque offre passe un test **« Prise par une autre
+compagnie »** (plus probable si la récompense est élevée, moins si la mission est dangereuse) ; on retire les offres
+prises et expirées (le journal nomme la rivale) ; on remplit les places libres. Formule à définir.
 
 ## 2 — La fiche d'une mission (proposition JC3)
 
-Ce que le joueur voit au tableau des contrats :
+Type et commanditaire ; distance en jours (aller) ; ennemis (faction, nombre approximatif, tiers) ; boss éventuel ;
+difficulté (☠ de 1 à 5, relative à la compagnie) ; récompense plus le butin ; jours avant l'expiration.
 
-- type de mission et commanditaire ;
-- distance en jours (aller) ;
-- ennemis : faction, nombre approximatif, tiers ;
-- boss éventuel ;
-- difficulté (☠ de 1 à 5, relative à la compagnie) ;
-- récompense du contrat en pièces d'or, plus le butin ;
-- jours avant l'expiration de l'offre.
+## 3 — Génération (proposition JC3)
 
-Exemple :
+Ordre : **difficulté → type → faction → budget de menace → distance → récompense** (règles retenues : §14 et §16).
 
-> **Assassinat : le percepteur de Valombre** — guilde des marchands
-> 3 jours de marche (6 aller-retour) · une dizaine d'Humains (bandits), T1 à T2 · boss : Garm le Balafré (Humain T3)
-> ☠☠☠ · 4 500 PO + butin · expire dans 4 jours
-
-## 3 — Génération (proposition JC3, non validée)
-
-Ordre : **difficulté → type → faction → budget de menace → distance → récompense**.
-
-- **Difficulté** : tirée selon la renommée de la compagnie (doc 09 prévoit que la renommée ouvre des missions plus dures).
-- **Budget de menace** : la difficulté donne des points, dépensés en ennemis. Un ennemi coûte selon son archétype et son tier (piste : T1 = 1, T2 = 2, T3 = 4, T4 = 8), plus le boss. Le simulateur d'équilibrage calibrera les prix : 12 Gobelins battent 3 Ogres à chaque fois, un Gobelin ne peut donc pas coûter le quart d'un Ogre.
-- **Archétypes d'ennemis** (fixes, §1) : une fiche par ligne et par niveau dans un fichier de données : peuple, caractéristiques, compétences, équipement et son tier, comportement, coût en menace calibré au simulateur. Le générateur de mercenaires peut servir à ébaucher les fiches.
-- **Boss** : un chef, sur quatre niveaux (§10), avec un nom propre généré (« Garm le Balafré »).
-- **Butin** : pour « Faire le ménage », voir §8.
-- **Récompense** : une base selon la difficulté, plus une indemnité par jour de trajet. Elle ne suit pas la paie réelle du joueur, ce serait exploitable. Repère : une compagnie neuve dépense environ 700 PO de salaires par jour.
+- **Boss** : un chef sur quatre niveaux (§10), avec un nom propre généré (« Garm le Balafré »).
+- **Récompense** : elle ne suit pas la paie réelle du joueur, ce serait exploitable (repère : une compagnie neuve
+  dépense environ 700 PO de salaires par jour).
 
 ## 4 — Juger son escouade (proposition JC3, non validée)
 
-- **Valeur de combat** de chaque mercenaire : caractéristiques, équipement et compétences, calibrée au simulateur.
-- **Jauge de risque** sur l'écran de composition : la puissance de l'escouade choisie face à la menace estimée, mise à jour à chaque ajout ou retrait (« Avec cette escouade : ☠☠☠☠ — très risqué »).
-- **Intendant** : sur le modèle de son évaluation des candidats de la Taverne (doc 14 §7, ±20 % × (1 − Intendance / 100)), il estime la menace de chaque mission, avec une erreur figée par mission. Sans intendant, la marge d'erreur est plus large (à fixer).
+- **Valeur de combat** de chaque mercenaire (caractéristiques, équipement, compétences), calibrée au simulateur.
+- **Jauge de risque** à la composition : l'escouade face à la menace estimée, mise à jour à chaque ajout ou retrait
+  (« Avec cette escouade : ☠☠☠☠ — très risqué »).
+- **Intendant** : comme pour les candidats (doc 14 §7, ±20 % × (1 − Intendance / 100)), il estime la menace, avec une
+  erreur figée par mission. Sans intendant, la marge est plus large (à fixer).
 
 ## 5 — Types de mission envisagés (non validés)
 
@@ -88,32 +71,35 @@ Ces missions pourraient donner un rôle à la Discrétion, aux Pièges et au Cha
 
 ## 6 — À trancher
 
-- Chiffres de la récompense, de la perte de renommée en cas d'échec et du gain en cas de réussite (« points de mission », doc 09).
+- Gain de renommée en cas de réussite (« points de mission », doc 09).
 - Marge d'erreur de la jauge sans intendant.
-- Contenu du coffre (or et objets selon la difficulté).
 - Retraite : quand on peut la sonner, et ce qu'elle coûte.
 - Taille et forme des cartes pour 20 contre 30.
-- Abandon d'une mission acceptée : ne pas partir, faire demi-tour.
+- Abandon d'une mission en route : faire demi-tour.
 - Combat automatique : quand, et comment.
 
 ## 7 — Idée notée : Charisme et Courage
 
-Idan, 2026-10-24 : « Le charisme aidera les autres à réussir leur test de courage. » Première règle : le Charisme du capitaine compte dans son aura (25 %, doc 13, Idan 2026-10-24). Le Charisme des autres mercenaires (lieutenants…) : piste à tester plus tard.
+« Le charisme aidera les autres à réussir leur test de courage. » (Idan, 2026-10-24). Le Charisme du capitaine compte
+dans son aura (25 %, doc 13) ; celui des autres mercenaires : piste à tester plus tard.
 
 ## 8 — Première mission : « Faire le ménage » (Idan, 2026-10-24)
 
-On attaque un camp ennemi.
+On attaque un camp ennemi, tiré au hasard (§14). Les Reptiliens, aussi prévus, n'ont pas encore de camp.
 
-- **Factions** : un camp d'Orcs, de Gobelins, de voleurs (Humains), d'Ogres, d'Hommes-bêtes ou de Reptiliens, tiré au hasard. Les Morts-vivants viendront plus tard : ce ne sont pas un peuple du jeu.
-- **Victoire** : tous les ennemis tués ou mis en déroute (sortis de la carte). Un ennemi à 0 PV ou moins à la fin du combat compte comme mort ; les ennemis ne passent pas le jet de mort.
-- **Défaite** : toute l'escouade est hors de combat (morte, à terre ou sortie de la carte).
-- **Victoire, butin** : l'équipement de tous les morts, des deux camps ; un coffre du camp (or et objets, à chiffrer), qui revient automatiquement ; la récompense du contrat.
-- **Défaite** : rien du tout, et une perte de renommée (§1). L'équipement de nos morts est perdu. Nos mercenaires restés à terre passent le jet de mort (doc 10 §3) avec une **probabilité doublée**, bornée à 100 % : on laisse sa chance à celui qui fait le mort et en profite pour s'échapper.
-- **Prime de mission** : un mort ne la touche pas ; un mercenaire sorti de la carte en fuite non plus.
+- **Victoire** : tous les ennemis tués ou mis en déroute (sortis de la carte). Un ennemi à 0 PV ou moins à la fin compte
+  comme mort : les ennemis ne passent pas le jet de mort. **Butin** : l'équipement de tous les morts, des deux camps ;
+  un coffre, qui revient automatiquement ; la récompense du contrat (chiffres : §16).
+- **Défaite** : toute l'escouade est hors de combat (morte, à terre ou sortie de la carte). Rien n'est payé ; renommée
+  −30 (points de mission, doc 09 §2) ; l'équipement de nos morts est perdu. Nos mercenaires restés à terre passent le
+  jet de mort (doc 10 §3) avec une **probabilité doublée**, bornée à 90 % : on laisse sa chance à celui qui fait le
+  mort et en profite pour s'échapper.
+- **Prime de mission** : ni pour un mort, ni pour un mercenaire sorti de la carte en fuite.
 
 ## 9 — Ordres de mission validés (Idan, 2026-10-24)
 
-Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. Les accolades sont remplies par le jeu ; {estimation} est le nombre approximatif d'ennemis, flou par nature.
+Trois ordres pour « Faire le ménage » chez les Gobelins. Les accolades sont remplies par le jeu ; {estimation} est le
+nombre approximatif d'ennemis, flou par nature.
 
 ### Le chef de village
 
@@ -173,9 +159,11 @@ Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. L
 
 ## 10 — Archétypes gobelins (Idan, 2026-10-24)
 
-Données : `data/reference/enemy-archetypes.json` (24 fiches gobelines ; les orcs au §14).
+Données : `data/reference/enemy-archetypes.json`.
 
-**Niveaux par centiles.** Les Gobelins générés de faible et de forte réputation ont presque les mêmes valeurs de combat (leur réputation vient surtout du Charisme et de l'Intelligence). Chaque niveau prend donc, valeur par valeur, un centile des Gobelins générés : **novice P20, normal P50, vétéran P75, élite P90** ; résistances, compétences et Intimidation suivent le même centile. PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme à la génération.
+**Niveaux par centiles** : chaque niveau prend, valeur par valeur, un centile des Gobelins générés : **novice P20,
+normal P50, vétéran P75, élite P90** (résistances, compétences et Intimidation comprises). PV = 3 × (Constitution + 0,2
+× Endurance + 0,1 × Volonté), comme à la génération.
 
 **Spécialisation des lignes** : trois caractéristiques un cran de centile au-dessus, deux un cran au-dessous.
 
@@ -188,20 +176,18 @@ Données : `data/reference/enemy-archetypes.json` (24 fiches gobelines ; les orc
 | Assassin | deux Dagues (+ Discrétion d'un cran) | Vitesse, Esquive, Dextérité | Constitution, Courage |
 | Chef | Sabre + Rondache (+ Intimidation d'un cran) | Courage, Volonté, Charisme | — |
 
-**Équipement** : le tier suit le niveau, T1 Usée, T2 Correcte, T3 De bonne facture, T4 De luxe (qualités renommées le 2026-11-01 ; T3 et T4 étaient « Grand Luxe »). **Le T4 ne se trouve que sur les élites et les chefs** : un butin rare, aucun mercenaire généré n'a d'arme T4. Armures, du novice à l'élite : Lancier Vêtements, Gambison, Armure de cuir, Cuir renforcé ; Frondeur Vêtements, Vêtements, Gambison, Armure de cuir ; Archer Vêtements, Gambison, Armure de cuir, Armure de cuir ; Guerrier Gambison, Armure de cuir, Cuir renforcé, Brigandine ; Assassin Vêtements.
+**Équipement** : le tier suit le niveau (T1 à T4, §17). **Le T4 ne se trouve que sur les élites et les chefs** : un
+butin rare, aucun mercenaire généré n'a d'arme T4. Armures, du novice à l'élite : Lancier Vêtements, Gambison, Armure de
+cuir, Cuir renforcé ; Frondeur Vêtements, Vêtements, Gambison, Armure de cuir ; Archer Vêtements, Gambison, Armure de
+cuir, Armure de cuir ; Guerrier Gambison, Armure de cuir, Cuir renforcé, Brigandine ; Assassin Vêtements.
 
-**Chefs**, quatre niveaux (noms validés par Idan) :
+**Chefs** (points au §15) : **Caïd gobelin** (P75, Cuir renforcé T3), **Grand Caïd gobelin** (P90, Cotte de mailles T4),
+**Chef de clan gobelin** (P95, Brigandine T4), **Roi des Cavernes** (P99, Armure d'écailles T4). Le Roi des Cavernes
+reste presque intouchable pour une compagnie de départ, c'est voulu : il devra affronter des mercenaires à 4 étoiles
+d'or, et la magie (boule de feu) ignorera son bouclier.
 
-| Chef | Centile | Armure | Battu seul par | Menace |
-|---|---|---|---|---|
-| Caïd gobelin | P75 | Cuir renforcé T3 | ~3 mercenaires | 30 |
-| Grand Caïd gobelin | P90 | Cotte de mailles T4 | ~5,5 | 58 |
-| Chef de clan gobelin | P95 | Brigandine T4 | ~10 | 102 |
-| Roi des Cavernes | P99 | Armure d'écailles T4 | ~20 (remesuré au §17) | 201 |
-
-Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'est voulu (Idan) ; il devra affronter des mercenaires à 4 étoiles d'or, et la magie (boule de feu) ignorera son bouclier.
-
-**Menace mesurée** (simulateur, 150 combats par effectif : nombre d'exemplaires qu'il faut pour battre 3 mercenaires générés quelconques une fois sur deux ; **un mercenaire moyen vaut 10 points** ; un Gobelin généré quelconque en vaut 10) :
+**Points de combat** (simulateur, 150 combats par effectif : nombre d'exemplaires qu'il faut pour battre 3 mercenaires
+générés une fois sur deux ; **un mercenaire moyen vaut 10**) :
 
 | | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|
@@ -211,30 +197,52 @@ Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'
 | Guerrier | 5 | 11 | 24 | 60 |
 | Assassin | 4 | 7 | 15 | 28 |
 
-Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires monteront aussi en niveau et en équipement (Idan). Limites de la mesure : groupes d'un seul archétype, petite carte de test ; les synergies d'un camp mélangé ne sont pas mesurées. L'Assassin vaudra plus quand la Discrétion aura une règle de combat. **Le Chaman** viendra avec la magie en combat.
+Le Guerrier d'élite reste tel quel : les mercenaires monteront aussi en niveau et en équipement. Le **Chaman** viendra
+avec la magie en combat.
 
-## 11 — Mise en œuvre V1 (2026-10-24)
+## 11 — Déroulement d'un contrat (2026-10-24)
 
-« Faire le ménage » chez les Gobelins est la seule mission proposée, en boucle, à la Taverne (« Trouver une mission »). Code : `game-core/missions.js` (règles), `prototype-web/contract-ui.js` (tableau), `prototype-web/mission.js` (trajet, combat, bilan). Données : `data/reference/one-shot-missions.json` (camp, distance, carte, récompense, coffre, échec, défaite, les trois ordres et leurs noms) et `enemy-archetypes.json`.
+Données : `data/reference/one-shot-missions.json`.
 
-- **Tableau** : une offre à la fois, avec son ordre de mission (un des trois, au hasard) et ses faits : commanditaire, distance, ennemis (en toutes lettres, flou), récompense, date d'expiration. Une offre non signée qui dépasse sa date (3 à 6 jours) est prise par une autre compagnie : le journal le dit, une nouvelle la remplace. Une offre signée part avec son escouade et une nouvelle est affichée : plusieurs escouades peuvent être en route en même temps.
-- **Camp ☠** : gobelin ou orc, tiré au hasard, composé par les points de combat (§14). Frondeurs 35 %, Lanciers 20 %, Archers, Guerriers, Assassins 15 % chacun ; un « normal » (T2) dans 5 % des tirages ; un chef nommé (Caïd gobelin, Chef de bande orc). Historique : 1D4+3 novices au départ, 1D4+4 le 2026-11-01 (« un tout petit peu » plus fort), puis le budget de points, qui garde la même taille moyenne.
-- **Escouade** : de 1 à 20 mercenaires au choix du joueur ; l'écran de choix affiche le coût des primes si tous reviennent et les jours de marche.
-- **Expédition** (Idan, 2026-10-24 : « le joueur doit pouvoir continuer à gérer son camp pendant la mission ») : l'escouade part (statut « En mission » ; ni intendance, ni échange, ni autre mission) ; distance 1D3 jours. **Mission programmée** (Idan, 2026-10-30 : « les soldats partent en mission le lendemain matin… on doit pouvoir encore leur parler et les équiper. C'est fondamental. ») : signée, l'escouade reste au camp jusqu'au lendemain matin (statut « Mission programmée ») ; on peut encore l'équiper et lui parler (échanges d'équipement, lieutenant), elle recharge son mana la nuit, mais elle ne part sur aucune autre mission et ne devient pas intendant. Elle part le matin suivant, puis marche ses jours de distance : l'arrivée vient donc un jour après la signature plus la distance. Même règle pour la garde du corps (départ le lendemain, retour au bout de sa durée). **Annuler le départ** (Idan, 2026-11-02 : « pendant la journée, on peut encore changer les plans ») : tant que l'escouade n'est pas partie, « Annuler le départ » la libère et l'offre revient au tableau (doc 16, « Au jour J, on organise J+1 »). Le joueur fait passer les jours au camp comme d'habitude. À l'arrivée, une fenêtre propose **Commencer le combat** ; « Plus tard » laisse finir la journée au camp (équiper, recruter…), mais **le jour suivant est bloqué tant que le combat n'est pas livré** (Idan) : le bouton du jour rouvre la fenêtre, et « Commencer le combat » reste aussi au tableau des contrats. Après le combat, les survivants rentrent en autant de jours (le retour compte comme du repos, doc 10 §9) ; la récompense, le coffre, le butin et les primes arrivent avec eux.
-- **Combat** : carte de **36 × 25** cases, le **camp au centre** (Idan, 2026-11-09 : « on peut agrandir la carte et centrer le camp, comme les chasses d'ailleurs » ; « 36 × 25 c'est parfait » ; 30 × 15 avant, le camp à droite ; 20 × 12 avant le §16) : le chef au milieu, les autres autour de lui, au plus près d'abord ; l'escouade se déploie à gauche ; à l'arrivée, on peut d'abord **envoyer un éclaireur** (doc 04, « Discrétion et camouflage ») : revenu, il permet de **se déployer** où l'on veut sur une bande de 4 cases autour de la carte, ou de **rebrousser chemin** (contrat perdu, renommée de l'échec, sans combat ni mort) ; votre équipe a l'initiative (elle joue la première). Le terrain suit la faction (Idan, 2026-11-06 : vieille carrière et camp en hauteur, clairière en forêt, repaire… ; doc 04, « Décor »).
-- **Victoire** : tous les ennemis à terre ou sortis de la carte. **Récompense du contrat** = 2 000 + 1 200 par jour de marche aller-retour + **35 PO par point de combat** du camp (Idan, 2026-11-01 ; 300 par ennemi avant ; doublée par Idan le 2026-10-25), soit environ 6 100 à 12 000 PO (9 100 en moyenne, gobelins comme orcs) ; **coffre** = 2D6 × 50 PO et **1D3 objets** (Idan, 2026-10-25 : « il faut pouvoir trouver de l'équipement T2 ou T3 à ce stade »), chacun d'une famille tirée au hasard (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague, casque), **T2 (70 %) ou T3 (30 %)**, à la qualité de son tier ; **butin** = l'équipement de tous les morts des deux camps, au stock de l'Intendance.
-- **Défaite** : rien n'est payé ; renommée de la compagnie −30 (points de mission, doc 09 §2) ; jet de mort doublé pour nos mercenaires à terre ; leur équipement est perdu.
-- **Primes** : versées au retour de l'escouade aux survivants sous contrat, sauf à ceux qui ont fui hors de la carte (règle générale). La renommée perdue sur un échec compte dès la fin du combat.
-- Tous les montants sont des valeurs de départ (Idan : « on ajuste les récompenses et on va voir »).
-- La Mission Test reste disponible dans la rubrique Compagnie du camp, comme outil de test.
+- **Camp** : composé par les points de combat (§14, §16). Poids des lignes gobelines : Frondeurs 35, Lanciers 20,
+  Archers, Guerriers et Assassins 15 chacun.
+- **Escouade** : 1 à 20 mercenaires ; l'écran de choix affiche le coût des primes si tous reviennent et les jours de
+  marche.
+- **Mission programmée** (Idan, 2026-10-30 : « on doit pouvoir encore leur parler et les équiper. C'est
+  fondamental. ») : signée, l'escouade reste au camp jusqu'au lendemain matin ; on peut l'équiper et lui parler, elle
+  recharge son mana la nuit, mais ne prend aucune autre mission et ne devient pas intendant. Jusqu'au départ, « Annuler
+  le départ » la libère et l'offre revient au tableau (doc 16). Même règle pour la garde du corps.
+- **Expédition** : l'escouade part le matin (« En mission » : ni intendance, ni échange, ni autre mission) et marche ses
+  jours de distance (§16) : arrivée un jour après la signature, plus la distance. Le joueur continue de gérer son camp.
+- **Arrivée** : une fenêtre propose **Commencer le combat** ; « Plus tard » laisse finir la journée au camp, mais **le
+  jour suivant est bloqué tant que le combat n'est pas livré** (le bouton du jour rouvre la fenêtre ; « Commencer le
+  combat » reste aussi au tableau des contrats).
+- **Combat** : carte de **36 × 25** cases, le **camp au centre** (comme les chasses) : le chef au milieu, les autres
+  autour, au plus près d'abord ; l'escouade se déploie à gauche. On peut d'abord **envoyer un éclaireur** (doc 04) :
+  revenu, il permet de **se déployer** où l'on veut sur une bande de 4 cases autour de la carte, ou de **rebrousser
+  chemin** (contrat perdu, renommée de l'échec, sans combat ni mort). Votre équipe a l'initiative. Le terrain suit la
+  faction (doc 04, « Décor »). Obstacles, défenses et remparts autour du camp : plus tard.
+- **Victoire** : tous les ennemis à terre ou sortis de la carte ; le butin va au stock de l'Intendance.
+  **Défaite** : §8.
+- **Retour** : les survivants rentrent en autant de jours (repos, doc 10 §9), avec la récompense, le coffre et le
+  butin ; leurs primes sont versées alors (pas aux fuyards). La renommée perdue sur un échec compte dès la fin du
+  combat.
+- Tous les montants sont des valeurs de départ.
 
 ## 12 — Garde du corps (Idan, 2026-10-25)
 
-Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé des mercenaires pendant la mission. Code : `game-core/bodyguard.js` (règles), `game-core/campaign.js` (offre, départ, retour), `prototype-web/contract-ui.js` et `mission.js` (tableau, choix des gardes, fenêtre du retour). Données et textes : `data/reference/bodyguard-missions.json`.
+Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé des mercenaires. Données et textes :
+`data/reference/bodyguard-missions.json`.
 
-- **Offre** : une à la fois au tableau de la Taverne, sous le contrat, valable 3 à 6 jours ; un client (texte de JC), **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour **3 à 21 jours**. Niveau : le **niveau de renommée de la compagnie + un écart de −4 à +1**, chaque écart avec la même chance, de 1 à 15 (Idan, 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions » ; « De la compagnie » ; `bodyguard-missions.json`, `niveau.ecart`). Avant : 1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 %, + max(0, niveau du meilleur mercenaire − 4).
-- **Cercle des Fines Lames** (doc 11 §7 ; Idan, 2026-11-03) : le paiement d'une offre × (1 + 5 % par niveau du Cercle), arrondi à 10 PO ; la fiche de l'offre montre le paiement, sans commentaire.
-- **Paiement d'avance**, versé **le matin du départ** (Idan, 2026-11-02 : « On reçoit l'argent le lendemain matin ! Les SEPA heroic fantasy, c'est long » ; annuler avant le départ ne coûte ni ne rapporte rien), par mercenaire (formule de JC, validée et relevée sur les durées courtes par Idan) : **W × (2 + jours × (1,3 + (jours − 3) / 22))**, arrondi à 10 PO, où **W = 10 × Réputation minimale du niveau suivant / 30** (le salaire d'un mercenaire en haut du niveau demandé ; au-delà de 15★, × 1,5 comme les seuils). Les seuils d'étoiles × 1,5 par niveau (Idan, 2026-11-08, doc 09) font monter W avec le niveau ; la compagnie, elle, monte plus lentement en étoiles. Plus c'est long, plus la journée paie ; un mercenaire payé nettement plus que son niveau fait perdre de l'or, surtout sur les missions courtes.
+- **Offre** (§18), valable 3 à 6 jours : un client, **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour
+  **3 à 21 jours**. Niveau = niveau de renommée de la compagnie + un écart de **−4 à +1**, chacun avec la même chance,
+  de 1 à 15.
+- **Paiement d'avance**, versé **le matin du départ** (« Les SEPA heroic fantasy, c'est long » ; annuler avant ne coûte
+  ni ne rapporte rien), par mercenaire : **W × (2 + jours × (1,3 + (jours − 3) / 22))**, arrondi à 10 PO, où **W = 10
+  × Réputation minimale du niveau suivant / 30** (le salaire d'un mercenaire en haut du niveau demandé ; au-delà de 15★,
+  × 1,5 comme les seuils). Les seuils d'étoiles × 1,5 par niveau (doc 09) font monter W avec le niveau ; la compagnie,
+  elle, monte plus lentement en étoiles. Plus c'est long, plus la journée paie ; un mercenaire payé nettement plus que
+  son niveau fait perdre de l'or, surtout sur les missions courtes.
 
   | Niveau | W | 3 jours | 7 jours | 14 jours | 21 jours |
   |---:|---:|---:|---:|---:|---:|
@@ -244,159 +252,64 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
   | 10★ | 1 192 | 7 030 | 14 740 | 32 410 | 55 390 |
   | 15★ | 9 050 | 53 400 | 111 970 | 246 160 | 420 660 |
 
-- **Qui** : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; pas le capitaine ni l'intendant (validé par Idan). Exactement le nombre demandé. Les salaires courent comme d'habitude.
-- **Pas de combat.** Au retour, chacun tire son sort : **50 %** rentré ; **25 %** rentré fatigué (« il a trop gardé le corps de charmantes demoiselles », fatigue 1D3 jours) ; **25 %** rentré blessé (« bagarre dans une taverne », blessure 1D3 jours). Une fenêtre le dit, avec une ligne par mercenaire ; si plusieurs gardes rentrent le même matin, leurs fenêtres se suivent (correctif de Chatty, PR #310, issue #503).
-- **Prime de mission** versée au retour. **Réputation** : +5 (rentré ou fatigué), +2,5 (blessé) (+10 et +5 avant le bêta-test, divisés par deux comme la renommée) ; **renommée de la compagnie** : **+3** par mission (points de mission, doc 09 §2 ; Idan, 2026-11-08 : « Les gardes - réputation compagnie de 5 à 3 ») — « un peu », chiffres de JC validés par Idan ; +10 avant le bêta-test, puis +5 (Idan, 2026-11-07 : « On reduit par 2 la réputation donnée par les gardes du corps »).
-
+- **Cercle des Fines Lames** (doc 11 §7) : paiement × (1 + 5 % par niveau du Cercle), arrondi à 10 PO.
+- **Qui** : exactement le nombre demandé, au camp, disponibles (pas blessés ; un fatigué peut partir), du niveau demandé ; ni le
+  capitaine ni l'intendant. Les salaires courent.
+- **Au retour**, chacun tire son sort : **50 %** rentré ; **25 %** fatigué (« il a trop gardé le corps de charmantes
+  demoiselles », 1D3 jours) ; **25 %** blessé (« bagarre dans une taverne », 1D3 jours). Une fenêtre le dit, une ligne
+  par mercenaire (plusieurs gardes le même matin : les fenêtres se suivent). Prime de mission ; **réputation** +5
+  (rentré ou fatigué), +2,5 (blessé) ; **renommée de la compagnie +3** (points de mission, doc 09 §2).
 
 ## 13 — Tableau des missions (Idan, 2026-10-31)
 
-À la Taverne, « Trouver une mission » montre une **carte par mission**, toutes au même gabarit
-(`prototype-web/contract-ui.js`, `missionCards`) : illustration, type (« Faire le ménage », « Garde du corps »),
-titre, description, difficulté en étoiles (la réputation minimale pour une garde du corps), récompense, durée. Au clic,
-le **détail** : grande illustration, titre et étoiles, description, faits avec leurs icônes (commanditaire, distance,
-ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une, et l'action (« Accepter le contrat »,
-« Choisir les gardes »).
-
-- **Illustration** : le champ `illustration` de la mission (`one-shot-missions.json`, `missions[]`) ou des gardes du corps
-  (`bodyguard-missions.json`), chemin d'une image du site ; vide, un emblème de la mission en attendant l'image.
-- **Difficulté** : la difficulté de la mission (`difficulte`) en étoiles de réputation (1 = 1 étoile de bronze), à
-  caler avec Idan quand les missions plus dures arriveront.
-- Un nouveau type de mission ajoute son gabarit dans `missionCards`.
-
-**Le panneau de bois (Idan, 2026-11-14)** : « Trouver une mission » s'affiche sur un panneau de bois accroché au mur
-(`assets/taverne/panneau-missions.webp`, plein écran comme le fond de la taverne) ; plus de bouton « Retour à la taverne » :
-**un clic sur le mur, autour du cadre, ramène à la taverne**.
-
-- **Les annonces** sur notre parchemin (celui de la création du capitaine), **trois par page** : l'illustration (cadre vide
-  en attendant les images), le titre, la difficulté en étoiles, la récompense (le picto or de la barre du haut, sans « PO »)
-  et la durée (un sablier). Plus de type, plus de description, plus de symbole dollar (ils restent dans le détail).
-- **Les flèches** de chaque côté du cadre (le chevron de la création, couleur du fer) : trois annonces de plus ; la page
-  suivante pousse l'autre, par la droite ou par la gauche. Une seule page : pas de flèches ; au bout : la flèche grisée.
-- **Case vide** : rien (« Rien. Même pas de parchemin. On a le fond en bois »).
-- **Départ demain** : une mission signée qui part le lendemain reste en tête du tableau, avec « Annuler » sur l'annonce
-  elle-même. Les escouades déjà parties ne sont plus listées ici (« Ça n'a rien à faire ici »).
-- **Au clic**, l'annonce s'avance un peu, puis le détail s'ouvre en grand (le détail sera refait ensuite).
-- **Mise en page selon la charte de la création du capitaine** (Idan, 2026-11-14 : « Ça manque de détails de matière, de
-  mise en page. Peut-être un choix de police pour le titre ») : le lieu en Cinzel 700, en capitales espacées, « de … » en
-  EB Garamond italique ; un filet qui entre dans une fleur de lys ; l'illustration dans un double filet d'or, comme le
-  portrait de la création ; l'or en grand (avec l'espace des milliers), la durée en italique dessous. Chaque annonce est
-  clouée au panneau, un peu de travers, son ombre à gauche ; au survol, un halo doré. Une mission qui part demain porte
-  un tampon rouge « Départ demain » et le bouton « Annuler le départ ».
-- **La matière** (Idan, 2026-11-14 : « Continue à essayer de faire un peu mieux, sois créatif ») : le papier froissé,
-  éclairé par la droite comme le panneau (`assets/taverne/papier-froisse.webp`, tiré de la texture libre de droits CC0
-  « Paper003 » d'ambientCG), plié en trois ; l'ombre gagne vers la gauche. Chaque annonce a son allure, toujours la même
-  pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune (jamais rouge : Idan, 2026-11-14 ; environ une sur
-  quatre est un vieux papier, désaturé, avec deux traces de crasse et les bords salis), parfois
-  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : une tête de clou forgé, deux punaises de laiton
-  ou un cachet de cire rouge, noir ou bleu (trois têtes de chaque sorte, `data-head`). En attendant les illustrations, une
-  vignette gravée (hachures qui s'épaississent vers les bords).
-  Sur le panneau, trois restes d'annonces arrachées dépassent derrière, encore sous leur clou ; la lumière d'une bougie
-  vacille en haut à droite, avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
-  Les trois annonces d'une page ne se ressemblent pas (Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts…
-  plis à des endroits différents, taches, orientations, forme du parchemin ») : chacune est une des huit feuilles
-  vierges de Jean-Mi (`assets/taverne/feuille-1…8.webp`, détourées par `scripts/key-green-sheet.js`, la 7 retournée et
-  la 8 tournée d'un demi-tour pour que les coins arrachés ne tombent pas tous au même endroit), étirée à la taille de
-  l'annonce ; la matière par-dessus et la gravure sont découpées à la forme de la feuille. Les feuilles au coin du haut
-  arraché ne prennent pas de punaises. Les feuilles sont classées de la plus abîmée à la plus propre (2, 6, 5, 1, 7, 8,
-  4, 3) et suivent le niveau de la mission (Idan, 2026-11-14 : « les plus abîmés pour les missions avec le moins
-  d'étoiles et les plus propres pour les missions plus hautes… sans être rigide totalement ») : le niveau 1 à 15 donne
-  un rang dans ce classement, à un rang et demi près de chaque côté. En plus : une taille un peu différente, plus ou moins de travers (jusqu'à 3°),
-  un ou deux plis en travers à des hauteurs différentes et parfois un pli en long, le froissé décalé, et selon
-  l'annonce une tache de graisse, une coulure depuis le haut, un bord qui a pris l'humidité, des chiures de mouche
-  (dans les marges, pour ne pas passer pour des fautes d'impression).
-  Les missions d'argent (niveaux 6 à 10) et d'or (11 à 15) se reconnaissent d'un coup d'œil (Idan, 2026-11-14 :
-  « 1 et 3 ») : le titre à la feuille de métal (étain ou or, gravé d'un filet sombre) et des étoiles plus grandes qui
-  brillent, et une dague plantée dans le haut du papier, la lame entrant juste au-dessus de la gravure et la poignée
-  dépassant vers le haut (Idan : « le bas de la dague devrait arriver en haut de l'image » ; « elles étaient à la bonne
-  taille sur la v1 » : l'annonce à dague descend un peu et raccourcit un peu pour que la poignée reste sous la barre du
-  haut), à la place du clou, des punaises ou du cachet : acier pour
-  l'argent, garde dorée pour l'or, deux de chaque (`assets/taverne/dague-argent|or-1|2.webp`, Jean-Mi, détourées avec
-  `--slit` : une fente sombre dans le papier là où la lame entre).
-  Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la
-  flèche avance un peu ; sur la première ou la dernière page, elle reste sombre.
-  Toute cette matière vient de Jean-Mi, sur fond vert, détourée par `scripts/key-green-sheet.js` (`assets/taverne/` :
-  `feuille-*`, `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
-  `scripts/build-mission-art.js`.
-- **Le détail de l'annonce** (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif dans le
-  jeu et pas ce qu'un dev doit savoir, limite à l'utile et l'essentiel », « les boutons de la création de capitaine »,
-  « pense icônes et pictos ») : au clic, l'annonce en grand sur le panneau assombri (la même feuille, la même gravure,
-  la même attache, le même titre et les mêmes étoiles) et l'essentiel en pictos, une ligne chacun : la paie (le picto
-  or ; « et le butin », ou « payées d'avance »), la route (la botte : jours de marche, aller-retour), l'ennemi (les
-  épées croisées : qui, combien), les gardes demandés (le picto des mercenaires), la durée d'une garde (le sablier,
-  « sans combat »), l'échéance (la chandelle : « Jusqu'au … »). Une seule feuille par mission (Idan, 2026-11-14 :
-  « deux feuilles différentes de papier pour la même mission… c'est ce qui me gêne le plus ») : pour un contrat, la
-  feuille de l'annonce couchée à l'horizontale (`feuille-N-large.webp`, `scripts/make-landscape-sheets.js`, le coin
-  arraché en haut à gauche sous la gravure), l'annonce à gauche du pli, à droite la lettre du commanditaire : l'en-tête
-  en capitales bordeaux, une lettrine, la signature, le cachet de cire au lion de la création dans le coin. Une garde
-  du corps n'a pas de lettre : l'annonce reste debout. Plus de libellés techniques (« Difficulté », « Commanditaire »,
-  description de la règle). Dessous, « ‹ Retour au panneau » et le bouton bordeaux cerclé de laiton de la création
-  (« Accepter le contrat », « Choisir le garde ») ; un clic à côté de la feuille ramène aussi au panneau.
-- **Le choix de l'escouade** (Idan, 2026-11-15 : « ni la mise en page, ni le contenu n'allait » ; puis, sur la maquette
-  de Chatty : « Oui, vas-y avec la maquette de Chatty ») : sur le panneau des missions assombri. En haut, la mission en
-  grand (« L'escouade », ou « Les gardes », son nom, ses étoiles, « Départ demain matin · 1 jour de marche »). À gauche,
-  les **mercenaires au camp**, sur le parchemin de la création : une recherche par nom ; les tags en onglets — « Tous »
-  (le filtre éteint, à l'ouverture), puis « comme premier tag, celui de la mission ! » (le camp ou la chasse sous
-  Mission, doc 20, ou Garde du corps), Dégâts, Soutien, Protection, Magie, et les autres rôles dans « Autres rôles » (ceux
-  que porte au moins l'un d'eux) ; puis la galerie, seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir
-  en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là bien entendu ») ; un mercenaire choisi
-  quitte la galerie (« au lieu de les avoir sélectionnés à gauche, on les retire à gauche. Ça permet de mieux voir »), et
-  y revient à sa place s'il est retiré de l'escouade. Une carte : le portrait carré (« Gardons le carré pour la
-  sélection, c'est natif » ; un « + »), le nom (un clic ouvre la fiche complète par-dessus : « les persos
-  sont cliquables et ça ouvre la fiche complète ? »), les étoiles, l'état — Prêt, Fatigué −20 % (encore fatigué au
-  combat) ou Reposé à l'arrivée (une garde du corps, sans combat : Prêt ou Fatigué) ; pas de picto de combat (« on va le
-  virer / refaire »). Des pages, jamais de défilement (Idan, 2026-11-15 : « je veux pas des flèches de défilement. Ce
-  sont des flèches de clic. Je trouve ça mieux (globalement, sur l'ensemble du jeu) », « on a 12 mercenaires visibles. On
-  clique, on en voit 12 autres. Je trouve que le défilement ne fait pas très jeux », « avec des clics, on ne devrait
-  jamais avoir des portraits coupés ») : une page montre autant de cartes entières que la place en tient (en 1920 × 1080,
-  trois rangées de sept), le portrait jamais sous 120 px (80 px sur un petit écran) ; deux flèches de fer l'une sur
-  l'autre au milieu de la marge (« les mettre au milieu »), sur le même axe, pour la page précédente et la suivante,
-  cachées s'il n'y a qu'une page, grisées au début et à la fin, comme celles du panneau ; la molette tourne les pages
-  aussi (« Oui, la molette tourne les pages aussi », un choix pour tout le jeu, comme sur le panneau des annonces). À
-  droite, l'**escouade**, dans un panneau de cuir sombre aux coins de bronze : le compte (« 6 / 20 » ; une garde : toutes
-  ses places), les portraits choisis en 4:3 (« Le 4:3… à droite »), avec leur croix ; elle tient toujours en entier,
-  sans flèches (« chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser la place de tout afficher »),
-  avec les plus grands portraits possibles (« Ils sont trop petits… ils devraient être à 4 col - 5 lignes. Ça rentre » ;
-  « on veut pas forcément qu'ils soient plus petits que ceux de gauche. Ceux de gauche sont fixes. À droite, ça
-  s'adapte » ; « je préfère que ça soit dynamique. On remplit le panneau en fonction du nombre de mercenaires. On
-  rétrécit à chaque fois qu'on en ajoute ») : seul, un mercenaire prend toute la largeur du panneau ; en 1920 × 1080, 2
-  l'un sur l'autre, 4 en deux par deux, 6 en trois par deux, 9 en trois par trois, puis 12, 16 et 20 (4 colonnes, 5
-  rangées) ; le nom quand les portraits sont grands, puis seulement au survol (« 20 pour la mission… + en dortoirs ») ;
-  les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
-  l'arrivée »), les primes au retour, « Partir demain » et « D'ici demain matin, le départ peut encore être annulé ». En
-  bas à gauche, « ‹ Retour à l'annonce ».
-- **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
-  le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
-  les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,
-  la gravure prend toute la largeur du parchemin et la moitié de sa hauteur, et s'estompe vers les bords, plus loin par
-  endroits, avec le grain d'une encre usée ; l'intérieur pâlit un peu par plaques. Quatre masques
-  (`assets/taverne/estompe-1…4.webp`, `scripts/make-fade-masks.js`), un par annonce d'après son identifiant. Le détail
-  de la mission garde son cadre. Par camp (`one-shot-missions.json`, `camps[].illustrations`),
-  sinon celles de la mission (`missions[].illustrations` : les bêtes des chasses), sinon son illustration. Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal
-  d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
-  la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,
-  voir `docs/DEPLOYMENT.md`). Arrivées : les sept camps (une gravure chacun ; deux pour les voleurs, deux scènes vraiment
-  différentes) et les bêtes (loups, cerbère, chiens sauvages, papillons : 1 chacune ; licorne : 2, la forêt et la
-  montagne étoilée), et les dix clients des gardes du corps (une gravure chacun, `bodyguard-missions.json`,
-  `illustrations_clients`).
-  Une variante n'est gardée que si elle apporte une autre image (Idan : « Y'en a beaucoup qui sont proches… Faut pas
-  hésiter à les virer ») ; les écartées et leur raison sont en tête de `scripts/build-mission-art.js`. 
+- **Le panneau de bois** (2026-11-14) : « Trouver une mission » s'affiche sur un panneau accroché au mur ; un clic sur
+  le mur, autour du cadre, ramène à la taverne.
+- **Les annonces**, trois par page, sur le parchemin de la création du capitaine : illustration, titre, difficulté en
+  étoiles (la réputation minimale pour une garde du corps), récompense (picto or, sans « PO ») et durée (sablier) ; des
+  flèches de fer tournent les pages. Case vide : rien (« Rien. Même pas de parchemin. On a le fond en bois »).
+- **Départ demain** : une mission signée reste en tête, avec un tampon rouge « Départ demain » et « Annuler le départ ».
+  Les escouades déjà parties n'y sont plus (« Ça n'a rien à faire ici »).
+- **Chaque annonce a son allure**, toujours la même pour la même offre, et les trois d'une page ne se ressemblent pas
+  (feuille, inclinaison, plis, taches, papier jamais rouge, attache : clou, punaises ou cachet de cire). **Les plus
+  abîmées pour les missions à peu d'étoiles, les plus propres pour les plus hautes** (« sans être rigide totalement »).
+  **Argent et or** se voient d'un coup d'œil : titre en métal, étoiles plus grandes qui brillent, une dague plantée à la
+  place de l'attache.
+- **Les illustrations** : des gravures à l'encre, celles du camp, sinon de la mission (les bêtes des chasses). Un camp
+  peut en avoir plusieurs : chaque offre en tire une, toujours la même.
+- **Le détail** (« immersif dans le jeu et pas ce qu'un dev doit savoir ») : l'annonce en grand, et l'essentiel en
+  pictos, une ligne chacun : la paie (« et le butin », ou « payées d'avance »), la route (jours de marche,
+  aller-retour), l'ennemi (qui, combien), les gardes demandés, la durée d'une garde (« sans combat »), l'échéance. **Une
+  seule feuille par mission** : pour un contrat, l'annonce à gauche du pli, la lettre du commanditaire à droite ; une
+  garde du corps n'a pas de lettre. Pas de libellés techniques.
+- **Le choix de l'escouade** (2026-11-15) : à gauche, les mercenaires au camp qui peuvent partir (« Les fatigués sont là
+  bien entendu »), avec une recherche par nom et des onglets de tags (Tous, le tag de la mission, doc 20, Dégâts,
+  Soutien, Protection, Magie, Autres rôles). Une carte : portrait, nom (un clic ouvre la fiche), étoiles, état : Prêt,
+  Fatigué −20 % (encore fatigué au combat) ou Reposé à l'arrivée (une garde du corps : Prêt ou Fatigué). Un mercenaire
+  choisi quitte la galerie. **Des pages, jamais de défilement** (« le défilement ne fait pas très jeux », choix pour
+  tout le jeu) : flèches de clic et molette. À droite, l'escouade (« 6 / 20 » ; une garde : toutes ses places) : ses
+  portraits rétrécissent à chaque ajout pour tenir en entier (jusqu'à 4 colonnes et 5 rangées) ; dessous, les fatigués,
+  les primes au retour et « Partir demain » (« D'ici demain matin, le départ peut encore être annulé »).
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 
-> « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
+« Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre
+d'ennemis qu'on ajoute. »
 
-- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs). Depuis le §19 : **Culte des morts** ; depuis le §20 : **Cour de sang**.
-- **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; tous mesurés depuis le §15).
-- **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne pour chaque peuple ; en plus du chef, 6,5 gobelins en moyenne (comme l'ancien camp à 1D4+4), 4,3 orcs, 3,7 hommes-bêtes, 3,5 voleurs ou 2,7 ogres. Le total s'écarte du budget d'au plus la moitié d'un « normal ».
-- **Lignes des nouveaux peuples** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux tireurs), avec les armes que ce peuple porte vraiment à la génération (mesuré sur 3 000 personnages générés). Mêmes armures par rôle et même spécialisation que les lignes gobelines correspondantes. Une ligne de chaque peuple, ses armes et ses poids peuvent changer sans toucher au reste : seuls ses points comptent pour le budget.
-- **Récompense** : 35 PO par point de combat (même moyenne que 300 PO par ennemi pour les gobelins) : un camp plus dangereux paie plus, quel que soit le nombre d'ennemis.
-- **Vérifié en campagne simulée** (avant le budget) : 1D4+2 orcs et leur Chef de bande (67 points) se jouent comme 1D4+4 gobelins et leur Caïd (65 points) : 94 % / 97 % de victoires en escouade complète, 48 % / 50 % avec 300 PO de primes.
-- **Depuis le §16** : la Renommée donne le niveau de la mission, donc le budget, les niveaux des monstres, la récompense et le coffre.
+- **Une seule mission « Faire le ménage »** ; son camp est tiré au hasard, à poids égal
+  (`data/reference/one-shot-missions.json`) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains),
+  **Ogres**, **Culte des morts** (§19), **Cour de sang** (§20). Chaque peuple a ses lignes, son chef, ses trois ordres
+  de mission et ses noms.
+- **Points de combat** : chaque fiche vaut ce qu'elle pèse au combat (mesure : §10 ; chefs : §15) ; le camp remplit le
+  budget de la mission (§16).
+- **Lignes** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux
+  tireurs), avec les armes que le peuple porte vraiment à la génération ; mêmes armures par rôle et même spécialisation
+  que chez les gobelins. Une ligne peut changer sans toucher au reste : seuls ses points comptent pour le budget.
 
 ### Archétypes orcs (2026-11-01)
 
-Même méthode que les gobelins (§10), sur les centiles des Orcs générés (Orcs noirs, des villes, des steppes) : mêmes lignes, armes et armures ; base des personnages : Orcs des steppes. À niveau égal, un orc a environ 50 PV, 20 de Force et 11 points d'arme de plus qu'un gobelin, mais moins de Dextérité, d'Esquive, de Vitesse et de Perception.
+Même méthode que les gobelins (§10), sur les centiles des Orcs générés (base : Orcs des steppes) ; mêmes lignes, armes
+et armures. À niveau égal, un orc a environ 50 PV, 20 de Force et 11 points d'arme de plus qu'un gobelin, mais moins de
+Dextérité, d'Esquive, de Vitesse et de Perception.
 
 | Points de combat | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|
@@ -406,13 +319,14 @@ Même méthode que les gobelins (§10), sur les centiles des Orcs générés (Or
 | Guerrier | 6 | 15 | 32 | 79 |
 | Assassin | 5 | 10 | 18 | 34 |
 
-Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 77), **Seigneur de guerre orc** (P95, 135), **Khan des Steppes** (P99, 261 ; T4 De luxe, §17). Pour comparer : Caïd gobelin 30, Grand Caïd 58, Chef de clan 102.
-
-Ordres orcs (Idan : « au pire, c'est un texte à changer ») : le chef de village (le vieux fort, le forgeron rendu avec une liste de commandes), le chef orc rival (« Un orc ne ment pas. Presque jamais. ») et l'ordre de l'Empereur (« une horde orque »). Texte complet dans `one-shot-missions.json` (`village_orcs`, `orc_rival`, `emperor_orcs`).
+Chefs (P75 à P99) : **Chef de bande orc**, **Chef de guerre orc**, **Seigneur de guerre orc**, **Khan des Steppes**.
+Ordres : le chef de village (le vieux fort, le forgeron rendu avec une liste de commandes), le chef orc rival (« Un orc
+ne ment pas. Presque jamais. ») et l'ordre de l'Empereur (« une horde orque »).
 
 ### Hommes-bêtes, Voleurs et Ogres (2026-11-01)
 
-Même méthode, sur les centiles des personnages générés de chaque peuple (toutes ses cultures). Base des personnages : Tribus des forêts anciennes, Cités libres, Ogres des montagnes. Points de combat par niveau (novice, normal, vétéran, élite) ; poids de la ligne dans le camp entre parenthèses.
+Même méthode, sur les centiles de chaque peuple (bases : Tribus des forêts anciennes, Cités libres, Ogres des
+montagnes). Points de combat par niveau ; poids de la ligne entre parenthèses.
 
 | Hommes-bêtes | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -422,7 +336,7 @@ Même méthode, sur les centiles des personnages générés de chaque peuple (to
 | Traqueur (15) | deux Hachettes (+ Discrétion d'un cran) | 5 | 10 | 19 | 34 |
 | Archer (15) | Arc | 6 | 10 | 16 | 27 |
 
-Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de harde** (82), **Seigneur des Bêtes** (133), **Roi-Totem** (237).
+Chefs (Hache de guerre + Rondache) : **Chef de harde**, **Grand Chef de harde**, **Seigneur des Bêtes**, **Roi-Totem**.
 
 | Voleurs | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -432,7 +346,8 @@ Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de har
 | Archer (20) | Arc | 7 | 11 | 20 | 31 |
 | Bandit (15) | Lance | 8 | 16 | 25 | 48 |
 
-Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands** (81), **Maître de la Guilde** (132), **Prince des Voleurs** (255).
+Chefs (Sabre + Rondache) : **Chef de brigands**, **Capitaine des brigands**, **Maître de la Guilde**, **Prince des
+Voleurs**.
 
 | Ogres | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -442,17 +357,21 @@ Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands**
 | Perceur (15) | Pic de guerre | 9 | 19 | 35 | 57 |
 | Canonnier (15) | Canon à main | 8 | 13 | 22 | 34 |
 
-Chefs (Marteau de guerre) : **Patron ogre** (42), **Grand Patron ogre** (67), **Tyran ogre** (98), **Ventre-Roi** (136).
+Chefs (Marteau de guerre) : **Patron ogre**, **Grand Patron ogre**, **Tyran ogre**, **Ventre-Roi**.
 
-Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village (les totems dans la forêt ; le droit de respirer du moulin ; les ogres qui « repasseront »), rival (corne-maîtresse d'une harde, maître voleur d'une confrérie, chef ogre qui veut récupérer sa marmite) et ordre de l'Empereur. Codes : `village_hommes_betes`, `beastman_rival`, `emperor_hommes_betes`, `village_voleurs`, `thief_rival`, `emperor_voleurs`, `village_ogres`, `ogre_rival`, `emperor_ogres`.
+Ordres : chef de village (les totems dans la forêt ; le droit de respirer du moulin ; les ogres qui « repasseront »),
+rival (corne-maîtresse d'une harde, maître voleur d'une confrérie, chef ogre qui veut récupérer sa marmite) et ordre de
+l'Empereur.
 
-## 15 — Bestiaire : butin, niveau de mission minimum, chefs mesurés (Idan, 2026-11-01)
+## 15 — Bestiaire : niveau minimum, butin, chefs (Idan, 2026-11-01)
 
-> « Il faut que tu fasses : le butin par créature, le niveau de mission minimum et les chefs qui n'ont pas de points mesurés. »
-
-- **Niveau de mission minimum** (`enemy-archetypes.json`, `niveau_mission_min`) : de 1 à 15, comme les étoiles (1 à 5 de bronze, puis d'argent, puis d'or : « 2★ argent » = 7). Une créature ne sort que dans une mission de ce niveau ou plus : au tirage du camp, les lignes dont la fiche n'est pas permise sont écartées. **Toutes les fiches sont à 1 pour l'instant** (rien ne change en jeu) ; les niveaux se régleront avec le budget par étoile.
-- **Butin par créature** (`butin`) : `equipement` = chance (%) de récupérer chaque objet porté par un ennemi mort (100 = la règle d'avant, §11) ; `objets` = objets en plus, chacun `{type, nom, tier, chance}` (type : `weapon`, `armor`, `potion`, `manual` ou un objet à bonus comme `ring`), tirés à la mort de la créature. **Toutes les fiches : 100 % de l'équipement, rien en plus** pour l'instant. L'équipement de nos morts revient toujours en entier.
-- **Chefs mesurés** : les neuf chefs restés « au-delà de la mesure » sont mesurés sur leurs fiches figées, telles que le jeu les applique, contre 1 à 27 mercenaires générés (200 combats par effectif ; points = 10 × le nombre de mercenaires qui les battent une fois sur deux). Contrôle : le Grand Caïd (55) et le Tyran ogre (79) retombent à 51 et 81 avec la même méthode. Le tableau donne les points à jour (fiches T4 remesurées au §17).
+- **Niveau de mission minimum** de chaque fiche : de 1 à 15, comme les étoiles (« 2★ argent » = 7). Une créature ne sort
+  que dans une mission de ce niveau ou plus : au tirage du camp, les lignes dont la fiche n'est pas permise sont
+  écartées.
+- **Butin par créature** : la chance de récupérer chaque objet porté (§16), et des objets en plus (arme, armure, potion,
+  manuel ou objet à bonus), chacun avec son tier et sa chance, tirés à sa mort.
+- **Points des chefs** : 10 × le nombre de mercenaires générés qui les battent une fois sur deux (contre 1 à 27, 200
+  combats par effectif).
 
 | Peuple | Chef 1 | Chef 2 | Chef 3 | Chef 4 |
 |---|---|---|---|---|
@@ -462,32 +381,42 @@ Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village 
 | Voleurs | Chef de brigands 40 | Capitaine des brigands 81 | Maître de la Guilde 132 | Prince des Voleurs 255 |
 | Ogres | Patron 42 | Grand Patron 67 | Tyran 98 | Ventre-Roi 136 |
 
-- **Design Lab, Bestiaire** : colonnes « Dès » (niveau de mission minimum) et « Butin » (chance par objet porté, et les objets en plus au survol).
-
 ## 16 — Niveau de mission, budget par métal, récompense, coffre (Idan, 2026-11-01)
 
-> « Le joueur doit se prendre une branlée de temps à autre, sinon, c'est pas intéressant ! » « Les récompenses ne montent pas assez. » « Le coffre : ici, il faut des fourchettes très larges. C'est la partie loterie du butin. » « Je veux une ambiance à la X-com. »
+« Le joueur doit se prendre une branlée de temps à autre, sinon, c'est pas intéressant ! » Données :
+`data/reference/one-shot-missions.json`.
 
-Le niveau d'une mission va de 1 à 15, comme les étoiles : 1 à 5 étoiles de bronze (niveaux 1 à 5), d'argent (6 à 10), d'or (11 à 15). Dans les formules, « niveau » est ce nombre.
+Le niveau d'une mission va de 1 à 15 : bronze (1 à 5), argent (6 à 10), or (11 à 15).
 
-- **Niveau de la mission** = niveau de Renommée de la compagnie + un écart tiré entre **−4 et +1** (avant : −3 et +2 ; Idan, 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions »), chaque écart avec la même chance, borné de 1 à 15 (`one-shot-missions.json`, `niveau.ecart`). Une compagnie de départ est à 2 ou 3 étoiles de bronze.
-- **Budget en points de combat** (`budgets`, un par métal) :
+- **Niveau** = niveau de Renommée de la compagnie + un écart de **−4 à +1**, chacun avec la même chance, borné de 1 à
+  15. Une compagnie de départ est à 2 ou 3 étoiles de bronze.
+- **Budget en points de combat** :
   - Bronze : tirage 40–60 × niveau ; monstres novice / normal (50 % / 50 %) ; chef 1.
   - Argent : tirage 60–80 × niveau ; novice / normal / vétéran (25 % / 50 % / 25 %) ; chef 2.
-  - Or : niveau² × tirage 8–12 ; vétéran / élite (50 % / 50 %) ; chef 3 ou chef 4 (50 % / 50 %). Le niveau 5 de monstre viendra plus tard.
-  - Le chef compte dans le budget. Puis des ennemis (niveau selon le métal, ligne selon son poids dans le camp) tant que le total plus la moitié du suivant reste dans le budget ; **au plus 100 ennemis, plus le chef** (`max_ennemis` ; Idan, 2026-11-02 : « 100 + chef… j'ai dit 100 pour qu'on n'ait pas vraiment de limites »).
-  - **Chef permis** (Idan, 2026-11-02) : le chef du métal doit être permis au niveau de la mission (`niveau_mission_min`, comme les troupes) ; sinon on prend le cran en dessous (chef 4, 3, 2, 1) ; si le peuple du camp n'a aucun chef permis, on tire un autre camp. Sans effet tant que tous les chefs sont au niveau 1.
-  - **Le chef au plus la moitié du budget** (Idan, 2026-11-08 : « PC du chef au max 50 % du PC total. Les missions jusqu'à 3★ peuvent ne pas avoir de chef » ; `one-shot-missions.json`, `chef`) : un chef qui pèse plus de la moitié du budget laisse la place au cran en dessous (chef 3, 2, 1) s'il tient dans cette moitié. **Jusqu'à 3★**, si aucun ne tient, **le camp n'a pas de chef** : le plus fort de la troupe se place au fond, comme un chef, et porte le nom du chef de la lettre (`{boss}`). Au-delà de 3★, toujours un chef (le plus petit permis si aucun ne tient ; ne se produit pas avec les fiches actuelles). En pratique : en 1★ (budget 40 à 60, chef 1 de 30 à 42 points), presque jamais de chef ; en 2★, un chef presque toujours ; à partir de 3★, toujours. Constat de la partie n°5 : 11 des 13 morts sont tombés dans des camps 1★ dont le chef pesait 60 à 80 % du budget.
-- **Jours de marche** : tirage de 1 au niveau (jusqu'à 15 jours en 5 étoiles d'or).
-- **Récompense** = 5 000 + tirage 30–40 × budget × niveau (`recompense`). Plus de part par jour de marche ni par point.
-- **Butin des morts** : l'équipement peut se casser au combat ; chance de récupérer chaque objet porté = 100 % − 10 % par tier (T1 90 %, T2 80 %, T3 70 %, T4 60 % ; `enemy-archetypes.json`, `butin.equipement`). L'équipement de nos morts revient toujours en entier.
-- **Accessoires sur les morts** (Idan, 2026-11-08 : « Sur chaque mort, on a 2% de chance de dropper un accessoire par slot d'un tier equivalent au tier de l'ennemi mort ») : les ennemis ne portent pas d'accessoires, mais chaque ennemi mort a **2 % de chance par emplacement d'accessoire** de la fiche (13 : casque, amulette, cape, gants, ceinturon, culotte, bottes, 6 bagues ; `loot.accessory.chance_per_slot`) de laisser un objet de cette famille, tiré au hasard, **au tier de sa fiche** et à sa qualité. Exemple : un gobelin T2 a 2 % de chance de laisser une bague T2 pour chacun de ses 6 emplacements de bague. ≈ 0,26 accessoire par ennemi (0,12 bague) ; un camp de 22 ennemis ≈ 5,7 accessoires.
-  - **Seulement les humanoïdes** (« La règle, c'est plutôt humanoïde ou non » ; `enemy-archetypes.json`, `humanoide`) : tous, morts-vivants et trolls compris (goules, zombies, spectres, trolls : « ils droppent »), sauf les loups et les chauves-souris de la Cour de sang. Les bêtes des chasses n'ont pas de fiche d'ennemi : rien non plus.
-- **Coffre** (`coffre`) : la loterie.
+  - Or : niveau² × tirage 8–12 ; vétéran / élite (50 % / 50 %) ; chef 3 ou chef 4 (50 % / 50 %). Le niveau 5 de monstre
+    viendra plus tard.
+  - Le chef compte dans le budget ; puis des ennemis (ligne selon son poids) tant que le total plus la moitié du suivant
+    reste dans le budget ; **au plus 100 ennemis, plus le chef**.
+  - **Chef permis** : le chef du métal doit être permis au niveau de la mission ; sinon le cran en dessous (chef 4, 3,
+    2, 1) ; si le peuple n'a aucun chef permis, on tire un autre camp.
+  - **Le chef au plus la moitié du budget** (Idan, 2026-11-08) : un chef plus lourd laisse la place au cran en dessous,
+    s'il tient dans cette moitié. **Jusqu'à 3★**, si aucun ne tient, **pas de chef** : le plus fort de la troupe se
+    place au fond et porte le nom du chef de la lettre. Au-delà, toujours un chef (le plus petit permis si aucun ne
+    tient).
+- **Jours de marche** : tirage de 1 au niveau.
+- **Récompense** = 5 000 + tirage 30–40 × budget × niveau.
+- **Butin des morts** : chance de récupérer chaque objet porté = 100 % − 10 % par tier (T1 90 % … T4 60 %). L'équipement
+  de nos morts revient toujours en entier.
+- **Accessoires** (Idan, 2026-11-08) : chaque ennemi mort **humanoïde** (morts-vivants et trolls compris ; pas les loups
+  ni les chauves-souris de la Cour de sang, ni les bêtes des chasses) a **2 % de chance par emplacement d'accessoire**
+  (13 : casque, amulette, cape, gants, ceinturon, culotte, bottes, 6 bagues) de laisser un objet de cette famille, **au
+  tier de sa fiche** et à sa qualité ; ≈ 0,26 accessoire par ennemi.
+- **Coffre** : la loterie (« il faut des fourchettes très larges »).
   - Or = tirage 1–100 × budget × niveau ÷ 2.
-  - Objets : T1 1D6 × niveau ; T2 1D3 × niveau ; T3 ⌈1D6 × niveau ÷ 5⌉ ; T4 ⌈1D6 × niveau ÷ 5⌉ − 2 (au moins 0). La famille de chaque objet est tirée au hasard (arme, armure, objets à bonus). Le T4 se trouve dès 3★ bronze, une fois sur deux : c'est voulu (Idan : « l'idée, c'est qu'on porte du T4 ») ; la destruction d'objets par l'artisanat et les propriétés magiques viendront.
-  - Manuels : chaque sort d'une seule école a niveau % de chance d'y être (90 sorts : 0,9 manuel en moyenne en 1★ bronze, 13,5 en 5★ or). Détruire un manuel pour gagner de l'XP de sort viendra.
-- **Carte** : 36 × 25 cases (`carte`), le camp au centre ; les chasses aussi (2026-11-09 ; 30 × 15 avant). Obstacles, défenses et remparts autour du camp : plus tard.
+  - Objets (famille au hasard) : T1 1D6 × niveau ; T2 1D3 × niveau ; T3 ⌈1D6 × niveau ÷ 5⌉ ; T4 ⌈1D6 × niveau ÷ 5⌉ − 2
+    (au moins 0). Le T4 se trouve dès 3★ bronze, une fois sur deux : c'est voulu (« l'idée, c'est qu'on porte du T4 »).
+  - Manuels : chaque sort d'une seule école a niveau % de chance d'y être (90 sorts).
+  - Plus tard : détruire objets (artisanat) et manuels (XP de sort) ; propriétés magiques.
 
 Ordres de grandeur (moyennes) :
 
@@ -501,31 +430,33 @@ Ordres de grandeur (moyennes) :
 | 1★ or | 1 210 | ~35 | 471 000 | 336 000 | 38 / 22 / 7,5 / 5,7 | 10 |
 | 5★ or | 2 250 | ~70 | 1,19 M | 850 000 | 52 / 30 / 10,5 / 8,5 | 13,5 |
 
-Mesuré au simulateur (compagnie de départ complète, une quinzaine de mercenaires, 64 combats par budget, ennemis à 50 % novices et 50 % normaux, chef 1) : budget 50 : 100 % de victoires ; 100 : 88 % (capitaine mort 19 %) ; 150 : 64 % (34 %) ; 250 : 31 % (53 %). En jeu : 42 ennemis en 3★ argent, 88 en 5★ or, sans souci de calcul.
+Au simulateur (compagnie de départ, une quinzaine de mercenaires ; ennemis à 50 % novices et 50 % normaux, chef 1) :
+budget 50 : 100 % de victoires ; 100 : 88 % (capitaine mort 19 %) ; 150 : 64 % (34 %) ; 250 : 31 % (53 %).
 
-## 17 — Qualités par tier, fiches T4 remesurées (Idan, 2026-11-01)
+## 17 — Qualités par tier (Idan, 2026-11-01)
 
-> « Usé / Correcte / De bonne facture / De luxe. On aura du T5 et du T6 qui vont venir et des cristaux sur les armes. »
+Une qualité par tier (`data/reference/item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T3 **De bonne facture** (+20
+% / −20 % / prix × 1,5), T4 **De luxe** (valeurs bénéfiques +40 %, malus −40 %, prix × 2,5). Le T5, le T6 et les
+cristaux sur les armes viendront. Les points des fiches T4 (élites, chefs 2 à 4) sont mesurés avec ces valeurs.
 
-Une qualité par tier (`item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T3 **De bonne facture** (l'ancien « Grand Luxe », mêmes valeurs : +20 % / −20 % / prix × 1,5), T4 **De luxe** (valeurs bénéfiques +40 %, malus −40 %, prix × 2,5). Les 40 fiches équipées en T4 (élites et chefs 2 à 4) passent de +20 % à +40 % : leurs points sont remesurés (même méthode qu'au §15, 200 combats par effectif) et reportés dans les tableaux ci-dessus. Les élites de mêlée prennent le plus (Guerrier orc 51 → 79, Spadassin 58 → 88, Écraseur ogre 54 → 83) ; les tireurs peu. Chefs 4 : Roi des Cavernes 201, Khan des Steppes 261, Roi-Totem 237, Prince des Voleurs 255, Ventre-Roi 136.
+## 18 — Le tableau de la Taverne (Idan, 2026-11-01)
 
-## 18 — Taverne à 5 missions (Idan, 2026-11-01)
-
-> « La taverne a 5 missions. On génère aléatoirement une mission. Une fois la mission prise, on laisse 24 h une case vide et on régénère une mission. » « Totalement aléatoire sur le type de missions. On va en avoir une dizaine de types à terme. Le niveau de référence, c'est la réputation de la compagnie. »
-
-- **3 + 1 case par étoile de la compagnie** au tableau des missions de la Taverne (Idan, 2026-11-08 : « Cases : 3 + Nombre d'étoiles de la compagnie » ; à 6 étoiles, 9 cases — bronze, argent, or ne sont que l'affichage : 1★ d'argent = 6 étoiles ; `formula-constants.json`, `tavern.missions.slots` et `tavern.missions.slots_per_renown_level` ; avant : 5 cases). Si la renommée baisse, une case vide en trop disparaît ; une offre en cours garde la sienne. Chaque case tire un type de mission au hasard, **chacun avec la même chance** (Idan, 2026-11-08 : « Tous les types de missions sont équiprobables ») : contrat « Faire le ménage », garde du corps, chasse. Un nouveau type de mission s'ajoute à ce tirage.
-- **Niveau** : les trois types suivent la Renommée de la compagnie, avec le même écart de −4 à +1 (§12, §16, §23).
-- **Case prise** : une offre signée laisse sa case vide jusqu'au lendemain (`tavern.missions.empty_days`, 1 jour), puis une nouvelle mission arrive. Plusieurs escouades peuvent partir en même temps.
-- **Offre perdue** : une offre non signée qui dépasse sa date est prise par une autre compagnie et remplacée aussitôt. Le journal le dit ; la notification du jour n'en fait plus une alerte (une seule ligne).
-- **Anciennes sauvegardes** : l'offre de contrat et l'offre de garde du corps passent dans les deux premières cases.
-- Code : `game-core/campaign.js` (`tavernBoard`, `fillTavernBoard`, `boardOffers`, `boardOffer`) ; interface `prototype-web/contract-ui.js` (une annonce par offre ; une case vide n'affiche rien depuis le 2026-11-14, §13).
-
+- **Cases : 3 + nombre d'étoiles de la compagnie** (Idan, 2026-11-08 ; 1★ d'argent = 6 étoiles, donc 9 cases ;
+  `data/reference/formula-constants.json`). Si la renommée baisse, une case vide en trop disparaît ; une offre en cours
+  garde la sienne.
+- **Type** : chaque case tire un type au hasard, **tous équiprobables** : contrat « Faire le ménage », garde du corps,
+  chasse. Un nouveau type s'ajoute au tirage (une dizaine à terme).
+- **Niveau** : les trois types suivent la Renommée de la compagnie, écart −4 à +1 (§12, §16, §23).
+- **Case prise** : vide jusqu'au lendemain, puis une nouvelle mission arrive.
+- **Offre perdue** : une offre non signée qui dépasse sa date est prise par une autre compagnie et remplacée aussitôt ;
+  le journal le dit (une ligne, pas une alerte).
 
 ## 19 — Culte des morts (Idan, 2026-11-06)
 
-> « On ajoute des factions morts-vivants ? Une plutôt basée sur un vampire comme capitaine et l'autre sur un nécromancien… » « Oui, insensibles aux poisons. Squelettes très résistants aux dégâts tranchants, très faibles aux contondants… » « Les portraits arriveront ! »
+« On ajoute des factions morts-vivants ? Une plutôt basée sur un vampire comme capitaine et l'autre sur un
+nécromancien… »
 
-Sixième peuple de camp (`one-shot-missions.json`, camp « Cimetière profané »), tiré comme les autres (un camp sur six). La Cour de sang (vampire) suivra.
+Camp « Cimetière profané », tiré comme les autres.
 
 | Culte des morts | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -535,21 +466,32 @@ Sixième peuple de camp (`one-shot-missions.json`, camp « Cimetière profané �
 | Acolyte (20) | deux Dagues | 5 | 11 | 20 | 40 |
 | Spectre (10) | Toucher spectral (psychique, 1D6) | 12* | 22* | 42* | 66* |
 
-Chefs (Bâton long, école de Nécromancie) : **Nécromancien** (31), **Maître nécromancien** (56), **Seigneur des tombes** (88), **Roi des morts** (130). Leurs sorts (maîtrise 65, 80, 100 et 130 ; 20, 35, 50 et 65 au départ, Idan : « monte la maîtrise à 65 », « le roi des morts… Il devrait être à 130 ! », « le 2 à 80 et le 3 à 100 »), dans l'ordre où l'IA les essaie : Armée d'os, Invocation de spectre (chefs 3 et 4), Résurrection, Malédiction (dès le chef 2), Siphon d'âme (chef 4), Nécrose (chefs 3 et 4), Flèche de mort. Règles des morts-vivants et IA des sorts : doc 04, « Invocations et morts-vivants ».
+Chefs (Bâton long, Nécromancie) : **Nécromancien** (31), **Maître nécromancien** (56), **Seigneur des tombes** (88),
+**Roi des morts** (130). Sorts à la maîtrise 65, 80, 100 et 130, dans l'ordre où l'IA les essaie : Armée d'os,
+Invocation de spectre (chefs 3 et 4), Résurrection, Malédiction (dès le chef 2), Siphon d'âme (chef 4), Nécrose (chefs 3
+et 4), Flèche de mort. Ils ont le corps du Chef de brigands, sans bouclier ni armure, une **Réserve de mana doublée**
+(134, 142, 168, 168), leur **Armée d'os déjà levée** au début du combat, et se tiennent **en retrait** (doc 04,
+« Invocations et morts-vivants »). Encore sous les chefs des autres peuples (environ 40, 80, 130, 250) : le budget du
+camp compense.
 
-- **Nécromancien plus fort** (Idan : « pourquoi il est bien plus faible que les autres chefs ? », puis « B, vas-y ») : il a le corps du Chef de brigands, mais un Bâton long sans bouclier ni armure, et ses sorts ne lui apportaient presque rien (contre 2 mercenaires : 48 % de victoires, 52 % sans aucun sort ; 80 % armé comme le Chef de brigands). Depuis : **Réserve de mana doublée** (134, 142, 168, 168), **Armée d'os déjà levée** au début du combat (`sort_initial`), **en retrait** derrière ses troupes (`en_retrait` ; doc 04). Remesurés : 25 → 26, 42 → 46, 62 → 83, 104 → 126 (les chefs 3 et 4 en profitent le plus) ; puis ses sorts à la maîtrise 65, 80, 100 et 130 : 26 → 31, 46 → 56, 83 → 88, 126 → 130 ; encore en dessous des autres peuples (environ 40, 80, 130, 250), compensé par le budget du camp.
-- **Morts-vivants** (squelettes, zombies, spectres) : sans peur, insensibles au poison. **Squelettes** : dégâts tranchants × 0,5, contondants × 1,5 (`degats_subis`). **Spectres** : insensibles aux dégâts physiques (tranchants, perforants, contondants : armes et sorts physiques) et au poison ; les dégâts d’eau, de feu et de foudre les blessent (sorts, et Arme enflammée même quand la lame les traverse), comme les sorts psychiques et nécrotiques (Idan : « tous les dégâts eau / feu / foudre devraient le blesser »). À partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
-- **Points** : même méthode qu'au §14 (troupes contre 3 mercenaires générés, chefs contre 1 à 27 ; un combat bloqué compte comme une victoire ennemie), 120 combats par effectif, sur une carte 30 × 15 sans décor. **Recalage × 1,2** : les fiches témoins des Voleurs (Coupe-jarret, Spadassin, Archer, Bandit, Chef de brigands) mesurées le même jour sortent en moyenne 1,2 fois plus bas que leurs points figés ; les points du Culte sont donc les mesures × 1,2, pour rester sur la même échelle que les autres peuples.
-- **\* Spectre, points provisoires** (ceux du Squelette guerrier) : il ne se mesure pas. Seul contre 10 mercenaires, il gagne 77 % (novice) à 91 % (élite) des combats, même quand nos mages lancent leurs sorts, car rien d'autre ne le blesse et le combat bloqué compte pour lui. À revoir avec Idan.
-- **Ordres** : le chef de village (les tombes ouvertes), le prêtre (`noms_commanditaire` : `pretres`) et l'ordre de l'Empereur. Codes : `village_culte`, `priest_culte`, `emperor_culte`. Noms : `cultes_des_morts`, `necromanciens`.
-- **Cimetière** (`mission-landscapes.json`) : tombes (nouveau décor, infranchissable, transparent, couverture partielle), un peu de forêt, de marais, de buissons et d'éboulis ; enceinte de **murets** au lieu de la palissade ; camp au sol.
-- Code : `game-core/missions.js` (`applyArchetype` : `attaque`, `mort_vivant`, `insensible_poison`, `immunite_physique`, `degats_subis`, `ecoles`, `sorts`), `game-core/combat-engine.js` (`poisonImmune`, `damageTypeFactor`), `prototype-web/mission.js` (`missionAiSpell`). Test : `tests/undead-cult.test.js`.
+- **Morts-vivants** (squelettes, zombies, spectres) : sans peur, insensibles au poison. **Squelettes** : dégâts
+  tranchants × 0,5, contondants × 1,5. **Spectres** : insensibles aux dégâts physiques (armes et sorts physiques) ;
+  l'eau, le feu et la foudre les blessent (sorts, et Arme enflammée même quand la lame les traverse), comme les sorts
+  psychiques et nécrotiques. À partir du niveau de mission 6.
+- **Points** : méthode du §14 (un combat bloqué compte comme une victoire ennemie), puis **× 1,2** : les fiches témoins
+  des Voleurs, mesurées le même jour, sortent 1,2 fois plus bas que leurs points ; on reste ainsi sur la même échelle.
+- **\* Spectre, points provisoires** (ceux du Squelette guerrier) : il ne se mesure pas (seul contre 10 mercenaires, il
+  gagne 77 à 91 % des combats, car le combat bloqué compte pour lui). À revoir avec Idan.
+- **Ordres** : le chef de village (les tombes ouvertes), le prêtre et l'ordre de l'Empereur.
+- **Cimetière** : tombes (infranchissables, transparentes, couverture partielle), un peu de forêt, de marais, de
+  buissons et d'éboulis ; enceinte de **murets** ; camp au sol.
 
 ## 20 — Cour de sang (Idan, 2026-11-06)
 
-> « Ajoute aussi des chauves-souris. Elles volent donc ignorent les pénalités de mouvement ! J'aimerais bien qu'on donne quelques sorts à notre vampire. » « Elles survolent tout. » « Dans ma tête, les vampires et rejetons sont très classe et dandy, pas bête sauvage. C'est plutôt estoc, drain de vie, sort d'illusions. » « murs ok »
+« Dans ma tête, les vampires et rejetons sont très classe et dandy, pas bête sauvage. C'est plutôt estoc, drain de vie,
+sort d'illusions. »
 
-Septième peuple de camp (`one-shot-missions.json`, camp « Château maudit »), tiré comme les autres (un camp sur sept). Même échelle que le Culte des morts (les fiches Voleurs, Humains des Cités libres).
+Camp « Château maudit », tiré comme les autres ; même échelle que le Culte des morts.
 
 | Cour de sang | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -560,21 +502,28 @@ Septième peuple de camp (`one-shot-missions.json`, camp « Château maudit »),
 | Loup (15) | Morsure (1D8) | 5 | 10 | 18 | 31 |
 | Chauve-souris (10) | Morsure (1D6) ; vole | 5 | 8 | 18 | 34 |
 
-Chefs (Estoc seul, « combat à une main ») : **Vampire** (34), **Seigneur vampire** (66), **Comte de sang** (97), **Prince de la nuit** (184). Ils régénèrent (`regeneration` : 50, 75, 100, 150 ; la règle du sang de troll, que le feu bloque) et lancent, à la maîtrise 65, 80, 100 et 130 comme les nécromanciens, dans l'ordre où l'IA les essaie : Drain de vie, Création de double (chef 4), Désespoir (dès le chef 2), Sommeil, Brouillage mental (chefs 3 et 4), Choc psychique.
+Chefs (Estoc seul, « combat à une main ») : **Vampire** (34), **Seigneur vampire** (66), **Comte de sang** (97),
+**Prince de la nuit** (184) ; plus durs que ceux du Culte : ils se battent eux-mêmes et régénèrent (50, 75, 100, 150 ;
+la règle du sang de troll, que le feu bloque). Sorts à la maîtrise 65, 80, 100 et 130, dans l'ordre où l'IA les essaie :
+Drain de vie, Création de double (chef 4), Désespoir (dès le chef 2), Sommeil, Brouillage mental (chefs 3 et 4), Choc
+psychique.
 
-- **Morts-vivants** : le vampire, les rejetons et les goules (insensibles au poison). Gardes, arbalétriers, loups et chauves-souris sont vivants.
-- **Vol** (`vol`) : les chauves-souris ignorent décor, montées et falaises (1 point par case) et survolent les murs, rochers et maisons sans pouvoir s'y arrêter (doc 04).
-- **Drain de vie** : l'IA se le lance (action rapide) quand un ennemi est à portée de ses pas, puis frappe (doc 04).
-- **Points** : même méthode et même recalage × 1,2 qu'au §19, 120 combats par effectif. La Cour est plus dure que le Culte : ses chefs se battent eux-mêmes et régénèrent (34, 66, 97, 184, contre environ 40, 80, 130, 250 pour les autres peuples).
-- **Ordres** : le chef de village (le château qui se rallume, les gens qui reviennent très pâles et très polis), une famille noble (leur fille partie au bal, `noms_commanditaire` : `nobles`) et l'ordre de l'Empereur. Codes : `village_cour`, `noble_cour`, `emperor_cour`. Noms : `cours_de_sang`, `vampires`.
-- **Château en ruine** (`mission-landscapes.json`) : éboulis, murs, gros rochers, buissons, une tombe, un peu de marais ; le camp sur un plateau de hauteur 2, avec ses rampes, entouré de **murs** (qui bloquent la vue : on ne voit dedans, et eux dehors, que par les ouvertures).
-- Code : `game-core/missions.js` (`applyArchetype` : `vol`, `regeneration`), `prototype-web/mission.js` (`missionFlies`, `missionAiSpell`). Test : `tests/blood-court.test.js`.
+- **Morts-vivants** : le vampire, les rejetons et les goules (insensibles au poison) ; les autres sont vivants.
+- **Vol** : les chauves-souris ignorent décor, montées et falaises (1 point par case) et survolent murs, rochers et
+  maisons sans pouvoir s'y arrêter (doc 04).
+- **Drain de vie** : l'IA se le lance (action rapide) quand un ennemi est à portée de ses pas, puis frappe.
+- **Ordres** : le chef de village (le château qui se rallume, les gens qui reviennent très pâles et très polis), une
+  famille noble (leur fille partie au bal) et l'ordre de l'Empereur.
+- **Château en ruine** : éboulis, murs, gros rochers, buissons, une tombe, un peu de marais ; le camp sur un plateau de
+  hauteur 2, avec ses rampes, entouré de **murs** (on ne voit dedans, et eux dehors, que par les ouvertures).
 
 ## 21 — Troll (Idan, 2026-11-06)
 
-> « On va ajouter un troll. Niveau 1 à 4. Peut être chez les orcs, les gobelins ou les hommes bêtes à partir de 6*. Il est lent, bête mais fort et très intimidant. Il se régénère et tape avec une grosse massue. En force je dirais : 80/100/140. En PV : 300/600/900/1200. » Puis : « 80/100/120/140 », « ok pour la régénération ».
+« Il est lent, bête mais fort et très intimidant. Il se régénère et tape avec une grosse massue. »
 
-Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à partir du niveau de mission 6 (1★ argent). **Une seule série de fiches** (Idan : « Ça devrait être les mêmes fiches qui s'intègrent pour les différentes factions ») : `troll_novice`, `troll`, `troll_veteran`, `troll_elite`, de la famille **Créatures** (`enemy-archetypes.json`, faction « Créatures »), qu'un camp appelle par sa ligne (`one-shot-missions.json` : `{"ligne": "Troll", "faction": "Créatures", "poids": 10}`). D'autres créatures partagées (un loup dans un camp gobelin) pourront s'y ajouter.
+Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, dès le niveau de mission 6 (1★ argent). Une
+seule série de fiches, de la famille **Créatures**, qu'un camp appelle par sa ligne ; d'autres créatures partagées (un
+loup dans un camp gobelin) pourront s'y ajouter.
 
 | Troll | Force | PV | Régénération | Vitesse | Intelligence | Intimidation | Points |
 |---|---|---|---|---|---|---|---|
@@ -583,24 +532,27 @@ Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à pa
 | Vétéran | 120 | 900 | 200 | 35 | 14 | 90 | 99 |
 | Élite | 140 | 1200 | 300 | 40 | 16 | 100 | 180 |
 
-- **Base** : le Cogneur ogre de même niveau (les autres caractéristiques, les résistances, les compétences), puis Force, PV, Vitesse (lent), Intelligence (bête), Courage (70 à 85) et Intimidation (au-dessus de toutes les autres fiches, 67 au plus) du troll.
-- **Grosse massue** : son arme propre (2D8, contondant 80), comme les griffes du zombie : elle ne tombe pas en butin.
-- **Régénération** : la règle du sang de troll (au début de chaque activation, 2D6 × (0,5 + Régénération / 50) PV, soit environ 17, 24, 31 et 45 PV) ; brûlé depuis sa dernière activation, rien.
-- **Points** : même méthode et même recalage × 1,2 (§19) ; le troll d'élite, trop fort pour la méthode des troupes, est mesuré comme un chef (il bat 15 mercenaires une fois sur deux).
-- **Poids** : comme pour toute ligne, la chance qu'un ennemi tiré soit un troll (10 sur 110, soit 9 %), pas la chance par camp ; avec des camps de dizaines d'ennemis à partir du niveau 6, presque chaque camp de ces trois peuples a au moins un troll.
-- Test : `tests/troll.test.js`.
+- **Base** : le Cogneur ogre de même niveau, avec la Force, les PV, la Vitesse, l'Intelligence, le Courage (70 à 85) et
+  l'Intimidation du troll (au-dessus de toutes les autres fiches, 67 au plus).
+- **Grosse massue** : son arme propre (2D8, contondant 80), qui ne tombe pas en butin.
+- **Régénération** (sang de troll) : au début de chaque activation, 2D6 × (0,5 + Régénération / 50) PV (environ 17, 24,
+  31 et 45) ; brûlé depuis sa dernière activation, rien.
+- **Points** : × 1,2 (§19) ; l'élite est mesuré comme un chef (il bat 15 mercenaires une fois sur deux).
+- **Poids** : la chance qu'un ennemi tiré soit un troll (10 sur 110, soit 9 %) ; dès le niveau 6, presque chaque camp de
+  ces trois peuples en a au moins un.
 
 ### Troll mort-vivant (Idan, 2026-11-06)
 
-> « Un troll mort vivant pour l'équipe du nécromancien… » ; « Non, pas de régénération ».
-
-Quatre fiches de la famille **Créatures** (`undead_troll_novice`, `undead_troll`, `undead_troll_veteran`, `undead_troll_elite`) : le troll (mêmes caractéristiques, PV, Grosse massue, Intimidation), **sans régénération**, mort-vivant (sans peur, insensible au poison). Ligne **Troll mort-vivant** (poids 10) au camp du Culte des morts, à partir du niveau de mission 6. Points (× 1,2, l'élite mesuré comme un chef) : **19, 47, 91, 140** (le troll : 17, 47, 99, 180) ; sans régénération, il coûte moins aux hauts niveaux.
+Pour le Culte des morts (ligne **Troll mort-vivant**, poids 10, dès le niveau 6) : le troll, **sans régénération**
+(« Non, pas de régénération »), mort-vivant (sans peur, insensible au poison). Points : **19, 47, 91, 140**.
 
 ## 22 — Cavalier (Idan, 2026-11-07)
 
-> « On ajoute des montures aux ennemis. » « Faisons une nouvelle ligne, cavalier dans le camp des voleurs, on étendra plus tard avec un jet de proba pour les chefs. » « Restons sur le Destrier pour l'instant. »
+« Faisons une nouvelle ligne, cavalier dans le camp des voleurs, on étendra plus tard avec un jet de proba pour les
+chefs. »
 
-Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 1 : `thief_rider_novice`, `thief_rider`, `thief_rider_veteran`, `thief_rider_elite`, chacun sur un **destrier** (`monture`, `mounts.json` ; les règles du combat à cheval : doc 04).
+Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau 1, sur un **destrier**
+(`data/reference/mounts.json` ; combat à cheval : doc 04).
 
 | Cavalier | Base | Armes | Armure | Compagnon animal | Équidés | Points |
 |---|---|---|---|---|---|---|
@@ -609,47 +561,69 @@ Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 
 | Vétéran | Bandit vétéran | Lance + Rondache | Cuir renforcé | 59 | 51 | 49 |
 | Élite | Bandit d'élite | Lance + Rondache | Brigandine | 63 | 57 | 74 |
 
-- **Base** : les caractéristiques, les PV, l'Intimidation et la lance du Bandit de même niveau ; la rondache, l'armure et le port d'armure du Spadassin ; Compagnon animal et Équidés aux centiles des humains générés (P20, P50, P75, P90), soit une part de 0,84 à 1 pour le partage du Courage et de la Volonté avec son cheval.
-- **Points** : cavalier et cheval ensemble (le cheval frappe aussi, dans l'activation de son cavalier, en charge et en attaque d'opportunité ; sa fiche complète, Discrétion du couple la plus basse, Intimidation la plus haute : doc 04 ; mesurés sur 360 combats par point ; au départ, 12, 22, 46 et 70), même méthode et même recalage × 1,2 qu'au §19 ; le vétéran et l'élite, trop forts pour la méthode des troupes, sont mesurés seuls contre 3 à 6 mercenaires. Pour comparer, le Bandit vaut 8, 16, 25 et 48. Sa charge (lance, 8 à 16 cases, la moitié de la Force du cheval en plus) frappe très fort : jusqu'à 190–270 PV d'un coup dans les combats de mesure.
-- **Butin** : celui du Bandit (100 % − 10 % par tier) ; le cheval tombé peut être capturé après la victoire (test de survie, une place aux Écuries ; doc 11 §8).
-- **Mission Test** : le deuxième ennemi est un Cavalier, sur son destrier.
-- Test : `tests/mounts.test.js`.
+- **Base** : le Bandit de même niveau (caractéristiques, PV, Intimidation, lance) ; la rondache, l'armure et le port
+  d'armure du Spadassin ; Compagnon animal et Équidés aux centiles des humains générés (P20 à P90), soit une part de
+  0,84 à 1 pour le partage du Courage et de la Volonté avec son cheval.
+- **Points** : cavalier et cheval ensemble (le cheval frappe aussi, en charge et en attaque d'opportunité : doc 04),
+  × 1,2 (§19) ; vétéran et élite mesurés seuls contre 3 à 6 mercenaires. Sa charge (lance, 8 à 16 cases, la moitié de la
+  Force du cheval en plus) frappe jusqu'à 190–270 PV d'un coup dans les combats de mesure.
+- **Butin** : celui du Bandit ; le cheval tombé peut être capturé après la victoire (test de survie, une place aux
+  Écuries ; doc 11 §8).
 
 ## 23 — Chasses (Idan, 2026-11-07)
 
-> « On va pouvoir travailler sur les missions Éliminez la bête. Récompense de 1000 Po par étoile. 0,25 à 1 jour de marche par étoile. Arrondi sup. Textes cohérents avec l'espèce : Version Meute de Loup : 3D6 par étoile. Version Licorne : 1D6 par étoile. On élimine les animaux. On peut en capturer ou se prendre une pilée ! On génère des missions -2 / +2 étoiles par rapport à l'étoile. » « Les fiches fixes. » « Éliminez la bête, c'est notre nom interne pour classer les missions… On peut trouver mieux et plus variés. »
+« On élimine les animaux. On peut en capturer ou se prendre une pilée ! »
 
-Deux missions (`one-shot-missions.json`, celles qui ont une `bete`) : **Chasse au loup** (`hunt_wolves`) et **Chasse à la licorne** (`hunt_unicorn`).
-
-- **Difficulté** : le niveau de Renommée de la compagnie + un écart de **−4 à +1** (`niveau.ecart` ; avant : −2 à +2 ; Idan, 2026-11-08), de 1 à 15.
-- **Les bêtes** : **1D6 loups par étoile** (3★ : 3D6, une dizaine), **1D3 licornes par étoile** ; au plus 100. Après le bêta-test (Idan, 2026-11-07 : « On passe la mission loup à 1D6 loups au lieu de 3D6 et les licornes en 1D3 ») ; avant : 3D6 loups et 1D6 licornes par étoile. Elles ont la **fiche fixe** de nos animaux (`mounts.json` : le Loup, la Licorne), quelle que soit l'étoile : pas de chef, pas de niveaux. Elles se battent et fuient comme tout combattant ; la licorne lance sa Création de double.
+- **Niveau** : Renommée de la compagnie + un écart de **−4 à +1**, de 1 à 15. Le niveau est tiré d'abord, puis la chasse
+  parmi celles qui l'acceptent (niveau minimum ou maximum), à égalité.
+- **Les bêtes** : la **fiche fixe** de nos animaux (`data/reference/mounts.json`), quelle que soit l'étoile : pas de
+  chef, pas de niveaux ; au plus 100. Elles se battent et fuient comme tout combattant.
 - **Marche** : étoiles × un tirage de 0,25 à 1, arrondi au jour supérieur.
-- **Récompense** : **1 000 PO par étoile**, seule : ni coffre ni butin (l'équipement de nos morts revient). Un échec fait baisser la renommée et une défaite double le jet de mort, comme un contrat.
-- **Capture** : après la victoire, chaque bête restée à terre passe le test de survie et rentre avec l'escouade, s'il reste une place au Chenil (loups) ou aux Écuries (licornes ; doc 11 §8).
-- **Au tableau** : **une case sur trois** (`tavern.missions.weight_*` : contrat 1, garde du corps 1, chasse 1 ; Idan, 2026-11-08 : « Tous les types de missions sont équiprobables » ; avant : 2, 2, 1) ; loups et licornes **à égalité** (`poids` ; Idan : « Equiprobables » ; avant : les loups 3 fois sur 4). Elle se signe comme un contrat (l'escouade part le lendemain matin).
-- **Lieux** : « Repaire des loups », « Territoire de la meute », « Bois des hurlements » ; « Bois de la licorne », « Vallon de la licorne », « Sanctuaire de la licorne » ; paysages : **Forêt profonde** (loups), **Clairière** (licornes), sans enceinte (`mission-landscapes.json`).
-- **Lettres** : un village d'éleveurs et un seigneur sans gibier pour les loups ; un noble endetté et un alchimiste pour les licornes (`ordres`, noms `alchimistes`).
-- **Cerbères et chiens sauvages** (Idan, 2026-11-09 : le cerbère, « on peut aussi le chasser en meute » ; « 1D3 » ; « On peut attaquer des meutes de chiens sauvages » ; « 1D6 + 1D3 » ; « On limite la mission à 1 étoile argent max. Au dessus elle n'est pas proposée ») : **Chasse au cerbère** (`hunt_cerberus`, **1D3 cerbères par étoile**, dès le niveau 6 comme dans les camps ogres : `niveau.min`) ; **Chasse aux chiens sauvages** (`hunt_wild_dogs`, **1D6 + 1D3 chiens par étoile** : `bete.plus`, **jusqu'à 6★** : `niveau.max` ; au-dessus, elle n'est pas tirée). Les chiens sauvages ont la fiche du **molosse** (`bete.nom` : « Chien sauvage 1, 2… » sur la carte) : capturés, ce sont des molosses. Le niveau de la chasse est tiré d'abord, puis la chasse parmi celles qui l'acceptent, à égalité.
-- **Papillons vénéneux** (Idan, 2026-11-09 : « On peut le capturer en forêt, la difficulté, c'est de les repérer et qu'ils ne s'enfuient pas. Chasse aux papillons 3D6 » ; « On limite la mission à 1 étoile argent max » ; « on oublie la chasse aux télépathe. On fait que les vénéneux ») : **Chasse aux papillons** (`hunt_butterflies`, **3D6 papillons vénéneux par étoile**, **jusqu'à 6★**) ; paysage **Sous-bois fleuri** ; lettres : un alchimiste et un village qui s'endort. Discrets (150), ils piquent sans se faire voir : le plus dur est de les repérer. Paysages : **Gorge rocheuse** (cerbères), **Friches** (chiens) ; lettres : une mine de trop et un prêtre pour les cerbères, un village et un baron pour les chiens.
-- **Sangliers de combat** (Idan, 2026-11-16 : « sanglier de combat + chasse » ; « 1D3 par étoile ») : **Chasse au sanglier** (`hunt_boars`, **1D3 sangliers par étoile**, à tous les niveaux) ; lieux « Chênaie des hures », « Lisière aux souilles », « Bois du Grand-Mâle » ; paysage **Chênaie** ; lettres : un seigneur aux champs retournés et un village où la harde est sortie du bois. Capturés, ils logent à la Souille (doc 11 §8). L'illustration de la chasse viendra d'Idan.
-- **Pégases** (Idan, 2026-11-16 : « la chasse aux pégases ? Elle commence à 3* bronze et est un peu plus dur » ; « 1D4 par étoile ») : **Chasse au pégase** (`hunt_pegasus`, **1D4 pégases par étoile**, dès **3★ bronze** : `niveau.min` 3, sans plafond) ; lieux « Pics des nuées », « Plateau des vents », « Aire des pégases » ; paysage **Hauts plateaux** (rochers, éboulis, collines, un torrent) ; lettres : un noble jaloux du pégase de son cousin et un village dont les pégases mangent le foin des greniers. Ils volent ; capturés, ils logent aux Écuries (doc 11 §8). L'illustration de la chasse viendra d'Idan.
-- **Mammouths** (Idan, 2026-11-16 : « On ajoute déjà un mamouth et une chasse ») : **Chasse au mammouth** (`hunt_mammoths`, **1D2 mammouths par étoile**, dès **6★** : `niveau.min` 6) ; lieux « Toundra des grands os », « Col des mammouths », « Vallée des défenses » ; paysage **Toundra** (éboulis, rochers, broussailles, un peu d'eau ; pas encore de décor de neige) ; lettres : un village dont les cochons ont été piétinés (« les anciens disent qu'ils ont peur des cochons qui crient ») et un noble qui veut un trône d'ivoire. Capturés, ils logent à la Souille (2 places chacun). L'illustration de la chasse viendra d'Idan.
-- **Tricératops** (Idan, 2026-11-17 : « Chasse : à partir de 7* ») : **Chasse au tricératops** (`hunt_triceratops`, **1D2 tricératops par étoile**, dès **7★** : `niveau.min` 7) ; lieux « Jungle des trois cornes », « Marais du temple englouti », « Clairière des fougères géantes » ; paysage **Jungle** (forêt, broussailles, marais, eau, quelques rochers) ; lettres : un prêtre dont le temple est trop bien gardé et un village dont les champs sont occupés (« les fourches ont cassé, les flèches ont rebondi »). Capturés, ils logent à la Souille (2 places chacun). L'illustration de la chasse viendra d'Idan.
-- **Le lieu avec son article** (Idan, 2026-11-16 : « le vallée des défenses » corrigé) : masculin par défaut, féminin ou pluriel d'après `genres_lieux` (`one-shot-missions.json`), élision devant une voyelle (« l’antre du cerbère ») ; chaque offre garde ses trois formes (`place` : « pour la vallée… », « arrivée à la vallée… », « retour de la vallée… »), pour le journal, les nouvelles du jour et le combat. Un nouveau lieu féminin ou pluriel s'ajoute à cette liste.
-- Code : `missions.js` (`createHunt`, `rollBeasts`, `huntDistance`, `buildEnemies`), `campaign.js` (tableau), `mission.js`, `contract-ui.js`. Tests : `tests/hunts.test.js`, `tests/boar.test.js`.
+- **Récompense** : **1 000 PO par étoile**, seule : ni coffre ni butin (l'équipement de nos morts revient). Échec et
+  défaite comme un contrat.
+- **Capture** : après la victoire, chaque bête restée à terre passe le test de survie et rentre s'il reste une place
+  (doc 11 §8) : Chenil (loups), Écuries (licornes, pégases), Souille (sangliers ; mammouths et tricératops, 2 places
+  chacun). Capturés, les chiens sauvages sont des molosses.
+- **Au tableau** : une case sur trois (§18) ; elle se signe comme un contrat.
+
+| Chasse | Bêtes par étoile | Niveaux | Paysage |
+|---|---|---|---|
+| Loup | 1D6 loups | tous | Forêt profonde, sans enceinte |
+| Licorne (lance Création de double) | 1D3 licornes | tous | Clairière, sans enceinte |
+| Cerbère | 1D3 cerbères | dès 6 (comme dans les camps ogres) | Gorge rocheuse |
+| Chiens sauvages (fiche du molosse) | 1D6 + 1D3 chiens | jusqu'à 6 | Friches |
+| Papillons vénéneux | 3D6 papillons | jusqu'à 6 | Sous-bois fleuri |
+| Sanglier de combat | 1D3 sangliers | tous | Chênaie |
+| Pégase (vole) | 1D4 pégases | dès 3 | Hauts plateaux |
+| Mammouth | 1D2 mammouths | dès 6 | Toundra |
+| Tricératops | 1D2 tricératops | dès 7 | Jungle |
+
+- **Papillons vénéneux** (Discrétion 150) : ils piquent sans se faire voir ; le plus dur est de les repérer et qu'ils ne
+  s'enfuient pas. Pas de papillons télépathes.
+- **Lieux** : « Repaire des loups », « Territoire de la meute », « Bois des hurlements » ; « Bois de la licorne »,
+  « Vallon de la licorne », « Sanctuaire de la licorne » ; « Chênaie des hures », « Lisière aux souilles », « Bois du
+  Grand-Mâle » ; « Pics des nuées », « Plateau des vents », « Aire des pégases » ; « Toundra des grands os », « Col des
+  mammouths », « Vallée des défenses » ; « Jungle des trois cornes », « Marais du temple englouti », « Clairière des
+  fougères géantes ».
+- **Lettres** (deux par chasse) : loups, un village d'éleveurs et un seigneur sans gibier ; licornes, un noble endetté
+  et un alchimiste ; cerbères, une mine et un prêtre ; chiens, un village et un baron ; papillons, un alchimiste et un
+  village qui s'endort ; sangliers, un seigneur et un village ; pégases, un noble jaloux et un village ; mammouths, un
+  village et un noble qui veut un trône d'ivoire ; tricératops, un prêtre et un village.
+- **Le lieu avec son article** : masculin par défaut, féminin ou pluriel d'après une liste (`one-shot-missions.json`),
+  élision devant une voyelle (« l’antre du cerbère ») ; chaque offre garde ses trois formes (« pour la vallée… »,
+  « arrivée à la vallée… », « retour de la vallée… »). Un nouveau lieu féminin ou pluriel s'ajoute à la liste.
 
 ## 24 — Le Chenil chez l'ennemi (Idan, 2026-11-09)
 
-> « oui loup chez les Gobelins » ; le cerbère : « Pas dans les camps orcs, mais Ogres. Il n'est pas monté » ; le molosse : « On en trouve dans les camps humains » (les voleurs ; « oui »).
-
-Trois lignes de quatre niveaux, **poids 10** dans leur camp :
+Trois lignes de quatre niveaux, **poids 10** dans leur camp (le cerbère n'est pas monté) :
 
 | Ligne | Camp | Dès le niveau | Fiche | Points (novice → élite) |
 |---|---|---|---|---|
-| **Chevaucheur** gobelin | Gobelins | 1 | le Lancier gobelin de même niveau, la lance et la rondache du Cavalier (§22), Compagnon animal et Canidés du Cavalier, **sur un loup** (`monture`) | 15, 22, 36, 55 |
+| **Chevaucheur** gobelin | Gobelins | 1 | le Lancier gobelin de même niveau, la lance et la rondache du Cavalier (§22), Compagnon animal et Canidés du Cavalier, **sur un loup** | 15, 22, 36, 55 |
 | **Cerbère** | Ogres | 6 (comme le troll) | notre cerbère pour le normal (339 PV, **trois morsures**) ; les écarts de la ligne du loup de la Cour de sang pour les autres | 17, 32, 49, 60 |
 | **Molosse** | Voleurs | 1 | notre molosse pour le normal (145 PV) ; mêmes écarts | 2, 4, 10, 14 |
 
-- **Points** : mesurés au simulateur (100 combats par effectif ; un mercenaire généré moyen vaut 10), étalonnés sur les lignes voisines mesurées de la même façon (Cavalier × 1,24 ; loup × 1,2 ; troll × 1,1). Un cerbère normal vaut environ quatre loups : « il mange 3 loups au Petit déjeuner ».
-- **Capture** : le cerbère et le molosse tombés (`capture`), le loup du chevaucheur (sa monture) : test de survie, une place au Chenil (doc 11 §8).
-- Test : `tests/kennel.test.js`.
+- **Points** : simulateur (100 combats par effectif), étalonnés sur les lignes voisines (Cavalier × 1,24 ; loup × 1,2 ;
+  troll × 1,1). Un cerbère normal vaut environ quatre loups.
+- **Capture** (doc 11 §8) : le cerbère et le molosse tombés, le loup du chevaucheur : test de survie, une place au
+  Chenil.

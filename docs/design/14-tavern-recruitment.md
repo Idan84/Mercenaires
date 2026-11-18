@@ -1,72 +1,48 @@
-> **Statut : V1 de design validée sur les principes — coefficients de formule à playtester.**  
-> Décisions d'Idan du 2026-10-03 intégrées. Les constantes marquées **PLAYTEST** peuvent être équilibrées sans changer le principe de la règle.
+> Principes validés par Idan. Les coefficients marqués **PLAYTEST** peuvent être équilibrés sans changer la règle.
 
 # Taverne — recrutement V1
 
-La Taverne est le cœur du recrutement au début de partie. Les candidats sont de vrais mercenaires persistants, déjà générés, qui occupent physiquement une place de candidat tant qu'ils ne sont ni recrutés par le joueur ni engagés ailleurs.
+La Taverne est le cœur du recrutement en début de partie. Les candidats sont de vrais mercenaires persistants, déjà
+générés, qui occupent une place de candidat tant qu'ils ne sont ni recrutés par le joueur ni engagés ailleurs.
 
 ## 1 — Candidats persistants
 
-Un candidat est un objet `Mercenary` complet généré **avant** son recrutement.
-
-Il conserve le même profil d'un jour à l'autre. Il n'est jamais régénéré lorsque le joueur ouvre sa fiche ou commence un entretien.
-
-Conséquence voulue : un candidat médiocre peut rester assez longtemps pour occuper une place qui aurait pu accueillir un meilleur profil.
+Un candidat est un mercenaire complet, généré **avant** son recrutement. Il garde le même profil d'un jour à l'autre ; il
+n'est jamais régénéré quand on ouvre sa fiche ou qu'on lui parle. Voulu : un candidat médiocre peut occuper longtemps une
+place qui aurait pu accueillir un meilleur profil.
 
 ## 2 — Capacité de la Taverne
 
-**Places = 3 + niveau de renommée de la compagnie** (Idan, 2026-11-04 : « 3 + nombre d'étoiles de réputation de la
-compagnie » ; le niveau, de 1 à 15 : 1 à 5 étoiles de bronze, puis d'argent, puis d'or ; « Oui, parfait »), soit **4 à 18
-places** (constantes `tavern.slots.base`, `tavern.slots.per_renown_level`). Une compagnie neuve démarre le plus souvent au
-niveau 2 : 5 places (seuils × 1,5 depuis le 2026-11-08 ; sur 200 compagnies simulées : niveau 1 pour 15, 2 pour 185 ;
-renommée 345 à 490, médiane 415). Avant : niveau 1 pour 9, 2 pour 112, 3 pour 78, 4 pour 1.
+**Places = 3 + niveau de renommée de la compagnie** (Idan, 2026-11-04 ; niveau de 1 à 15 : 1 à 5 étoiles de bronze,
+puis d'argent, puis d'or), soit **4 à 18 places**. Une compagnie neuve démarre le plus souvent au niveau 2 : 5 places
+(sur 200 compagnies simulées : niveau 1 pour 15, 2 pour 185 ; renommée 345 à 490, médiane 415).
 
 - Les places sont recalculées chaque matin, avant le remplissage : une place gagnée se remplit le lendemain matin.
-- Si la renommée baisse, **personne n'est chassé** : aucun nouveau candidat tant que la Taverne est au-dessus de ses places.
-- Sans le référentiel des étoiles (tests isolés) : `tavern.slots.initial` (5).
-- Écran « Recruter » : les candidats **défilent en carrousel** (Idan, 2026-11-04 : « fais un système qui défile comme un
-  carousel ») : une rangée de portraits, une flèche de chaque côté (grisée au bout), la molette ou le doigt ; quand tout
+- Si la renommée baisse, **personne n'est chassé** : aucun nouveau candidat tant que la Taverne est au-dessus de ses
+  places.
+- Écran « Recruter » : les candidats **défilent en carrousel** (flèches grisées au bout, molette ou doigt) ; si tout
   tient à l'écran, la rangée est centrée, sans flèches.
 
-Code : `game-core/tavern.js` (`slotsFor`), `prototype-web/tavern-ui.js` ; test : `tests/tavern-slots.test.js`.
+Ces places n'ont rien à voir avec le **Dortoir** (les membres de la compagnie) : un candidat n'y occupe aucune place.
 
-Cette capacité est totalement distincte de celle du Dortoir :
-
-- Taverne : candidats non recrutés ;
-- Dortoir : mercenaires membres de la compagnie ;
-- Dortoir initial : **40 places** (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`).
-- Places (Idan, 2026-10-24) : un ogre en prend deux ; un halfling, un gnome ou un gobelin une demi ; tout autre mercenaire une ; le capitaine et l'intendant n'en prennent pas. Si le dortoir n'a plus assez de places pour le candidat, la signature est impossible (« Il me faut deux lits, capitaine » pour un ogre).
-
-Un candidat de la Taverne n'occupe aucune place de Dortoir.
+- Dortoir initial : **25 places** (Idan, 2026-11-01) ; le capitaine et l'intendant n'en prennent pas.
+- Un ogre prend deux places ; un halfling, un gnome ou un gobelin une demie ; tout autre mercenaire une ; le capitaine et
+  l'intendant aucune (Idan, 2026-10-24). Sans assez de places pour le candidat, la signature est impossible (« Il me faut
+  deux lits, capitaine » pour un ogre).
 
 ## 3 — Boucle quotidienne
 
-La Taverne est mise à jour au **début de chaque nouvelle journée**, via l'horloge stratégique commune.
+Chaque matin (horloge commune, §11) : chaque candidat fait son test **Engagé ailleurs** ; ceux recrutés par une autre
+compagnie partent ; on génère exactement assez de nouveaux mercenaires pour remplir les places libres ; les autres
+candidats restent sans changement. Pas de « N nouveaux par jour », donc : des places, remplies si besoin.
 
-Ordre V1 :
-
-1. pour chaque candidat actuellement présent, effectuer son test **Engagé ailleurs** ;
-2. retirer ceux qui ont été recrutés par une autre compagnie ;
-3. compter les places désormais libres ;
-4. générer exactement assez de nouveaux `Mercenary` pour remplir toutes les places libres ;
-5. conserver sans modification tous les candidats qui n'ont pas quitté la Taverne.
-
-Il n'existe donc pas « 5 nouveaux mercenaires par jour ». Il existe **5 places au départ**, remplies chaque matin si nécessaire.
-
-Deux événements normaux libèrent une place :
-
-- le joueur recrute le candidat ;
-- une autre compagnie recrute le candidat lors du test du matin.
-
-Les règles d'expulsion volontaire / refus définitif / retour futur d'un candidat pourront être ajoutées plus tard si elles deviennent utiles.
+Une place se libère quand le joueur recrute le candidat ou qu'une autre compagnie le recrute au test du matin.
+Expulsion, refus définitif ou retour d'un candidat : plus tard, si utile.
 
 ## 4 — Test quotidien « Engagé ailleurs »
 
-Objectif :
-
-- une forte Réputation personnelle augmente l'intérêt des compagnies concurrentes ;
-- un salaire demandé élevé le rend moins attractif ;
-- même « Marcel le Pignouf » doit finir par partir un jour.
+Une forte Réputation personnelle attire les compagnies concurrentes ; un salaire demandé élevé les rebute ; même
+« Marcel le Pignouf » doit finir par partir.
 
 ### Formule PLAYTEST V1
 
@@ -81,13 +57,7 @@ Clamp(
 )
 ```
 
-Un seul `D100` est lancé chaque matin par candidat.
-
-- réussite si `D100 <= P_EngageAilleurs` ;
-- plancher : **2 % par jour** ;
-- plafond : **35 % par jour**.
-
-Exemples indicatifs :
+Un `D100` par candidat chaque matin : il part si `D100 <= P_EngageAilleurs`. Plancher **2 % par jour**, plafond **35 %**.
 
 | Réputation | Salaire demandé | P/jour | Médiane de présence approximative |
 |---:|---:|---:|---:|
@@ -96,17 +66,14 @@ Exemples indicatifs :
 | 300 | 100 PO | 22 % | 2,8 jours |
 | cas au plancher | — | 2 % | 34 jours |
 
-Le plancher garantit qu'un candidat peu séduisant peut néanmoins finir par être recruté ailleurs au bout de quelques semaines.
-
-Les coefficients sont des constantes de playtest ; le principe Réputation positive / salaire négatif est validé.
+Le plancher garantit qu'un candidat peu séduisant finit par partir au bout de quelques semaines. Le principe (Réputation
+en plus, salaire en moins) est validé ; les coefficients sont à playtester.
 
 ## 5 — Qualité des nouveaux candidats
 
-La qualité des candidats générés doit dépendre de la **Renommée de compagnie**.
-
-Ce principe est déjà commun au générateur général : les distributions actuelles de `Create_Mercenary()` sont des distributions de base destinées à être pondérées.
-
-**Formule V1 (décision Idan du 2026-10-20) : le tavernier présente le meilleur de N prétendants.** Pour chaque place libre, le jeu tire N mercenaires avec `Create_Mercenary()` et garde le plus réputé (réputation personnelle). Les formules de génération ne changent pas : la réputation personnelle résume déjà caractéristiques et compétences.
+**Le tavernier présente le meilleur de N prétendants** (Idan, 2026-10-20) : pour chaque place libre, le jeu génère N
+mercenaires et garde celui qui a la meilleure réputation personnelle. Les formules de génération ne changent pas : la
+réputation résume déjà caractéristiques et compétences.
 
 ```
 N = Clamp(1 + ⌊(RenommeeCompagnie − 500) / 250⌋, 1, 5)
@@ -120,61 +87,69 @@ N = Clamp(1 + ⌊(RenommeeCompagnie − 500) / 250⌋, 1, 5)
 | 1250 à 1499 | 4 |
 | 1500 et plus | 5 |
 
-Une compagnie démarre entre 410 et 590 de renommée (médiane 510) : rien ne change au début. Mesure sur 600 candidats : réputation médiane 140 avec 1 prétendant, 156 avec 3, 165 avec 5 ; les profils exceptionnels deviennent plus fréquents, et de meilleures recrues demandent un meilleur salaire. L'écran Taverne affiche le nombre de prétendants. Constantes : `tavern.renown.suitors_*`.
-
-Le chiffrage de l'effet de Renommée sur la **capacité de la Taverne** (nombre de places) est reporté (Idan, 2026-10-20).
-
-sera traité séparément après validation de la boucle V1.
+Pour une compagnie neuve (§2), rien ne change au début. Sur 600 candidats :
+réputation médiane 140 avec 1 prétendant, 156 avec 3, 165 avec 5 ; les profils exceptionnels deviennent plus fréquents,
+et de meilleures recrues demandent un meilleur salaire. L'écran Taverne affiche le nombre de prétendants.
 
 ## 6 — Informations visibles avant entretien
 
-> **Interface du 2026-10-21 (Idan).** L'écran Recruter ne montre plus que le portrait en pied, le nom, le peuple, la culture, la réputation et le nombre de jours de présence à l'auberge. Le reste se découvre en parlant au candidat (§6 bis) : salaire et prime par la question sur ses prétentions, l'affinité par le ton de sa salutation, le profil et les prédilections par ses réponses.
+L'écran Recruter montre seulement le **portrait en pied**, le **nom**, le **peuple**, la **culture**, la **réputation**
+et le **nombre de jours** à l'auberge (Idan, 2026-10-21). Le reste se découvre en lui parlant (§6 bis) : salaire et prime
+par ses prétentions, l'affinité par le ton de sa salutation, le profil (CAC / Distance / Magie) et les prédilections par
+ses réponses.
 
-Le joueur voit directement :
+- L'alignement du candidat reste caché ; le détail peuple / culture / alignement de l'affinité (doc 02, de −100 à +100)
+  ne s'affiche que sur la fiche, après l'embauche.
+- Les autres caractéristiques et compétences ne sont pas montrées.
 
-- Peuple ;
-- Culture ;
-- profil de combat principal : **CAC / Distance / Magie** ;
-- prédilection associée :
-  - CAC → arme de mêlée de prédilection ;
-  - Distance → arme à distance de prédilection ;
-  - Magie → école de magie de prédilection ;
-- Réputation personnelle ;
-- Salaire journalier demandé ;
-- Prime de mission demandée ;
-- Affinité avec le capitaine : le score seul, de −100 à +100 (doc 02 ; décision Idan du 2026-10-20). L'alignement du candidat reste caché, même si le score en laisse deviner une partie ; le détail peuple / culture / alignement ne s'affiche que sur la fiche après l'embauche.
+## 6 bis — Dialogue de recrutement (Idan, 2026-10-21)
 
-Le générateur possède déjà un profil technique `equipment.profile.type` avec les valeurs `melee / ranged / magic` ainsi que les meilleures prédilections. La Taverne doit réutiliser ce calcul plutôt que créer un second classement.
+« Aller lui parler » ouvre un dialogue avec le portrait carré du candidat. On peut partir à tout moment.
 
-Les autres caractéristiques et compétences ne sont pas affichées librement pendant l'entretien.
+1. **Salutation** selon l'affinité avec le capitaine : 20 phrases, de franchement hostile (−100) à admirative (+100), une
+   par tranche de 10 points.
+2. **Questions**, auxquelles il répond **sincèrement**, d'une petite phrase : arme de prédilection (la meilleure des
+   préférences « une main » et « deux mains », doc 03), style de combat préféré, arme de tir de prédilection, magie de
+   prédilection (aucune si toutes ses écoles sont au plancher, 1), métier avant d'être mercenaire (origine sociale).
+3. **Prétentions** : « Pour devenir votre combattant, je demande X par jour et Y par mission. » Ensuite seulement
+   apparaissent **Négocier** et **Signer**.
+4. **Négocier** : le joueur saisit un salaire et une prime ; les règles du §9 s'appliquent, la réponse est dialoguée :
+   contre-proposition (« Disons X et Y, non ? »), refus d'une offre plus basse qu'une offre déjà refusée, ou départ (il
+   renverse la table, la fenêtre se ferme).
+5. **Signer** accepte les conditions sur la table (demande initiale ou dernière contre-proposition) : acceptation
+   garantie (§9), il rejoint la compagnie (« Parfait. Ravi de faire partie de la compagnie… »). Dortoir plein : il
+   accepte, mais la signature attend une place (§10).
 
-## 6 bis — Dialogue de recrutement (interface du 2026-10-21, Idan)
+Textes : `data/reference/tavern-dialogue.json`.
 
-« Aller lui parler » ouvre une fenêtre de dialogue avec le portrait carré du candidat.
+## 7 — Entretien : les conseils du tavernier
 
-1. **Salutation** selon l'affinité avec le capitaine : 20 phrases, de franchement hostile (−100) à admirative et respectueuse (+100), une par tranche de 10 points.
-2. **Questions**, auxquelles le candidat répond **sincèrement**, par une petite phrase : arme de prédilection (la meilleure des préférences « une main » et « deux mains », doc 03), style de combat préféré, arme de tir de prédilection, magie de prédilection (aucune si toutes ses écoles sont au plancher, 1), métier avant d'être mercenaire (origine sociale).
-3. **Prétentions salariales** : « Pour devenir votre combattant, je demande X par jour et Y par mission. » Ensuite seulement apparaissent **Négocier** et **Signer**.
-4. **Négocier** : le joueur saisit un salaire et une prime ; les règles du §9 s'appliquent sans changement et la réponse est dialoguée — contre-proposition (« Disons X et Y, non ? »), refus d'une offre plus basse qu'une offre déjà refusée, ou départ : le candidat renverse la table et la fenêtre se ferme.
-5. **Signer** accepte les conditions sur la table (demande initiale ou dernière contre-proposition) ; l'acceptation est alors garantie (§9) et le candidat rejoint la compagnie : « Parfait. Ravi de faire partie de la compagnie… ». Dortoir plein : il accepte, mais la signature attend une place (§10).
+**Demander des conseils** au tavernier (Idan, 2026-10-21) : quel candidat → physique, mental, résistances ou magie →
+quelle caractéristique. **1 PO** la question (rien n'est gratuit dans ce bas monde), **sans limite**.
 
-On peut partir à tout moment. Textes : `data/reference/tavern-dialogue.json` ; code : `game-core/recruit-dialogue.js`.
+- Il rapporte ce que le candidat dit de lui-même : la vantardise ci-dessous (× 1,10 à × 3,00), en phrase et située dans
+  la compagnie (« bien plus fort que [Prénom] », « plus fort que la moitié de ta compagnie », « dans la moyenne », « plus
+  fort que n'importe qui chez toi »…).
+- Une rumeur reste figée : reposer la question redonne la même réponse, mais se paie.
 
-## 7 — Entretien : trois questions
+**Vantardise du candidat** (PLAYTEST), volontairement peu fiable :
 
-> **Interface du 2026-10-21 (Idan).** Ces questions passent désormais par le **tavernier** : « Demander des conseils » → quel candidat → physique, mental, résistances ou magie → quelle caractéristique. Chaque question coûte **1 PO** (`tavern.advice.cost` ; rien n'est gratuit dans ce bas monde), **sans limite** de nombre. Le tavernier rapporte ce que le candidat dit de lui-même : la même vantardise que sans Intendant ci-dessous (×1,10 à ×3,00), dite en phrase et située dans la compagnie (« bien plus fort que [Prénom] », « plus fort que la moitié de ta compagnie », « dans la moyenne », « plus fort que n'importe qui chez toi »…). Une rumeur reste figée : reposer la question redonne la même réponse, mais se paie. Le budget de trois questions et l'Intendant ne servent plus à la Taverne ; leur règle reste dans `game-core/tavern.js`, en attendant qu'Idan décide de la rebrancher ou de la retirer.
+```
+EstimationCandidate =
+Arrondi(
+  ValeurReelle × Rand(1.10 ; 3.00)
+)
+```
 
-Le joueur peut poser **3 questions** par candidat.
+Il se survend toujours ; ce mensonge reste simple : Charisme, Intelligence ou autre n'affinent pas encore
+l'auto-évaluation.
 
-Chaque question cible une valeur chiffrée cachée du mercenaire : caractéristique, compétence ou autre valeur explicitement autorisée par l'interface.
+### En suspens : 3 questions et estimation de l'Intendant
 
-### Avec un Intendant
-
-L'Intendant est un **rôle que le joueur assigne** à un mercenaire de la compagnie. Sans assignation, la compagnie n'a pas d'Intendant (décision Idan du 2026-10-03, PR #11).
-
-L'Intendant utilise sa compétence Camp **Intendance** pour estimer la valeur réelle.
-
-Formule PLAYTEST :
+L'ancienne règle n'est plus utilisée à la Taverne, en attendant qu'Idan décide de la rebrancher ou de la retirer :
+**3 questions** par candidat pour tout son séjour (budget commun avec ou sans Intendant ; réponse figée), chacune sur une
+valeur chiffrée cachée (caractéristique, résistance, compétence de prédilection). L'Intendant est un rôle que le joueur
+assigne (sans assignation, pas d'Intendant ; Idan, 2026-10-03). Il estime avec sa compétence **Intendance** (PLAYTEST) :
 
 ```
 ErreurMax = 0.20 × (1 - Clamp(Intendance, 0, 100) / 100)
@@ -185,46 +160,16 @@ Arrondi(
 )
 ```
 
-Ordres de grandeur :
-
-- Intendance 0 → ±20 % ;
-- Intendance 50 → ±10 % ;
-- Intendance 75 → ±5 % ;
-- Intendance 100 → estimation exacte.
-
-Le joueur reçoit une **estimation**, pas la valeur réelle stockée.
-
-### Sans Intendant
-
-Le joueur pose directement la question au candidat.
-
-Formule PLAYTEST volontairement peu fiable :
-
-```
-EstimationCandidate =
-Arrondi(
-  ValeurReelle × Rand(1.10 ; 3.00)
-)
-```
-
-Le candidat se survend donc systématiquement dans cette première version. Les bornes seront équilibrées après quelques recrutements réels.
-
-**Décision V1 : ce mensonge reste volontairement simple.** Charisme, Intelligence ou d'autres caractéristiques n'affinent pas encore l'auto-évaluation. L'objectif est notamment de rendre l'Intendant rapidement désirable ; ses autres utilités seront définies plus tard.
-
-Les 3 questions constituent un budget commun : avec ou sans Intendant, pas de questions supplémentaires gratuites.
+Intendance 0 → ±20 % ; 50 → ±10 % ; 75 → ±5 % ; 100 → exact. Le joueur reçoit une estimation, pas la valeur stockée.
+Sans Intendant, il demande au candidat (vantardise ci-dessus). L'idée : rendre l'Intendant vite désirable.
 
 ## 8 — Salaire journalier et prime de mission
 
-Le recrutement négocie **deux composantes simultanément** :
-
-1. Salaire journalier ;
-2. Prime de mission.
-
-Le salaire demandé conserve la formule définie dans `09-reputation-renown-and-salaries.md`.
+Le recrutement négocie **deux montants à la fois** : le salaire journalier (formule du doc 09) et la prime de mission.
 
 ### Prime de mission demandée — PLAYTEST V1
 
-Le Courage doit réduire directement la prime : un mercenaire courageux exige moins de « prime de risque ».
+Un mercenaire courageux exige moins de « prime de risque » : le Courage réduit directement la prime.
 
 ```
 FacteurCouragePrime =
@@ -242,35 +187,23 @@ Arrondi(
 )
 ```
 
-Le salaire demandé apporte déjà indirectement Réputation, Intelligence et Prétentions salariales ; le second facteur de Prétentions n'est donc qu'une déformation supplémentaire légère.
+Le salaire demandé porte déjà Réputation, Intelligence et Prétentions : le facteur de Prétentions n'est qu'une légère
+déformation en plus. Le `3` est un
+coefficient d'échelle de playtest.
 
-Exemple avec salaire demandé 50 PO et prétentions 35 :
+Exemple, salaire demandé 50 PO, prétentions 35 : Courage 20 → environ **195 PO** ; 50 → **150 PO** ; 100 → **75 PO**.
 
-- Courage 20 → environ **195 PO** ;
-- Courage 50 → **150 PO** ;
-- Courage 100 → **75 PO**.
-
-La constante `3` est un coefficient d'échelle de playtest.
-
-La prime contractuelle est payée uniquement si le mercenaire **revient** de mission, conformément aux règles de fin de mission.
-
-**Décision V1 : la Prime de mission contractuelle est un montant fixe.** Elle n'est pas recalculée selon le danger de la mission. Une éventuelle **prime de risque** liée à une mission dangereuse pourra être ajoutée plus tard comme mécanisme séparé ; elle est volontairement hors V1 afin de conserver seulement deux montants négociés au recrutement : salaire journalier + prime de mission.
+- La prime est payée seulement si le mercenaire **revient** de mission (règles de fin de mission).
+- C'est un **montant fixe**, jamais recalculé selon le danger. Une éventuelle **prime de risque** de mission dangereuse
+  serait un mécanisme séparé, hors V1.
 
 ## 9 — Négociation du contrat
 
-Le candidat commence avec un package demandé :
-
-- `SalaireCourant = SalaireDemande` ;
-- `PrimeCourante = PrimeMissionDemandee`.
-
-Le joueur peut :
-
-- accepter immédiatement le package courant ;
-- proposer un salaire et/ou une prime plus faibles.
+Le candidat part de sa demande : `SalaireCourant = SalaireDemande`, `PrimeCourante = PrimeMissionDemandee`. Le joueur
+accepte ce package ou propose un salaire et/ou une prime plus faibles. Une négociation interrompue reprend au package
+courant.
 
 ### Acceptation garantie
-
-L'acceptation automatique est évaluée **composante par composante** :
 
 ```
 SalairePropose >= SalaireCourant
@@ -278,9 +211,8 @@ ET
 PrimeProposee >= PrimeCourante
 ```
 
-Si les deux conditions sont vraies, le candidat accepte automatiquement.
-
-Un excès sur une composante **ne compense jamais automatiquement** un manque sur l'autre. Le package demandé initialement reste donc toujours recrutable si le joueur peut le payer et dispose d'une place au Dortoir.
+Si les deux sont vraies, il accepte. Un excès sur un montant **ne compense jamais** un manque sur l'autre. Le package
+demandé reste donc toujours recrutable si le joueur peut le payer et a une place au Dortoir.
 
 ### Valeur relative de l'offre
 
@@ -303,7 +235,7 @@ ConcessionDemandee =
 100 × (1 - RatioPackage)
 ```
 
-Le salaire journalier pèse davantage car il s'applique chaque jour ; la prime reste néanmoins importante.
+Le salaire pèse plus, car il se paie chaque jour.
 
 ### Résistance à la négociation
 
@@ -321,7 +253,10 @@ Clamp(
 )
 ```
 
-`Affinite` : affinité du candidat avec le capitaine qui négocie (doc 02, de −100 à +100 ; décision Idan du 2026-10-20). Une bonne affinité rend le candidat plus facile à convaincre et ses contre-offres plus souples. Exemple : une offre 10 % sous la demande, acceptée à 75 % avec une affinité nulle, passe à environ 81 % avec +56 et 68 % avec −71. La chance de partir après un refus ne dépend pas de l'affinité. Constante : `tavern.negotiation.affinity_coefficient`.
+`Affinite` : celle du candidat avec le capitaine qui négocie (doc 02, de −100 à +100 ; Idan, 2026-10-20). Une bonne
+affinité le rend plus facile à convaincre et ses contre-offres plus souples : une offre 10 % sous la demande, acceptée à
+75 % avec une affinité nulle, passe à environ 81 % avec +56 et 68 % avec −71. La chance de partir après un refus n'en
+dépend pas.
 
 ### Probabilité d'accepter une offre basse
 
@@ -338,16 +273,9 @@ Clamp(
 )
 ```
 
-Exemples avec résistance 50 :
-
-- package à 90 % → 75 % d'acceptation ;
-- package à 80 % → 55 % ;
-- package à 70 % → 35 % ;
-- package à 60 % → 15 %.
+Avec une résistance de 50 : package à 90 % → 75 % d'acceptation ; 80 % → 55 % ; 70 % → 35 % ; 60 % → 15 %.
 
 ### Après un refus : départ ou contre-proposition
-
-Après un refus :
 
 ```
 P_QuitterNegociation (%) =
@@ -361,21 +289,19 @@ Clamp(
 )
 ```
 
-**Réglage Idan du 2026-10-03 (PR #11)** : coefficient de concession porté de 0,75 à **1,5** et plafond de 75 à **95 %**, pour que les offres très basses ne deviennent pas une loterie. Constantes `tavern.negotiation.quit_concession_coefficient` et `tavern.negotiation.quit_max`.
+Réussite : il quitte aussitôt la Taverne ; échec : il fait une contre-proposition. Coefficient 1,5 et plafond 95 % (Idan,
+2026-10-03) : les offres très basses ne doivent pas devenir une loterie. Mesure sur 3 000 mercenaires (première offre à
+une fraction de la demande, puis contre-proposition acceptée) :
 
-Mesure sur 3 000 mercenaires générés (première offre à une fraction de la demande, puis acceptation de la contre-proposition) :
+| Première offre | Résultat |
+|---:|---|
+| 90 % | 93 % signés, à 91 % du salaire demandé |
+| 80 % | 82 % signés, à 84 % |
+| 50 % | 17 % signés, à 71 % |
+| 2 % | 10 % signés, à 25 % |
 
-| Première offre | Avant (0,75 / 75) | Après (1,5 / 95) |
-|---:|---|---|
-| 90 % | 95 % signés, à 91 % du salaire demandé | 93 % signés, à 91 % |
-| 80 % | 87 % signés, à 84 % | 82 % signés, à 84 % |
-| 50 % | 53 % signés, à 76 % | 17 % signés, à 71 % |
-| 2 % | 29 % signés, à 47 % | 10 % signés, à 25 % |
-
-Les 10 % restants des offres extrêmes viennent du plancher de 5 % de `P_Accepter` et de la contre-proposition, qui part de l'offre du joueur.
-
-- réussite du jet → le candidat quitte immédiatement la Taverne ;
-- échec → il fait une contre-proposition.
+Les 10 % des offres extrêmes viennent du plancher de 5 % de `P_Accepter` et de la contre-proposition, qui part de l'offre
+du joueur.
 
 ### Contre-proposition
 
@@ -410,110 +336,64 @@ Max(
 )
 ```
 
-Un personnage difficile à négocier reste donc plus proche de ses exigences précédentes.
-
-**Règle absolue : une contre-proposition ne peut jamais être inférieure à l'offre que le joueur vient de faire sur aucune composante.** Si le joueur a déjà proposé davantage que la demande courante sur le salaire ou la prime, le candidat conserve au minimum ce montant généreux dans sa contre-proposition.
-
-La négociation peut recommencer jusqu'à :
-
-- acceptation ;
-- acceptation par le joueur d'une contre-proposition ;
-- départ du candidat.
+Un personnage difficile reste plus près de ses exigences. **Règle absolue : une contre-proposition n'est jamais
+inférieure à l'offre que le joueur vient de faire, sur aucun montant** (s'il a offert plus que la demande sur l'un, le
+candidat garde au moins ce montant). On recommence jusqu'à l'acceptation, l'acceptation d'une contre-proposition par le
+joueur, ou le départ du candidat.
 
 ### Règle anti-spam
 
-Après un refus, la nouvelle proposition du joueur ne peut pas être inférieure à l'offre refusée précédente :
+Après un refus, la nouvelle offre ne peut pas être inférieure à l'offre refusée, **montant par montant** :
 
 ```
 SalaireNouveau >= SalaireRefuse
 PrimeNouvelle >= PrimeRefusee
 ```
 
-Cette règle évite de marteler des offres de plus en plus insultantes en espérant gagner un jet aléatoire.
-
-**Décision V1 : le plancher reste composante par composante.** On ne peut donc pas compenser une baisse supplémentaire de salaire par une hausse de prime, ni l'inverse, après qu'une offre a déjà été refusée. Une négociation de package global pourra être envisagée plus tard si la V1 paraît trop rigide.
+On ne martèle pas des offres de plus en plus insultantes en espérant un bon jet, et on ne compense pas une baisse de
+salaire par une hausse de prime (ni l'inverse). Une négociation du package global pourra venir si la V1 est trop rigide.
 
 ## 10 — Dortoir plein
 
-Le joueur peut :
-
-- consulter le candidat ;
-- poser ses questions ;
-- négocier.
-
-Mais il ne peut pas finaliser le recrutement si le Dortoir est à sa capacité maximale.
-
-Les indemnités de licenciement et les moyens plus... créatifs de libérer une place sont hors périmètre V1.
+Le joueur peut consulter le candidat, lui parler et négocier, mais pas finaliser le recrutement si le Dortoir est plein.
+Licenciement, indemnités et moyens plus… créatifs de libérer une place : hors V1.
 
 ## 10 bis — Arrivée le lendemain matin (Idan, 2026-11-02)
 
-« On recrute immédiatement, mais on paye le salaire à j+1 et elle peut partir en mission ou faire des actions concrètes
-à j+1. Seul l'équipement est immédiat. »
+« On recrute immédiatement, mais on paye le salaire à j+1 […]. Seul l'équipement est immédiat. »
 
-- Signée au jour J, la recrue est **dans la compagnie** (et au Dortoir) tout de suite ; contrat : `joinDay = J + 1`.
+- Signée au jour J, la recrue est **dans la compagnie** (et au Dortoir) tout de suite ; son contrat court à partir de
+  J + 1.
 - On peut l'**équiper** et l'inscrire pour une **mission qui part le lendemain matin**.
 - Son **premier salaire** est payé le lendemain matin, avec les autres.
-- **Aucun poste avant le lendemain matin** : intendant, médecin, directeur de l'École, maître (Doctore, Vétéran, Maître des lames), lieutenant (« Il rejoint la
-  compagnie demain matin. ») ; grisée dans les listes de nomination ; effectif : « Disponible demain ».
-- Règle générale : doc 16, « Au jour J, on organise J+1 ». Test : `tests/recruit-next-day.test.js`.
+- **Aucun poste avant le lendemain matin** : intendant, médecin, directeur de l'École, maître (Doctore, Vétéran, Maître
+  des lames), lieutenant (« Il rejoint la compagnie demain matin. ») ; grisée dans les listes de nomination ; effectif :
+  « Disponible demain ».
+- Règle générale : doc 16, « Au jour J, on organise J+1 ».
 
 ## 11 — Temps stratégique commun
 
-**Décision validée :** le jeu possède une seule horloge stratégique en jours.
+Une seule horloge stratégique, en jours. Les jours se résolvent **l'un après l'autre**, dans un ordre déterministe :
+avancer de 5 jours, c'est résoudre 5 fois un jour, jamais un saut opaque.
 
-Point d'entrée conceptuel :
-
-```
-AdvanceTime(days)
-```
-
-Chaque jour doit être résolu séquentiellement afin que les événements quotidiens conservent un ordre déterministe.
-
-`AdvanceTime(5)` équivaut donc conceptuellement à cinq appels successifs de `AdvanceTime(1)`, et non à un saut opaque de cinq jours.
-
-Les systèmes qui se brancheront sur cette horloge comprennent notamment :
-
-- Taverne ;
-- salaires ;
-- départs / loyauté ;
-- missions et délais avant départ ;
-- trajets et retours de mission ;
-- soins ;
-- fatigue ;
-- constructions ;
-- entraînements ;
-- renouvellement des missions.
-
-Pour la Taverne : **départs du matin puis remplissage des places libres**.
+Elle cadence notamment : Taverne, salaires, départs / loyauté, missions et délais avant départ, trajets et retours,
+soins, fatigue, constructions, entraînements, renouvellement des missions. Pour la Taverne : **départs du matin, puis
+remplissage des places libres**.
 
 ## 12 — Dépendances techniques
 
-La Taverne dépend de :
+La Taverne s'appuie sur la génération des mercenaires, l'horloge commune (§11), un état de partie persistant (sans lui,
+les candidats ne restent pas plusieurs jours), la renommée, la capacité du Dortoir et les contrats.
 
-- `Create_Mercenary()` ;
-- `AdvanceTime(days)` ;
-- un état de partie persistant `Game / Company` dans `game-core/` ;
-- Renommée de compagnie ;
-- capacité du Dortoir ;
-- système de contrat.
+## 13 — Points à arbitrer / playtester
 
-Le besoin d'un état de partie persistant a été signalé par JC3 : les candidats ne peuvent pas rester plusieurs jours si l'état stratégique reste uniquement dans l'interface web.
+1. constantes du test « Engagé ailleurs » ;
+2. coefficients de la prime de mission ;
+3. coefficients de négociation ;
+4. qualité du mensonge du candidat (`Rand 1.10–3.00`) ;
+5. liste exacte des valeurs qu'une question peut cibler ;
+6. renégociation après recrutement ;
+7. licenciement / indemnités ;
+8. **prime de risque** éventuelle, séparée de la prime de mission fixe.
 
-**Implémentation** : `game-core/tavern.js` (règles de la Taverne), `game-core/campaign.js` (état de partie, `AdvanceTime`, signature) et `prototype-web/tavern-ui.js` (écran Taverne : candidats, entretien, négociation, signature, jour suivant). Dans l'écran V1, une question peut viser une caractéristique, une résistance ou la compétence de prédilection affichée. Choix V1 confirmés en review PR #11 : 3 questions pour tout le séjour d'un candidat, réponse figée une fois obtenue ; une négociation interrompue reprend au package courant. Le Dortoir compte le capitaine.
-
-## 13 — Points encore à arbitrer / playtester
-
-Les principes ci-dessus sont suffisamment définis pour permettre un prototype. Restent à traiter séparément :
-
-1. ~~formule exacte Renommée → nombre de places de Taverne~~ : tranché le 2026-11-04 (§2) ;
-2. ~~formule Renommée → qualité des nouveaux candidats~~ : tranché le 2026-10-20 (§5) ;
-3. constantes du test `Engagé ailleurs` ;
-4. coefficients exacts de la prime de mission ;
-5. coefficients de négociation ;
-6. qualité du mensonge sans Intendant (`Rand 1.10–3.00`) ;
-7. liste exacte des valeurs qu'une question d'entretien peut cibler ;
-8. future renégociation après recrutement ;
-9. licenciement / indemnités ;
-10. future **prime de risque** éventuelle, séparée de la prime de mission contractuelle fixe.
-
-Ces points peuvent être équilibrés sans remettre en cause la boucle fondamentale.
+Ces points s'équilibrent sans remettre en cause la boucle.

@@ -40,6 +40,13 @@ check(depot_verifier_demande($familles, 'pictos-camp', 'assets/pictos/peuple-x.w
 check(depot_verifier_demande($familles, 'pictos-camp', 'assets/hud/../../x.webp', 'nouvelle') !== null, 'nouvelle : chemin remontant');
 check(depot_verifier_demande($familles, 'taverne', 'assets/taverne/table1/nouvelle-table.webp', 'nouvelle') === null, 'nouvelle : motif à accolades');
 check(depot_verifier_demande($familles, 'taverne', 'assets/taverne/cave.webp', 'nouvelle') !== null, 'nouvelle : nom hors des accolades');
+// Donner un rôle à une image du jeu (Idan, 2026-11-18 : le picto des mercenaires de la barre du haut pour le dortoir).
+check(depot_verifier_demande($familles, 'icones-dortoir', 'assets/dormitory/icones/mercenaires.webp', 'reutiliser') === null, 'réutiliser : cible existante');
+check(depot_verifier_demande($familles, 'pictos-camp', 'assets/hud/picto-bois.webp', 'reutiliser') === null, 'réutiliser : cible attendue');
+check(depot_verifier_demande($familles, 'pictos-camp', 'assets/autre/x.webp', 'reutiliser') !== null, 'réutiliser : cible hors famille');
+check(depot_verifier_source($familles, 'assets/hud/picto-mercenaires.webp', 'assets/dormitory/icones/mercenaires.webp') === null, 'source du catalogue');
+check(depot_verifier_source($familles, 'assets/hud/inconnu.webp', 'assets/dormitory/icones/mercenaires.webp') !== null, 'source inconnue');
+check(depot_verifier_source($familles, 'assets/hud/picto-or.webp', 'assets/hud/picto-or.webp') !== null, 'source = cible');
 
 // Le fichier : une vraie image avec la bonne extension ; un SVG sans script pour une image SVG ; 30 Mo au plus.
 $webp = $web . '/assets/pictos/peuple-orc.webp';
@@ -71,6 +78,12 @@ check($fiche['fichier'] === 'media/depots/' . $fiche['id'] . '/orc-nouveau.webp'
 check(is_file($dossier . '/' . $fiche['id'] . '/depot.json'), 'fiche du dépôt');
 $index = json_decode((string) file_get_contents($dossier . '/index.json'), true);
 check(count($index['depots']) === 1 && $index['depots'][0]['cible'] === 'assets/pictos/peuple-orc.webp' && $index['depots'][0]['note'] === 'Plus de crocs', 'index des dépôts');
+$source = depot_fichier_du_catalogue($familles, 'assets/hud/picto-mercenaires.webp');
+$reutil = depot_enregistrer_reutilisation($dossier, ['famille' => 'icones-dortoir', 'cible' => 'assets/dormitory/icones/mercenaires.webp',
+    'note' => '', 'auteur' => 'idan'], $source);
+check($reutil['type'] === 'reutiliser' && $reutil['source'] === 'assets/hud/picto-mercenaires.webp' && $reutil['largeur'] > 0, 'réutilisation rangée');
+$index = json_decode((string) file_get_contents($dossier . '/index.json'), true);
+check(count($index['depots']) === 2, 'index : dépôt et réutilisation');
 
 // La Design Lab n'a jamais de .htaccess dans le dépôt Git : celui de Hostinger porte son mot de passe, la mise en ligne
 // l'écraserait. Le point d'entrée exige la protection, l'en-tête X-Depot et l'origine du site.

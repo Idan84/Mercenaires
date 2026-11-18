@@ -41,9 +41,12 @@
   function spellSections(reference){
     const spells=rows(reference.spells);
     const schools=[...new Set(spells.map(s=>s.ecole).filter(Boolean))];
+    // Le dossier du jeu d'une école (celui de ses icônes ou de son cadre), pour déposer une icône manquante.
+    const schoolDir=school=>{const known=spells.find(s=>s.ecole===school&&(s.icone||s.cadre));
+      return known?String(known.icone||known.cadre).replace(/\/[^/]*$/,""):"spells/"+slug(school);};
     const icons={key:"spells",title:"Icônes de sorts",master:"assets-src/Sorts/<École>/<code>.jpg (un parchemin par sort)",
       groups:schools.map(school=>({name:school,items:spells.filter(s=>s.ecole===school).map(s=>({
-        name:s.nom,file:s.code+".jpg",present:Boolean(s.icone)}))}))};
+        name:s.nom,file:s.code+".jpg",present:Boolean(s.icone),url:"assets/"+(s.icone||schoolDir(school)+"/"+s.code+".webp")}))}))};
     const frames={key:"frames",title:"Cadres",master:"assets-src/Sorts/<École>/cadre.jpg ; assets-src/Equipements/Frames/frame_<tier>.jpg",
       groups:[
         {name:"Cadres d'école (sorts)",items:schools.map(school=>({name:school,file:"cadre.jpg",

@@ -1,7 +1,8 @@
 <?php
 // Blood & Wages — dépôt d'une image depuis la Design Lab (onglet Images, « Remplacer » ou « Ajouter une variante »).
 // Range le fichier sur Hostinger dans media/depots/ (prototype-web/api/lib/depots.php) ; JC l'intègre ensuite au jeu.
-// POST multipart : famille, cible (chemin de l'image du jeu), type (remplacer | variante), note, fichier.
+// POST multipart : famille, cible (chemin de l'image du jeu), type (remplacer | variante | nouvelle), note, fichier ;
+// ou type reutiliser, source (une image du jeu à qui donner ce rôle), sans fichier.
 // Réponse JSON : {"ok":true,"depot":{…}} ou {"ok":false,"erreur":"…"}.
 //
 // Sécurité : ce fichier est sous design/, protégé par le mot de passe de la Design Lab (réglé chez Hostinger, jamais par
@@ -43,6 +44,28 @@ $origine = $_SERVER['HTTP_ORIGIN'] ?? '';
 $hote = (string) preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? ''));
 if (($_SERVER['HTTP_X_DEPOT'] ?? '') !== '1' || ($origine !== '' && parse_url($origine, PHP_URL_HOST) !== $hote)) {
     depot_repondre(403, ['ok' => false, 'erreur' => 'Dépôt refusé : la demande ne vient pas de la Design Lab.']);
+}
+
+if (($_POST['type'] ?? '') === 'reutiliser') {
+    try {
+        $demande = [
+            'famille' => (string) ($_POST['famille'] ?? ''),
+            'cible' => (string) ($_POST['cible'] ?? ''),
+            'note' => mb_substr(trim((string) ($_POST['note'] ?? '')), 0, 500),
+            'auteur' => (string) ($_SERVER['REMOTE_USER'] ?? $_SERVER['PHP_AUTH_USER'] ?? ''),
+        ];
+        $familles = depot_familles($site);
+        $source = (string) ($_POST['source'] ?? '');
+        $erreur = depot_verifier_demande($familles, $demande['famille'], $demande['cible'], 'reutiliser')
+            ?? depot_verifier_source($familles, $source, $demande['cible']);
+        if ($erreur !== null) {
+            depot_repondre(400, ['ok' => false, 'erreur' => $erreur]);
+        }
+        $fiche = depot_enregistrer_reutilisation(depot_dossier($site . '/media'), $demande, depot_fichier_du_catalogue($familles, $source));
+        depot_repondre(200, ['ok' => true, 'depot' => $fiche]);
+    } catch (Throwable $e) {
+        depot_repondre(500, ['ok' => false, 'erreur' => $e->getMessage()]);
+    }
 }
 
 $fichier = $_FILES['fichier'] ?? null;

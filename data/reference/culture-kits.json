@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "name": "culture-kits",
-  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol fait de pièces posées par prototype-web/hover-card-ui.js. « geometrie » : les mesures des pièces dans leurs masters (assets-src/Kits/<cle>/README.md), pour que coins, bordures et raccords aient la même épaisseur et le même pas de clous (Idan, 2026-11-16 : « avec les coins sobres et les T une bordure cohérente en taille et en répétition de motif. Ensuite, on peut ajouter du fun, des ornements ») ; « fiche » : les réglages choisis par Idan dans sa planche (positions en pixels de la fiche, 860 × 565) ; « barres » : ses réglages des deux barres du camp (planche du 2026-11-16, en pixels d'un écran de 1920 × 1080, où la bande B des barres mesure 81,6 px ; posées par prototype-web/hud-kit-ui.js).",
+  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol et les barres du camp, faits de pièces posées par prototype-web/hover-card-ui.js et prototype-web/hud-kit-ui.js ; pièces du jeu par scripts/build-culture-kit.sh. Les trois cultures elfes (Idan, 2026-11-18, Elfes.zip). « geometrie » : les pièces et leurs mesures dans les masters (assets-src/Kits/<cle>/README.md) ; le cadre vient d'un cadre en une pièce découpé (coin posé par son angle extérieur, cellules de la bande du haut, de la bande de gauche et de la barre du milieu, barre du milieu couchée, jonction en T) ; « fiche » et « barres » : les réglages d'Idan dans ses planches « Fiches des Elfes » et « Barres des Elfes » (2026-11-18).",
   "columns": [
     {"key": "cle", "source": "Culture : dossier de sa barre (hud-bars.js) et de son kit"},
     {"key": "culture", "source": "Nom de la culture (cultures.json)"},
     {"key": "dossier", "source": "Pièces du jeu (scripts/build-culture-kit.sh)"},
-    {"key": "geometrie", "source": "Mesures des pièces dans les masters (pixels des originaux)"},
-    {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche du 2026-11-16)"},
-    {"key": "barres", "source": "Réglages d'Idan pour les barres du camp (planche du 2026-11-16)"}
+    {"key": "geometrie", "source": "Les pièces (prototype-web/<dossier>/) et leurs mesures dans les masters (pixels des originaux)"},
+    {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche « Fiches des Elfes », 2026-11-18)"},
+    {"key": "barres", "source": "Réglages d'Idan pour les barres du camp (planche « Barres des Elfes », 2026-11-18)"}
   ],
   "rows": [
     {
@@ -16,70 +16,268 @@
       "culture": "Elfes noirs",
       "dossier": "assets/fiche/kits/elfes-noirs",
       "geometrie": {
-        "sangles": {
-          "gros": {"h": "cellule-gros.webp", "v": "cellule-gros-v.webp", "coeur": 238, "bord": 12, "pas": 267},
-          "fine": {"h": "cellule-fine.webp", "v": "cellule-fine-v.webp", "coeur": 93, "bord": 4, "pas": 95}
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 240, "coupeX": 218, "coupeY": 143, "clouX": 180.5, "clouY": 107, "coeur": 80, "coeurV": 82, "pasX": 80, "pasV": 74},
+          "h": {"f": "cell-h.webp", "coeur": 80, "pas": 80},
+          "v": {"f": "cell-v.webp", "coeur": 82, "pas": 74},
+          "m": {"f": "cell-m.webp", "coeur": 84, "pas": 74},
+          "mh": {"f": "cell-m-h.webp", "coeur": 84, "pas": 74},
+          "jonction": {"f": "jonction.webp", "w": 164, "h": 36, "y0": 56, "barre": 80, "tige": 84, "cx": 82}
         },
-        "coinSobre": {"f": "coin-sobre.webp", "n": 1254, "ax": 106, "ay": 105, "coupeX": 1135, "coupeY": 1137, "clouX": 1020, "clouY": 968, "coeur": 238, "coeurV": 226, "pasX": 267, "pasV": 253},
-        "raccordT": {"f": "raccord-t.webp", "w": 540, "h": 454, "haut": 4, "coeur": 93, "cx": 270},
-        "ornementsCoin": {"leger": "coin-orne-leger.webp", "riche": "coin-orne-riche.webp", "pointes": "coin-orne-pointes.webp"},
-        "couronne": {"f": "couronne.webp", "w": 640, "h": 237, "base": 0.22},
-        "chaine": {"f": "chaine.webp", "w": 640, "h": 214, "attache": 0.12},
-        "chaineTorsadee": {"f": "chaine-torsadee.webp", "w": 120, "h": 249},
+        "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-pointes.webp"},
+        "poses": {
+          "couronne": {"f": "couronne.webp", "w": 640, "h": 237, "base": 0.22}
+        },
+        "suspendu": {"f": "chaine.webp", "w": 640, "h": 214, "attache": 0.12},
+        "allonge": {"f": "chaine-torsadee.webp", "w": 120, "h": 249},
         "texture": "texture.webp",
+        "voile": "12,2,16",
         "ornementTitre": {"largeur": 35.44},
         "rond": {"f": "rond-central.webp", "w": 1200, "h": 637, "cx": 0.50018, "cy": 0.50795, "trou": 0.23642},
         "bouton": {"f": "bouton-jour-suivant.webp"},
         "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 407}
       },
       "fiche": {
-        "cadre": {"ep": 16, "style": "gros", "sobres": true},
-        "cotes": {"haut": -7.5, "bas": 0, "gauche": 0, "droite": 0},
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
         "coins": {
           "hg": {"sens": "miroir", "dx": 0, "dy": 0},
-          "hd": {"sens": "miroir", "dx": 0, "dy": 0.5},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0},
           "bd": {"sens": "miroir", "dx": 0, "dy": 0},
           "bg": {"sens": "miroir", "dx": 0, "dy": 0}
         },
-        "separation": {"style": "fine", "ep": 16, "dx": 0, "raccords": "dessous", "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
-        "sousNom": {"style": "fine", "dy": 4.5},
+        "separation": {
+          "ep": 16,
+          "dx": 1.5,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 4,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
         "ornementsCoin": {
           "hg": {"modele": "riche", "taille": 176, "sens": "miroir", "dx": -20, "dy": -29.5},
           "hd": {"modele": "leger", "taille": 158, "sens": "rotation", "dx": 29, "dy": -21.5},
           "bd": {"modele": "leger", "taille": 176, "sens": "rotation", "dx": 20, "dy": 29.5},
           "bg": {"modele": "leger", "taille": 176, "sens": "miroir", "dx": -20, "dy": 29.5}
         },
-        "couronne": {"place": "bas-centre", "taille": 220, "dx": 151.5, "dy": -6, "retournee": false},
-        "chaine": {"place": "haut-portrait", "taille": 178, "dx": 80.5, "dy": -4},
-        "chaineTorsadee": {"place": "separation", "taille": 29.5, "longueur": 61, "espacement": 0, "dx": 0, "dy": 0},
+        "pose": {"modele": "couronne", "place": "bas-centre", "taille": 220, "dx": 151.5, "dy": -6, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 178, "dx": 0, "dy": -4},
+        "allonge": {"place": "separation", "taille": 29, "longueur": 61, "espacement": 0, "dx": -0.5, "dy": -48},
         "titre": {"hauteur": 20, "ecart": 2},
-        "cuir": {"grain": 250, "sombre": 30}
+        "cuir": {"grain": 100, "sombre": 30},
+        "nom": "clair"
       },
       "barres": {
         "ecran": {"w": 1920, "h": 1080, "B": 81.6},
         "haut": {
           "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 60, "grain": 250},
-          "sangleHaut": {"style": "gros", "ep": 12, "dy": -3},
-          "sangleBas": {"style": "gros", "ep": 12, "dy": 3},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
           "emblemeDroit": {"visible": true, "taille": 180, "dx": 78, "dy": -39},
           "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
           "textes": {"ecart": -40, "dy": -58}
         },
         "bas": {
           "bande": {"haut": 990, "fond": "cuir", "sombre": 60, "grain": 250},
-          "sangleHaut": {"style": "gros", "ep": 16, "dy": 0},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
           "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
           "rond": {"taille": 370, "dx": 0, "dy": 6.5},
           "bouton": {"taille": 98, "dx": 0, "dy": 0},
           "pictos": {"ecart": 50, "dy": 0}
         },
         "ornements": {
-          "couronne": {"place": "sur-bas-droite", "taille": 220, "dx": 400, "dy": -5.5, "retournee": false},
-          "chaine": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
-          "chaineTorsadee": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
-        }
+          "pose": {"modele": "couronne", "place": "sur-bas-droite", "taille": 220, "dx": 400, "dy": -5.5, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        },
+        "contenu": "clair"
+      }
+    },
+    {
+      "cle": "elfes-sylvains",
+      "culture": "Elfes sylvains",
+      "dossier": "assets/fiche/kits/elfes-sylvains",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 280, "coupeX": 244, "coupeY": 225, "clouX": 124, "clouY": 105, "coeur": 91, "coeurV": 80, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 91, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 80, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 87, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 87, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 177, "h": 86, "y0": 45, "barre": 91, "tige": 87, "cx": 88.5}
+        },
+        "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-courbe.webp"},
+        "poses": {
+          "arbre": {"f": "pose-arbre.webp", "w": 700, "h": 197, "base": 0.2},
+          "dryade": {"f": "pose-dryade.webp", "w": 700, "h": 227, "base": 0.16},
+          "dragon": {"f": "pose-dragon.webp", "w": 700, "h": 217, "base": 0.14}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 230, "attache": 0.1},
+        "allonge": {"f": "allonge.webp", "w": 188, "h": 700},
+        "texture": "texture.webp",
+        "voile": "4,18,6",
+        "ornementTitre": {"f": "titre.webp", "w": 500, "h": 171},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 660, "cx": 0.49917, "cy": 0.47121, "trou": 0.25833},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 400}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
+          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
+          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
+          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+        },
+        "pose": {"modele": "dryade", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
+        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "titre": {"hauteur": 20, "ecart": -1.7},
+        "cuir": {"grain": 100, "sombre": 20},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -30.5}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "bouton": {"taille": 98, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "dragon", "place": "sur-bas-droite", "taille": 271, "dx": 433, "dy": 7, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        },
+        "contenu": "clair"
+      }
+    },
+    {
+      "cle": "elfes-des-grandes-cites",
+      "culture": "Elfes des grandes cités",
+      "dossier": "assets/fiche/kits/elfes-des-grandes-cites",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 280, "coupeX": 228, "coupeY": 226, "clouX": 78, "clouY": 76, "coeur": 101, "coeurV": 99, "pasX": 300, "pasV": 300},
+          "h": {"f": "cell-h.webp", "coeur": 101, "pas": 300},
+          "v": {"f": "cell-v.webp", "coeur": 99, "pas": 300},
+          "m": {"f": "cell-m.webp", "coeur": 94, "pas": 300},
+          "mh": {"f": "cell-m-h.webp", "coeur": 94, "pas": 300},
+          "jonction": {"f": "jonction.webp", "w": 194, "h": 96, "y0": 50, "barre": 101, "tige": 94, "cx": 97}
+        },
+        "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-courbe.webp"},
+        "poses": {
+          "arc": {"f": "pose-arc.webp", "w": 700, "h": 229, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 228, "attache": 0.16},
+        "allonge": {"f": "allonge.webp", "w": 166, "h": 700},
+        "texture": "texture.webp",
+        "voile": "34,22,8",
+        "ornementTitre": {"f": "titre.webp", "w": 500, "h": 130},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 673, "cx": 0.5, "cy": 0.49851, "trou": 0.25333},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 450}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 7,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "riche", "taille": 223, "sens": "miroir", "dx": -27, "dy": -39.5},
+          "hd": {"modele": "leger", "taille": 280, "sens": "rotation", "dx": 32, "dy": -26},
+          "bd": {"modele": "aucun", "taille": 130, "sens": "miroir", "dx": 16, "dy": 14},
+          "bg": {"modele": "leger", "taille": 280, "sens": "miroir", "dx": -25, "dy": 30.5}
+        },
+        "pose": {"modele": "arc", "place": "bas-centre", "taille": 220, "dx": 149.5, "dy": 5.5, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -6.5},
+        "allonge": {"place": "separation", "taille": 58.5, "longueur": 40, "espacement": 0, "dx": 545, "dy": 39},
+        "titre": {"hauteur": 16, "ecart": -1.7},
+        "cuir": {"grain": 100, "sombre": 0},
+        "nom": "encre"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 0, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 155, "dx": 59, "dy": -42.5},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -44.5}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 0, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 345, "dx": 0, "dy": 4},
+          "bouton": {"taille": 98, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "arc", "place": "aucune", "taille": 220, "dx": 400, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -342, "dy": -5},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        },
+        "contenu": "dore",
+        "inactifs": 50
       }
     }
   ],
-  "row_count": 1
+  "row_count": 3
 }

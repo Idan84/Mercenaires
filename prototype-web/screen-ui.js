@@ -144,6 +144,11 @@ function applyHudBar(culture){
   bottomBar?.classList.toggle("has-ornament",Boolean(bottom));
   paintHudKit(topBar,layout?.piecesHaut);
   paintHudKit(bottomBar,layout?.piecesBas);
+  // Un kit au cuir clair (les Grandes cités, Idan, 2026-11-18) : textes et pictos dorés, pictos inactifs à son opacité.
+  topBar?.classList.toggle("is-dore",Boolean(layout?.dore));
+  bottomBar?.classList.toggle("is-dore",Boolean(layout?.dore));
+  if(layout?.inactifs!=null) bottomBar?.style.setProperty("--hud-inactifs",String(layout.inactifs));
+  else bottomBar?.style.removeProperty("--hud-inactifs");
   const play=hudFind(".hud-play-img");
   if(play) play.setAttribute("src",layout?layout.bouton:"assets/hud/next.webp");
   const ring=hudFind(".hud-ornament");

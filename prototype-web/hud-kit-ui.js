@@ -1,8 +1,8 @@
 "use strict";
 
-// Les barres du camp au kit graphique de la culture du capitaine (Chatty, Idan ; les Elfes noirs, planche d'Idan du
-// 2026-11-16 : « Et voilà chef ! ») : à la place de la barre illustrée du pack de la culture (hud-bars.js), les pièces
-// du kit (data/reference/culture-kits.json, « barres »), posées par screen-ui.js (applyHudBar). Les réglages de la
+// Les barres du camp au kit graphique de la culture du capitaine (Chatty, Idan ; les trois cultures elfes, planche
+// « Barres des Elfes » d'Idan du 2026-11-18) : à la place de la barre illustrée du pack de la culture (hud-bars.js), les
+// pièces du kit (data/reference/culture-kits.json, « barres »), posées par screen-ui.js (applyHudBar). Les réglages de la
 // planche sont en pixels d'un écran de 1920 × 1080, où la bande B des barres (--hb-B) mesure 81,6 px : tout se convertit
 // en bandes B, comme les barres des packs, pour garder les proportions sur tous les écrans.
 // - La barre du haut se place depuis le haut de l'écran. Sa bande et ses sangles vont d'un bout à l'autre de la barre
@@ -23,6 +23,9 @@ function hudKitFor(culture){
 
 // L'emblème au bout de la barre du haut : à 8 px du bout, son haut à 2 px du haut de la bande (planche).
 const HUD_KIT_EMBLEM={marge:8,haut:2};
+// Les sangles : la bande du cadre en une pièce (son liseré extérieur tourné vers l'extérieur de la barre) ou la barre du
+// milieu couchée (la même des deux côtés).
+const HUD_KIT_STRAPS={bande:"h",barre:"mh"};
 // Les places des ornements (planche) : la fraction de la largeur de la barre du haut ou de l'écran où tombe leur milieu.
 const HUD_KIT_CHAIN_PLACES={"sous-haut-gauche":[.25,"gauche"],"sous-haut-centre":[.5,"milieu"],"sous-haut-droite":[.75,"droite"]};
 const HUD_KIT_CROWN_PLACES={"sur-bas-gauche":.3,"sur-bas-droite":.7};
@@ -30,7 +33,8 @@ const hudKitRound=n=>Math.round(n*1e4)/1e4;
 
 // kit : la ligne du kit (culture-kits.json) ; bar : la barre du pack de la culture (hud-bars.js), dont on reprend les
 // réglages des textes, du bouton et des pictos. Rend { haut, bas } (les réglages des deux barres, en bandes B, pour
-// screen-ui.js), { piecesHaut, piecesBas } (le HTML des pièces) et bouton (l'image du bouton Jour suivant).
+// screen-ui.js), { piecesHaut, piecesBas } (le HTML des pièces), bouton (l'image du bouton Jour suivant), et pour un
+// cuir clair (« dorés », les Grandes cités) dore et inactifs (l'opacité des pictos inactifs).
 function hudKitBars(kit,bar){
   const G=kit.geometrie,K=kit.barres,{w:W,h:H,B}=K.ecran,dir=kit.dossier+"/";
   const b=n=>hudKitRound(n/B);
@@ -41,14 +45,15 @@ function hudKitBars(kit,bar){
     ax==="gauche"?`left:${len(x)}`:ax==="droite"?`right:${len(W-x-w)}`:`left:calc(50% + var(--hb-B) * ${b(x-W/2)})`,
     ay==="haut"?`top:${len(y)}`:`bottom:${len(H-y-h)}`,`width:${len(w)}`,`height:${len(h)}`].join(";");
   const img=(f,style,extra="")=>`<img class="hud-kit-piece" src="${dir}${f}" alt="" style="${style}${extra}">`;
-  // Le cuir violet (sa tuile à « grain » % de 256 px), assombri ; ou un noir uni.
-  const fond=f=>f.fond==="cuir"?`linear-gradient(rgba(12,2,16,${f.sombre/100}),rgba(12,2,16,${f.sombre/100})),url('${dir}${G.texture}') 0 0/${len(256*f.grain/100)} repeat`:"#120c14";
-  // Une sangle, son milieu sur une ligne (décalé de dy) ; ses clous gardent leur pas, leur nombre s'ajuste à la largeur
-  // (round : un nombre entier de cellules d'un clou).
-  const sangle=(g,y,span)=>{
-    if(g.style==="aucune") return "";
-    const S=G.sangles[g.style],large=(S.coeur+2*S.bord)*g.ep/S.coeur;
-    return `<span class="hud-kit-piece" style="${span(y+g.dy-large/2,large)};background:url('${dir}${S.h}') 0 0/auto 100% round no-repeat"></span>`;
+  // Le cuir de la culture (sa tuile à « grain » % de 256 px), assombri dans sa teinte ; ou un noir uni.
+  const fond=f=>{const v=`rgba(${G.voile},${f.sombre/100})`;return f.fond==="cuir"?`linear-gradient(${v},${v}),url('${dir}${G.texture}') 0 0/${len(256*f.grain/100)} repeat`:"#120c14";};
+  // Une sangle d'épaisseur ep, son milieu sur une ligne (décalé de dy) ; son motif garde son pas, son nombre s'ajuste à
+  // la largeur (round : un nombre entier de cellules). dehors : le côté de l'extérieur de la barre (« haut » ou « bas »).
+  const sangle=(g,y,span,dehors)=>{
+    const S=G.cadre[HUD_KIT_STRAPS[g.style]];
+    if(!S) return "";
+    const retourne=g.style==="bande"&&dehors==="bas";
+    return `<span class="hud-kit-piece" style="${span(y+g.dy-g.ep/2,g.ep)};background:url('${dir}${S.f}') 0 0/auto 100% round no-repeat${retourne?";transform:scaleY(-1)":""}"></span>`;
   };
 
   // La barre du haut.
@@ -62,31 +67,31 @@ function hudKitBars(kit,bar){
   const bas=[`<span class="hud-kit-piece" style="${spanBas(bh,H-bh)};background:${fond(D.bande)}"></span>`];
   const O=K.ornements;
 
-  // La chaîne torsadée, posée sur une barre (sous ses sangles), au milieu de l'écran : ses maillons empilés puis tournés.
-  const tor=O.chaineTorsadee;
+  // L'ornement allongé, couché sur une barre (sous ses sangles), au milieu de l'écran : ses maillons empilés puis tournés.
+  const tor=O.allonge;
   if(tor.place!=="aucune"){
-    const surHaut=tor.place==="sur-haut",C=G.chaineTorsadee,w=tor.taille,h=w*C.h/C.w,pas=Math.max(2,h+tor.espacement);
+    const surHaut=tor.place==="sur-haut",C=G.allonge,w=tor.taille,h=w*C.h/C.w,pas=Math.max(2,h+tor.espacement);
     const L=(surHaut?l:W)*tor.longueur/100,n=Math.max(1,Math.floor((L-h)/pas)+1),total=h+(n-1)*pas;
     const cy=(surHaut?y1+T.sangleBas.dy:bh+D.sangleHaut.dy)+tor.dy;
     const maillons=Array.from({length:n},(_,i)=>`<img src="${dir}${C.f}" alt="" style="position:absolute;left:0;top:${len(i*pas)};width:${len(w)};height:${len(h)}">`).join("");
     (surHaut?haut:bas).push(`<span class="hud-kit-piece" style="${at(W/2-w/2+tor.dx,cy-total/2,w,total,"milieu",surHaut?"haut":"bas")};transform:rotate(90deg)">${maillons}</span>`);
   }
-  haut.push(sangle(T.sangleHaut,y0,spanHaut),sangle(T.sangleBas,y1,spanHaut));
-  bas.push(sangle(D.sangleHaut,bh,spanBas),sangle(D.sangleBas,H,spanBas));
+  haut.push(sangle(T.sangleHaut,y0,spanHaut,"haut"),sangle(T.sangleBas,y1,spanHaut,"bas"));
+  bas.push(sangle(D.sangleHaut,bh,spanBas,"haut"),sangle(D.sangleBas,H,spanBas,"bas"));
 
-  // La chaîne suspendue sous la barre du haut, accrochée à sa sangle du bas.
-  const ch=O.chaine;
+  // L'ornement suspendu sous la barre du haut, accroché à sa sangle du bas.
+  const ch=O.suspendu,SG=G.suspendu;
   if(ch.place!=="aucune"){
-    const [f,ax]=HUD_KIT_CHAIN_PLACES[ch.place],w=ch.taille,h=w*G.chaine.h/G.chaine.w;
-    haut.push(img(G.chaine.f,at(x0+l*f-w/2+ch.dx,y1+T.sangleBas.dy-h*G.chaine.attache+ch.dy,w,h,ax,"haut")));
+    const [f,ax]=HUD_KIT_CHAIN_PLACES[ch.place],w=ch.taille,h=w*SG.h/SG.w;
+    haut.push(img(SG.f,at(x0+l*f-w/2+ch.dx,y1+T.sangleBas.dy-h*SG.attache+ch.dy,w,h,ax,"haut")));
   }
-  // La couronne : posée sur la barre du bas, ou pendue sous celle du haut.
-  const co=O.couronne;
+  // L'ornement posé sur la barre du bas, ou pendu sous celle du haut.
+  const co=O.pose,PG=G.poses[co.modele]||Object.values(G.poses)[0];
   if(co.place!=="aucune"){
-    const sous=co.place==="sous-haut-centre",w=co.taille,h=w*G.couronne.h/G.couronne.w;
+    const sous=co.place==="sous-haut-centre",w=co.taille,h=w*PG.h/PG.w;
     const cx=sous?x0+l/2:W*HUD_KIT_CROWN_PLACES[co.place],ligne=sous?y1+T.sangleBas.dy:bh+D.sangleHaut.dy;
-    const y=(co.retournee?ligne-h*G.couronne.base:ligne-h+h*G.couronne.base)+co.dy;
-    (sous?haut:bas).push(img(G.couronne.f,at(cx-w/2+co.dx,y,w,h,"milieu",sous?"haut":"bas"),co.retournee?";transform:scaleY(-1)":""));
+    const y=(co.retourne?ligne-h*PG.base:ligne-h+h*PG.base)+co.dy;
+    (sous?haut:bas).push(img(PG.f,at(cx-w/2+co.dx,y,w,h,"milieu",sous?"haut":"bas"),co.retourne?";transform:scaleY(-1)":""));
   }
   // Les emblèmes aux bouts de la barre du haut (celui de gauche en miroir).
   for(const [e,droite] of [[T.emblemeDroit,true],[T.emblemeGauche,false]]){
@@ -115,7 +120,7 @@ function hudKitBars(kit,bar){
       pictosDroite:hudKitRound(P.pictosDroite+D.pictos.ecart/B),pictosGauche:hudKitRound(P.pictosGauche+D.pictos.ecart/B),
       pictosY:hudKitRound(P.pictosY-D.pictos.dy/B)},
     piecesHaut:haut.filter(Boolean).join(""),piecesBas:bas.filter(Boolean).join(""),
-    bouton:dir+G.bouton.f
+    bouton:dir+G.bouton.f,dore:K.contenu==="dore",inactifs:K.contenu==="dore"?K.inactifs/100:null
   };
 }
 

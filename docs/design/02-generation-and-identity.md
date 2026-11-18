@@ -185,6 +185,9 @@ Décision d'Idan du 2026-10-21. Les données sont dans `data/reference/character
   peuple hindou », « Terres des deux fleuves ! ») : nouveau nom des Steppes désertiques, inspiration Inde et Mésopotamie.
   Les règles et les textes de la culture seront revus ensuite. L'ancien nom reste reconnu (`renamed-names.json`) : les
   mots-clés Bridge des avatars déjà tagués « Steppes désertiques » et les anciennes parties.
+- **Kukri et Transmutation** (Idan, 2026-11-18 : « un +2 kukri au 2 fleuves et +1 seulement au royaume du soleil levant »,
+  « +1 en transmutation aux 2 fleuves ») : le kukri, arme népalaise, passe aux Terres des Deux Fleuves (Matrice : Kukri +2,
+  Transmutation +1) ; le Soleil Levant garde Kukri +1.
 
 - **Autres peuples** : prénoms propres au peuple, pour les femmes et pour les hommes ; noms de famille propres à la culture.
 - **Capitaine** : son nom est saisi par le joueur et ne change jamais (sauf si le joueur le renomme).

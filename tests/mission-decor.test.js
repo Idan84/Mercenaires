@@ -412,6 +412,8 @@ m=newMission();
   const [archer,friend]=m.players,[aim,other]=m.enemies;
   at(archer,1,4);at(aim,8,4);at(friend,0,0);at(other,12,0);
   for(const u of [...m.players,...m.enemies]) u.camouflaged=false;
+  // Tous du même gabarit : le peuple tiré au hasard (un Halfling plus petit ne cache rien) n'entre pas en jeu.
+  for(const u of [archer,friend,aim,other]) u.character.gabarit=1;
   assert.equal(api.missionLineOfSight(archer,aim),true,"la ligne est libre");
   at(other,5,4);
   assert.equal(api.missionLineOfSight(archer,aim),false,"un ennemi cache ceux qui sont derrière lui");
@@ -426,7 +428,7 @@ m=newMission();
   assert.equal(api.missionLineOfSight(archer,aim),true,"un plus petit ne cache pas un plus grand");
   aim.character.gabarit=0.5;
   assert.equal(api.missionLineOfSight(archer,aim),false,"de même taille, si");
-  delete other.character.gabarit;delete aim.character.gabarit;
+  other.character.gabarit=aim.character.gabarit=1;
   other.camouflaged=true;
   assert.equal(api.missionLineOfSight(archer,aim),false,"un personnage caché bloque aussi (sans qu'on sache pourquoi)");
   other.camouflaged=false;

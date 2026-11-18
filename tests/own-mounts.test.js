@@ -137,7 +137,8 @@ assert.equal(m.activeUnit === duo && duo.attackAvailable, true, "celle du cavali
 assert.equal(api.missionActionAvailability().mountMelee, false);
 // Le cavalier apprend (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, comme une arme
 // (enchaînement compris).
-const mountAttacks = m.log.filter(l => new RegExp("^" + duo.mount.character.name + " attaque ").test(l.message)).length;
+// Ses attaques d'opportunité comptent aussi (selon le tirage, l'ennemi touché peut fuir et s'ouvrir aux sabots).
+const mountAttacks = m.log.filter(l => new RegExp("^" + duo.mount.character.name + " (attaque |profite de l’ouverture et frappe )").test(l.message)).length;
 assert.ok(mountAttacks >= 1);
 assert.equal(duo.progress.animalUses["Équidés"].attacks, mountAttacks);
 const learned = Progression.createProgressionRules({reference}).gains(duo.progress, rider).skills.animal;
@@ -152,6 +153,8 @@ api.endMissionActivation();
 assert.ok(!m.log.some(l => l.message === "Activation de " + duo.mount.character.name + "."), "le cheval ne joue pas après");
 // Le cheval monté menace aussi (Idan : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ; « oui ») : un
 // ennemi qui quitte le contact du couple subit aussi son attaque d'opportunité.
+// Selon le tirage, l'ennemi touché a pu fuir : on le remet au contact du couple.
+target.fleeing = false; assert.ok(adjacentTo(duo, target), "l'ennemi de nouveau au contact");
 assert.ok(api.missionReactors(target).includes(duo.mount), "le cheval réagit");
 const away = {q: target.q + (target.q - duo.q) * 3, r: target.r};
 assert.ok(combat.opportunityReactors(api.missionReactors(target), target, {...target, q: away.q, r: away.r}).includes(duo.mount));
@@ -225,6 +228,8 @@ api.endMissionActivation();
 for (const u of m.players) u.acted = false;
 m.activeUnit = null;
 while (m.activeUnit !== pairUnit) { if (m.activeUnit) api.endMissionActivation(); else api.selectNextMissionPlayer(); }
+// Selon le tirage, un tir ennemi a pu faire paniquer la monture pendant le tour ennemi : on la remet au contact.
+if (steed.fleeing || combat.axialDistance(pairUnit, steed) !== 1) { steed.fleeing = false; steed.fleeTurn = 0; adjacentTo(pairUnit, steed); }
 assert.equal(combat.axialDistance(pairUnit, steed), 1);
 assert.equal(api.missionActionAvailability().remount, true);
 assert.equal(api.remountMission(pairUnit), true);

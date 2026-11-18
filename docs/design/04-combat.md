@@ -155,7 +155,8 @@ viendront avec le graphisme.
 
 ## Initiative & ordre interne V1
 
-[Initiative interne d'équipe V1](/design/#doc=formulas/initiative-interne-d-equipe-v1.md) est calculée **avant la mission** et visible pendant la préparation.
+[Initiative interne d'équipe V1](/design/#doc=formulas/initiative-interne-d-equipe-v1.md) est calculée **avant la
+mission** et visible pendant la préparation.
 
 - Les équipes jouent l'une après l'autre ; l'équipe qui commence est fixée par le **scénario**.
 - L'initiative ne sert qu'à ordonner les personnages **au sein de leur équipe**.
@@ -165,7 +166,8 @@ viendront avec le graphisme.
 
 ## Attaque d'opportunité CAC V1
 
-[Attaque d'opportunité CAC V1](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) formalise les réactions de zone de menace.
+[Attaque d'opportunité CAC V1](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) formalise les réactions de zone de
+menace.
 
 - Sortir de la zone menacée par un adversaire déclenche sa réaction ; rester à l'intérieur de sa portée ne suffit pas.
   Chaque adversaire dont on quitte la zone peut réagir.
@@ -179,7 +181,9 @@ viendront avec le graphisme.
 
 ## Frappe dans le dos & encerclement V1
 
-[Frappe dans le dos V1](/design/#doc=formulas/frappe-dans-le-dos-v1.md) annule la **Perception défensive** au Toucher et divise par deux la **résistance au type de dégâts** utilisée pour Blesser. La Résistance physique % qui réduit ensuite les PV n'est pas modifiée.
+[Frappe dans le dos V1](/design/#doc=formulas/frappe-dans-le-dos-v1.md) annule la **Perception défensive** au Toucher et
+divise par deux la **résistance au type de dégâts** utilisée pour Blesser. La Résistance physique % qui réduit ensuite
+les PV n'est pas modifiée.
 
 - Elle vaut pour toute attaque d'opportunité, contre une cible en fuite et pour une attaque non détectée.
 - [Encerclement CAC V1](/design/#doc=formulas/encerclement-cac-v1.md) : deux ennemis au contact sur des cases **non
@@ -227,9 +231,9 @@ Précisions (Idan, 2026-10-20) :
 
 **Combat à une main** (Idan, 2026-11-02) : une arme à une main tenue seule, l'autre main vide (pistolet compris ; la
 fronde est à deux mains ; une arme `Au choix` non empoignée à deux mains), donne **Esquive effective + 0,2 × Combat à
-une main** contre tous les jets qui lisent l'Esquive effective (CAC, tir, sorts) : à 50, +10 d'Esquive, une attaque à 50
-% passe à 40 %. Au Sol, l'Esquive reste à 0. Tiré à la création comme Combat à deux armes, +10 XP par attaque (doc 08) ;
-visible dans le détail de l'Esquive. Plus tard, peut-être : une seconde action rapide.
+une main** contre tous les jets qui lisent l'Esquive effective (CAC, tir, sorts) : à 50, +10 d'Esquive, une attaque à
+50 % passe à 40 %. Au Sol, l'Esquive reste à 0. Tiré à la création comme Combat à deux armes, +10 XP par attaque (doc
+08) ; visible dans le détail de l'Esquive. Plus tard, peut-être : une seconde action rapide.
 
 **Attaquer à deux mains** (Idan, 2026-11-02) : une arme `Au choix` tenue seule est à une main ; le bouton « Attaquer à
 deux mains » l'empoigne (dégâts × 1,5, Combat à deux mains au Blesser) jusqu'au prochain tour du combattant. La charge
@@ -599,8 +603,8 @@ Fiches : `data/reference/mounts.json` (une fiche fixe par monture, ennemie ou n�
   monture.
 - **XP, réputation, titre** : chaque attaque de la monture (ou du loup mené à pied) donne au cavalier l'XP d'une arme
   (doc 08 : 10, + 5 si elle touche, + 5 si elle blesse), famille de la monture (Équidés, Canidés…), catégorie Compagnon
-  animal. Ses exploits comptent pour sa réputation (doc 09) ; montée, elle s'ajoute à son titre (doc 19) : « à cheval »,
-  « à dos de sanglier », « de mammouth », « de tricératops », « de loup ».
+  animal. Ses exploits comptent pour sa réputation (doc 09) ; équipée, elle s'ajoute à son titre (doc 19) : « à
+  cheval », « à dos de sanglier », « de mammouth », « de tricératops » ; « à dos de loup » seulement pour qui le monte.
 - **Qui prend les coups** : au CAC et en charge, le joueur choisit (bouton **Viser la monture**, sinon le cavalier) ; au
   tir, pour un sort qui vise, une attaque d'opportunité et les coups de l'IA, la monture est visée à son gabarit ÷ (son
   gabarit + celui du cavalier) (humain sur destrier : 2 ÷ 3 ; gobelin : 80 % ; mammouth : 75 % sous un humain, 60 % sous
@@ -640,7 +644,9 @@ Fiches : `data/reference/mounts.json` (une fiche fixe par monture, ennemie ou n�
 
 ## Attaques de zone — Toucher V1
 
-[Précision d'attaque de zone V1](/design/#doc=formulas/precision-d-attaque-de-zone-v1.md) fournit le noyau commun : l'attaque vise une **case**, puis chaque cible potentielle perd **10 points de probabilité de toucher par case d'écart** à cette case.
+[Précision d'attaque de zone V1](/design/#doc=formulas/precision-d-attaque-de-zone-v1.md) fournit le noyau commun :
+l'attaque vise une **case**, puis chaque cible potentielle perd **10 points de probabilité de toucher par case d'écart**
+à cette case.
 
 `P_touche(d) = max(0, P_touche_centre − 10×d)`.
 
@@ -674,7 +680,9 @@ Précisions (Idan, 2026-10-20) :
 
 ## En Fuite V1
 
-[Mouvement de fuite immédiat V1](/design/#doc=formulas/mouvement-de-fuite-immediat-v1.md) : quand l'état En Fuite est appliqué, tout mouvement restant sert à s'éloigner de la source de peur. Avec `0` mouvement restant, le personnage reste sur place mais demeure En Fuite.
+[Mouvement de fuite immédiat V1](/design/#doc=formulas/mouvement-de-fuite-immediat-v1.md) : quand l'état En Fuite est
+appliqué, tout mouvement restant sert à s'éloigner de la source de peur. Avec `0` mouvement restant, le personnage reste
+sur place mais demeure En Fuite.
 
 À partir du tour suivant, [Reprise de contrôle — En Fuite V1](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md)
 est résolu au début de chaque activation. Une réussite retire aussitôt **En Fuite** et rend l'activation normale

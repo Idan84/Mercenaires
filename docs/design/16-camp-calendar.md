@@ -34,7 +34,7 @@ lisibles ») :
   sombres, l'air à droite du menu et l'écart avec le haut de l'écran (négatif : le haut de l'image passe au-dessus). Ses
   réglages sont dans `scripts/hud-bars-reglages.json`.
 - **Une culture peut avoir une autre version de sa barre** (Idan, 14 novembre : « un v2 pour toute la barre ») : les
-  Steppes désertiques ont la v2.
+  Terres des Deux Fleuves ont la v2.
 - **Une culture refaite avec son kit graphique** (Chatty, Idan ; les **trois cultures elfes**, planche « Barres des
   Elfes » d'Idan du 18 novembre, après celle des Elfes noirs du 16 : « Et voilà chef ! ») : ses deux barres sont faites
   des pièces du kit à la place de la barre du pack. En haut, une bande du cuir de la culture entre deux sangles (la bande

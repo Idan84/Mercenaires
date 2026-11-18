@@ -106,7 +106,7 @@ assert.equal(packCulture("Gobelins/gobelins-cavernes-ferrailleurs"),"Caravanes d
 assert.equal(packCulture("Elfes/elfes-solaires"),"Elfes des grandes cités");
 assert.equal(packCulture("Nains/nains-fer-entrave"),"Nains esclaves");
 assert.equal(packCulture("Hommes Betes/hommes-betes-runiques"),"Tribus nordiques");
-assert.equal(packCulture("Humains/grandes-steppes"),"Steppes désertiques","les Clans des grandes steppes sont des hommes-bêtes");
+assert.equal(packCulture("Humains/grandes-steppes"),"Terres des Deux Fleuves","les Clans des grandes steppes sont des hommes-bêtes ; le pack des Steppes désertiques, renommées Terres des Deux Fleuves");
 assert.equal(packCulture("Hommes Betes/hommes-betes-steppes"),"Clans des grandes steppes");
 assert.equal(packCulture("Elfes/inconnus"),undefined);
 

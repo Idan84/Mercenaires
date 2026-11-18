@@ -13,7 +13,7 @@ doublon du cadre en une pièce : pas repris.
 |---|---|---|---|
 | `logo.png` | `Emblème solaire des elfes citadins-1.png` | 1086 × 1448 | Logo de la culture : le picto de culture. |
 | `cadre.png` | `05be5e7d-…png` | 1536 × 1024 | Le cadre en une pièce (or, coins en onglet) : coin, bordures, barre du milieu, jonctions en T ; les sangles des barres. |
-| `texture.png` | `6b7948c9-…png` | 1254 × 1254 | Le cuir ivoire : fond du cartouche (nom à l'encre) et des barres (textes et pictos dorés). |
+| `texture.png` | `6b7948c9-…png` | 1254 × 1254 | Le cuir ivoire : fond du cartouche (nom doré, titre à l'encre) et des barres (textes et pictos dorés). |
 | `coin-orne-riche.png` | `cece068d-…png` | 1254 × 1254 | Ornement de coin riche (dragon). |
 | `coin-orne-leger.png` | `9186404f-…png` | 1254 × 1254 | Ornement de coin léger (filigrane). |
 | `coin-orne-courbe.png` | `6ec41774-…png` | 1287 × 1222 | Ornement de coin courbe (nacre). |

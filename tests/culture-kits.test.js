@@ -76,7 +76,7 @@ F = cites.fiche;
 assert.deepEqual([F.separation.dx, F.ornementsCoin.hg.taille, F.ornementsCoin.bd.modele], [7, 223, "aucun"]);
 assert.deepEqual(F.pose, {modele: "arc", place: "bas-centre", taille: 220, dx: 149.5, dy: 5.5, retourne: false});
 assert.deepEqual(F.allonge, {place: "separation", taille: 58.5, longueur: 40, espacement: 0, dx: 545, dy: 39});
-assert.deepEqual([F.titre.hauteur, F.cuir.sombre, F.nom], [16, 0, "encre"], "le cuir ivoire, le nom à l'encre");
+assert.deepEqual([F.titre.hauteur, F.cuir.sombre, F.nom], [16, 0, "or"], "le cuir ivoire, le nom doré (Idan, 2026-11-18 : « écrire les noms en lettres dorées »)");
 assert.equal(colors.rows.find(r => r.cle === "elfes-noirs").couleur, "#5b2463");
 const pointe = read("prototype-web/assets/fiche/ornements/pointe-epines.svg");
 assert.match(pointe, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 104 24"><svg x="68\.56" y="0" width="35\.44" height="24"/, "la pointe, côté titre, dans la boîte commune");
@@ -141,12 +141,13 @@ assert.equal(srcsOf(api.hoverKitFrame(cites)).filter(s => /coin-orne-/.test(s)).
 assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-banner\{padding-bottom:14px\}\n\.hover-card\[data-kit\] \.hc-title\{margin-top:-5px\}/, "de l'air sous le titre, le nom en place");
 assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-page\{padding-top:27px\}/, "de l'air entre la bande sous le nom et les pictos");
 assert.match(read("prototype-web/hover-card-ui.js"), /\$\{hoverKitFrame\(frame\.kit\)\}\n {2}<\/article>/, "le cadre par-dessus la carte");
-assert.match(read("prototype-web/hover-card-ui.js"), /data-kit="\$\{esc\(frame\.kit\.cle\)\}"\$\{frame\.kit\.fiche\.nom==="encre"\?' data-kit-nom="encre"':""\}/);
+assert.match(read("prototype-web/hover-card-ui.js"), /data-kit="\$\{esc\(frame\.kit\.cle\)\}"\$\{frame\.kit\.fiche\.nom==="or"\?' data-kit-nom="or"':""\}/);
 
 // 4. Le style et le chargement.
 const css = read("prototype-web/styles.css");
 assert.match(css, /\.hover-card\[data-kit\] \.hc-banner\{background:linear-gradient\(rgba\(var\(--hc-kit-voile,12,2,16\),var\(--hc-kit-sombre\)\),[^}]*var\(--hc-texture\) 50% 50%\/var\(--hc-kit-grain\) repeat/);
-assert.match(css, /\.hover-card\[data-kit-nom="encre"\] \.hc-banner h3,\.hover-card\[data-kit-nom="encre"\] \.hc-title span\{background:none;[^}]*-webkit-text-fill-color:#2c1d0c;color:#2c1d0c;/, "le nom à l'encre");
+assert.match(css, /\.hover-card\[data-kit-nom="or"\] \.hc-banner h3\{background:linear-gradient\(180deg,#b98a2e 0%,#94681a 55%,#6f4b10 100%\);-webkit-background-clip:text;/, "le nom doré, l'or des textes de la barre du haut");
+assert.match(css, /\.hover-card\[data-kit-nom="or"\] \.hc-title span\{background:none;[^}]*-webkit-text-fill-color:#2c1d0c;color:#2c1d0c;/, "le titre à l'encre");
 assert.match(css, /\.hover-card\[data-kit\] \.hc-orn\{width:var\(--hc-orn-w\);height:var\(--hc-orn-h\)\}/);
 assert.match(css, /\.hc-cadre\{position:absolute;inset:0;z-index:2;pointer-events:none\}/);
 assert.match(read("prototype-web/reference-data.js"), /cultureKits: "culture-kits\.json"/);

@@ -20,7 +20,7 @@
       "source": "Date de la décision"
     }
   ],
-  "row_count": 6,
+  "row_count": 7,
   "rows": [
     {
       "ancien": "Nains des plaines",
@@ -57,6 +57,12 @@
       "nouveau": "Armes articulées",
       "famille": "arme",
       "date": "2026-11-12"
+    },
+    {
+      "ancien": "Steppes désertiques",
+      "nouveau": "Terres des Deux Fleuves",
+      "famille": "culture",
+      "date": "2026-11-18"
     }
   ]
 }

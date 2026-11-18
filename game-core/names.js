@@ -3,8 +3,8 @@
 // Noms des personnages générés (décision Idan du 2026-10-21) :
 // - le prénom respecte le sexe ; les noms de famille qui s'accordent (russes) aussi ;
 // - les humains portent des noms de la consonance de leur culture (Soleil Levant japonais, Tribus de la
-//   jungle africain, Cités libres Europe de l'Ouest, Montagnes du Nord scandinave ou russe, Steppes
-//   désertiques indien) ; prénom et nom viennent toujours de la même consonance ;
+//   jungle africain, Cités libres Europe de l'Ouest, Montagnes du Nord scandinave ou russe, Terres
+//   des Deux Fleuves indien) ; prénom et nom viennent toujours de la même consonance ;
 // - le sexe vient de l'avatar (game-core/avatars.js), attribué après la génération : le nom est tiré pour
 //   un sexe au hasard, puis fitSex le réaccorde une fois l'avatar posé. Sans avatar sexué, c'est le nom qui
 //   fixe le sexe, pour que le portrait attribué plus tard lui corresponde.

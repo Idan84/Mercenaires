@@ -90,7 +90,7 @@
 	Caravanes de ferrailleurs
 	Gnomes des forêts
 	Explorateurs
-	Steppes désertiques
+	Terres des Deux Fleuves
 	Orcs noirs
 	Elfes des grandes cités
 	Gobelins des cavernes

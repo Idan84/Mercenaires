@@ -38,7 +38,7 @@ les « Nains du chaos ».
 | Reptiliens des marécages | `reptiliens-des-marecages.jpg` | Snake_and_dagger_emblem_20261022215821.jpg | oui |
 | Reptiliens des villes | `reptiliens-des-villes.jpg` | Snake_and_gear_emblem_20261022215821.jpg | oui |
 | Royaumes du Soleil Levant | `royaumes-du-soleil-levant.jpg` | Katana_emblem_with_sun_disc_20261022215821.jpg | oui |
-| Steppes désertiques | `steppes-desertiques.jpg` | Tulwar_sword_and_lotus_emblem_20261022215821.jpg | oui |
+| Terres des Deux Fleuves | `terres-des-deux-fleuves.jpg` | Tulwar_sword_and_lotus_emblem_20261022215821.jpg | oui |
 | Tribus de la jungle | `tribus-de-la-jungle.jpg` | Dark_fantasy_tribal_emblem_logo_20261022215821.jpg | oui |
 | Tribus des forêts anciennes | `tribus-des-forets-anciennes.jpg` | Stag_skull_emblem_with_dagger_20261022215821.jpg | validé |
 | Tribus nordiques | `tribus-nordiques.jpg` | Dark_fantasy_emblem_with_horns_20261022215821.jpg | validé |

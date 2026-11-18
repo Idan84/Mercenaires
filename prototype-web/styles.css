@@ -2504,8 +2504,9 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hover-card[data-kit] .hc-orn--r{margin:0 calc(var(--hc-orn-vide) * -1) 0 var(--hc-orn-ecart)}
 /* Le nom à l'encre, sur un cuir clair (les Grandes cités, planche d'Idan du 2026-11-18) : lettres brun foncé, un liseré
    clair dessous ; l'ornement du titre à l'encre aussi. */
-.hover-card[data-kit-nom="encre"] .hc-banner h3,.hover-card[data-kit-nom="encre"] .hc-title span{background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#2c1d0c;color:#2c1d0c;filter:drop-shadow(0 1px 0 rgba(255,250,235,.55))}
-.hover-card[data-kit-nom="encre"] .hc-orn{background:#2c1d0c}
+.hover-card[data-kit-nom="or"] .hc-banner h3{background:linear-gradient(180deg,#b98a2e 0%,#94681a 55%,#6f4b10 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#94681a;filter:drop-shadow(0 1px 0 rgba(255,250,235,.7))}
+.hover-card[data-kit-nom="or"] .hc-title span{background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#2c1d0c;color:#2c1d0c;filter:drop-shadow(0 1px 0 rgba(255,250,235,.55))}
+.hover-card[data-kit-nom="or"] .hc-orn{background:#2c1d0c}
 .hc-cadre{position:absolute;inset:0;z-index:2;pointer-events:none}
 .hc-cadre>*,.hc-cadre span>img{position:absolute;display:block;max-width:none}
 /* Dans le choix de l'escouade (mission.js) : la fiche à côté du portrait survolé, à sa taille, plus petite seulement si

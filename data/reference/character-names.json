@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "character-names",
-  "description": "Noms des personnages générés (décision Idan du 2026-10-21). Chaque ligne est un réservoir de noms : prénoms de femme, prénoms d'homme, noms de famille (avec leur forme féminine quand la langue l'exige). Une ligne de culture remplace celle du peuple ; plusieurs lignes pour une culture = plusieurs consonances, tirées selon leur poids, et un personnage garde la même consonance pour son prénom et son nom. Une ligne de culture sans prénoms reprend ceux de la ligne du peuple. Humains : Soleil Levant japonais, Tribus de la jungle africain, Cités libres Europe de l'Ouest, Montagnes du Nord scandinave ou russe, Steppes désertiques indien. Le sexe vient de l'avatar : le prénom est réaccordé après l'attribution du portrait (game-core/names.js).",
+  "description": "Noms des personnages générés (décision Idan du 2026-10-21). Chaque ligne est un réservoir de noms : prénoms de femme, prénoms d'homme, noms de famille (avec leur forme féminine quand la langue l'exige). Une ligne de culture remplace celle du peuple ; plusieurs lignes pour une culture = plusieurs consonances, tirées selon leur poids, et un personnage garde la même consonance pour son prénom et son nom. Une ligne de culture sans prénoms reprend ceux de la ligne du peuple. Humains : Soleil Levant japonais, Tribus de la jungle africain, Cités libres Europe de l'Ouest, Montagnes du Nord scandinave ou russe, Terres des Deux Fleuves indien. Le sexe vient de l'avatar : le prénom est réaccordé après l'attribution du portrait (game-core/names.js).",
   "columns": [
     {
       "source": "Identifiant",
@@ -608,9 +608,9 @@
       ]
     },
     {
-      "id": "humain-steppes-desertiques-indienne",
+      "id": "humain-terres-des-deux-fleuves-indienne",
       "peuple": "Humain",
-      "culture": "Steppes désertiques",
+      "culture": "Terres des Deux Fleuves",
       "consonance": "Indienne",
       "poids": 1,
       "prenoms_femme": [

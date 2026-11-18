@@ -241,8 +241,8 @@
           "type": "image/webp"
         },
         {
-          "name": "steppes-desertiques.webp",
-          "source": "prototype-web/assets/pictos/culture-steppes-desertiques.webp",
+          "name": "terres-des-deux-fleuves.webp",
+          "source": "prototype-web/assets/pictos/culture-terres-des-deux-fleuves.webp",
           "size": 18372,
           "type": "image/webp"
         },
@@ -525,7 +525,7 @@
           "size": 173,
           "type": "image/svg+xml",
           "cultures": [
-            "steppes-desertiques"
+            "terres-des-deux-fleuves"
           ]
         },
         {
@@ -960,8 +960,8 @@
           "type": "image/webp"
         },
         {
-          "name": "steppes-desertiques.webp",
-          "source": "prototype-web/assets/hud/barres/steppes-desertiques/center.webp",
+          "name": "terres-des-deux-fleuves.webp",
+          "source": "prototype-web/assets/hud/barres/terres-des-deux-fleuves/center.webp",
           "size": 18284,
           "type": "image/webp"
         },

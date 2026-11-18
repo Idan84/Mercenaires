@@ -530,7 +530,7 @@ Avec les sorts, deux règles déjà écrites (doc 08) s'appliquent enfin : **Con
 | École | Cultures |
 |---|---|
 | Eau | Tribus nordiques, Reptiliens des marécages, Elfes des grandes cités |
-| Feu | Clans des grandes steppes, Steppes désertiques, Ogres des steppes |
+| Feu | Clans des grandes steppes, Terres des Deux Fleuves, Ogres des steppes |
 | Foudre | Elfes noirs, Nains du chaos |
 | Vie | Elfes sylvains, Cités libres, Royaumes du Soleil Levant |
 | Nécromancie | Tribus des forêts anciennes, Gnomes des cavernes, Montagnes du Nord |
@@ -546,7 +546,7 @@ Simulation (6 000 recrues, tous les sorts supposés écrits) : 48 % ne connaisse
 
 **Rattrapage du mage** (Idan, 2026-11-01 : « Un profil mage sans sort, c'est quand même problématique… Qu'il connaisse au moins un sort de sa meilleure école ») : un mercenaire de domaine Mage (doc 02) qui n'a réussi aucun tirage apprend un sort au hasard dans sa meilleure école, une fois son domaine accentué (`grantMageSpell`, trace `mageSpell`). Environ un Mage sur cinq en profite ; il n'y a plus de Mage sans sort.
 
-L'école de culture n'est **pas garantie** à la création : une recrue sur deux des cultures que la génération ne pousse pas dans leur école (Cités libres, Royaumes du Soleil Levant, Steppes désertiques, Ogres des steppes, Nains du chaos, Orcs des villes, Orcs des steppes, Caravanes de ferrailleurs) n'a pas l'école, et sa chance au tirage de culture est presque nulle. Voulu : « tout le monde ne doit pas être mage » (Idan, 2026-10-25).
+L'école de culture n'est **pas garantie** à la création : une recrue sur deux des cultures que la génération ne pousse pas dans leur école (Cités libres, Royaumes du Soleil Levant, Terres des Deux Fleuves, Ogres des steppes, Nains du chaos, Orcs des villes, Orcs des steppes, Caravanes de ferrailleurs) n'a pas l'école, et sa chance au tirage de culture est presque nulle. Voulu : « tout le monde ne doit pas être mage » (Idan, 2026-10-25).
 
 **Manuels de sorts** (Idan, 2026-10-31 : « les manuels des sorts doivent être en vente ; c'est ce qui permettra de les
 apprendre » ; modalités de JC3) :

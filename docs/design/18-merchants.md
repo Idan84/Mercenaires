@@ -162,7 +162,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Flek Visseclou | Caravanes de ferrailleurs | Amulette de chance, Tromblon, Canon à main, Fléau d’armes, Gants de pièges, Bague de la chance, Manuels de Télékinésie | 7 |
 | Lirri Feuillecoque | Gnomes des forêts | Fronde, Bâton court, Cape d’esquive, Gants de dextérité, Bottes d’esquive, Bague de l’illusionniste, Manuels d’Illusion | 7 |
 | Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation, Papillon télépathe | 8 |
-| Amar Rathore | Steppes désertiques | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu, Destrier | 8 |
+| Amar Rathore | Terres des Deux Fleuves | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu, Destrier | 8 |
 | Karg Brisenclume | Orcs noirs | Épée à deux mains, Hache double, Bardiche, Armure de plates, Armure d'écailles, Gants de force, Manuels de Transmutation | 7 |
 | Ilyra Hauteverrière | Elfes des grandes cités | Estoc, Épée longue, Bâton long, Ceinture de mana, Amulette de puissance magique, Vêtements, Manuels d’Eau | 7 |
 | Crik Fouillecrâne | Gobelins des cavernes | Dague, Kukri, Fronde, Bottes d’esquive, Gants de pièges, Bague de l’invocation, Manuels d’Invocation | 7 |
@@ -288,7 +288,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 > « On ajoute pour le marchand des humains des steppes, l'achat et la vente du cheval. Je te propose que la valeur d'un animal soit de 300 x coût d'entretien. On peut donc acheter et vendre des chevaux comme les autres biens. » « Le marchand elfe Sylvain en vend et en achète. »
 
-- **Amar Rathore** (Steppes désertiques) vend des **destriers** ; **Ysolwen Chantesève** (Elfes sylvains) des **licornes** (`merchants.json`, type `mount`). Un marchand chacune : l'exception à la règle des deux marchands (`scripts/merchant-coverage.js`).
+- **Amar Rathore** (Terres des Deux Fleuves) vend des **destriers** ; **Ysolwen Chantesève** (Elfes sylvains) des **licornes** (`merchants.json`, type `mount`). Un marchand chacune : l'exception à la règle des deux marchands (`scripts/merchant-coverage.js`).
 - **Valeur** = 300 × entretien (`economy.mount_value_per_upkeep`, `mounts.json`) : destrier **3 000 PO**, licorne **9 000 PO** ; puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…). Sans tier ni qualité : pas de rareté.
 - **Aymeric Belcomptoir** (Cités libres) vend des **pégases** (Idan, 2026-11-09 : « Il est vendu par le marchand humain des
   cités libres ») : **12 000 PO** de valeur (40 PO d'entretien).

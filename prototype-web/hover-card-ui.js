@@ -139,7 +139,7 @@ const HOVER_TITLE_ORNAMENTS={
   "halflings-des-cites-humaines":"couronne-croix","halflings-des-villages-isoles":"epi","explorateurs":"tentacule-sabre",
   "elfes-noirs":"pointe-epines","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"branche",
   "cites-libres":"lys","montagnes-du-nord":"flocon","tribus-de-la-jungle":"fleur",
-  "steppes-desertiques":"croissant-haut","royaumes-du-soleil-levant":"dragon",
+  "terres-des-deux-fleuves":"croissant-haut","royaumes-du-soleil-levant":"dragon",
   "reptiliens-des-villes":"oeil","reptiliens-des-marecages":"crapaud","reptiliens-des-cites-temples":"triangle"
 };
 function hoverCultureFrame(culture){

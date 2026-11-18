@@ -137,7 +137,8 @@ assert.equal(m.activeUnit === duo && duo.attackAvailable, true, "celle du cavali
 assert.equal(api.missionActionAvailability().mountMelee, false);
 // Le cavalier apprend (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, comme une arme
 // (enchaînement compris).
-const mountAttacks = m.log.filter(l => new RegExp("^" + duo.mount.character.name + " attaque ").test(l.message)).length;
+// Ses attaques d'opportunité comptent aussi (selon le tirage, l'ennemi touché peut fuir et s'ouvrir aux sabots).
+const mountAttacks = m.log.filter(l => new RegExp("^" + duo.mount.character.name + " (attaque |profite de l’ouverture et frappe )").test(l.message)).length;
 assert.ok(mountAttacks >= 1);
 assert.equal(duo.progress.animalUses["Équidés"].attacks, mountAttacks);
 const learned = Progression.createProgressionRules({reference}).gains(duo.progress, rider).skills.animal;
@@ -148,12 +149,18 @@ if (target.hp < hpBefore) assert.ok(Object.keys(duo.progress.enemyWounds).length
 Progression.recordAttack(duo.mount, target, {mode: "melee"}, {ok: true, wound: true, damage: 12, targetDown: true, weapon: "Sabots", hit: true});
 assert.ok(Object.keys(duo.progress.enemyKnockouts).length > 0, "le coup de grâce de sa monture compte pour lui");
 assert.ok(Progression.createProgressionRules({reference}).reputationGains(duo.progress).sources.enemyKnockouts > 0);
+// Le tour ennemi passe : selon le tirage, une blessure pourrait faire fuir le couple et finir le combat. Il tient bon
+// (sans peur, comme un mort-vivant) le temps de ce tour.
+duo.character.undead = true;
 api.endMissionActivation();
+delete duo.character.undead;
 assert.ok(!m.log.some(l => l.message === "Activation de " + duo.mount.character.name + "."), "le cheval ne joue pas après");
 // Le cheval monté menace aussi (Idan : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ; « oui ») : un
 // ennemi qui quitte le contact du couple subit aussi son attaque d'opportunité.
+// Selon le tirage, l'ennemi touché a pu fuir : on le remet au contact du couple.
+target.fleeing = false; assert.ok(adjacentTo(duo, target), "l'ennemi de nouveau au contact");
 assert.ok(api.missionReactors(target).includes(duo.mount), "le cheval réagit");
-const away = {q: target.q + (target.q - duo.q) * 3, r: target.r};
+const away = {q: target.q + (target.q - duo.q) * 3, r: target.r + (target.r - duo.r) * 3};
 assert.ok(combat.opportunityReactors(api.missionReactors(target), target, {...target, q: away.q, r: away.r}).includes(duo.mount));
 // Une potion de soins avec « Viser le cheval » : c'est le cheval qui la boit (Idan : « oui »).
 const potion = generator.createItemByName("potion", "Potion de soins");
@@ -167,8 +174,14 @@ assert.ok(m.log.some(l => /fait boire à Destrier/.test(l.message)));
 m.aimMount = false;
 // Un coup d'IA sur un couple (Idan : « oui ») : le jet du tir décide qui le prend.
 const strikes = {horse: 0, rider: 0};
+// Sans peur (comme des morts-vivants) et sans fond de PV : selon le tirage, une fuite ouvrirait des attaques d'opportunité,
+// une mort finirait le combat ; on ne compte que qui prend le coup.
+duo.character.undead = target.character.undead = true;
+const pvBefore = [duo.pvMax, duo.mount.pvMax, target.pvMax];
+duo.pvMax = duo.mount.pvMax = target.pvMax = target.hp = 100000;
 for (let i = 0; i < 40; i++) {
   const before = m.log.length;
+  duo.hp = duo.pvMax; duo.mount.hp = duo.mount.pvMax;
   target.attackAvailable = true;
   api.performMissionAttack(target, duo, "melee", combat.axialDistance(target, duo));
   const line = m.log.slice(before).find(l => /^Coup sur /.test(l.message));
@@ -176,6 +189,8 @@ for (let i = 0; i < 40; i++) {
   duo.hp = duo.pvMax; duo.mount.hp = duo.mount.pvMax; duo.alive = true; duo.mount.alive = true; duo.fleeing = false; target.fleeing = false;
   if (m.over) break;
 }
+delete duo.character.undead; delete target.character.undead;
+[duo.pvMax, duo.mount.pvMax, target.pvMax] = pvBefore; duo.hp = duo.pvMax; duo.mount.hp = duo.mount.pvMax; target.hp = target.pvMax;
 assert.ok(strikes.horse > strikes.rider && strikes.rider > 0, "le cheval prend environ 2 coups sur 3 : " + JSON.stringify(strikes));
 // Un cavalier ennemi : son cheval frappe aussi, dans la même activation, sur place.
 const enemyRider = rules.applyArchetype(generator.createMercenary({id: 950, captain, forcedPeople: "Humain", forcedCulture: rules.archetype("thief_rider").culture}),
@@ -225,6 +240,8 @@ api.endMissionActivation();
 for (const u of m.players) u.acted = false;
 m.activeUnit = null;
 while (m.activeUnit !== pairUnit) { if (m.activeUnit) api.endMissionActivation(); else api.selectNextMissionPlayer(); }
+// Selon le tirage, un tir ennemi a pu faire paniquer la monture pendant le tour ennemi : on la remet au contact.
+if (steed.fleeing || combat.axialDistance(pairUnit, steed) !== 1) { steed.fleeing = false; steed.fleeTurn = 0; adjacentTo(pairUnit, steed); }
 assert.equal(combat.axialDistance(pairUnit, steed), 1);
 assert.equal(api.missionActionAvailability().remount, true);
 assert.equal(api.remountMission(pairUnit), true);

@@ -1,14 +1,15 @@
 # Mercenaires — Design source
 
-Git est désormais la source de vérité du game design. Notion n'est plus requis.
+Git est la source de vérité du game design : on modifie Git directement, sans synchroniser depuis Notion.
 
-Données structurées : ../../data/reference/
-Archive historique : ../../archive/notion-export/
+- Données structurées : `../../data/reference/` (voir `CATALOG.md`)
+- Formules détaillées : `formulas/` (43 pages)
+- Archive historique, jamais source active : `../../archive/notion-export/`
 
-## Documents principaux
+## Documents
 
-- [00-overview.md](./00-overview.md)
-- [01-start-and-generation-functions.md](./01-start-and-generation-functions.md)
+- [00-overview.md](./00-overview.md) — vue d'ensemble, repères du jeu
+- [01-start-and-generation-functions.md](./01-start-and-generation-functions.md) — démarrage de partie, biais du capitaine
 - [02-generation-and-identity.md](./02-generation-and-identity.md)
 - [03-character-and-skills.md](./03-character-and-skills.md)
 - [04-combat.md](./04-combat.md)
@@ -23,20 +24,12 @@ Archive historique : ../../archive/notion-export/
 - [13-fleeing.md](./13-fleeing.md)
 - [14-tavern-recruitment.md](./14-tavern-recruitment.md)
 - [15-biographies-and-narrative-tags.md](./15-biographies-and-narrative-tags.md)
-- [16-camp-calendar.md](./16-camp-calendar.md) — mois, jours, citations et passage du temps au camp ; les barres du haut et du bas du camp
-- [17-one-shot-missions.md](./17-one-shot-missions.md) — missions one shot (brouillon) : tableau des contrats, escouades, difficulté, échec
-- [18-merchants.md](./18-merchants.md) — marchands : passage du jour, Thorval Poudredefeu (armes à feu), étal de 10 articles, affinité, achat, revente, intendant
-- [19-mercenary-profile.md](./19-mercenary-profile.md) — titres des mercenaires : 10 catégories de rôle et leurs sous-catégories, notées en étoiles de réputation ; 1 à 3 rôles fondus en un seul titre écrit (« ce qu'il fait × comment », v3) ou « Chair à canon »
-- [20-mercenary-tags.md](./20-mercenary-tags.md) — tags des mercenaires : Occupations principales, Équipement (avec les styles de combat), Rôle au combat ; trois niveaux ; l'onglet Rôle et occupations de la fiche ; l'intendant qui tague (Rôle, Occupations, Équipement, Entraînement, Postes) et sa simulation
-- [90-mechanics-backlog.md](./90-mechanics-backlog.md)
-- [91-combat-ideas.md](./91-combat-ideas.md)
-- [92-balance-questions.md](./92-balance-questions.md)
+- [16-camp-calendar.md](./16-camp-calendar.md) — calendrier, barres du haut et du bas du camp
+- [17-one-shot-missions.md](./17-one-shot-missions.md) — missions one shot : contrats, escouades, difficulté, échec
+- [18-merchants.md](./18-merchants.md) — marchands : passage, étal, affinité, achat, revente
+- [19-mercenary-profile.md](./19-mercenary-profile.md) — titres des mercenaires : rôles notés en étoiles, titre écrit
+- [20-mercenary-tags.md](./20-mercenary-tags.md) — tags des mercenaires et l'intendant qui tague
+- [90-mechanics-backlog.md](./90-mechanics-backlog.md) — mécaniques encore ouvertes
+- [91-combat-ideas.md](./91-combat-ideas.md) — boîte à idées du combat
+- [92-balance-questions.md](./92-balance-questions.md) — questions d'équilibrage
 - [93-pending-and-parked.md](./93-pending-and-parked.md) — en attente et mis de côté
-
-## Formules détaillées
-
-43 pages dans formulas/.
-
-## Règle d'édition
-
-Modifier Git directement. Ne plus synchroniser depuis Notion.

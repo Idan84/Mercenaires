@@ -29,7 +29,7 @@ const key = c => c.q + "," + c.r;
 const keys = cells => cells.map(key).sort();
 assert.deepEqual(engine.footprintAt(0, 0, "normale").length, 1);
 assert.deepEqual(keys(engine.footprintAt(5, 5, "longue", 0)), keys([{q: 5, r: 5}, {q: 4, r: 5}]), "longue : la tête et le corps derrière elle");
-// Cases carrées (doc 04 : « cheval 1×2 », « cerbère 2×2 », énorme 3×3).
+// Cases carrées (doc 04 : « cheval et cerbère 1×2 », mammouth 2×2, énorme 3×3).
 assert.deepEqual(keys(engine.footprintAt(5, 5, "grande", 0)), keys([{q: 5, r: 5}, {q: 5, r: 4}, {q: 4, r: 5}, {q: 4, r: 4}]), "grande : 2×2");
 assert.equal(engine.footprintAt(5, 5, "enorme").length, 9, "énorme : 3×3");
 for (const size of ["longue", "grande", "enorme"]) for (let f = 0; f < 4; f++) {

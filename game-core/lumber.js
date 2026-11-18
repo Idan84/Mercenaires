@@ -1,11 +1,8 @@
 "use strict";
 
-// Cabane du bûcheron (Idan, 2026-11-03 : « l'idée c'est d'envoyer des mercenaires bûcheronner pour accélérer la
-// construction du camp. Pas une ressource de bois […] sur les constructions actuelles de niveau 1 à 5 (y'aura la mine pour
-// 6 à 10). On peut envoyer 1 mercenaire par niveau de cabane » ; chantier : « A » (celui qui finit le plus tôt) ; dortoir :
-// « Oui » ; effet « fixe ») et Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments
-// de lvl 6 à 10 » ; le test « pareil ») : course "lumber" ou "mine". Module pur : campaign.js lui donne le camp et appelle
-// morning(state) chaque matin, après les chantiers terminés.
+// Cabane du bûcheron (Idan, 2026-11-03 : « On peut envoyer 1 mercenaire par niveau de cabane ») et Guilde des mineurs
+// (Idan, 2026-11-04 ; le test « pareil ») : course "lumber" ou "mine". Module pur : campaign.js lui donne le camp et appelle
+// morning(state) chaque matin.
 //
 // Les corvées (Idan, 2026-11-04 : « on va mettre les mercenaires en durée indéterminée. On peut les retirer quand on le
 // souhaite. Par contre, chaque jour fait baisser l'affinité » ; « Dans les 3 cas, ils peuvent refuser. -1 par jour c'est
@@ -17,10 +14,11 @@
 //   (camp.lumber.offer_offset) + l'appui de l'intendant ; une relance après un refus (persuasion.js) : Intimider
 //   (+ Intimidation du capitaine) ou Convaincre (+ Charisme ÷ 2) ; puis c'est non pour aujourd'hui. Le capitaine, sans test.
 // - Chaque matin de travail : affinité −1 (camp.lumber.daily_affinity), × 2 s'il a été intimidé, × 0,5 s'il a été convaincu.
-// - Effet : chaque travailleur retire 1 jour (camp.<course>.days_per_worker) au chantier qui finit le plus tôt, parmi ceux de
-//   niveau 1 à 5 (bois) ou 6 à 10 (pierre) : un bâtiment (son niveau en construction), la qualité du dortoir (son niveau),
-//   un agrandissement du dortoir (son rang), un quartier du lieutenant (son numéro). Un chantier finit au plus tôt le
-//   lendemain matin.
+// - Effet (Idan, 2026-11-18 : « ils rapportent du bois et de la pierre » ; « Cabane et Guilde produisent ») : chaque matin,
+//   du bois (Cabane) ou de la pierre (Guilde) dans les réserves de la compagnie (company.wood, company.stone) :
+//   - le bâtiment : 20 × 0,5 × étoiles de renommée de la compagnie × niveau du bâtiment (camp.resources.hall_*) ;
+//   - chaque ouvrier : 15 × (Force ÷ 50)² (camp.resources.worker_*) : « envoyer un mec très fort, c'est très utile, un
+//     gobelin avec 10 en force, ça rapporte rien ».
 //
 // Le Palais des plaisirs (Idan, 2026-11-04 : « On peut y faire travailler nos mercenaires, ils rapportent des pièces d'or en
 // fonction de leur charisme et de leur réputation. Il faut un test d'affinité pour envoyer un mercenaire » ; « Il faut que
@@ -37,11 +35,11 @@
 })(typeof globalThis!=="undefined"?globalThis:this,function(Persuasion,OldSteward){
   const HALL="lumber_camp";
   const COURSES={
-    lumber:{hall:"lumber_camp",key:"lumberjacks",offerKey:"lumberOffer",prefix:"camp.lumber",minLevel:1,maxLevel:5,text:{
+    lumber:{hall:"lumber_camp",key:"lumberjacks",offerKey:"lumberOffer",prefix:"camp.lumber",resource:"wood",text:{
       noHall:"Il faut d’abord construire la Cabane du bûcheron.",already:"Il bûcheronne déjà.",
       full:"La Cabane n’a plus de place.",tomorrow:"Il part bûcheronner demain matin.",working:"Il bûcheronne.",
       notAssigned:"Il ne bûcheronne pas."}},
-    mine:{hall:"miners_guild",key:"miners",offerKey:"mineOffer",prefix:"camp.mine",minLevel:6,maxLevel:10,text:{
+    mine:{hall:"miners_guild",key:"miners",offerKey:"mineOffer",prefix:"camp.mine",resource:"stone",text:{
       noHall:"Il faut d’abord construire la Guilde des mineurs.",already:"Il travaille déjà à la mine.",
       full:"La Guilde n’a plus de place.",tomorrow:"Il descend à la mine demain matin.",working:"Il travaille à la mine.",
       notAssigned:"Il ne travaille pas à la mine."}},
@@ -56,23 +54,11 @@
   }
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const curve=(delta,slope)=>10+80/(1+Math.exp(-delta/slope));
-  // Le « niveau » d'un chantier, pour la règle des niveaux 1 à 5 (bois) ou 6 à 10 (pierre).
-  function workLevel(work){
-    if(!work) return 0;
-    if(work.kind==="dormitory"||work.kind==="lieutenant_quarter") return Number(work.number)||0;
-    return Number(work.level)||0;
-  }
-  function workName(work){
-    if(work?.kind==="dormitory") return "Agrandissement du dortoir";
-    if(work?.kind==="dormitory_quality") return "Qualité du dortoir";
-    if(work?.kind==="lieutenant_quarter") return "Quartier du lieutenant";
-    return work?.name||"Chantier";
-  }
 
   // course : "lumber" (Cabane, par défaut), "mine" (Guilde) ou "palace" (Palais des plaisirs).
   // camp : { buildingLevel(state, code), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (un
-  //          apprentissage, l'autre corvée), offField(state, m) (intendant, médecin, maîtres : à leur poste), works(state) →
-  //          les chantiers en cours (objets construction, modifiés sur place), masterOf(state) → le Maître des plaisirs }
+  //          apprentissage, l'autre corvée), offField(state, m) (intendant, médecin, maîtres : à leur poste),
+  //          companyLevel(state) → étoiles de renommée de la compagnie (1 à 15), masterOf(state) → le Maître des plaisirs }
   //          (campaign.js).
   function createLumberRules({reference,random=Math.random,affinity=null,camp,course="lumber"}={}){
     const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
@@ -80,8 +66,10 @@
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const C={
-      perLevel:k(COURSE.prefix+".workers_per_level",1),daysPerWorker:k(COURSE.prefix+".days_per_worker",1),
-      minLevel:k(COURSE.prefix+".min_work_level",COURSE.minLevel),maxLevel:k(COURSE.prefix+".max_work_level",COURSE.maxLevel),
+      perLevel:k(COURSE.prefix+".workers_per_level",1),
+      hallYield:k("camp.resources.hall_yield",20),starWeight:k("camp.resources.hall_star_weight",0.5),
+      workerYield:k("camp.resources.worker_yield",15),forceRef:k("camp.resources.worker_force_ref",50),
+      forceExponent:k("camp.resources.worker_force_exponent",2),
       offset:k(COURSE.prefix+".offer_offset",k("camp.lumber.offer_offset",-30)),
       daily:k(COURSE.prefix+".daily_affinity",k("camp.lumber.daily_affinity",-1)),
       reputationWeight:k("camp.palace.reputation_weight",0.2),masterDivisor:k("camp.palace.master_divisor",200),
@@ -208,12 +196,11 @@
     }
 
     // Les chantiers que le bois (niveaux 1 à 5) ou la pierre (6 à 10) peut accélérer aujourd'hui, pas déjà au plus court.
-    const eligible=state=>(camp.works(state)||[]).filter(work=>{
-      const level=workLevel(work);
-      return level>=C.minLevel&&level<=C.maxLevel&&Number(work.endDay)>state.day+1;
-    });
-    // Chaque matin : ceux qui travaillent aujourd'hui perdent un peu d'affinité, puis chacun retire un jour au chantier qui
-    // finit le plus tôt.
+    // Le bois ou la pierre d'une journée : le bâtiment (niveau × étoiles de renommée), puis chaque ouvrier selon sa Force.
+    const hallOutput=state=>Math.round(C.hallYield*C.starWeight*(Number(camp.companyLevel?.(state))||1)
+      *(Number(camp.buildingLevel(state,hall))||0));
+    const workerOutput=m=>Math.round(C.workerYield*Math.pow(Math.max(0,stat(m,"Force"))/C.forceRef,C.forceExponent));
+    // Chaque matin : ceux qui travaillent aujourd'hui perdent un peu d'affinité ; le bâtiment et ses ouvriers rapportent.
     function morning(state){
       const list=entriesOf(state);
       for(let i=list.length-1;i>=0;i--) if(!memberOf(state,list[i].id)) list.splice(i,1);
@@ -231,24 +218,19 @@
         let gold=0;
         for(const r of report){ r.gold=earnings(state,r.mercenary); gold+=r.gold; }
         state.company.gold=(Number(state.company.gold)||0)+gold;
-        return {workers:report,reduced:[],gold};
+        return {workers:report,gold};
       }
-      const reduced=new Map();
-      for(let n=0;n<workers.length;n++){
-        const work=eligible(state).sort((a,b)=>a.endDay-b.endDay)[0];
-        if(!work) break;
-        work.endDay=Math.max(state.day+1,work.endDay-C.daysPerWorker);
-        const entry=reduced.get(work)||{name:workName(work),days:0,endDay:work.endDay};
-        entry.days+=1;
-        entry.endDay=work.endDay;
-        reduced.set(work,entry);
-      }
-      return {workers:report,reduced:[...reduced.values()]};
+      // Cabane et Guilde : du bois ou de la pierre, même sans ouvrier.
+      const resource=COURSE.resource,fromHall=hallOutput(state);
+      let total=fromHall;
+      for(const r of report){ r.output=workerOutput(r.mercenary); total+=r.output; }
+      state.company[resource]=(Number(state.company[resource])||0)+total;
+      return {workers:report,resource,hall:fromHall,total};
     }
 
     return {constants:C,HALL:hall,course,slots,entriesOf,entryOf,working,busyReason,tomorrowReason,chance,dailyLoss,reputationLevel,earnings,canSend,send,
-      canRetry,retry,withdraw,cancel:withdraw,morning,workLevel,workName};
+      canRetry,retry,withdraw,cancel:withdraw,morning,hallOutput,workerOutput};
   }
 
-  return {createLumberRules,HALL,COURSES,workLevel,workName};
+  return {createLumberRules,HALL,COURSES};
 });

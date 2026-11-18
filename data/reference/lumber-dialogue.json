@@ -1,15 +1,17 @@
 {
   "schema_version": 1,
   "name": "lumber-dialogue",
-  "description": "Cabane du bûcheron (Idan, 2026-11-03 et 2026-11-04) : envoyer un mercenaire bûcheronner à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte de la Cabane ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "description": "Cabane du bûcheron (Idan, 2026-11-03 et 2026-11-04) : envoyer un mercenaire bûcheronner à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte de la Cabane ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; panel.output, panel.worker_output : ce que le bâtiment et chaque ouvrier rapportent par jour ({total}, {n}) ; log : le journal du matin ({total}, {batiment}, {ouvriers} ; produced_hall sans ouvrier). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
   "panel": {
     "send": "Envoyer bûcheronner",
-    "send_tip": "Il peut refuser. Chaque jour à la Cabane coûte un peu d’affinité. Chaque bûcheron retire un jour à un chantier du camp (niveaux 1 à 5).",
+    "send_tip": "Il peut refuser. Chaque jour à la Cabane coûte un peu d’affinité. Il rapporte du bois chaque jour : beaucoup s’il est très fort, presque rien s’il est faible.",
     "title": "Bûcherons",
     "starting": "dès demain",
     "withdraw": "Retirer",
     "captain": "Le capitaine ira bûcheronner dès demain.",
-    "withdrawn": "{nom} ne bûcheronnera plus."
+    "withdrawn": "{nom} ne bûcheronnera plus.",
+    "output": "Production : +{total} bois par jour",
+    "worker_output": "+{n} bois"
   },
   "send": {
     "proposal": "Il nous faut des bras pour couper du bois, à partir de demain. Vous y allez.",
@@ -27,7 +29,7 @@
     "outcome_refused": "{prenom} refuse."
   },
   "log": {
-    "reduced": "{chantier} : {jours} de moins grâce aux bûcherons.",
-    "none": "Les bûcherons n’ont trouvé aucun chantier à accélérer."
+    "produced": "Bois : +{total} (Cabane {batiment}, bûcherons {ouvriers}).",
+    "produced_hall": "Bois : +{total} (Cabane)."
   }
 }

@@ -19,7 +19,7 @@ const files=Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)
 assert.equal(files.mineDialogue,"mine-dialogue.json","le jeu charge les textes");
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
-assert.deepEqual(["workers_per_level","days_per_worker","min_work_level","max_work_level"].map(k=>constant("camp.mine."+k)),[1,1,6,10]);
+assert.equal(constant("camp.mine.workers_per_level"),1);
 assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
 
 // Le bâtiment : le Puits entraîne les Armes contondantes, apprises avec la Force ; pas de chef.
@@ -36,7 +36,7 @@ const generator=createGenerator(reference,{random:genRandom,nameGenerator:(peopl
 const rules=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,
   random:()=>dice.length?dice.shift():0.999});
 const mine=rules.miners,lumber=rules.lumberjacks;
-assert.deepEqual([mine.HALL,mine.constants.minLevel,mine.constants.maxLevel,lumber.constants.minLevel,lumber.constants.maxLevel],["miners_guild",6,10,1,5]);
+assert.deepEqual([mine.HALL,mine.course,lumber.HALL],["miners_guild","mine","lumber_camp"]);
 const captain=generator.createCaptain({id:1});
 const state=rules.createCampaign({captain,squad:[2,3,4,5,6].map(id=>generator.createMercenary({id,captain}))});
 const [, first, second, third, fourth]=state.company.roster;
@@ -75,19 +75,16 @@ assert.equal(lumber.send(state,third.id).accepted,true);
 assert.equal(mine.canSend(state,third).reason,"Il part bûcheronner demain matin.");
 assert.equal(mine.withdraw(state,third.id).reason,"Il ne travaille pas à la mine.");
 
-// Les chantiers : le Cercle (niveau 1, 4 jours), l'École de magie (niveau 6, 24 jours), le Ludus (niveau 7, 28 jours).
-state.company.camp.buildings.magic_school={level:5,construction:null};
-state.company.camp.buildings.ludus={level:6,construction:null};
-for(const code of ["blade_circle","magic_school","ludus"]) assert.equal(rules.startBuilding(state,code).ok,true,code);
-const day0=state.day,camp=state.company.camp.buildings;
-const circle=camp.blade_circle.construction,school=camp.magic_school.construction,ludus=camp.ludus.construction;
-assert.deepEqual([circle.level,school.level,ludus.level].concat([circle,school,ludus].map(w=>w.endDay-day0)),[1,6,7,4,24,28]);
+// La pierre du matin (Idan, 2026-11-18) : la Guilde, 20 × 0,5 × étoiles de renommée × niveau ; chaque mineur, 15 × (Force
+// ÷ 50)². Le bûcheron, lui, rapporte du bois.
+first.stats.Force=50;second.stats.Force=75;third.stats.Force=100;
+const wood0=state.company.wood,stone0=state.company.stone;
 dice=[];
 const [morning]=rules.advanceTime(state,1);
-// Les deux mineurs vont à l'École (niveau 6 à 10, finit le plus tôt) ; le bûcheron au Cercle (niveau 1 à 5).
-assert.deepEqual(morning.mine.reduced.map(r=>[r.name,r.days]),[["École de magie",2]]);
-assert.deepEqual(morning.lumber.reduced.map(r=>[r.name,r.days]),[["Cercle des Fines Lames",1]]);
-assert.deepEqual([circle,school,ludus].map(w=>w.endDay-day0),[3,22,28]);
+assert.deepEqual([morning.mine.resource,morning.mine.hall,morning.mine.total],["stone",20,69]);
+assert.deepEqual(morning.mine.workers.map(w=>[w.id,w.output]),[[first.id,15],[second.id,34]]);
+assert.deepEqual([morning.lumber.resource,morning.lumber.hall,morning.lumber.total],["wood",10,70]);
+assert.deepEqual([state.company.stone-stone0,state.company.wood-wood0],[69,70]);
 // Intimidé : −2 d'affinité par jour ; sinon −1.
 assert.deepEqual(morning.mine.workers.map(w=>[w.id,w.affinityDelta]),[[first.id,-2],[second.id,-1]]);
 assert.equal(rules.agenda.reason(state,first.id),"Il travaille à la mine.");
@@ -99,11 +96,7 @@ assert.equal(mine.withdraw(state,second.id).ok,true);
 dice=[0];
 assert.equal(mine.send(state,third.id).accepted,true);
 
-// Le dortoir aussi, de son 6e au 10e agrandissement (son rang), de sa qualité 6 à 10, du 6e au 10e quartier du lieutenant.
-state.company.camp.construction={kind:"dormitory",number:6,gold:0,days:3,startDay:state.day,endDay:state.day+3};
-const [dorm]=rules.advanceTime(state,1);
-assert.deepEqual(dorm.mine.reduced.map(r=>[r.name,r.days]),[["Agrandissement du dortoir",1],["École de magie",1]]);
-assert.deepEqual([mine.workLevel({kind:"dormitory",number:5}),mine.workLevel({kind:"dormitory_quality",level:8}),mine.workLevel({kind:"lieutenant_quarter",number:10})],[5,8,10]);
+rules.advanceTime(state,1);
 
 // Interface : la carte de la Guilde, le journal du matin.
 const fmt=value=>String(Math.round(Number(value)||0));
@@ -118,17 +111,17 @@ let html=ui.mineHtml(state);
 assert.match(html,/<summary class="talk-offer-btn" title="[^"]+">Envoyer à la mine<\/summary>/);
 assert.match(html,new RegExp(`data-course="mine" data-work-send="${fourth.id}"`));
 assert.doesNotMatch(html,new RegExp(`data-work-send="${third.id}"`),"il y est déjà");
-assert.match(html,new RegExp(`<h4>Mineurs \\(1 / 2\\)</h4>[\\s\\S]*<strong>${third.name}</strong></div>[\\s\\S]*data-course="mine" data-work-withdraw="${third.id}">Retirer`));
+assert.match(html,new RegExp(`<h4>Mineurs \\(1 / 2\\)</h4>[\\s\\S]*<strong>${third.name}</strong><span>\\+60 pierre</span></div>[\\s\\S]*data-course="mine" data-work-withdraw="${third.id}">Retirer`));
 assert.doesNotMatch(ui.lumberHtml(state),/Mineurs/);
 ui.logCampWork(morning.mine,"mine");
-ui.logCampWork({workers:[{id:1}],reduced:[]},"mine");
+ui.logCampWork({workers:[],resource:"stone",hall:20,total:20},"mine");
 ui.logCampWork(morning.lumber,"lumber");
-assert.deepEqual(lines,[["École de magie : 2 jours de moins grâce aux mineurs.","turn"],["Les mineurs n’ont trouvé aucun chantier à accélérer.","info"],
-  ["Cercle des Fines Lames : 1 jour de moins grâce aux bûcherons.","turn"]]);
+assert.deepEqual(lines,[["Pierre : +69 (Guilde 20, mineurs 49).","turn"],["Pierre : +20 (Guilde).","turn"],
+  ["Bois : +70 (Cabane 10, bûcherons 60).","turn"]]);
 const copy=reference.mineDialogue;
 assert.ok(copy.send.accepted.length>=3&&copy.send.refused.length>=3);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8"),/code==="miners_guild"&&typeof mineHtml==="function"\?mineHtml\(c\):""/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/logCampWork\(report\.mine,"mine"\)/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8"),/\{kind:"available",label:"À la mine demain"\}/);
 
-console.log("Guilde des mineurs : 1 mineur par niveau, même test et même relance, jusqu'au retrait, 1 jour de moins au chantier le plus proche (niveaux 6 à 10), une corvée à la fois — OK");
+console.log("Guilde des mineurs : 1 mineur par niveau, même test et même relance, jusqu'au retrait, la pierre du matin (Guilde et mineurs selon leur Force), une corvée à la fois — OK");

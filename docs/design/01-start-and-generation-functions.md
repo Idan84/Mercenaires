@@ -1,120 +1,40 @@
-> Source de vérité Git. Migré depuis l'export Notion figé du 2026-10-03.
+# Démarrage de partie & fonctions de génération
 
-# 00 — Démarrage de partie & fonctions de génération
+Une nouvelle partie crée le **capitaine**, puis l'**escouade initiale**. Ensuite, chaque mercenaire généré reçoit le
+capitaine comme contexte de pondération (ses biais : `data/reference/formula-constants.json`).
 
-Cette page décrit l’ordre d’appel des fonctions de création au démarrage d’une partie et les biais introduits par le capitaine dans la génération ultérieure des mercenaires.
+## Création du capitaine
 
-<aside>
-🎛️
+Le joueur choisit : son prénom (et un nom de famille s'il le veut) ; le peuple ; s'il veut une ascendance ; la culture ;
+l'origine sociale ; son arme favorite, sa tenue, ses affinités spirituelles et son caractère (ci-dessous) ; son
+portrait ; l'alignement (par défaut, le plus fréquent de son peuple ou de sa culture) ; le nom et le blason de sa
+compagnie.
 
-Les valeurs réglables du biais capitaine sont centralisées dans [Constantes de formule](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Constantes%20de%20formule%202a25d0db802141bb8e0273935c2be8c2.md), vue **Génération — capitaine** : `generation.captain.people_bonus_pp = 9`, `generation.captain.other_people_malus_pp = -1`, `generation.captain.ascendance_weight_multiplier = 2`, `generation.captain.culture_weight_multiplier = 2`, `generation.captain.alignment_bonus_pp = 15`.
+Les jets ne sont **jamais améliorés, relancés ou modifiés par l'identité** : mêmes jets bruts qu'un mercenaire normal
+(caractéristiques fondamentales `20 + 3D20`, résistances `1D6`). Les choix décident seulement quels modificateurs et
+quelles tables s'appliquent.
 
-</aside>
-
-```mermaid
-graph TD
-    A["New_Game"] --> B["Create_Captain_Mercenary"]
-    B --> C["Create_Initial_Squad"]
-    B --> D["Contexte capitaine"]
-    D --> E["Create_Mercenary"]
-    C -->|"boucle X fois : peuple + culture forcés"| E
-```
-
-## `New_Game`
-
-Responsabilité connue à ce stade : déclencher la création du capitaine, puis lancer la création de l’escouade initiale.
-
-```jsx
-function New_Game(playerChoices) {
-    const captain = Create_Captain_Mercenary(playerChoices);
-    const initialSquad = Create_Initial_Squad(captain);
-
-    return { captain, initialSquad };
-}
-```
-
-## `Create_Captain_Mercenary`
-
-Le capitaine est un mercenaire particulier dont **l’identité est orientée par les choix du joueur**.
-
-Le joueur choisit :
-
-- son prénom et, s’il le souhaite, son nom de famille ;
-- le peuple ;
-- s’il souhaite une ascendance ;
-- la culture ;
-- l’origine sociale ;
-- son arme favorite, sa tenue, ses affinités spirituelles et son caractère (voir ci-dessous) ;
-- son portrait ;
-- l’alignement (par défaut, le plus fréquent de son peuple ou de sa culture) ;
-- le nom et le blason de sa compagnie.
-
-Les jets de caractéristiques ne sont **pas améliorés, relancés ou modifiés par l’identité**. On utilise les mêmes jets bruts que pour un mercenaire normal : caractéristiques fondamentales = `20 + 3D20`, résistances = `1D6`. Le peuple, l’ascendance, la culture et l’origine déterminent simplement quels modificateurs seront ensuite appliqués.
+**Ascendance** : il choisit son type parmi ceux compatibles avec son peuple et la reçoit au **niveau 3** (modificateurs
+de la Matrice de génération, échelle D6 du niveau 3).
 
 ### Choix de personnalité (Idan, 2026-11-12)
 
-Quatre questions, posées après l’ascendance, laissent un peu plus de choix au joueur (« on peut se retrouver à jouer un healer alors qu’on est un bourrin »). Les gains ne sont jamais affichés à l’écran. Ils s’appliquent une fois le profil tiré (après la remise à 1 des compétences non pratiquées, pour que le gain se voie) et avant les valeurs dérivées (PV, réputation, équipement, salaire) :
+Quatre questions, après l'ascendance (« on peut se retrouver à jouer un healer alors qu'on est un bourrin »). Les gains
+ne s'affichent jamais. Ils s'appliquent une fois le profil tiré (après la remise à 1 des compétences non pratiquées) et
+avant les valeurs dérivées (PV, réputation, équipement, salaire).
 
 | Question | Effet |
 |---|---|
-| Arme favorite (toutes les armes du jeu, sans les boucliers) | +3D6 dans l’arme, +2D6 dans sa famille |
-| « Vestimentairement, vous êtes plutôt ? » | Ports d’armure : le vent = aucun ; un petit truc léger = légère ; mon cuir = légère et intermédiaire ; une vraie boîte de conserve = les trois |
-| « Sur le plan spirituel, vous avez des affinités » | +2D6 dans l’école (bain = Eau, barbecues = Feu, foudre = Foudre, chaque chose vivante = Vie, changer d’apparence = Transmutation, refuser de croire en la mort = Nécromancie, animaux de compagnie = Invocation, faire voler les choses = Télékinésie, ne croire que ce qu’on ne voit pas = Illusion) |
+| Arme favorite (toutes les armes du jeu, sans les boucliers) | +3D6 dans l'arme, +2D6 dans sa famille |
+| « Vestimentairement, vous êtes plutôt ? » | Ports d'armure : le vent = aucun ; un petit truc léger = légère ; mon cuir = légère et intermédiaire ; une vraie boîte de conserve = les trois |
+| « Sur le plan spirituel, vous avez des affinités » | +2D6 dans l'école (bain = Eau, barbecues = Feu, foudre = Foudre, chaque chose vivante = Vie, changer d'apparence = Transmutation, refuser de croire en la mort = Nécromancie, animaux de compagnie = Invocation, faire voler les choses = Télékinésie, ne croire que ce qu'on ne voit pas = Illusion) |
 | « Franchement aucune ! » | Les points de ses écoles (au-dessus de 1, la valeur « non pratiquée ») sont répartis au hasard, point par point, dans ses caractéristiques non magiques (toutes sauf Puissance magique et Réserve de mana) ; il perd ses sorts ; un capitaine mage change de domaine |
 | « Pour bien vous comprendre » | +2D6 dans la caractéristique : Vitesse, Perception, Courage, Intelligence, Force ou Dextérité |
 
-Constantes : `generation.captain.favorite_weapon_d6 = 3`, `generation.captain.favorite_weapon_family_d6 = 2`, `generation.captain.spirit_school_d6 = 2`, `generation.captain.character_stat_d6 = 2`. Code : `applyCaptainChoices` (game-core/mercenary-generator.js), option `captainChoices` de `createCaptain`.
+## Escouade initiale
 
-Si le joueur demande une ascendance :
-
-- il **choisit directement le type d’ascendance** parmi les ascendances compatibles avec son peuple ;
-- le capitaine reçoit directement une **ascendance de niveau 3** ;
-- les modificateurs correspondants sont lus dans la Matrice de génération et convertis avec l’échelle D6 du niveau 3.
-
-```jsx
-function Create_Captain_Mercenary(playerChoices) {
-    const mercenary = Roll_Base_Mercenary_Stats();
-
-    mercenary.peuple = playerChoices.peuple;
-    mercenary.culture = playerChoices.culture;
-    mercenary.origin = playerChoices.origin;
-    mercenary.alignment = playerChoices.alignment;
-    mercenary.company_leader = true;
-
-    if (playerChoices.wantsAscendance) {
-        Assert_Ascendance_Compatible(
-            playerChoices.ascendance,
-            mercenary.peuple
-        );
-
-        mercenary.hasAscendance = true;
-        mercenary.ascendance = playerChoices.ascendance;
-        mercenary.ascendanceLevel = 3;
-    } else {
-        mercenary.hasAscendance = false;
-        mercenary.ascendance = null;
-        mercenary.ascendanceLevel = null;
-    }
-
-    Apply_Generation_Modifiers(mercenary);
-    Compute_Initial_Derived_Values(mercenary);
-
-    return mercenary;
-}
-```
-
-<aside>
-🎲
-
-Les choix du joueur n’altèrent jamais les jets bruts. Ils orientent uniquement **quels** modificateurs et tables sont utilisés ensuite.
-
-</aside>
-
-## `Create_Initial_Squad`
-
-Fonction appelée après la création du capitaine. Elle crée une **boucle de X mercenaires** dont le **peuple** et la **culture** sont forcés à ceux du capitaine.
-
-La taille `X` dépend du peuple du capitaine et du fait qu’il possède ou non une ascendance :
+**X mercenaires** dont le **peuple** et la **culture** sont forcés à ceux du capitaine ; tout le reste suit la génération
+normale.
 
 | Peuple du capitaine | Sans ascendance | Avec ascendance |
 | --- | --- | --- |
@@ -123,238 +43,43 @@ La taille `X` dépend du peuple du capitaine et du fait qu’il possède ou non 
 | Nain / Orc / Humain | `3D6 + 4` | `3D6` |
 | Gnome / Gobelin / Halfling | `4D6 + 6` | `4D6` |
 
-Seuls **Peuple** et **Culture** sont forcés par `Create_Initial_Squad`. Le reste de la génération passe par `Create_Mercenary` normalement : jets bruts, ascendance éventuelle, niveau d’ascendance, origine sociale, modificateurs et valeurs dérivées.
+## Création d'un mercenaire et biais du capitaine
 
-```jsx
-function Roll_Initial_Squad_Size(captain) {
-    const hasAscendance = captain.hasAscendance === true;
+1. **Peuple** (sauf s'il est forcé) : **+9 points de pourcentage** pour le peuple du capitaine, **−1** pour chacun des
+   9 autres (le total reste 100 %). Puis les modificateurs de caractéristiques du peuple ; ceux de compétences sont mis
+   de côté.
+2. **Ascendance** : la probabilité d'en avoir une ne change pas. Si le mercenaire est du peuple du capitaine, a une
+   ascendance, et que celle du capitaine est compatible, le **poids de l'ascendance du capitaine est × 2** (tirage
+   normalisé). Puis le niveau et les modificateurs.
+3. **Culture** (forcée et compatible, ou tirée) : si celle du capitaine est compatible avec le peuple, son **poids est
+   × 2**. Puis ses modificateurs.
+4. **Origine sociale**, tirée parmi celles de la culture ; ses modificateurs.
+5. **Alignement** (sauf s'il est forcé) : celui du peuple, ou de l'exception culturelle ; puis l'**alignement exact du
+   capitaine gagne +15 points**, les autres baissent **proportionnellement** (7,5 % → 22,5 %). Seule l'orientation
+   change. L'alignement choisi du capitaine reste forcé.
+6. **Compétences brutes**, puis tous les modificateurs de compétences mis de côté.
+7. **Valeurs dérivées.**
 
-    switch (captain.peuple) {
-        case "Ogre":
-            return Roll_D3() + (hasAscendance ? 0 : 1);
+**Décision de conception** : les jets de la génération doivent aussi être **pondérés par la réputation du capitaine / de
+sa compagnie**. `20 + 3D20`, `1D20`, `2D20`… sont des distributions de base, pas des constantes : plus la compagnie est
+réputée, plus le niveau des candidats peut monter.
 
-        case "Elfe":
-        case "Reptilien":
-        case "Homme-bête":
-            return Roll_Dice(2, 6) + (hasAscendance ? 0 : 3);
+## Ouverture narrative
 
-        case "Nain":
-        case "Orc":
-        case "Humain":
-            return Roll_Dice(3, 6) + (hasAscendance ? 0 : 4);
+En **vue subjective**, un château en ruines au milieu d'une bataille entre Orcs, Elfes et Humains. Le personnage-joueur
+fuit et se réfugie dans une petite pièce. Un homme en armure, blessé à l'abdomen, s'effondre près de lui : barbe blanche
+parfaitement taillée, cheveux courts, allure de vieux « Prince Charmant ». La bataille est perdue, Garreth, Ludwig et
+les autres sont morts ; il a toujours cru en lui et lui demande de les venger. Il lui remet sa chevalière :
 
-        case "Gnome":
-        case "Gobelin":
-        case "Halfling":
-            return Roll_Dice(4, 6) + (hasAscendance ? 0 : 6);
-    }
-}
+> « Bob, tu es le capitaine à présent. Tu es le dernier vivant, mais je suis certain que tu seras un bon capitaine. Tu
+> t'appelles bien Bob ? »
 
-function Create_Initial_Squad(captain) {
-    const squad = [];
-    const count = Roll_Initial_Squad_Size(captain);
-
-    for (let i = 0; i < count; i++) {
-        squad.push(
-            Create_Mercenary(captain, {
-                forcedPeuple: captain.peuple,
-                forcedCulture: captain.culture
-            })
-        );
-    }
-
-    return squad;
-}
-```
-
-## `Create_Mercenary`
-
-`Create_Mercenary` utilise le pipeline normal de génération, mais reçoit le capitaine comme **contexte de pondération**.
-
-### 1. Biais de peuple
-
-Avant le tirage du peuple :
-
-- peuple identique à celui du capitaine : **+9 points de pourcentage** ;
-- chacun des 9 autres peuples : **−1 point de pourcentage**.
-
-Avec les 10 peuples actuels, le total reste donc à 100 %.
-
-```jsx
-function Get_Mercenary_People_Probabilities(captain, baseProbabilities) {
-    const probabilities = { ...baseProbabilities };
-
-    for (const peuple of Object.keys(probabilities)) {
-        probabilities[peuple] += (peuple === captain.peuple)
-            ? CAPTAIN_PEOPLE_BONUS_PP
-            : CAPTAIN_OTHER_PEOPLE_MALUS_PP;
-    }
-
-    return probabilities;
-}
-```
-
-### 2. Biais d’ascendance
-
-La probabilité **d’avoir ou non** une ascendance ne change pas.
-
-Si :
-
-- `mercenary.peuple === captain.peuple` ;
-- `mercenary.hasAscendance === true` ;
-- le capitaine possède lui-même une ascendance ;
-- cette ascendance est compatible avec le peuple du mercenaire ;
-
-alors le **poids relatif du type d’ascendance du capitaine est multiplié par 2** avant le tirage. Les autres poids restent inchangés. Le tirage est ensuite normalisé comme tout tirage pondéré.
-
-```jsx
-function Get_Ascendance_Weights(mercenary, captain, baseWeights) {
-    const weights = { ...baseWeights };
-
-    if (
-        mercenary.peuple === captain.peuple &&
-        mercenary.hasAscendance === true &&
-        captain.hasAscendance === true &&
-        weights[captain.ascendance] !== undefined
-    ) {
-        weights[captain.ascendance] *= CAPTAIN_ASCENDANCE_WEIGHT_MULTIPLIER;
-    }
-
-    return weights;
-}
-```
-
-### 3. Biais de culture
-
-Au moment de tirer la culture, si la culture du capitaine est compatible avec le peuple du mercenaire, son **poids relatif est multiplié par 2**. Les autres cultures conservent leur poids normal.
-
-```jsx
-function Get_Culture_Weights(mercenary, captain, baseWeights) {
-    const weights = { ...baseWeights };
-
-    if (weights[captain.culture] !== undefined) {
-        weights[captain.culture] *= CAPTAIN_CULTURE_WEIGHT_MULTIPLIER;
-    }
-
-    return weights;
-}
-```
-
-### 4. Biais d’alignement
-
-L’alignement de base est d’abord calculé depuis le peuple et, le cas échéant, l’exception culturelle. Ensuite, si un capitaine est présent, son **alignement exact gagne +15 points de probabilité**.
-
-Les autres alignements sont réduits **proportionnellement** afin de conserver une somme de 100 %. Cette règle ne modifie que l’orientation du mercenaire généré : elle ne change ni ses caractéristiques, ni ses compétences, ni son peuple, sa culture ou son origine.
-
-Exemple : si l’alignement du capitaine avait 7,5 % dans la distribution de base du candidat, il passe à **22,5 %** après influence.
-
-Le capitaine créé par le joueur n’est pas affecté par cette règle : son alignement choisi reste forcé.
-
-### Pipeline résumé
-
-```jsx
-function Create_Mercenary(captain, overrides = {}) {
-    const mercenary = Roll_Base_Mercenary_Stats();
-
-    mercenary.peuple = overrides.forcedPeuple ?? Weighted_Draw(
-        Get_Mercenary_People_Probabilities(captain, PEOPLE_BASE_PROBABILITIES)
-    );
-    Apply_People_Stat_Modifiers(mercenary);
-    Collect_People_Skill_Modifiers(mercenary);
-
-    mercenary.hasAscendance = Roll_Ascendance_Presence(mercenary.peuple);
-
-    if (mercenary.hasAscendance) {
-        const baseAscendanceWeights = Get_Compatible_Ascendance_Weights(mercenary.peuple);
-        const ascendanceWeights = Get_Ascendance_Weights(
-            mercenary,
-            captain,
-            baseAscendanceWeights
-        );
-
-        mercenary.ascendance = Weighted_Draw(ascendanceWeights);
-        mercenary.ascendanceLevel = Roll_Ascendance_Level();
-        Apply_Ascendance_Stat_Modifiers(mercenary);
-        Collect_Ascendance_Skill_Modifiers(mercenary);
-    }
-
-    if (overrides.forcedCulture !== undefined) {
-        Assert_Culture_Compatible(overrides.forcedCulture, mercenary.peuple);
-        mercenary.culture = overrides.forcedCulture;
-    } else {
-        const baseCultureWeights = Get_Compatible_Culture_Weights(mercenary.peuple);
-        const cultureWeights = Get_Culture_Weights(mercenary, captain, baseCultureWeights);
-        mercenary.culture = Weighted_Draw(cultureWeights);
-    }
-    Apply_Culture_Stat_Modifiers(mercenary);
-    Collect_Culture_Skill_Modifiers(mercenary);
-
-    mercenary.origin = Weighted_Draw(
-        Get_Compatible_Origin_Weights(mercenary.culture)
-    );
-    Apply_Origin_Stat_Modifiers(mercenary);
-    Collect_Origin_Skill_Modifiers(mercenary);
-
-    mercenary.alignment = overrides.forcedAlignment ?? Weighted_Draw(
-        Get_Alignment_Probabilities(mercenary.peuple, mercenary.culture, captain)
-    );
-
-    Roll_Base_Mercenary_Skills(mercenary, captain);
-    Apply_Collected_Skill_Modifiers(mercenary);
-
-    Compute_Initial_Derived_Values(mercenary);
-    return mercenary;
-}
-```
-
-<aside>
-🧭
-
-Le capitaine modifie les probabilités de peuple, de type d’ascendance, de culture et d’alignement. **Décision de conception : les jets de dés effectués dans `Create_Mercenary` doivent également être pondérés par la réputation du capitaine / de sa compagnie.** Les formules actuelles (`20 + 3D20`, `1D20`, `2D20`, etc.) sont donc des distributions de base et ne doivent pas être codées comme des constantes rigides. Plus la compagnie devient réputée, plus le niveau des candidats susceptibles de se présenter doit pouvoir monter. Dans `Create_Initial_Squad`, le peuple et la culture restent exceptionnellement forcés à ceux du capitaine.
-
-</aside>
-
-## Ouverture narrative — version retenue
-
-La partie s’ouvre par une cinématique en **vue subjective** dans un château en ruines au milieu d’une bataille chaotique où Orcs, Elfes et Humains s’affrontent.
-
-Le personnage-joueur fuit, se réfugie dans une petite pièce et reprend son souffle. Un homme en armure, grièvement blessé à l’abdomen, entre et s’effondre près de lui : barbe blanche parfaitement taillée, cheveux courts, allure de vieux « Prince Charmant ».
-
-Il annonce que la bataille est perdue, que Garreth, Ludwig et les autres sont morts, dit avoir toujours cru au potentiel du personnage-joueur et lui demande de les venger.
-
-Il lui remet ensuite sa chevalière et le nomme **capitaine** :
-
-> « Bob, tu es le capitaine à présent. Tu es le dernier vivant, mais je suis certain que tu seras un bon capitaine. Tu t’appelles bien Bob ? »
-> 
-
-Fin de cinématique :
-
-> **« Vous vous appelez Bob ? Tapez votre nom : »**
-> 
-
-Le joueur configure ensuite son capitaine.
-
-<aside>
-🏰
-
-Le château en ruines de cette introduction devient la **base / camp** de la compagnie et sera restauré puis agrandi pendant la partie.
-
-</aside>
-
-La cinématique présente le capitaine comme dernier survivant immédiat de la scène, mais le système de jeu conserve ensuite la génération de l’**Initial Squad** existante. La justification narrative précise de ce groupe pourra être affinée plus tard sans modifier la fonction.
+Puis : **« Vous vous appelez Bob ? Tapez votre nom : »** et la création guidée. Un seul bouton, « Vous n'êtes pas
+Bob ? », pas de « C'est moi » ; texte et voix d'Idan (Idan, 2026-10-04). Le thème « Blood & Wages » accompagne l'arrivée
+au camp. Le château en ruines devient le **camp** de la compagnie, restauré et agrandi pendant la partie. L'escouade
+initiale existe quand même ; sa justification narrative pourra être affinée.
 
 ## Hiérarchie de compagnie
 
-Hiérarchie retenue : **Capitaine → Lieutenants → Mercenaires**.
-
-- un seul Capitaine ;
-- plusieurs Lieutenants possibles ;
-- Lieutenant est un **rang / statut porté par un mercenaire**, pas un type de personnage séparé ;
-- effets du grade (Idan, 2026-10-25) : quartiers, promotion, aura et demandes au lieutenant, voir [doc 11 §4 « Le lieutenant »](/design/#doc=11-camp-and-ruined-castle.md).
-
-<aside>
-☠️
-
-**Le capitaine n’a pas de succession : sa mort entraîne Game Over.**
-
-</aside>
+**Capitaine → Lieutenants → Mercenaires** : un seul capitaine ; lieutenant est un rang porté par un mercenaire (effets :
+[doc 11 §4](/design/#doc=11-camp-and-ruined-castle.md)). **Pas de succession : la mort du capitaine est un Game Over.**

@@ -1504,6 +1504,9 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .game-top-bar .hud-stat{box-sizing:border-box;height:calc(var(--ht-B) * var(--ht-fonds));gap:calc(var(--ht-u) * .17);padding:0 calc(var(--ht-u) * .44) 0 calc(var(--ht-u) * .32);border:0;border-radius:999px;background:rgba(7,5,4,.35);box-shadow:inset 0 1px 6px #000c}
 .game-top-bar .hud-stat dt{filter:none}
 .hud-picto{display:block;width:auto;height:calc(var(--ht-u) * .42);filter:drop-shadow(0 1px 3px #000a)}
+/* Bois et pierre (Idan, 2026-11-18) : un mot en attendant leurs pictos. */
+.camp-work-output{margin:4px 0 8px;font-weight:600}
+.hud-resource-label{display:block;font:italic calc(var(--ht-u) * .25)/1 Georgia,serif;opacity:.8}
 .game-top-bar .hud-stat dd,.game-top-bar .hud-stat--gold dd{font:calc(var(--ht-u) * .28) Georgia,serif;font-weight:400;color:#f6e0da;text-shadow:0 2px 5px #000}
 .game-top-bar .hud-stat--debt dd{color:#ff8a6e}
 /* Les mercenaires ouvrent « Mes mercenaires » (le menu de l'accueil du camp est retiré). */

@@ -1,15 +1,17 @@
 {
   "schema_version": 1,
   "name": "mine-dialogue",
-  "description": "Guilde des mineurs (Idan, 2026-11-04) : envoyer un mercenaire à la mine à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte de la Guilde ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "description": "Guilde des mineurs (Idan, 2026-11-04) : envoyer un mercenaire à la mine à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte de la Guilde ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; panel.output, panel.worker_output : ce que le bâtiment et chaque ouvrier rapportent par jour ({total}, {n}) ; log : le journal du matin ({total}, {batiment}, {ouvriers} ; produced_hall sans ouvrier). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
   "panel": {
     "send": "Envoyer à la mine",
-    "send_tip": "Il peut refuser. Chaque jour à la mine coûte un peu d’affinité. Chaque mineur retire un jour à un chantier du camp (niveaux 6 à 10).",
+    "send_tip": "Il peut refuser. Chaque jour à la mine coûte un peu d’affinité. Il rapporte de la pierre chaque jour : beaucoup s’il est très fort, presque rien s’il est faible.",
     "title": "Mineurs",
     "starting": "dès demain",
     "withdraw": "Retirer",
     "captain": "Le capitaine descendra à la mine dès demain.",
-    "withdrawn": "{nom} ne descendra plus à la mine."
+    "withdrawn": "{nom} ne descendra plus à la mine.",
+    "output": "Production : +{total} pierre par jour",
+    "worker_output": "+{n} pierre"
   },
   "send": {
     "proposal": "Il nous faut des bras à la mine, à partir de demain. Vous y descendez.",
@@ -27,7 +29,7 @@
     "outcome_refused": "{prenom} refuse."
   },
   "log": {
-    "reduced": "{chantier} : {jours} de moins grâce aux mineurs.",
-    "none": "Les mineurs n’ont trouvé aucun chantier à accélérer."
+    "produced": "Pierre : +{total} (Guilde {batiment}, mineurs {ouvriers}).",
+    "produced_hall": "Pierre : +{total} (Guilde)."
   }
 }

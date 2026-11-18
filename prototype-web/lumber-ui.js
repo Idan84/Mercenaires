@@ -3,8 +3,8 @@
 // Cabane du bûcheron (Idan, 2026-11-03), Guilde des mineurs et Palais des plaisirs (Idan, 2026-11-04), interface. Sur la carte du bâtiment (Ma
 // Compagnie) : « Envoyer bûcheronner » / « Envoyer à la mine » ouvre la liste des membres disponibles ; la réponse passe par
 // la boîte de dialogue des échanges : il accepte, ou il refuse et on peut relancer une fois (Intimider, Convaincre) ou
-// laisser tomber. Puis « Bûcherons (2 / 3) » : chacun (« dès demain », « intimidé », « convaincu »), et « Retirer ». Le
-// journal du matin dit quels chantiers ont gagné des jours.
+// laisser tomber. Puis « Bûcherons (2 / 3) » : chacun (« dès demain », « intimidé », « convaincu », ce qu'il rapporte),
+// et « Retirer ». Le journal du matin dit le bois et la pierre de la journée (Idan, 2026-11-18).
 // Règles : game-core/lumber.js, game-core/persuasion.js ; textes : lumber-dialogue.json, mine-dialogue.json,
 // palace-dialogue.json, persuasion-dialogue.json.
 const CAMP_WORKS={
@@ -12,6 +12,13 @@ const CAMP_WORKS={
   mine:{rules:"miners",copy:"mineDialogue"},
   palace:{rules:"palaceWorkers",copy:"palaceDialogue"}
 };
+// Le bois ou la pierre d'une journée : la Cabane ou la Guilde, plus ses ouvriers d'aujourd'hui (lumber.js).
+function resourceDaily(rules,state){
+  return rules.hallOutput(state)+rules.working(state).reduce((sum,e)=>{
+    const m=state.company.roster.find(x=>x.id===e.id);
+    return sum+(m?rules.workerOutput(m):0);
+  },0);
+}
 function campWorkRules(course){ return campaignRules()[CAMP_WORKS[course]?.rules]||null; }
 function campWorkCopy(course){ return game.referenceData?.[CAMP_WORKS[course]?.copy]||{}; }
 
@@ -28,13 +35,17 @@ function campWorkHtml(c,course){
   const rows=entries.map(entry=>{
     const m=company.roster.find(x=>x.id===entry.id);
     if(!m) return "";
-    const notes=[entry.startDay>c.day?copy.starting:"",entry.approach?studyFill(labels[entry.approach]||"",m):""].filter(Boolean);
+    const notes=[entry.startDay>c.day?copy.starting:"",entry.approach?studyFill(labels[entry.approach]||"",m):"",
+      rules.workerOutput?String(copy.worker_output||"").replace("{n}",fmt(rules.workerOutput(m))):""].filter(Boolean);
     return `<div class="study-row">
         <div class="building-info"><strong>${esc(m.name)}</strong>${notes.length?`<span>${esc(notes.join(" · "))}</span>`:""}</div>
         <div class="study-actions"><button type="button" class="secondary" data-course="${course}" data-work-withdraw="${esc(m.id)}">${esc(copy.withdraw||"")}</button></div>
       </div>`;
   }).join("");
-  return offer+(rows?`<div class="study-list"><h4>${esc(copy.title||"")} (${fmt(entries.length)} / ${fmt(slots)})</h4>${rows}</div>`:"");
+  // Bois ou pierre : ce que le bâtiment et ses ouvriers rapportent par jour.
+  const output=rules.hallOutput
+    ?`<p class="camp-work-output">${esc(String(copy.output||"").replace("{total}",fmt(resourceDaily(rules,c))))}</p>`:"";
+  return output+offer+(rows?`<div class="study-list"><h4>${esc(copy.title||"")} (${fmt(entries.length)} / ${fmt(slots)})</h4>${rows}</div>`:"");
 }
 function lumberHtml(c){ return campWorkHtml(c,"lumber"); }
 function mineHtml(c){ return campWorkHtml(c,"mine"); }
@@ -85,16 +96,14 @@ function withdrawCampWorker(memberId,course){
   renderGame();
 }
 
-// Journal du matin : les jours gagnés, chantier par chantier ; au Palais, l'or de la journée.
+// Journal du matin : le bois ou la pierre de la journée ; au Palais, l'or de la journée.
 function logCampWork(report,course){
-  if(!report?.workers?.length) return;
   const copy=campWorkCopy(course).log||{};
-  if(report.gold!=null){ tavernLog(String(copy.earned||"").replace("{or}",fmt(report.gold)),"turn"); return; }
-  if(!report.reduced.length){ tavernLog(copy.none||"","info"); return; }
-  for(const r of report.reduced){
-    const days=`${fmt(r.days)} jour${r.days>1?"s":""}`;
-    tavernLog(String(copy.reduced||"").replace("{chantier}",r.name).replace("{jours}",days),"turn");
-  }
+  if(report?.gold!=null){ if(report.workers.length) tavernLog(String(copy.earned||"").replace("{or}",fmt(report.gold)),"turn"); return; }
+  if(!report?.total) return;
+  const fromWorkers=report.total-report.hall;
+  const line=fromWorkers?copy.produced:copy.produced_hall;
+  tavernLog(String(line||"").replace("{total}",fmt(report.total)).replace("{batiment}",fmt(report.hall)).replace("{ouvriers}",fmt(fromWorkers)),"turn");
 }
 
 function initializeCampWork(){

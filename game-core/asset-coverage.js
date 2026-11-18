@@ -41,9 +41,12 @@
   function spellSections(reference){
     const spells=rows(reference.spells);
     const schools=[...new Set(spells.map(s=>s.ecole).filter(Boolean))];
+    // Le dossier du jeu d'une école (celui de ses icônes ou de son cadre), pour déposer une icône manquante.
+    const schoolDir=school=>{const known=spells.find(s=>s.ecole===school&&(s.icone||s.cadre));
+      return known?String(known.icone||known.cadre).replace(/\/[^/]*$/,""):"spells/"+slug(school);};
     const icons={key:"spells",title:"Icônes de sorts",master:"assets-src/Sorts/<École>/<code>.jpg (un parchemin par sort)",
       groups:schools.map(school=>({name:school,items:spells.filter(s=>s.ecole===school).map(s=>({
-        name:s.nom,file:s.code+".jpg",present:Boolean(s.icone)}))}))};
+        name:s.nom,file:s.code+".jpg",present:Boolean(s.icone),url:"assets/"+(s.icone||schoolDir(school)+"/"+s.code+".webp")}))}))};
     const frames={key:"frames",title:"Cadres",master:"assets-src/Sorts/<École>/cadre.jpg ; assets-src/Equipements/Frames/frame_<tier>.jpg",
       groups:[
         {name:"Cadres d'école (sorts)",items:schools.map(school=>({name:school,file:"cadre.jpg",
@@ -91,6 +94,14 @@
         .map(name=>({name,file:folder+"/"+name,url:"assets/pictos/"+prefix+"-"+slug(name)+".webp"}))}))};
   }
 
+  // Pictos de la barre du haut du camp (doc 16) : bois et pierre attendus (Idan, 2026-11-18 : icônes à demander à Jean-Mi ;
+  // en attendant, le jeu écrit « Bois » et « Pierre »).
+  const HUD=[["Or","picto-or"],["Bois","picto-bois"],["Pierre","picto-pierre"],["Salaires","picto-salaires"],["Mercenaires","picto-mercenaires"]];
+  function hudSection(){
+    return {key:"hud",title:"Pictos de la barre du haut",master:"PNG transparent, 192 px de haut (affiché à 25 px) ; Hostinger media/hud-pack/",
+      groups:[{name:"Barre du haut",items:HUD.map(([name,file])=>({name,file:file+".webp",url:"assets/hud/"+file+".webp"}))}]};
+  }
+
   function sceneSection(){
     return {key:"scenes",title:"Décors",master:"assets-src/fonds/",groups:[{name:"Écrans",items:SCENES.map(s=>({...s}))}]};
   }
@@ -98,7 +109,7 @@
   // equipmentArt : ensemble des clés présentes (prototype-web/equipment-art.js, EQUIPMENT_ART).
   function listExpected(reference,{equipmentArt=new Set()}={}){
     const sections=[...spellSections(reference),enemySection(reference),summonSection(reference),
-      equipmentSection(reference),potionSection(reference),pictoSection(reference),sceneSection()];
+      equipmentSection(reference),potionSection(reference),pictoSection(reference),hudSection(),sceneSection()];
     for(const item of sections.flatMap(s=>s.groups.flatMap(g=>g.items))){
       if(item.planned===false) item.present=false;
       else if(item.key) item.present=equipmentArt.has(item.key);

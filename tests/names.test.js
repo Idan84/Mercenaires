@@ -45,7 +45,7 @@ for(const r of table.rows.filter(r=>r.peuple==="Humain")){
 const consonances=culture=>table.rows.filter(r=>r.culture===culture).map(r=>r.consonance).sort();
 assert.deepEqual(consonances("Royaumes du Soleil Levant"),["Japonaise"]);
 assert.deepEqual(consonances("Montagnes du Nord"),["Russe","Scandinave"]);
-assert.deepEqual(consonances("Steppes désertiques"),["Indienne"]);
+assert.deepEqual(consonances("Terres des Deux Fleuves"),["Indienne"]);
 assert.deepEqual(consonances("Tribus de la jungle"),["Bantoue","Ouest-africaine"]);
 assert.deepEqual(consonances("Cités libres"),["Anglaise","Française","Germanique","Italienne"]);
 

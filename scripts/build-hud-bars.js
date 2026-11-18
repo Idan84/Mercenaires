@@ -61,7 +61,9 @@ const PACK_CULTURE={
   "Halflings/halflings-villes":"Halflings des cités humaines",
   "Ogres/ogres-villes":"Ogres des cités humaines",
   "Reptiliens/reptiliens-marais":"Reptiliens des marécages",
-  "Hommes Betes/hommes-betes-runiques":"Tribus nordiques"
+  "Hommes Betes/hommes-betes-runiques":"Tribus nordiques",
+  // Le dossier d'Idan garde son nom ; la culture est devenue les Terres des Deux Fleuves (Idan, 2026-11-18).
+  "Humains/grandes-steppes":"Terres des Deux Fleuves"
 };
 const TOKEN_ALIASES={orque:"orc"};
 

@@ -249,7 +249,7 @@
         "allonge": {"place": "separation", "taille": 58.5, "longueur": 40, "espacement": 0, "dx": 545, "dy": 39},
         "titre": {"hauteur": 16, "ecart": -1.7},
         "cuir": {"grain": 100, "sombre": 0},
-        "nom": "encre"
+        "nom": "or"
       },
       "barres": {
         "ecran": {"w": 1920, "h": 1080, "B": 81.6},

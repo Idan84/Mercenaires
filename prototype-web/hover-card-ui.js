@@ -139,7 +139,7 @@ const HOVER_TITLE_ORNAMENTS={
   "halflings-des-cites-humaines":"couronne-croix","halflings-des-villages-isoles":"epi","explorateurs":"tentacule-sabre",
   "elfes-noirs":"pointe-epines","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"branche",
   "cites-libres":"lys","montagnes-du-nord":"flocon","tribus-de-la-jungle":"fleur",
-  "steppes-desertiques":"croissant-haut","royaumes-du-soleil-levant":"dragon",
+  "terres-des-deux-fleuves":"croissant-haut","royaumes-du-soleil-levant":"dragon",
   "reptiliens-des-villes":"oeil","reptiliens-des-marecages":"crapaud","reptiliens-des-cites-temples":"triangle"
 };
 function hoverCultureFrame(culture){
@@ -344,7 +344,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const steed=d.mount?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
-  return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="encre"?' data-kit-nom="encre"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
+  return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">

@@ -388,7 +388,8 @@ contact, non.
 - **Second mouvement de l'IA** : qui ne peut pas avancer d'une seule case renonce à attaquer pour un second mouvement.
 - **L'éclaireur** (Idan, 2026-11-09) : à l'arrivée d'un contrat ou d'une chasse (après la marche), la fenêtre « Escouade
   sur place » propose **Envoyer un éclaireur**, pris dans l'escouade (les plus discrets d'abord) ; un compagnon animal
-  ne part pas seul, il suit son maître. Chaque ennemi tente de le repérer à **8 cases**, lui avec **+60** de Discrétion (il se faufile),
+  ne part pas seul, il suit son maître. Chaque ennemi tente de le repérer à **8 cases**, lui avec **+60** de Discrétion (il se faufile ; gardé, Idan 2026-11-18 : « un jeu qui tend vers l'escarmouche plus
+  que la bataille rangée »),
   en plus de la sienne : Perception 60 contre Discrétion 30, **1,8 %** ; contre 80, 0,1 %. **Un
   succès : capturé**, avec son animal, il quitte le combat ; **victoire** : libéré **indemne** ; **défaite** : **mort**,
   son animal aussi. Parti seul et capturé : pas de combat, mission perdue. **Pas vu**, il cherche à son tour chaque

@@ -13,6 +13,45 @@ const DEPOT_MAX_OCTETS = 30 * 1024 * 1024;
 const DEPOT_TYPES = ['remplacer', 'variante', 'nouvelle', 'reutiliser'];
 const DEPOT_RASTER = ['png' => IMAGETYPE_PNG, 'jpg' => IMAGETYPE_JPEG, 'webp' => IMAGETYPE_WEBP, 'gif' => IMAGETYPE_GIF];
 
+// La réponse JSON des points d'entrée de la Design Lab (design/api/depot.php, design/api/reglages.php).
+function depot_repondre(int $code, array $corps): void
+{
+    http_response_code($code);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo json_encode($corps, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+// La Design Lab est-elle derrière son mot de passe (réglé chez Hostinger) ? DEPOT_LOCAL=1 : essais en local.
+function depot_protege(string $site): bool
+{
+    foreach (['REMOTE_USER', 'REDIRECT_REMOTE_USER', 'PHP_AUTH_USER', 'AUTH_TYPE'] as $cle) {
+        if (!empty($_SERVER[$cle])) {
+            return true;
+        }
+    }
+    $htaccess = (string) @file_get_contents($site . '/design/.htaccess');
+    return stripos($htaccess, 'AuthType') !== false || getenv('DEPOT_LOCAL') === '1';
+}
+
+// Les gardes communes : POST, Design Lab protégée, demande venue de la Design Lab elle-même (en-tête X-Depot, origine
+// du site). Répond et s'arrête sinon.
+function depot_garder(string $site): void
+{
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+        depot_repondre(405, ['ok' => false, 'erreur' => 'Dépôt : POST seulement.']);
+    }
+    if (!depot_protege($site)) {
+        depot_repondre(403, ['ok' => false, 'erreur' => 'Dépôt fermé : la Design Lab n\'est pas protégée par mot de passe.']);
+    }
+    $origine = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $hote = (string) preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? ''));
+    if (($_SERVER['HTTP_X_DEPOT'] ?? '') !== '1' || ($origine !== '' && parse_url($origine, PHP_URL_HOST) !== $hote)) {
+        depot_repondre(403, ['ok' => false, 'erreur' => 'Dépôt refusé : la demande ne vient pas de la Design Lab.']);
+    }
+}
+
 // Les familles du catalogue et leurs fichiers, tels que publiés avec le site (data/images.json, data/images-fichiers.json).
 function depot_familles(string $site): array
 {

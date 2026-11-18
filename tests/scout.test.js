@@ -34,7 +34,7 @@ assert.equal(constant("combat.scout.distance"),8);
 const unitOf=(stats)=>({character:{stats,skills:{martial:{}},items:[],equipment:{slots:{}}},activeSet:1});
 const scout30=unitOf({Perception:50,"Discrétion":30}),scout80=unitOf({Perception:70,"Discrétion":80});
 const guard=unitOf({Perception:60,"Discrétion":30}),sharp=unitOf({Perception:90,"Discrétion":20}),sneaky=unitOf({Perception:40,"Discrétion":90});
-const chance=(o,t)=>Math.round(engine.detectionChance(o,t,8,engine.coverDiscretion("totale"))*10)/10;
+const chance=(o,t)=>Math.round(engine.detectionChance(o,t,8,engine.SCOUT_COVER)*10)/10;
 assert.equal(chance(guard,scout30),1.8,"un garde ordinaire contre un éclaireur peu discret : 1,8 %");
 assert.equal(chance(guard,scout80),0.1,"contre un éclaireur discret : le plancher");
 assert.ok(chance(sharp,scout30)>chance(guard,scout30),"un ennemi qui a l'œil le repère plus souvent");
@@ -141,7 +141,7 @@ assert.match(ui,/\.sort\(\(a,b\)=>discretion\(b\)-discretion\(a\)\)/,"les plus d
 // 4. Revenu : le rapport (la carte, les ennemis vus), puis le déploiement libre sur la bande de 4 cases, ou la retraite.
 assert.equal(reference.formulaConstants.rows.find(r=>r.code==="combat.deploy.band").valeur,4);
 api.setMissionMapSize({cols:36,rows:25});
-const at=(col,r)=>({q:col-((r-(r&1))>>1),r});
+const at=(col,r)=>({q:col,r}); // cases carrées : q = la colonne
 assert.deepEqual([at(3,12),at(4,12),at(32,12),at(31,12),at(18,3),at(18,4),at(18,21),at(18,20)].map(c=>api.missionDeployBand(c)),
   [true,false,true,false,true,false,true,false],"la bande : 4 cases sur chaque bord");
 m=newMission();

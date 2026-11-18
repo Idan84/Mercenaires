@@ -82,7 +82,9 @@ if(combat.canSwitchWeaponSet(sw)){
   assert.notEqual(sw.activeSet,before);
 }
 
-assert.equal(combat.axialDistance({q:0,r:0},{q:3,r:-3}),3);
+// Cases carrées (doc 04) : la distance en losange ; une case en diagonale est à 2 cases.
+assert.equal(combat.axialDistance({q:0,r:0},{q:3,r:-3}),6);
+assert.equal(combat.axialDistance({q:0,r:0},{q:1,r:1}),2);
 
 // Inverse de la courbe 10 + 80/(1+exp(-delta/20)) : retrouve le delta d'une probabilité non bornée.
 function deltaOf(p){
@@ -101,7 +103,7 @@ function withMainWeapon(character,name){
   };
 }
 
-// Zone de menace : arme de mêlée standard 1 hex, arme d'hast 1–2 hex, rien avec une arme de tir.
+// Zone de menace : arme de mêlée standard 1 case, arme d'hast 1–2 cases, rien avec une arme de tir.
 const guard=unit(withMainWeapon(a,"Épée longue"),0,0);
 assert.equal(setFamily(guard,"melee"),true);
 assert.equal(combat.weaponRange(guard).max,1);
@@ -116,7 +118,10 @@ assert.equal(combat.threatens(pike,{q:3,r:0}),false);
 
 // Sortir de la zone déclenche la réaction ; se déplacer à l'intérieur ne déclenche rien.
 assert.deepEqual(combat.opportunityReactors([guard],{q:1,r:0},{q:2,r:0}),[guard]);
-assert.deepEqual(combat.opportunityReactors([guard],{q:1,r:0},{q:1,r:-1}),[]);
+// Cases carrées : le contact, ce sont les 4 cases des côtés ; passer en diagonale du garde, c'est le quitter. L'arme d'hast
+// tient aussi les diagonales : on s'y déplace sans réaction.
+assert.deepEqual(combat.opportunityReactors([guard],{q:1,r:0},{q:1,r:-1}),[guard]);
+assert.deepEqual(combat.opportunityReactors([pike],{q:1,r:0},{q:1,r:-1}),[]);
 assert.deepEqual(combat.opportunityReactors([pike],{q:1,r:0},{q:2,r:0}),[]);
 assert.deepEqual(combat.opportunityReactors([pike],{q:2,r:0},{q:3,r:0}),[pike]);
 assert.deepEqual(combat.opportunityReactors([guard,pike],{q:3,r:0},{q:4,r:0}),[]);
@@ -160,21 +165,22 @@ assert.equal(opp.opportunity,true);
 assert.equal(opp.backstab,true);
 assert.equal(combat.resolveAttack(striker,victim,{mode:"melee",opportunity:true,chargeDistance:3}).ok,false);
 
-// Encerclement : deux adversaires au contact, sur des cases de contact non adjacentes entre elles.
+// Encerclement (cases carrées, doc 04) : deux adversaires au contact, sur des côtés opposés (pris en tenaille).
 function meleeAt(q,r){ const u=unit(a,q,r); setFamily(u,"melee"); return u; }
 const center={q:3,r:3};
 assert.equal(combat.isEncircled(center,[meleeAt(4,3)]),false);
-assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(4,2)]),false,"deux cases de contact adjacentes");
-assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(3,2)]),true,"une case d'écart");
-assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(2,3)]),true,"cases opposées");
-assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(4,2),meleeAt(2,4)]),true,"trois assaillants");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(4,2)]),false,"une diagonale n'est pas au contact");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(3,2)]),false,"deux côtés voisins : pas pris en tenaille");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(2,3)]),true,"côtés opposés");
+assert.equal(combat.isEncircled(center,[meleeAt(3,2),meleeAt(3,4)]),true,"nord et sud");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(3,2),meleeAt(2,3)]),true,"trois assaillants");
 assert.equal(combat.isEncircled(center,[meleeAt(4,3),{...meleeAt(2,3),alive:false}]),false,"assaillant hors combat");
 const archer=unit(a,2,3);
 if(setFamily(archer,"ranged")){
   assert.equal(combat.isEncircled(center,[meleeAt(4,3),archer]),false,"arme de tir active : pas au CAC");
 }
 const reach=unit(withMainWeapon(a,"Hallebarde"),5,3);
-assert.equal(combat.isEncircled(center,[meleeAt(2,3),reach]),false,"arme d'hast à 2 hex : pas sur une case de contact");
+assert.equal(combat.isEncircled(center,[meleeAt(2,3),reach]),false,"arme d'hast à 2 cases : pas sur une case de contact");
 
 // Une cible encerclée subit une Frappe dans le dos au CAC, pas au tir.
 victim.hp=b.pvMax;victim.alive=true;
@@ -305,12 +311,21 @@ const charge=combat.chargeData(charger,chargeTarget);
 assert.equal(charge.path.length,charge.travel);
 assert.deepEqual(charge.path[0],{q:1,r:0});
 assert.deepEqual(charge.path[charge.path.length-1],charge.destination);
-// Hors des 6 axes aussi (Idan, 2026-11-04) : la ligne droite d'hexagones entre les deux ; la dernière case au contact.
+// Cases carrées (doc 04) : sur une colonne ou une ligne, la charge va tout droit ; en biais (Idan, 2026-11-17 : « 2 pour la
+// diagonale »), elle va de case en case par les côtés, au plus près de la ligne droite. La course se compte en losange, et
+// le chargeur finit collé à la cible par un côté.
 {
-  const slanted=combat.chargeData(charger,unit(b,3,2));
-  assert.equal(slanted.travel,combat.axialDistance({q:0,r:0},{q:3,r:2})-1);
-  assert.deepEqual(slanted.path,combat.hexLine({q:0,r:0},{q:3,r:2}).slice(1,-1));
-  assert.equal(combat.axialDistance(slanted.destination,{q:3,r:2}),1);
+  const down=combat.chargeData(charger,unit(b,0,4));
+  assert.deepEqual(down.path,[{q:0,r:1},{q:0,r:2},{q:0,r:3}]);
+  assert.equal(combat.axialDistance(down.destination,{q:0,r:4}),1);
+  const slant=combat.chargeData(charger,unit(b,3,2));
+  assert.equal(slant.travel,4,"en biais : 3 + 2 cases jusqu'à la cible, la dernière à son contact");
+  assert.equal(slant.path.length,4);
+  for(let i=0,prev={q:0,r:0};i<slant.path.length;prev=slant.path[i++]) assert.equal(combat.axialDistance(prev,slant.path[i]),1,"un pas par un côté");
+  assert.equal(combat.axialDistance(slant.destination,{q:3,r:2}),1,"collé à la cible par un côté");
+  assert.equal(Math.abs(slant.step.q)+Math.abs(slant.step.r),1);
+  const diag=combat.chargeData(charger,unit(b,3,3));
+  assert.ok(diag.path.every(c=>Math.abs(c.q-c.r)<=1),"une vraie diagonale : un escalier régulier, collé à la ligne droite");
   assert.equal(combat.axialDistance({q:0,r:0},{q:0,r:0}),0);
 }
 
@@ -608,7 +623,7 @@ near(r.stray.tries[0].p,combat.hitProbability(strayShooter,onAxis,"ranged",4)*0.
 // Le 1er est manqué (100), le 2e touché : facteur 0,35 × 0,5.
 r=scripted([100,1,100,1,100,50,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
 assert.equal(r.stray.unit,slightlyOff);
-near(r.stray.tries[1].p,combat.hitProbability(strayShooter,slightlyOff,"ranged",5)*0.35*0.5,"deuxième candidat ×0,175");
+near(r.stray.tries[1].p,combat.hitProbability(strayShooter,slightlyOff,"ranged",6)*0.35*0.5,"deuxième candidat ×0,175 (à 6 cases en losange)");
 // Personne de touché : le tir se perd.
 r=scripted([100,1,100,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
 assert.deepEqual([r.stray.unit,r.stray.tries.length],[null,2]);

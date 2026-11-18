@@ -852,6 +852,57 @@
       "defaite": {
         "multiplicateur_mort": 2
       }
+    },
+    {
+      "code": "hunt_triceratops",
+      "nom": "Chasse au tricératops",
+      "description": "Un troupeau de tricératops : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
+      "illustration": "",
+      "illustrations": [],
+      "niveau": {
+        "ecart": [
+          -4,
+          1
+        ],
+        "min": 7
+      },
+      "max_ennemis": 100,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 36,
+        "lignes": 25
+      },
+      "bete": {
+        "code": "triceratops",
+        "pluriel": "tricératops",
+        "des": 1,
+        "faces": 2,
+        "faction": "Tricératops",
+        "lieux": [
+          "Jungle des trois cornes",
+          "Marais du temple englouti",
+          "Clairière des fougères géantes"
+        ]
+      },
+      "marche": {
+        "facteur": [
+          0.25,
+          1
+        ]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
     }
   ],
   "ordres": [
@@ -1469,10 +1520,41 @@
       ],
       "signature": "{commanditaire}, de {lieu}, le {date}",
       "noms_commanditaire": "nobles"
+    },
+    {
+      "code": "triceratops_priest",
+      "mission": "hunt_triceratops",
+      "faction": "Tricératops",
+      "commanditaire": "Prêtre",
+      "titre": "Des gardiens trop zélés",
+      "texte": [
+        "Aux mercenaires qui ne craignent ni les cornes ni les dieux,",
+        "Je suis {commanditaire}, prêtre à {lieu}, à {jours} de marche de votre camp. Depuis toujours, des tricératops paissent autour du vieux temple. Les anciens disaient qu'ils le gardaient. Ils avaient raison : ils ne laissent plus entrer personne.",
+        "Les pèlerins en ont compté {estimation}, de loin, derrière un arbre. Nos portes ont tenu deux jours. Nos prières, moins.",
+        "Le temple a réuni {récompense} pièces d'or. Chassez-les, ou emmenez-les garder autre chose."
+      ],
+      "signature": "{commanditaire}, prêtre de {lieu}, le {date}",
+      "noms_commanditaire": "pretres"
+    },
+    {
+      "code": "triceratops_village",
+      "mission": "hunt_triceratops",
+      "faction": "Tricératops",
+      "commanditaire": "Chef de village",
+      "titre": "Une forteresse dans le champ",
+      "texte": [
+        "À toute compagnie de mercenaires munie de grosses lances,",
+        "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Des tricératops se sont couchés dans nos champs, et ils n'en bougent plus.",
+        "Nous avons essayé les fourches, les flèches et les prières. Les fourches ont cassé, les flèches ont rebondi, et les prières sont restées sans réponse.",
+        "Les bergers en ont vu {estimation}. Ce sont de grosses bêtes : difficile de se tromper en les comptant, mais nos bergers y arrivent.",
+        "Le village a réuni {récompense} pièces d'or. Faites-les bouger, d'une manière ou d'une autre."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
     }
   ],
   "genres_lieux": {
-    "feminin": ["Chênaie des hures", "Gorge des trois gueules", "Lande des chiens perdus", "Lisière aux souilles", "Prairie aux mille couleurs", "Toundra des grands os", "Vallée des défenses", "Vieille mine"],
+    "feminin": ["Chênaie des hures", "Gorge des trois gueules", "Lande des chiens perdus", "Lisière aux souilles", "Prairie aux mille couleurs", "Toundra des grands os", "Vallée des défenses", "Vieille mine", "Jungle des trois cornes", "Clairière des fougères géantes"],
     "pluriel": ["Friches aux crocs", "Pics des nuées"]
   },
   "noms": {

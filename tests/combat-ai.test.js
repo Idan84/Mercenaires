@@ -36,7 +36,7 @@ const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), 
 const api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", mission + "\nconst logged=[];const log0=missionLog;missionLog=function(message,kind){ logged.push(message); return log0(message,kind); };"
   + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,selectNextMissionPlayer,autoResolveMission,startMissionCamouflage,"
-  + "missionAiSpellCodes,missionAiZoneTarget,missionAiKeepFormation,missionAiRetreat,missionOpponents,logged};")
+  + "missionAiSpellCodes,missionAiZoneTarget,missionAiKeepFormation,missionAiRetreat,missionOpponents,enemyMissionAct,logged};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => engine, Progression, MissionEnd, Magic);
 api.setMissionMapSize({cols: 24, rows: 12});
 
@@ -55,7 +55,7 @@ const fighter = (team, q, r, extra = {}) => {
 const battle = (players, enemies) => {
   game.mission = {engine, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, engine), enemyOrder: api.sortMissionInitiative(enemies, engine),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: []};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: []};
   return game.mission;
 };
 
@@ -74,7 +74,8 @@ assert.deepEqual(api.missionAiSpellCodes(mage), ["fire_bolt"], "une fiche avec s
 delete mage.character.aiSpells;
 
 // 2. La zone : sur un ennemi, au moins deux ennemis dedans, aucun allié.
-const f1 = fighter("enemy", 7, 5), f2 = fighter("enemy", 8, 5), lone = fighter("enemy", 7, 9);
+// (Le second pas pile derrière le premier : un ennemi cache ceux qui sont derrière lui, doc 04 étape 3.)
+const f1 = fighter("enemy", 7, 5), f2 = fighter("enemy", 8, 7), lone = fighter("enemy", 7, 9);
 battle([mage], [f1, f2]);
 assert.ok([f1, f2].includes(api.missionAiZoneTarget(mage, "fireball", [f1, f2])), "deux ennemis groupés : la Boule de feu part");
 battle([mage], [lone]);
@@ -131,6 +132,22 @@ api.startMissionCamouflage();
 api.selectNextMissionPlayer();
 api.autoResolveMission();
 assert.ok(api.logged.some(t => /^Humain \d+ (lance|rate) Trait de feu/.test(t)), "il lance son Trait de feu");
+// 6. Se cacher en embuscade (Idan, 2026-11-18 : « oui ») : encore camouflé, il s'arrête dans la forêt, hors de vue, parce
+// qu'il ne pourrait pas frapper au tour suivant ; il prend « Se cacher » avec son action rapide. Un ennemi caché ne se
+// trahit pas dans le journal ; l'un des nôtres, si.
+const forest = [...Array(12).keys()].map(r => ({q: 16, r, code: "foret"}));
+for (const team of ["enemy", "player"]) {
+  const lurker = fighter(team, 17, 5, {move: 4, spells: []}), prey = fighter(team === "enemy" ? "player" : "enemy", 5, 5, {spells: []});
+  const m = team === "enemy" ? battle([prey], [lurker]) : battle([lurker], [prey]);
+  m.decor = forest;
+  lurker.camouflaged = true; lurker.alerted = true; lurker.aiAmbush = 0;
+  const before = api.logged.length;
+  api.enemyMissionAct(lurker, {reset: false});
+  assert.deepEqual([lurker.q, lurker.r], [16, 5], team + " : il attend dans la forêt");
+  assert.deepEqual([lurker.hiding, lurker.quickAvailable, lurker.camouflaged], [true, false, true], team + " : caché");
+  const said = api.logged.slice(before).some(t => / se cache \(Discrétion \+10 au repérage\)/.test(t));
+  assert.equal(said, team === "player", team + " : le journal");
+}
 // (La fin de chaque combat automatique est vérifiée sur tous les paysages : mission-terrain.test.js.)
 
 console.log(JSON.stringify({ok: true, casts: api.logged.filter(t => / (lance|rate) /.test(t)).length, turns: game.mission.turn}, null, 2));

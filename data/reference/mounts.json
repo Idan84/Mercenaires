@@ -96,7 +96,7 @@
       "key": "pluriel"
     }
   ],
-  "row_count": 11,
+  "row_count": 12,
   "rows": [
     {
       "nom": "Destrier",
@@ -735,6 +735,65 @@
       "alignement": "Neutre",
       "rang_echange": 4,
       "titre": "à dos de mammouth",
+      "logement": "trainer_wallow",
+      "compagnon": true,
+      "place": 2
+    },
+    {
+      "nom": "Tricératops",
+      "code": "triceratops",
+      "espece": "Bêtes à cornes",
+      "gabarit": 4,
+      "taille": "grande",
+      "caracteristiques": {
+        "Force": 140,
+        "Constitution": 150,
+        "Dextérité": 15,
+        "Vitesse": 25,
+        "Endurance": 100,
+        "Esquive": 0,
+        "Courage": 40,
+        "Volonté": 45,
+        "Perception": 40,
+        "Intelligence": 20,
+        "Chance": 50,
+        "Charisme": 20,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 5,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 8
+      },
+      "competences_martiales": {
+        "Armes naturelles": 45,
+        "Défenses": 45,
+        "Discrétion": 0
+      },
+      "attaque": {
+        "nom": "Cornes",
+        "degats_pv_base": "1D12",
+        "puissance_perforante": 70,
+        "bonus_charge": 2
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 75
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
+      "capturable": true,
+      "entretien": 70,
+      "alignement": "Neutre",
+      "rang_echange": 4,
+      "titre": "à dos de tricératops",
       "logement": "trainer_wallow",
       "compagnon": true,
       "place": 2

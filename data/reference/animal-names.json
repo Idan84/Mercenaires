@@ -12,7 +12,7 @@
       "key": "noms"
     }
   ],
-  "row_count": 11,
+  "row_count": 12,
   "rows": [
     {
       "code": "destrier",
@@ -57,6 +57,10 @@
     {
       "code": "mammouth",
       "noms": ["Ivoire", "Glacier", "Avalanche", "Banquise", "Frimas", "Toison", "Laineux", "Colline", "Montagne", "Pesant", "Pas-Lourd", "Tremble-Terre", "Tonnerre-Lent", "Vieux-Givre", "Brise-Glace", "Grand-Laine", "Grosse-Patte", "Barrique", "Ronfleur", "Blizzard", "Placide", "Trouillard", "Ancêtre", "Toundra"]
+    },
+    {
+      "code": "triceratops",
+      "noms": ["Rempart", "Bastion", "Donjon", "Citadelle", "Collerette", "Trois-Cornes", "Bélier", "Écaille", "Basalte", "Obsidienne", "Mur-Vivant", "Herse", "Pavois", "Granit", "Monolithe", "Ziggourat", "Idole", "Jade", "Forteresse", "Barbacane", "Contrefort", "Tonnerre-Sourd", "Vieille-Corne", "Grand-Bouclier"]
     }
   ]
 }

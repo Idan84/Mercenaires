@@ -108,10 +108,10 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
-  "MercenairesMagic", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,missionUnitHeight,"
+  "MercenairesMagic", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,missionGridMap,"
   + "missionChargeIfClear,performMissionCharge,missionFlies,missionAxial,missionAttackPreview};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic, () => rules);
 api.setMissionMapSize({cols: 30, rows: 15});
@@ -140,7 +140,7 @@ function battle(mountCode, {mire = false} = {}) {
   const enemies = [api.makeMissionUnit(target, "enemy", 0), api.makeMissionUnit(blocker, "enemy", 1)];
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players: [r], enemies, playerOrder: api.sortMissionInitiative([r], combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: r, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: [],
+    activeUnit: r, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [],
     mire: mire ? [{...api.missionAxial(10, 7), untilTurn: 9}] : []};
   for (const u of [r, ...enemies]) Object.assign(u, {camouflaged: false, movementRemaining: combat.movementBase(u), attackAvailable: true});
   put(r, 2, 7); put(enemies[0], 15, 7); put(enemies[1], 8, 7);

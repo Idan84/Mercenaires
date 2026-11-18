@@ -104,36 +104,37 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 Math.random = random;
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "MercenairesMissionTerrain", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,"
-  + "selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionTerrain,missionUnitHeight,"
+  + "selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionTerrain,missionGridMap,"
   + "missionAiSpell,enemyMissionAct,missionReachablePaths,missionPathCost,resetMissionActivation};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic, Terrain, () => rules);
 api.setMissionMapSize({cols: 30, rows: 15});
-function newMission(enemyCodes, mercs = 2, {decor = [], relief = []} = {}) {
+function newMission(enemyCodes, mercs = 2, {decor = []} = {}) {
   const foes = enemyCodes.map(make), squad = Array.from({length: mercs}, () => generator.createMercenary({id: ++uid, captain}));
   const players = api.placeMissionArmy(squad.map((c, i) => api.makeMissionUnit(c, "player", i % 3)), "player");
   const enemies = api.placeMissionArmy(foes.map((c, i) => api.makeMissionUnit(c, "enemy", i % 3)), "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor, relief};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor};
   for (const u of [...players, ...enemies]) u.camouflaged = false;
   return game.mission;
 }
-// Vol : un mur de 5 cases (infranchissable) et une falaise (plateau de hauteur 2) entre la chauve-souris et la case visée ;
-// elle passe au-dessus, 1 point par case, mais ne s'arrête pas sur le mur ; le garde, lui, doit contourner.
+// Vol : un mur de 5 cases (100 PM à pied) et une palissade (une arête, + 2) entre la chauve-souris et la case visée ; elle
+// passe au-dessus, 1 point par case (« Ceux qui volent ignorent les malus de déplacement des cases et des arêtes »), mais
+// ne s'arrête pas sur le mur ; le garde, lui, doit contourner.
 const wall = [-2, -1, 0, 1, 2].map(dr => ({q: 15 - Math.floor((7 + dr) / 2), r: 7 + dr, code: "mur"}));
-const cliff = [{q: 15 - Math.floor(7 / 2) + 1, r: 7, h: 2}];
-let m = newMission(["court_bat", "court_blood_guard"], 1, {decor: wall, relief: cliff});
+const fence = {q: wall[2].q + 1, r: 7, side: 0, code: "palissade"};
+let m = newMission(["court_bat", "court_blood_guard"], 1, {decor: [...wall, fence]});
 const [flyer, walker] = m.enemies;
 flyer.q = wall[2].q - 2; flyer.r = 7; walker.q = flyer.q; walker.r = 6;
 const target = {q: wall[2].q + 2, r: 7};
 const key = c => c.q + "," + c.r;
 const flyPaths = api.missionReachablePaths(flyer, 4), walkPaths = api.missionReachablePaths(walker, 4);
-assert.ok(flyPaths.has(key(target)), "la chauve-souris passe au-dessus du mur et de la falaise");
+assert.ok(flyPaths.has(key(target)), "la chauve-souris passe au-dessus du mur et de la palissade");
 assert.equal(api.missionPathCost(flyPaths.get(key(target)), flyer), 4, "1 point par case");
 assert.ok(wall.every(w => !flyPaths.has(key(w))), "pas d'arrêt sur le mur");
 assert.ok(!walkPaths.has(key(target)), "le garde doit contourner");
@@ -181,10 +182,10 @@ for (const o of offers.slice(0, 24)) {
   const enemies = api.placeMissionArmy(foes.map((c, i) => api.makeMissionUnit(c, "enemy", i % 3)), "enemy");
   const out = api.missionTerrain().generate({cols: 30, rows: 15, faction: FACTION, players, enemies});
   assert.equal(out.landscape, "Château en ruine");
-  assert.ok(out.decor.some(d => d.code === "mur") && out.relief.some(c => c.h === 2), "un château sur son plateau, entouré de murs");
+  assert.ok(out.decor.some(d => d.code === "mur" && d.side == null), "un château entouré de murs (des cases : un mur a de l'épaisseur)");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: out.decor, relief: out.relief, contract: o};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: out.decor, contract: o};
   api.startMissionCamouflage();
   api.selectNextMissionPlayer();
   api.autoResolveMission();

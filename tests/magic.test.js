@@ -346,7 +346,7 @@ assert.ok(out.wall.cells.some(c=>c.q===2&&c.r===0),"centré sur la case visée")
 const cone=magic.coneCells({q:0,r:0},{q:1,r:0},3);
 assert.equal(cone.length,7);
 assert.deepEqual(cone.slice(0,1),[{q:1,r:0}]);
-assert.ok(cone.every(c=>Math.max(Math.abs(c.q),Math.abs(c.r),Math.abs(c.q+c.r))<=3&&c.q>0),"devant le lanceur");
+assert.ok(cone.every(c=>c.q>=1&&c.q<=3&&Math.abs(c.r)<=1),"devant le lanceur, en ligne droite");
 assert.match(magic.canCast(caster,{q:0,r:0},"fiery_breath").reason,/case voisine/);
 assert.match(magic.canCast(caster,{q:2,r:0},"fiery_breath").reason,/hors de portée/);
 queue=[0,0.99,0.5,0.5];
@@ -403,9 +403,25 @@ assert.equal(out.fog.cells.length,5);
 assert.ok(out.fog.cells.some(c=>c.q===3&&c.r===0),"centré sur la case visée");
 assert.equal(out.fog.cells.filter(c=>c.r===0).length,1,"en travers : une seule case sur la ligne du lanceur");
 assert.deepEqual(magic.wallCells({q:0,r:0},{q:0,r:3},5),[{q:-2,r:3},{q:-1,r:3},{q:0,r:3},{q:1,r:3},{q:2,r:3}]);
+// Cases carrées (doc 04 : « les sorts en ligne, les cônes et les murs seulement en ligne droite, sans diagonale ») : la
+// ligne et le cône partent d'une case voisine par un côté (portée 1 : jamais en diagonale), droit devant ; le mur suit
+// toujours une colonne ou une ligne, même visé en biais.
+for(const code of ["tsunami","electric_arc","fiery_breath"]){
+  assert.equal(magic.range(archmage,code),1,code+" : portée 1, même pour un archimage");
+  assert.match(magic.canCast(caster,{q:1,r:1},code).reason,/hors de portée/,code+" : pas en diagonale");
+}
+for(const d of [{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}]){
+  const line=magic.lineCells({q:0,r:0},d,4),fan=magic.coneCells({q:0,r:0},d,3);
+  assert.ok(line.every((c,k)=>c.q===d.q*(k+1)&&c.r===d.r*(k+1)),"la ligne, droit devant");
+  assert.ok(fan.every(c=>d.q?Math.sign(c.q)===d.q&&Math.abs(c.r)<=1:Math.sign(c.r)===d.r&&Math.abs(c.q)<=1),"le cône, droit devant");
+}
+for(const center of [{q:3,r:3},{q:2,r:-3},{q:-3,r:1}]){
+  const wall=magic.wallCells({q:0,r:0},center,5);
+  assert.ok(wall.every(c=>c.q===center.q)||wall.every(c=>c.r===center.r),"le mur : une colonne ou une ligne");
+}
 // Ligne de vue : les cases traversées, extrémités comprises.
 assert.deepEqual(combat.hexLine({q:0,r:0},{q:3,r:0}),[{q:0,r:0},{q:1,r:0},{q:2,r:0},{q:3,r:0}]);
-assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,4);
+assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,3,"cases carrées : une case par pas, en diagonale quand il le faut");
 assert.deepEqual(combat.hexLine({q:2,r:2},{q:2,r:2}),[{q:2,r:2}]);
 // La ligne qui frôle (Idan, 2026-11-14 : « Frôler ne bloque pas ») : pile entre deux cases, une ligne de chaque côté ;
 // sinon, deux fois la même.
@@ -660,7 +676,7 @@ assert.deepEqual(magic.stormStrike({...out.storm,critical:true}).dice,8,"coup cr
 // École de la Télékinésie (Idan, 2026-10-28) : dégâts contondants qui passent par l'armure.
 assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.action,x.cible]),[
   ["attraction","principale","ennemi"],["projection","principale","ennemi"],
-  ["telekinetic_move","rapide","allie_ou_ennemi"],["clash","principale","ennemi"],
+  ["telekinetic_move","rapide","allie_ou_ennemi"],["clash","rapide","ennemi"],
   ["force_field","principale","allie_ou_soi"],["stone_throw","rapide","ennemi"],
   // Idan, 2026-10-31 : la Télékinésie passe à 10 sorts.
   ["weapon_throw","principale","ennemi"],["shockwave","principale","soi"],["leap","rapide","case_vide"],["crush","principale","ennemi"]]);

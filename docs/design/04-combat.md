@@ -21,11 +21,220 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 
 ## Grille, activation & mouvement V1
 
-- Grille **hexagonale**.
+- Grille **hexagonale**, jusqu'au passage aux cases carrées (section suivante : décidé, à coder).
 - En V1, un personnage standard occupe **1 hexagone**.
 - [Activation hexagonale V1](/design/#doc=formulas/activation-hexagonale-v1.md) : une activation fournit **Mouvement + Action rapide + Attaque**, dans l'ordre choisi ; le mouvement est fractionnable et l'Attaque peut être remplacée par un second Mouvement.
 - [Mouvement hexagonal V1](/design/#doc=formulas/mouvement-hexagonal-v1.md) : `MouvementBase` est calculé à partir de Vitesse combat effective, Endurance et Volonté.
 - [Portée d'arme V1](/design/#doc=formulas/portee-d-arme-v1.md) : une arme de mêlée standard vaut implicitement 1–1 ; les armes d'hast configurées 1–2 utilisent toujours le pipeline CAC.
+
+## Passage aux cases carrées (Idan, 2026-11-17 : décidé, à coder)
+
+> « On passe en carrés / top view. » « Pour le déplacement, une diagonale c'est 2 PM. » « Globalement, on se rapproche de
+> Dofus dans la logique. » Une vue isométrique viendra ensuite (« une carte serrée à la X-COM où l'on découvre ses
+> adversaires »).
+
+**Avancement du code** (Idan, 2026-11-17 : « Tu lances le chantier et tu fais fonctionner le jeu en carré ? ») :
+- **A, la géométrie (fait)** : cases carrées partout (moteur `game-core/combat-engine.js`, sorts `game-core/magic.js`,
+  cartes `game-core/mission-terrain.js`, écran `prototype-web/mission.js`) ; q = la colonne, r = la ligne ; distance en
+  losange ; 4 voisines ; lignes de vue case par case, en diagonale quand il le faut ; grandes créatures 1×2, 2×2, 3×3,
+  sens 0 à 3 (est, nord, ouest, sud) ; encerclement sur des côtés opposés ; cône 1-3-3 droit devant ; enceinte des camps
+  en carré. Le décor, la couverture et l'altitude d'avant restent branchés en attendant l'étape B.
+- **La charge en biais** (Idan, 2026-11-17 : « 2 pour la diagonale ») : la charge part dans n'importe quelle direction.
+  Sur une colonne ou une ligne, elle va tout droit ; en biais, elle va de case en case par les côtés, au plus près de la
+  ligne droite (un escalier). La course se compte en losange, et le chargeur finit collé à la cible par un côté. Un
+  personnage sur l'escalier barre la charge, comme sur une ligne droite.
+- **B, le terrain du nouveau modèle (fait)** : les cases et les arêtes des étapes 1, 2 et 4 (`combat-cells.json`,
+  `combat-edges.json` ; chaque décor de `terrain-decors.json` dessine une case ou une arête ; module pur
+  `game-core/combat-grid.js`, porté par le moteur : `engine.grid`). Sur la carte, `m.decor` mêle les cases `{q, r, code}`
+  et les arêtes `{q, r, side, code}` (side 0 est, 1 nord, 2 ouest, 3 sud ; (q, r) est le côté défendu).
+  - **B1** : les données et le module (coût d'un pas, Esquive, vue, corps à corps à travers).
+  - **B2** : le déplacement (PM au quart de point, arêtes franchies ; mouvement affiché « 3,5/5 ») ; les arêtes dessinées en
+    trait épais sur le bord des cases (un seul sens : une ombre du côté défendu) ; le survol d'une case dit son PM, sa vue
+    et ses arêtes.
+  - **B3** : l'Esquive du terrain à la place de la couverture (tirs, sorts qui volent, charge × 2 sauf aérienne) ; la vue
+    par les cases et les arêtes ; pas de corps à corps à travers une palissade ou une meurtrière (ni coup, ni zone de
+    menace, ni charge) ; l'IA qui se place pour tirer cherche la meilleure Esquive du terrain.
+  - **B4** : plus d'altitude (ni relief, ni falaises, ni camp en hauteur) ; les paysages des contrats posent leurs murets,
+    tombes, caisses et palissades en lignes d'arêtes et leurs maisons en plan (des murs autour d'un plancher, une porte) ;
+    l'enceinte des camps est une ligne d'arêtes Palissade (ou Muret au cimetière) défendue de l'intérieur, celle du château
+    en ruine un anneau de cases Mur.
+  - **Décidé ensuite** (Idan, 2026-11-17) : pas de charge à travers une palissade (« oui ») ; un volant passe au-dessus d'un
+    mur sans pouvoir s'y arrêter (« oui ») ; un déplacement forcé (repousser, attirer) s'arrête contre une palissade ou une
+    meurtrière comme contre un mur (« oui » ; par-dessus un muret, il passe).
+  - **Se cacher** (Idan, 2026-11-17 : « Se cacher, c'est une action rapide. On choisit de se cacher au lieu de boire une
+    potion. Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré ») : le bouton
+    « Se cacher », pour qui est encore camouflé et a son action rapide ; au repérage, **+10** de Discrétion
+    (`combat.stealth.hide_bonus`) plus le « Se cacher » de la case où il est, tant qu'on ne l'a pas repéré.
+    Il se déplace caché (Idan, 2026-11-17 : « Non, il se déplace caché ;) ») : le +10 le suit, le bonus de case est celui de
+    la case où il se trouve.
+  - **Garde-fou du décor** (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur (1 ennemi, coincé dans
+    une muraille de tous les côtés, il peut tirer et est presque invincible) ») : chaque case où l'on peut se tenir se
+    rejoint à pied depuis l'escouade sans passer par un mur (une case infranchissable) ni franchir une palissade ou une
+    muraille ; un muret n'enferme pas (on frappe par-dessus). Sinon le décor est tiré à nouveau (cartes de contrat et
+    Mission Test ; `combat-grid.js`, `closedPockets`). Avant ce garde-fou, environ 1 Mission Test sur 80 avait une case
+    enfermée (une porte de maison bouchée par un rocher, par exemple).
+- **C, les personnages et les sorts (fait)** :
+  - **C1** : les personnages coupent la ligne de vue des tirs et des sorts selon l'étape 3 (un ennemi cache ceux qui sont
+    derrière lui ; un allié collé au tireur, dans les 8 cases autour, ne gêne pas, plus loin il empêche de tirer ; un plus
+    petit ne cache pas un plus grand ; au sol ou en vol, rien ; une grosse créature sur toutes ses cases ; un personnage
+    caché bloque aussi). Pas au repérage (« Les personnages bloquent la vue, pas la discrétion »). L'arme d'hast frappe à
+    2 cases par-dessus un allié collé ou un personnage au sol, pas par-dessus un ennemi debout (en diagonale : par l'un ou
+    l'autre côté du coin).
+    Le personnage qui se tient sur la case visée (un sort de zone) ne la cache pas. L'**Entrechoc** demande de voir les
+    deux ennemis, donc côte à côte vus du lanceur ; il passe en **action rapide** (Idan, 2026-11-17 : « On garde ça, mais
+    comme il est bien dur à lancer, on va le passer en action rapide »).
+  - **C2** : les sorts en ligne et en cône partent d'une case voisine par un côté (portée 1), droit devant ; le mur suit une
+    colonne ou une ligne. C'était déjà vrai depuis A ; un test le garde.
+- **D, l'IA, la Mission Test, la mise en ligne** (en cours) : l'IA joue sur la grille carrée sans rien changer à ses
+  règles : elle franchit une palissade (+2 PM) pour frapper, un tireur dont un allié bouche la ligne se décale pour tirer,
+  ses zones et ses sorts suivent la nouvelle ligne de vue. Vérifié en simulation (combats automatiques sur les camps à
+  enceinte et sur la Mission Test, aucun blocage, aucun combat sans fin). Le journal compte en cases. L'IA en embuscade
+  prend « Se cacher » (Idan, 2026-11-18 : « oui »). Le garde-fou du décor (pas d'enceinte fermée). Mise en ligne : validée
+  par Idan le 2026-11-18 (« vas-y pour la mise en ligne »).
+
+- **Les distances en losange**, partout (déplacement, portées, zones, repérage) : une case en diagonale est à 2 cases.
+- **Déplacement en ligne droite seulement** (Idan : « On ne se déplace qu'en ligne droite ») : une case en diagonale,
+  c'est deux pas. Les valeurs de PM et de portée restent celles d'aujourd'hui ; l'équilibrage vient après.
+- **Fractions de PM** (Idan, 2026-11-17 : option A, puis « 0,75 pour des routes et du plancher ») : une case peut
+  coûter un quart de point près (0,75 ; 1 ; 1,5…), pour garder « 1 PM = 1 case normale ». Le reste qui ne suffit pour
+  entrer dans aucune case est perdu à la fin du tour.
+- **Corps à corps** : le contact, ce sont les **4 cases** des côtés (attaques d'opportunité, encerclement, descendre de
+  sa monture).
+- **Armes d'hast et fouet** (portée 1–2) : le contact, plus les **4 diagonales**, plus **2 cases en ligne droite**.
+- **Frappe dans le dos** : 4 sens (nord, sud, est, ouest) ; le dos, c'est la case derrière lui et ses deux coins.
+- **Encerclement** : deux adversaires sur des côtés opposés (pris en tenaille).
+- **Tir** : la portée en losange ; la ligne de vue passe en diagonale, même entre deux obstacles qui se touchent par le
+  coin, si rien n'est sur la diagonale elle-même (« si rien n'est dans la diago, ça passe »).
+- **Plus de couverture** (Idan : « On vire tout le système de couverture ») : l'Esquive des cases et des arêtes la
+  remplace (voir « Le modèle de la case » ci-dessous).
+- **Sorts** : les zones en rayon en losange ; les sorts en ligne, les cônes et les murs **seulement en ligne droite**,
+  sans diagonale (« ça oblige à bien se placer »).
+- **Charge** : dans toute direction, sans contourner d'obstacle ; en biais, de case en case par les côtés, au plus près
+  de la ligne droite (« 2 pour la diagonale ») : elle franchit donc les arêtes comme un déplacement. La course se compte
+  en losange. L'Esquive du chargé compte double (ci-dessous).
+- **Grosses créatures** : cheval 1×2, mammouth, tricératops et **cerbère 2×2**, énorme 3×3. Une créature qui fait plus
+  d'une case se déplace par rapport à sa **tête** : elle va dans la direction choisie depuis la case de sa tête.
+- **Carte** : 36 × 25 cases, comme aujourd'hui ; la taille se règle avec l'équilibrage.
+
+### Le modèle de la case (Idan, 2026-11-17)
+
+> « On retire l'altitude pour l'instant. Trop complexe à gérer en phase 1. » « On va séparer la fonction de l'obstacle
+> de sa représentation graphique. » Puis, en reprenant tout : « un mur prend une case complète, il a de l'épaisseur !
+> Contrairement à une palissade » ; « On vire tout le système de couverture ». Travaillé étape par étape dans
+> l'artefact « Grille de combat » : 1 les cases, 2 les arêtes, 3 les personnages, 4 les objets du décor.
+
+- **Phase 1 sans altitude** : collines, falaises, camps en hauteur et ±10 au toucher sortent de la grille carrée. La
+  section « Altitude » plus bas décrit le jeu actuel ; elle pourra revenir en phase 2.
+- **La règle d'un côté, le dessin de l'autre** : une case ou une arête peut avoir plusieurs dessins (« C'est une
+  variation graphique mais la même chose »). Une maison est un plan de plusieurs cases (murs, plancher), et l'on entre
+  dedans.
+- **Une case** a :
+  - sa **vitesse de déplacement** : les PM pour y entrer, au quart de point ;
+  - un **bonus de Discrétion** quand on s'y cache (« Se cacher », une action rapide : avancement B, plus haut) ;
+  - **bloque la vue**, oui ou non. Dedans, on n'est **ciblable qu'au contact** ; de sa case, on voit et on tire dehors
+    si aucune autre case qui bloque la vue n'est entre soi et la cible (« s'il est à l'orée de la forêt ») ;
+  - un **bonus d'Esquive** pour celui qui s'y tient, parfois sous condition (Respiration aquatique), et qui peut être
+    **négatif** (« neige par exemple ou marais.. c'est une bonne idée »).
+- **Un mur a de l'épaisseur** : c'est une case (100 PM, bloque la vue), comme la montagne et le gros rocher (« L'un
+  construit par dame nature, l'autre par les humains (ou les nains !) »).
+- **Une arête est partagée par les deux cases qu'elle sépare.** Elle a 4 réglages, les mêmes des deux côtés sauf la vue
+  (Idan : « Le seul cas en fait, c'est la vue bloquée ou non en fonction du sens. On peut peut-être tout simplifier ? ») :
+  - **la franchir** : des PM en plus ; passer d'une case à l'autre coûte le PM de la case d'arrivée plus ce malus ;
+  - **l'Esquive**, la même des deux côtés (« Le mec est à l'intérieur du camp, l'autre est plaqué contre la muraille, il
+    le touchera pas ») ;
+  - **la ligne de vue** : laisse voir, bloque la vue, ou **un seul sens** : on voit du côté défendu vers l'extérieur,
+    pas l'inverse (la meurtrière, la palissade d'un camp) ;
+  - **le corps à corps à travers** : possible ou non (« on ne tape pas au cac à travers une meurtrière » ; la palissade :
+    « c'est du bois plein. On fait le tour »).
+- **L'Esquive remplace la couverture** : celle de la case et celle de l'arête comptent contre les **tirs**, les **sorts
+  qui volent** comme une flèche (« Pas un sort dans ligne de vue par exemple ») et la **charge** ; pas contre un coup
+  normal au corps à corps. Elle passe par la formule du toucher : face à une attaque à 50 %, +20 d'Esquive la ramène à
+  32 % environ, +40 à 20 % ; jamais sous 10 %.
+- **Charge** : l'Esquive de la case et de l'arête du chargé compte **double** (« Je charge face à la palissade, il a 120
+  d'esquive. Au tour d'après, il n'a que 60 » ; « Je charge dans l'eau une sirène... C'est pas top »). La **charge
+  aérienne** y échappe (« la charge aérienne est très cool ! »).
+- **Rien d'infranchissable pour qui vole ou nage** : « Juste une valeur de déplacement de 100 PM ». Ceux qui volent
+  ignorent les malus de déplacement des cases et des arêtes, et passent au-dessus des murs et des montagnes (1 PM).
+- **Diagonales** : une arête ne protège pas la diagonale à elle seule (« Elle protège si une autre arête de la même case
+  ou adjacente protège ») ; un tir de biais regarde l'arête qui fait face au tireur. Une ligne de vue qui passe pile par
+  un coin n'est bloquée que si les deux arêtes de ce coin bloquent la vue.
+- **Les personnages bloquent la vue, pas la discrétion** : « On ne peut pas viser à l'arc le mec n° 4 d'une file
+  indienne si on est en ligne droite. En fait, il agit comme une arête » (voir l'étape 3).
+- **Plus tard** : les portes qui s'ouvrent et se ferment ; les sorts de zone à travers un mur (« au cas par cas »).
+
+### Étape 1 : les cases (Idan, 2026-11-17, V1)
+
+| Case | Dessins, où | PM | Se cacher | Vue | Esquive | Capacités de terrain, notes |
+|---|---|---|---|---|---|---|
+| Terrain par défaut | terre, herbe rase, champs, chemins, camps | 1 | — | laisse voir | — | |
+| Végétation souple | buissons, blé haut, champ de tournesols | 1,5 | +30 | laisse voir | — | vol : 1 PM |
+| Forêt | | 1,5 | — | bloque | +30 | Déplacement sylvain : sans malus et +30 de Discrétion, comme aujourd'hui |
+| Plancher, dallage, route | intérieur des bâtiments ; la route | 0,75 | — | laisse voir | — | |
+| Boue, marais, neige | marais, bords de rivière | 2 | — | laisse voir | — | vol : 1 PM |
+| Eau peu profonde | gués, mares, torrents | 2 | +10 | laisse voir | +25 avec Respiration aquatique | Déplacement aquatique : 1 PM et +30 de Discrétion ; vol : 1 PM |
+| Eau profonde | rivières, lacs | 100 | — | laisse voir | +80 avec Respiration aquatique | Déplacement aquatique : 2 PM ; Respiration aquatique : 1 PM ; vol : 1 PM |
+| Éboulis, pierraille | gorges, carrières, pieds de falaise | 2 | +30 | laisse voir | — | vol : 1 PM ; des murets en forme de rochers pourront s'y ajouter |
+| Gouffre, vide, lave | gorges, ruines effondrées | 100 | — | laisse voir | — | vol : 1 PM |
+| Mur, montagne, rocher | maisons, château, temples, remparts ; montagnes | 100 | — | bloque | — | vol : 1 PM (par-dessus) |
+
+- **Les sorts changent des cases en une case qui existe**, pour quelques tours et avec leur propre dessin (« c'est pas un
+  type de sol, mais une transformation en sol type Gouffre, vide pendant un certain nombre de tours et avec un
+  graphisme spécifique ») : la **Flaque de magma** fait du Gouffre (la lave) ; le **Bourbier** ferait une large zone de
+  Boue au lieu d'immobiliser une case (« C'est peut-être plus simple »), la taille de la zone se réglera avec le passage
+  des sorts aux cases carrées.
+
+### Étape 2 : les arêtes (Idan, 2026-11-17, V1)
+
+| Arête | Où | Franchir | Esquive | Vue | Corps à corps à travers | Notes |
+|---|---|---|---|---|---|---|
+| Muret | champs, fermes, ruines | +0,5 | +30 | laisse voir | possible | mi-hauteur : « On se baisse, on se relève pour tirer » |
+| Palissade | enceinte des camps | +2 | +60 | un seul sens | impossible | hauteur d'homme : « Ça se franchit avec une bonne traction » ; du bois plein, on fait le tour |
+| Muraille avec meurtrière | châteaux, remparts, forts | +4 | +100 | un seul sens | impossible | elle s'escalade ; différente de la case Mur |
+
+### Étape 3 : les personnages (Idan, 2026-11-17, V1)
+
+> « En gros, un ennemi bloque ses alliés. Un allié ne bloque pas sa ligne de vue. Un plus petit ne bloque pas la ligne
+> de vue par-dessus lui. » « La vraie règle pour les alliés, c'est un allié devant permet de tirer mais un allié à 10
+> cases au cac d'un ennemi, bah on peut pas tirer... »
+
+- **On ne traverse la case de personne**, allié ou ennemi.
+- **Ligne de vue** (tirs et sorts) :
+  - un **ennemi** cache ceux qui sont derrière lui ;
+  - un **allié collé au tireur** (les 8 cases autour de lui) ne gêne pas ; un **allié plus loin** sur la ligne empêche de
+    tirer ;
+  - **un plus petit ne cache pas un plus grand** (« Même logique avec un Gobelin devant un humain ou un humain devant
+    un Ogre ! ») : on compare le **gabarit**, comme pour les montures (gobelin 0,5, humain 1, ogre 2…), pour les alliés
+    comme pour les ennemis ;
+  - **au sol** ou **en vol**, un personnage ne cache rien ;
+  - une **grosse créature** cache sur toutes ses cases ;
+  - un **personnage caché** bloque la vue, sans qu'on sache pourquoi (on y reviendra avec le brouillard de guerre).
+- **Un personnage ne donne pas d'Esquive** à celui qui est derrière lui.
+- **Arme d'hast** : elle frappe par-dessus un allié collé ou un personnage au sol, pas par-dessus un ennemi.
+- **Le tir raté** peut toujours toucher quelqu'un dans le couloir de tir (« Approximation projectile V1 »).
+
+### Étape 4 : les objets du décor (Idan, 2026-11-17, V1)
+
+> « Pour moi, soit c'est juste graphique... Soit c'est une arête, non ? » « On ajoutera surtout des objets avec le
+> graphisme et le générateur de carte graphique. Là, l'idée c'est d'avoir une jouabilité moche ! »
+
+Un objet du décor est le **dessin d'une case** des étapes 1 et 2, ou **une arête**. Les décors d'aujourd'hui :
+
+| Décor d'aujourd'hui | Devient |
+|---|---|
+| Buissons, Blé haut | case Végétation souple |
+| Forêt | case Forêt |
+| Marais | case Boue, marais, neige |
+| Eau peu profonde, Eau profonde, Éboulis | leur case |
+| Gros rocher, Mur | case Mur / Montagne / Rocher |
+| Gouffre | case Gouffre, vide, lave |
+| Muret, Tombe, Caisses, Tonneaux | arête Muret |
+| Palissade | arête Palissade |
+| Maison | un plan : des cases Mur autour de cases Plancher ; la porte est une case Plancher dans le mur, avec son dessin (s'ouvrir et se fermer : plus tard) |
+
+- **La fenêtre** : à voir ; plutôt qu'une case mur, une case de sol avec une arête muret (« on peut retirer la case mur
+  et mettre une case sol + muret ? »).
+- **Les paysages** (Vieille carrière, Cimetière, Château en ruine…) suivent ce tableau ; sans altitude, ils perdent leurs
+  collines, leurs rampes et le camp en hauteur.
 
 ## Initiative & ordre interne V1
 
@@ -206,6 +415,11 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 
 ## Décor (Idan, 2026-11-06)
 
+> **Remplacé par la grille carrée** (« Le modèle de la case » et ses étapes 1 à 4, plus haut ; avancement B). Le passage
+> (coûts 2, 3, 4), la vue des décors et la couverture décrits ci-dessous sont ceux de l'ancien jeu en hexagones ; restent
+> vrais : la chute de charge sur un terrain lent (+5 % par point de PM au-delà de 1, l'arête comprise), le motif dessiné de
+> chaque décor, les paysages par faction, l'enceinte (en arêtes), le garde-fou et l'IA.
+
 « Franchissable / infranchissable. Couverture : sans / partiel / totale » ; « je distinguerais ligne de vue et couverture. Le
 mec est derrière un gros rocher, on le voit, on peut le viser, mais il est protégé. Derrière une forêt, on voit pas » ; « il
 peut y avoir une subtilité dans franchissable : vitesse réduite ». Données : `terrain-decors.json` ; code :
@@ -297,6 +511,13 @@ Données : `terrain-skills.json` (qui les a, ce qu'elles donnent par décor) ; c
 1 lointain ancêtre, 2 lignée proche, **3 bâtard**. Sur la fiche (onglet Compétences), elles s'affichent avec les
 **Aptitudes** ; au survol, ce qu'elles donnent.
 
+Grille carrée (doc 04, « Étape 1 : les cases » ; Idan, 2026-11-17, V1) : ce qu'elles donnent est rangé **par case**
+(`terrain-skills.json`, `cases`), sur la case où il est : le PM (le plus bas), la Discrétion et l'Esquive (qui s'ajoutent).
+Déplacement aquatique : **1 PM** et **+30** de Discrétion dans l'eau peu profonde, **2 PM** dans l'eau profonde ;
+Respiration aquatique : **1 PM** et **+80 d'Esquive** dans l'eau profonde, **+25** dans l'eau peu profonde ; Déplacement
+sylvain : **1 PM** et **+30** de Discrétion en forêt. Les points ci-dessous (« 1 point au lieu de 3 », « couverture ») sont
+ceux de l'ancien jeu.
+
 - **Vol** — **sang féerique, sang divin ou sang de dragon bâtard** (dès la création) : il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du
   décor) et **charge par les airs** (charge aérienne, comme le pégase). À cheval, c'est la monture qui compte : il ne vole pas.
 - **Déplacement aquatique** — **tous les Reptiliens, tous les sangs de sirène, les crocodiles invoqués** : pas de malus de
@@ -312,6 +533,11 @@ Données : `terrain-skills.json` (qui les a, ce qu'elles donnent par décor) ; c
   déplace et se cache comme sa monture (le cheval d'un elfe sylvain paie la forêt).
 
 ## Altitude (Idan, 2026-11-06)
+
+> **Retirée en phase 1** (Idan, 2026-11-17 : « On retire l'altitude pour l'instant. Trop complexe à gérer en phase 1 ») :
+> plus de relief dans la Mission Test, plus de collines, de rampes ni de camp en hauteur dans les paysages ; ce qui suit
+> décrit l'ancien jeu et pourra revenir en phase 2. Reste : le cavalier compte comme un niveau plus haut au corps à corps
+> (`combat.altitude.hit_per_level`, « Combat à cheval »).
 
 « Je voudrais aussi qu'on bosse l'altitude » ; « l'idée, c'est de faire des cartes à la Mordheim / X-Com à terme » ; puis,
 sur la proposition ci-dessous : « Oui, ça me va, vas-y pour l'altitude ». Première étape, à la Battle Brothers : **une
@@ -398,8 +624,9 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
     coup de grace »). Les morts-vivants, les invocations, les leurres et le nécromancien ne reculent pas.
   - **Se cacher** : un tireur qui se place pour tirer prend, à risque égal, la case la mieux couverte face à sa cible ;
     encore camouflé et hors de vue, un combattant qui ne pourrait pas frapper au tour suivant n'entre pas dans la vue de
-    l'ennemi : il attend en embuscade, au plus **2 tours**. Un combattant repéré le reste jusqu'à la fin du combat
-    (Idan : « Non »).
+    l'ennemi : il attend en embuscade, au plus **2 tours**. En embuscade, il prend « Se cacher » avec son action
+    rapide (Idan, 2026-11-18 : « oui ») ; un ennemi caché ne se trahit pas dans le journal. Un combattant repéré le
+    reste jusqu'à la fin du combat (Idan : « Non »).
 - **Nécromancien** (Idan, 2026-11-06 : « B, vas-y ») : son **Armée d'os est déjà levée** au début du combat, autour de lui,
   sans mana ni jet (`sort_initial`) ; ensuite, mêmes règles qu'une invocation lancée (entretien, test de Charisme). Il reste
   **en retrait** (`en_retrait`) : tant que ses troupes tiennent, il n'avance que pour lancer un sort et ne frappe qu'un
@@ -481,6 +708,12 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   (1D12, contondant 50), doublées en charge ; gabarit 3 : **tout le monde le monte, les ogres aussi** ; **3 cases** sur la
   carte (taille « grande », + 10 pour le toucher) ; au tir, la monture est visée à 3 ÷ (3 + le cavalier) : 75 % sous un
   humain (67 % sur un destrier), 60 % sous un ogre ; neutre ; « à dos de mammouth ».
+- **Tricératops** (Idan, 2026-11-17 : « C'est une forteresse sur pattes ! En gros, je verrai le profil du mammouth en
+  mieux » ; « Courage : 40 » ; plus gros que le mammouth) : Force 140, Constitution 150 (**524 PV**), **Résistance
+  physique 14** (la plus haute du jeu), Vitesse 25 (**4 cases**, comme le mammouth), Courage 40, Armes naturelles 45 ; les
+  **Cornes** (1D12, perforant 70), doublées en charge ; **gabarit 4** : tout le monde le monte, et au tir la monture est
+  visée à 4 ÷ (4 + le cavalier) : **80 % sous un humain**, 67 % sous un ogre ; 3 cases sur la carte (taille « grande » :
+  le moteur fait 1, 2, 3 ou 7 cases) ; il craint le froid ; neutre ; « à dos de tricératops ».
 - **Les papillons** (Idan, 2026-11-09), qui **volent** tous :
   - **télépathe** (« le drone de repérage ») : Discrétion **300**, Perception 90, Vitesse 110 ; **il n'attaque pas**
     (`attaque` null : pas d'arme) ; personne ne le monte ;

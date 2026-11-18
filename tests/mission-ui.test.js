@@ -80,21 +80,29 @@ function newMission(){
   return game.mission;
 }
 
-// 1. La charge : une ligne droite d'hexagones dans n'importe quelle direction, de 1 à 2 fois le mouvement de base.
+// 1. La charge : cases carrées (doc 04), de 1 à 2 fois le mouvement de base ; en ligne droite sur une colonne ou une ligne,
+// ou en biais (Idan, 2026-11-17 : « 2 pour la diagonale »), case par case par les côtés, collé à la cible à l'arrivée.
 let m=newMission();
 let u=at(m.activeUnit,2,4);
 const base=engine.movementBase(u);
 const foe=m.enemies[0];
-const slanted=api.missionCells().find(c=>{
-  const dq=c.q-u.q,dr=c.r-u.r;
-  if(!dq||!dr||dq+dr===0) return false; // pas sur un des six axes
+const slanted=api.missionCells().find(c=>c.q!==u.q&&c.r!==u.r&&(at(foe,c.q,c.r),api.missionChargeIfClear(u,foe)));
+assert.ok(slanted,"une charge en biais");
+at(foe,slanted.q,slanted.r);
+{
+  const biais=api.missionChargeIfClear(u,foe);
+  assert.equal(biais.travel,engine.axialDistance(u,foe)-1,"la course se compte en losange");
+  assert.equal(engine.axialDistance(biais.destination,foe),1,"il finit collé à la cible par un côté");
+}
+const straight=api.missionCells().find(c=>{
+  if(c.r!==u.r) return false;
   at(foe,c.q,c.r);
   return engine.chargeData(u,foe).valid&&engine.chargeData(u,foe).travel===base;
 });
-assert.ok(slanted,"une case de charge hors des six axes");
-at(foe,slanted.q,slanted.r);
+assert.ok(straight,"une case de charge en ligne droite");
+at(foe,straight.q,straight.r);
 let charge=api.missionChargeIfClear(u,foe);
-assert.ok(charge,"la charge en biais");
+assert.ok(charge,"la charge en ligne droite");
 assert.equal(charge.path.length,base);
 assert.equal(engine.axialDistance(charge.destination,foe),1,"il finit au contact");
 // Un personnage sur la ligne l'empêche ; un bourbier aussi ; une fois dégagée, elle repasse.
@@ -144,7 +152,7 @@ const end=approach.path[approach.path.length-1],before=m.log.length;
 api.handleMissionHexClick(target.q,target.r);
 const said=m.log.slice(before).map(x=>x.message);
 const name=x=>x.character.name;
-assert.equal(said[0],name(u)+" s’approche de "+name(target)+" (2 hex).");
+assert.equal(said[0],name(u)+" s’approche de "+name(target)+" (2 cases).");
 assert.ok(said[1].startsWith(name(u)+" attaque "+name(target)+" avec Épée courte"),said[1]);
 assert.equal(api.missionKey(u.q,u.r),key(end),"il frappe depuis la fin du chemin");
 
@@ -297,4 +305,4 @@ assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/);
 assert.match(css,/\.mission-panel\{[^}]*height:calc\(100dvh - 16px\)/);
 assert.doesNotMatch(css,/body\[data-screen="mission"\] \.app-shell\{[^}]*74px/);
 
-console.log("Écran de combat : charge en biais, portée et zone en surbrillance, approche au corps à corps, rythme du tour ennemi, aperçu des sorts — OK");
+console.log("Écran de combat : charge en ligne et en biais, portée et zone en surbrillance, approche au corps à corps, rythme du tour ennemi, aperçu des sorts — OK");

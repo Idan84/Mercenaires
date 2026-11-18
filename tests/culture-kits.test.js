@@ -20,7 +20,7 @@ const kits = json("culture-kits.json"), colors = json("culture-colors.json");
 // 1. Les données : une ligne par kit, sa culture, ses pièces.
 assert.equal(kits.row_count, kits.rows.length);
 assert.deepEqual(kits.rows.map(k => k.cle), ["elfes-noirs", "elfes-sylvains", "elfes-des-grandes-cites"]);
-assert.deepEqual(kits.columns.map(c => c.key), ["cle", "culture", "dossier", "geometrie", "fiche", "barres"]);
+assert.deepEqual(kits.columns.map(c => c.key), ["cle", "culture", "dossier", "geometrie", "fiche", "barres", "plein"]);
 for (const kit of kits.rows) {
   assert.equal(HUD_BARS[kit.cle]?.culture, kit.culture, kit.cle + " : culture de sa barre");
   assert.equal(kit.dossier, "assets/fiche/kits/" + kit.cle);
@@ -151,7 +151,7 @@ assert.match(css, /\.hover-card\[data-kit-nom="or"\] \.hc-title span\{background
 assert.match(css, /\.hover-card\[data-kit\] \.hc-orn\{width:var\(--hc-orn-w\);height:var\(--hc-orn-h\)\}/);
 assert.match(css, /\.hc-cadre\{position:absolute;inset:0;z-index:2;pointer-events:none\}/);
 assert.match(read("prototype-web/reference-data.js"), /cultureKits: "culture-kits\.json"/);
-assert.match(read("data/reference/CATALOG.md"), /\| culture-kits\.json \| 3 \| cle, culture, dossier, geometrie, fiche, barres /);
+assert.match(read("data/reference/CATALOG.md"), /\| culture-kits\.json \| 3 \| cle, culture, dossier, geometrie, fiche, barres, plein /);
 assert.match(read("scripts/build-pictos.sh"), /for src in assets-src\/Kits\/\*\/logo\.png; do/);
 assert.match(read("prototype-web/godmode.css"), /\.godmode-preview-scale\{width:860px;margin:25px;transform:scale\(\.45\)/, "l'aperçu du mode dieu montre les ornements qui débordent");
 

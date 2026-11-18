@@ -8,7 +8,8 @@
     {"key": "dossier", "source": "Pièces du jeu (scripts/build-culture-kit.sh)"},
     {"key": "geometrie", "source": "Les pièces (prototype-web/<dossier>/) et leurs mesures dans les masters (pixels des originaux)"},
     {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche « Fiches des Elfes », 2026-11-18)"},
-    {"key": "barres", "source": "Réglages d'Idan pour les barres du camp (planche « Barres des Elfes », 2026-11-18)"}
+    {"key": "barres", "source": "Réglages d'Idan pour les barres du camp (planche « Barres des Elfes », 2026-11-18)"},
+    {"key": "plein", "source": "La fiche complète en plein écran (Idan, 2026-11-18 : « deux parties fixes, une barre en haut, une colonne à gauche ») : places et épaisseurs en pixels d'un écran de 1080 px de haut ; réglable par culture dans le Design Lab (onglet Cultures)"}
   ],
   "rows": [
     {
@@ -97,7 +98,8 @@
           "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
         },
         "contenu": "clair"
-      }
+      },
+      "plein": {"largeur": "ecran", "haut": 150, "gauche": 440, "marge": 0, "cadre": {"ep": 20}, "separations": {"ep": 20}, "ornements": {"echelle": 1}}
     },
     {
       "cle": "elfes-sylvains",
@@ -187,7 +189,8 @@
           "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
         },
         "contenu": "clair"
-      }
+      },
+      "plein": {"largeur": "ecran", "haut": 150, "gauche": 440, "marge": 0, "cadre": {"ep": 20}, "separations": {"ep": 20}, "ornements": {"echelle": 1}}
     },
     {
       "cle": "elfes-des-grandes-cites",
@@ -276,7 +279,8 @@
         },
         "contenu": "dore",
         "inactifs": 50
-      }
+      },
+      "plein": {"largeur": "ecran", "haut": 150, "gauche": 440, "marge": 0, "cadre": {"ep": 20}, "separations": {"ep": 20}, "ornements": {"echelle": 1}}
     }
   ],
   "row_count": 3

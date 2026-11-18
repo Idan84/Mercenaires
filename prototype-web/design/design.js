@@ -24,6 +24,7 @@ async function init(){
     else if(hash==="charte"||hash.startsWith("charte-")){setMode("charte")}
     else if(hash==="bestiary"||hash.startsWith("best-")){setMode("bestiary")}
     else if(hash==="missions"||hash.startsWith("mis-")){setMode("missions")}
+    else if(hash==="cultures"||hash.startsWith("cult-")){setMode("cultures")}
     else if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
     else if(hash.startsWith("doc=")){openDoc(decodeURIComponent(hash.slice(4)))}
     else openDoc(state.docs.documents[0]?.file);
@@ -50,6 +51,7 @@ function setMode(mode){
   else if(mode==="charte") openLab("charte");
   else if(mode==="bestiary") openLab("bestiary");
   else if(mode==="missions") openLab("missions");
+  else if(mode==="cultures") openLab("cultures");
   else openTable(state.tables.tables[0]?.file);
 }
 function renderNav(){
@@ -68,7 +70,9 @@ function renderNav(){
   $("nav-list").innerHTML=items.filter(x=>(x.label+" "+x.id).toLowerCase().includes(q)).map(x=>
     `<button class="nav-item ${state.current===x.id?"active":""}" data-id="${esc(x.id)}">${esc(x.label)}<small>${esc(x.sub)}</small></button>`
   ).join("");
-  $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id):state.mode==="avatars"||state.mode==="images"||LABS[state.mode]?scrollToPeople(b.dataset.id):openTable(b.dataset.id));
+  $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id)
+    :LABS[state.mode]?.module().open?LABS[state.mode].module().open(b.dataset.id)
+    :state.mode==="avatars"||state.mode==="images"||LABS[state.mode]?scrollToPeople(b.dataset.id):openTable(b.dataset.id));
 }
 // Onglet Avatars : besoin en avatars par culture (avatars-lab.js).
 async function openAvatars(){
@@ -117,7 +121,9 @@ async function openImages(){
 const LABS={
   charte:{module:()=>CharteLab,prefix:"charte-",kicker:"Design",title:"Charte graphique"},
   bestiary:{module:()=>BestiaryLab,prefix:"best-",kicker:"Contenu",title:"Bestiaire",search:"Rechercher : arme, ligne, nom…"},
-  missions:{module:()=>MissionsLab,prefix:"mis-",kicker:"Contenu",title:"Missions"}
+  missions:{module:()=>MissionsLab,prefix:"mis-",kicker:"Contenu",title:"Missions"},
+  // Onglet Cultures (Idan, 2026-11-18, cultures-lab.js) : les panneaux de chaque culture réglés sur l'aperçu du jeu.
+  cultures:{module:()=>CulturesLab,prefix:"cult-",kicker:"Design",title:"Cultures"}
 };
 async function openLab(mode){
   const lab=LABS[mode],Lab=lab.module();
@@ -136,7 +142,9 @@ async function openLab(mode){
     $("content-meta").textContent=Lab.meta(data);
     $("viewer").innerHTML=Lab.render(data);
     renderNav();
-    if(location.hash.startsWith("#"+lab.prefix)) scrollToPeople(location.hash.slice(1));
+    // Un onglet qui ouvre un élément à la fois (Cultures) : il se branche et ouvre celui de l'adresse ; les autres défilent.
+    if(Lab.wire) Lab.wire($("viewer"),data,{onOpen:id=>{state.current=id;renderNav();}});
+    else if(location.hash.startsWith("#"+lab.prefix)) scrollToPeople(location.hash.slice(1));
   }catch(e){showError(e)}
 }
 function filterBestiary(){

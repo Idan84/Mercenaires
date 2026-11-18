@@ -73,6 +73,8 @@ function startMusic(audio){
 
 // À chaque changement d'écran ou de lieu du camp (screen-ui.js) : on garde le morceau s'il ne change pas.
 function refreshMusic(){
+  // L'aperçu du Design Lab (apercu-ui.js) reste muet.
+  if(typeof game!=="undefined"&&game?.apercu) return;
   const place=musicPlace();
   if(place===music.place) return;
   const old=music.audio;

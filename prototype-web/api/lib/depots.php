@@ -1,6 +1,8 @@
 <?php
 // Blood & Wages — dépôts d'images depuis la Design Lab (Idan, 2026-11-16 : « faire les maj comme un grand »).
-// Un dépôt remplace une image du jeu ou en ajoute une variante (familles où le jeu tire au hasard). Le fichier est rangé
+// Un dépôt remplace une image du jeu, en ajoute une variante (familles où le jeu tire au hasard) ou apporte une image que
+// le jeu attend et n'a pas encore (« nouvelle » : son chemin suit un motif de la famille, Idan 2026-11-18), ou donne à une
+// image du jeu un autre rôle (« reutiliser » : sans fichier, la source est une image du catalogue ; Idan 2026-11-18). Le fichier est rangé
 // tel quel sur Hostinger, dans media/depots/<id>/, avec sa fiche depot.json ; media/depots/index.json les liste tous.
 // JC les intègre ensuite (conversion au format du jeu, master dans Git, mise en ligne) : rien n'entre dans le jeu ici.
 // Le point d'entrée est prototype-web/design/api/depot.php, derrière le mot de passe de la Design Lab.
@@ -8,7 +10,7 @@
 declare(strict_types=1);
 
 const DEPOT_MAX_OCTETS = 30 * 1024 * 1024;
-const DEPOT_TYPES = ['remplacer', 'variante'];
+const DEPOT_TYPES = ['remplacer', 'variante', 'nouvelle', 'reutiliser'];
 const DEPOT_RASTER = ['png' => IMAGETYPE_PNG, 'jpg' => IMAGETYPE_JPEG, 'webp' => IMAGETYPE_WEBP, 'gif' => IMAGETYPE_GIF];
 
 // Les familles du catalogue et leurs fichiers, tels que publiés avec le site (data/images.json, data/images-fichiers.json).
@@ -25,16 +27,62 @@ function depot_familles(string $site): array
         foreach ($fichiers['familles'][$row['cle']] ?? [] as $f) {
             $liste[$f['chemin']] = $f;
         }
-        $familles[$row['cle']] = ['nom' => $row['famille'], 'variantes' => !empty($row['variantes']), 'fichiers' => $liste];
+        $familles[$row['cle']] = ['nom' => $row['famille'], 'variantes' => !empty($row['variantes']), 'fichiers' => $liste,
+            'motifs' => array_values(array_filter((array) ($row['motifs'] ?? []), 'is_string'))];
     }
     return $familles;
 }
 
 // La demande : une famille connue, une image de cette famille, un type permis pour elle. null si tout va bien.
+// Un motif du catalogue (scripts/build-images-index.js) : {a,b} des variantes, « **/ » des dossiers, « * » un nom.
+function depot_motif_regex(string $motif): array
+{
+    if (preg_match('/\{([^{}]*)\}/', $motif, $m, PREG_OFFSET_CAPTURE)) {
+        $avant = substr($motif, 0, $m[0][1]);
+        $apres = substr($motif, $m[0][1] + strlen($m[0][0]));
+        return array_merge(...array_map(fn($part) => depot_motif_regex($avant . $part . $apres), explode(',', $m[1][0])));
+    }
+    $re = '';
+    for ($i = 0, $n = strlen($motif); $i < $n;) {
+        if (substr($motif, $i, 3) === '**/') { $re .= '(?:[^/]+/)*'; $i += 3; }
+        elseif ($motif[$i] === '*') { $re .= '[^/]*'; $i++; }
+        else { $re .= preg_quote($motif[$i], '#'); $i++; }
+    }
+    return ['#^' . $re . '$#'];
+}
+
+function depot_suit_un_motif(array $motifs, string $cible): bool
+{
+    foreach ($motifs as $motif) {
+        foreach (depot_motif_regex($motif) as $re) {
+            if (preg_match($re, $cible)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function depot_verifier_demande(array $familles, string $famille, string $cible, string $type): ?string
 {
     if (!isset($familles[$famille])) {
         return 'Famille inconnue : « ' . $famille . ' ».';
+    }
+    if ($type === 'reutiliser') {
+        if (isset($familles[$famille]['fichiers'][$cible])) {
+            return null;
+        }
+        $type = 'nouvelle';
+    }
+    if ($type === 'nouvelle') {
+        if (isset($familles[$famille]['fichiers'][$cible])) {
+            return 'Cette image existe déjà : « Remplacer ».';
+        }
+        if (!preg_match('#^assets/[a-z0-9_-]+(?:/[a-z0-9_-]+)*\.(?:webp|png|jpg|svg)$#', $cible)
+            || !depot_suit_un_motif($familles[$famille]['motifs'], $cible)) {
+            return 'Cette image n\'est pas attendue dans la famille « ' . $familles[$famille]['nom'] . ' ».';
+        }
+        return null;
     }
     if (!isset($familles[$famille]['fichiers'][$cible])) {
         return 'Cette image n\'appartient pas à la famille « ' . $familles[$famille]['nom'] . ' ».';
@@ -46,6 +94,20 @@ function depot_verifier_demande(array $familles, string $famille, string $cible,
         return 'Le jeu ne tire pas encore au hasard dans la famille « ' . $familles[$famille]['nom'] . ' » : remplacer seulement.';
     }
     return null;
+}
+
+// La source d'une réutilisation : une image du catalogue, autre que la cible. Renvoie l'erreur ou null.
+function depot_verifier_source(array $familles, string $source, string $cible): ?string
+{
+    if ($source === $cible) {
+        return 'L\'image a déjà ce rôle.';
+    }
+    foreach ($familles as $famille) {
+        if (isset($famille['fichiers'][$source])) {
+            return null;
+        }
+    }
+    return 'Image source inconnue : « ' . $source . ' ».';
 }
 
 // Le fichier : une image (PNG, JPEG, WebP, GIF) ou un SVG sans script pour une image SVG, 30 Mo au plus.
@@ -136,6 +198,43 @@ function depot_enregistrer(string $dossier, array $demande, array $fichier, stri
     file_put_contents($rep . '/depot.json', json_encode($fiche, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . "\n");
     depot_reindexer($dossier);
     return $fiche;
+}
+
+// Une réutilisation : une fiche sans fichier ; « fichier » est l'image source du jeu (la Design Lab l'affiche).
+function depot_enregistrer_reutilisation(string $dossier, array $demande, array $source): array
+{
+    $id = gmdate('Ymd-His') . '-' . bin2hex(random_bytes(3));
+    $rep = $dossier . '/' . $id;
+    if (!mkdir($rep, 0755)) {
+        throw new RuntimeException('Impossible de créer le dossier du dépôt.');
+    }
+    $fiche = [
+        'id' => $id,
+        'date' => gmdate('c'),
+        'famille' => $demande['famille'],
+        'cible' => $demande['cible'],
+        'type' => 'reutiliser',
+        'source' => $source['chemin'],
+        'fichier' => $source['chemin'],
+        'octets' => (int) ($source['octets'] ?? 0),
+        'largeur' => $source['largeur'] ?? null,
+        'hauteur' => $source['hauteur'] ?? null,
+        'note' => $demande['note'],
+        'auteur' => $demande['auteur'],
+    ];
+    file_put_contents($rep . '/depot.json', json_encode($fiche, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . "\n");
+    depot_reindexer($dossier);
+    return $fiche;
+}
+
+function depot_fichier_du_catalogue(array $familles, string $chemin): ?array
+{
+    foreach ($familles as $famille) {
+        if (isset($famille['fichiers'][$chemin])) {
+            return $famille['fichiers'][$chemin];
+        }
+    }
+    return null;
 }
 
 // media/depots/index.json : toutes les fiches, les plus récentes d'abord (lu par la Design Lab et par JC).

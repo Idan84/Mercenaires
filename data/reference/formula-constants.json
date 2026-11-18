@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 477,
+  "row_count": 479,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2955,22 +2955,6 @@
       "version": "V1"
     },
     {
-      "nom": "Bûcherons — jours retirés par bûcheron",
-      "code": "camp.lumber.days_per_worker",
-      "description": "Cabane du bûcheron (Idan, 2026-11-03 : effet « fixe ») : chaque bûcheron du jour retire ce nombre de jours au chantier qui finit le plus tôt ; un chantier finit au plus tôt le lendemain matin.",
-      "formule": "Cabane du bûcheron",
-      "valeur": 1,
-      "version": "V1"
-    },
-    {
-      "nom": "Bûcherons — niveau maximal des chantiers",
-      "code": "camp.lumber.max_work_level",
-      "description": "Cabane du bûcheron (Idan, 2026-11-03 : « sur les constructions actuelles de niveau 1 à 5 (y’aura la mine pour 6 à 10) ») : bâtiment (niveau en construction), qualité du dortoir (niveau), agrandissement (rang), quartier du lieutenant (numéro).",
-      "formule": "Cabane du bûcheron",
-      "valeur": 5,
-      "version": "V1"
-    },
-    {
       "nom": "Bûcherons — décalage du test",
       "code": "camp.lumber.offer_offset",
       "description": "Corvées (Cabane du bûcheron, Guilde des mineurs ; Idan, 2026-11-03 : « test assez dur » ; 2026-11-04 : « Dans les 3 cas, ils peuvent refuser ») : chance d'accepter 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine + ce décalage + appui de l'intendant (+ la relance : persuasion.*). Affinité 0 : 25 % ; 50 : 45 % ; 100 : 69 %.",
@@ -2995,27 +2979,59 @@
       "version": "V1"
     },
     {
-      "nom": "Mineurs — jours retirés par mineur",
-      "code": "camp.mine.days_per_worker",
-      "description": "Guilde des mineurs (Idan, 2026-11-04) : chaque mineur du jour retire ce nombre de jours au chantier de niveau 6 à 10 qui finit le plus tôt ; un chantier finit au plus tôt le lendemain matin.",
-      "formule": "Guilde des mineurs",
-      "valeur": 1,
+      "nom": "Bois — stock de départ",
+      "code": "camp.resources.start_wood",
+      "description": "Idan, 2026-11-18 : « Stock de départ : fixe à 500 pour l'instant ».",
+      "formule": "Bois et pierre",
+      "valeur": 500,
       "version": "V1"
     },
     {
-      "nom": "Mineurs — niveau minimal des chantiers",
-      "code": "camp.mine.min_work_level",
-      "description": "Guilde des mineurs (Idan, 2026-11-04 : « des bâtiments de lvl 6 à 10 ») : bâtiment (niveau en construction), qualité du dortoir (niveau), agrandissement (rang), quartier du lieutenant (numéro).",
-      "formule": "Guilde des mineurs",
-      "valeur": 6,
+      "nom": "Pierre — stock de départ",
+      "code": "camp.resources.start_stone",
+      "description": "Idan, 2026-11-18 : « Stock de départ : fixe à 500 pour l'instant ».",
+      "formule": "Bois et pierre",
+      "valeur": 500,
       "version": "V1"
     },
     {
-      "nom": "Mineurs — niveau maximal des chantiers",
-      "code": "camp.mine.max_work_level",
-      "description": "Guilde des mineurs (Idan, 2026-11-04) : voir camp.mine.min_work_level.",
-      "formule": "Guilde des mineurs",
-      "valeur": 10,
+      "nom": "Cabane et Guilde — production du bâtiment",
+      "code": "camp.resources.hall_yield",
+      "description": "Idan, 2026-11-18 : « Batiment de base produit : 20 x jour x 0,5 etoiles de reputation x niveau du batiment ». Bois (Cabane) ou pierre (Guilde) par jour : cette valeur × camp.resources.hall_star_weight × étoiles de renommée de la compagnie (1 à 15) × niveau du bâtiment.",
+      "formule": "Bois et pierre",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Cabane et Guilde — poids des étoiles",
+      "code": "camp.resources.hall_star_weight",
+      "description": "Voir camp.resources.hall_yield (« 0,5 etoiles de reputation »).",
+      "formule": "Bois et pierre",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Ouvrier — production",
+      "code": "camp.resources.worker_yield",
+      "description": "Idan, 2026-11-18 : « envoyer un mec très fort, c'est très utile, un gobelin avec 10 en force, ça rapporte rien ». Bois ou pierre par jour et par ouvrier : cette valeur × (Force ÷ camp.resources.worker_force_ref) ^ camp.resources.worker_force_exponent. Force 10 : 1 ; 35 : 7 ; 55 : 18 ; 77 : 36 ; 110 : 73.",
+      "formule": "Bois et pierre",
+      "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Ouvrier — Force de référence",
+      "code": "camp.resources.worker_force_ref",
+      "description": "Voir camp.resources.worker_yield : la Force qui rapporte exactement camp.resources.worker_yield.",
+      "formule": "Bois et pierre",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Ouvrier — exposant de la Force",
+      "code": "camp.resources.worker_force_exponent",
+      "description": "Voir camp.resources.worker_yield : 1 = linéaire ; 2 = deux fois plus fort, quatre fois plus de bois.",
+      "formule": "Bois et pierre",
+      "valeur": 2,
       "version": "V1"
     },
     {

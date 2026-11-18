@@ -79,6 +79,22 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .img-list li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:5px 8px;border-radius:7px;font-size:.82rem}
 .img-list li.img-missing{background:#f8e3df}.img-list li.img-ok{background:#eaf3ea}
 .img-list code{font-size:.74rem;color:#6b6258}.img-list span{font-size:.74rem;color:#857b70}
+.img-list .img-new{margin-left:auto;border:1px solid #cfc5b8;background:#f7f2ea;border-radius:6px;padding:3px 8px;font-size:.74rem;font-weight:700;cursor:pointer;color:#26221d}
+.img-list .img-new:hover{background:#eee5d8}
+.depot-img>span{color:#cfc4b4;font-style:italic}
+.img-missing-actions{margin-left:auto;display:flex;gap:6px}.img-missing-actions .img-new{margin-left:0}
+.img-manquantes .img-list li>span:not(.img-missing-actions){font-size:.74rem;color:#857b70}
+.img-missing-group{margin:8px 0}.img-missing-group summary{cursor:pointer;font-weight:750;margin-bottom:6px}.img-missing-group summary small{color:#857b70;font-weight:600}
+.img-tile-empty{display:grid;place-items:center;height:130px;background:#1d1915;color:#cfc4b4;font-style:italic;font-size:.8rem}
+.img-tile-missing{border-color:#e3b7ad}
+.role-filters{display:flex;gap:8px;margin:12px 0 8px}.role-filters select,.role-filters input{font:inherit;padding:6px 8px;border:1px solid #cfc5b8;border-radius:6px;background:#fff}
+.role-filters input{flex:1;min-width:0}
+.role-tiles{max-height:46vh;overflow:auto;padding:2px}
+.role-tile{padding:0;text-align:left;font:inherit;cursor:pointer;color:inherit}
+.role-tile .role-tile-img{display:block;box-sizing:border-box;height:110px;padding:8px;background:#1d1915}
+.role-tile .role-tile-img img{display:block;width:100%;height:100%;object-fit:contain}
+.role-tile .role-tile-cap{display:grid;gap:2px;padding:6px 8px;font-size:.74rem;line-height:1.3}.role-tile strong{overflow-wrap:anywhere;font-weight:650}
+.role-tile small{color:#857b70}.role-tile.is-picked{outline:3px solid #b5503c;outline-offset:-1px}
 .img-present{margin-top:6px}.img-present summary{cursor:pointer;font-size:.8rem;color:#3f7a4a;font-weight:700}.img-present .img-list{margin-top:6px}
 /* Onglets Bestiaire et Missions (Idan, 2026-11-01) : lecture seule des ennemis et des types de mission. */
 .best-line{margin-top:14px}.best-line-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}

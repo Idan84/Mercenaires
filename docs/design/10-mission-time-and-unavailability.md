@@ -1,51 +1,27 @@
-> Source de vérité Git. Migré depuis l'export Notion figé du 2026-10-03.
-
 # Fin de mission, temps & indisponibilités
 
-<aside>
-⏱️
-
-**Version de travail consolidée — 2 octobre 2026.** Cette page fixe le temps stratégique, la résolution de fin de mission et les états mort / blessé / fatigué. Les coefficients non encore choisis restent explicitement ouverts.
-
-</aside>
+Le temps stratégique, la résolution de fin de mission et les états mort / blessé / fatigué. Les coefficients PLAYTEST
+s'ajustent dans `data/reference/formula-constants.json` (constantes `mission.*`), sans toucher au code.
 
 ## 1 — Temps stratégique
 
-La couche gestion du jeu fonctionne en **jours**.
-
-- le temps de combat lui-même compte pour **0 jour** ;
-- une mission située à `D` jours du camp immobilise normalement l’équipe pendant `D` jours à l’aller et `D` jours au retour ;
-- donc, hors événement spécial :
+La couche gestion avance en **jours**. Le combat compte pour **0 jour** ; une mission à `D` jours du camp immobilise
+l'équipe `D` jours à l'aller et `D` au retour :
 
 $$
 TempsMission = 2 \times DistanceCamp
 $$
 
-Le passage des jours doit faire progresser de façon cohérente :
+Une Mission stocke la **distance aller** ; pas de durée fixe « sur place » en V1.
 
-- retour des équipes parties en mission ;
-- guérison / indisponibilité ;
-- récupération de fatigue ;
-- construction et amélioration du château ;
-- renouvellement des candidats à la taverne ;
-- renouvellement des missions proposées ;
-- salaires journaliers ;
-- entraînements au camp.
-
-**Décision validée :** une fonction centrale `AdvanceTime(days)` fait avancer tous ces systèmes. Le temps stratégique est résolu **jour par jour** : `AdvanceTime(5)` doit être équivalent à cinq résolutions successives d’une journée, afin de conserver l’ordre des événements quotidiens.
-
-<aside>
-🗺️
-
-Une Mission stocke la **distance aller en jours**. Le combat à destination ne rajoute pas une durée fixe « sur place » en V1.
-
-</aside>
+**Une seule fonction centrale** fait avancer, **jour par jour** (5 jours = cinq résolutions d'une journée, pour garder
+l'ordre des événements) : retours de mission, guérisons, fatigue, constructions, candidats de la taverne, missions
+proposées, salaires, entraînements.
 
 ## 2 — Seuil de 0 PV
 
-`0 PV` est le seuil de mise hors combat, mais **pas encore la mort certaine**.
-
-Règle retenue : un personnage en dessous de `0 PV` ne peut pas être simplement ramené au-dessus de zéro par un soin ordinaire pendant la résolution concernée ; sa survie est tranchée en fin de mission.
+`0 PV` met hors combat, mais n'est **pas encore la mort certaine**. Sous `0 PV`, un soin ordinaire ne ramène pas
+au-dessus de zéro pendant la résolution concernée ; la survie se tranche en fin de mission.
 
 ## 3 — Mort en fin de mission
 
@@ -55,34 +31,18 @@ $$
 P(mort)\% = Clamp\left(-500 \times \frac{PV_{restants}}{PV_{max}} - \frac{Volonte}{20},\ 0,\ 90\right)
 $$
 
-Exemple : à `-20 %` des PV max, la base vaut `100 %`, diminuée de `Volonté / 20`, et plafonnée à **90 %**.
+Exemple : à `-20 %` des PV max, la base vaut `100 %`, moins `Volonté / 20`, plafonnée à **90 %** (Idan, 2026-11-07 :
+« Il faut des cas où le mercenaire meurt »). Défaite comprise (doc 17 §8). Un mercenaire relevé en zombie meurt toujours.
+Les montures suivent la même règle.
 
-**Après le bêta-test** (Idan, 2026-11-07 : « on reduise les chances par 2 en montant le seuil de 10% à 20%. Il faut des cas où le mercenaire meurt. […] à -20% de PV, on bloque à 90% de chance de mourir max ») : coefficient 500 au lieu de 1000 (`mission.death.hp_ratio_coefficient`), plafond 90 % au lieu de 100 % (`mission.death.max_chance`), défaite comprise (doc 17 §8). Un mercenaire relevé en zombie meurt toujours. Les montures suivent la même règle.
-
-Un mercenaire qui échoue au jet meurt. **La mort du capitaine entraîne Game Over.**
+Un mercenaire qui rate le jet meurt. **La mort du capitaine entraîne Game Over.**
 
 ## 4 — Blessure
 
-### Survivant revenu de PV négatifs
+**Survivant revenu de PV négatifs** : blessure **automatique**.
 
-Si le mercenaire avait `PV_restants < 0` et survit au jet de mort, il reçoit **automatiquement une blessure**.
-
-### Mercenaire entre 0 et 50 % de ses PV max
-
-Si :
-
-$$
-0 \le PV_{restants} \le 0.5 \times PV_{max}
-$$
-
-alors un **jet de blessure** est effectué.
-
-La probabilité doit :
-
-- augmenter en se rapprochant de 0 PV ;
-- être réduite par l’Endurance.
-
-**Formule PLAYTEST V1** (Issue #14 : courbe volontairement agressive, pour que l’indisponibilité fasse tourner le roster) :
+**Entre 0 et 50 % des PV max** (`0 ≤ PV_restants ≤ 0,5 × PV_max`) : **jet de blessure**, plus probable près de 0 PV,
+réduit par l'Endurance. Formule PLAYTEST V1 (volontairement agressive, pour faire tourner le roster) :
 
 $$
 DangerBlessure = 100 \times \left(1 - \frac{PV_{restants}}{0.5 \times PV_{max}}\right)
@@ -92,45 +52,39 @@ $$
 P_{Blessure}\% = Clamp\left(35 + 0.65 \times DangerBlessure - \frac{Endurance}{6},\ 20,\ 95\right)
 $$
 
-**Zone portée de 20 % à 50 % des PV max par Idan le 2026-10-03 : on veut plus de blessés que de morts.** Peu de mercenaires finissent un combat entre 0 et 20 % de leurs PV ; élargir la zone est le seul levier qui ajoute vraiment des blessés (mesure : 8,5 % → 16,3 % de blessés, morts inchangés, voir le registre d’équilibrage E7).
-
-Avec Endurance 50 : ~27 % à 50 % PV, ~43 % à 37,5 %, ~59 % à 25 %, ~75 % à 12,5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir une mission dans la zone de blessure doit déjà être dangereux.
+Zone de 0 à 50 % (Idan, 2026-10-03 : on veut plus de blessés que de morts). Avec Endurance 50 : ~27 % à 50 % PV, ~43 % à
+37,5 %, ~59 % à 25 %, ~75 % à 12,5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir dans la zone de blessure doit
+déjà être dangereux.
 
 ## 5 — Fatigue
 
-**Décision Idan (Issue #14) :** la fatigue n’est pas un jet. Tout mercenaire survivant **non blessé** termine la mission fatigué. Un blessé n’a pas de compteur Fatigue en plus de sa blessure.
-
-La **durée** de fatigue dépend de :
-
-- l’Endurance ;
-- la **quantité cumulée de dégâts réellement subis pendant toute la mission**.
-
-<aside>
-🩸
-
-Les soins restaurent les PV mais **n’effacent pas la contrainte physique déjà encaissée**. Il faut donc conserver un compteur de dégâts cumulés pour la mission.
-
-</aside>
-
-**Formule PLAYTEST V1** (Issue #14 ; base portée de 1 à 5 jours par Idan le 2026-10-03 : la fatigue doit approcher la semaine) :
+Pas de jet : tout survivant **non blessé** finit la mission fatigué ; un blessé n'a pas de compteur Fatigue en plus. La
+durée dépend de l'Endurance et des **dégâts cumulés subis pendant toute la mission**, même sous 0 : les soins rendent
+des PV, pas l'effort encaissé (un tank soigné peut rentrer à pleins PV mais rincé). Formule PLAYTEST V1 (la fatigue
+doit approcher la semaine) :
 
 $$
 JoursFatigue = Clamp\left(Ceil\left(5 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
 $$
 
-**Partir fatigué** (Idan, 2026-11-10 : « Un mercenaire fatigué peut partir dans toutes les missions. Il aura juste un malus de 20% de ses stats pour tout s'il commence le combat encore fatigué. Sinon, y'a pas de différence avec blessé… ») : un fatigué peut partir en mission (contrat, chasse, garde du corps, Mission Test) ; un blessé, non. Ses jours de fatigue continuent de s'écouler en route (départ le lendemain matin, puis les jours de marche). S'il lui en reste au début du combat, il se bat **à 80 %** pendant tout ce combat (`combat.fatigue.malus` = 0,2) : caractéristiques, résistances et compétences (armes, styles, écoles et sorts, Magie en armure, compagnon animal), l'équipement en pourcentage suivant. Ses PV max et sa Réserve de mana restent entiers, et la fin de mission (§7) lit ses valeurs reposées. Exemple d'Idan : fatigué pour 4 jours, sur une mission à 5 jours de marche, il commence le combat reposé. Le reste du camp (entraînement, corvées, défi du capitaine) attend toujours qu'il soit remis.
+Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. Ensuite :
 
-Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. **Qualité du dortoir** (Idan, 2026-11-08 ; doc 11 §4) : −10 % des jours par niveau, arrondi au jour supérieur ; au niveau 10, plus de fatigue. Puis les **Bains chauds** (Idan, 2026-11-01 ; doc 11 §9) : 1 jour de moins par niveau, au moins 1 jour. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
+1. **Qualité du dortoir** (Idan, 2026-11-08 ; doc 11 §4) : −10 % des jours par niveau, arrondi au jour supérieur ; au
+   niveau 10, plus de fatigue ;
+2. **Bains chauds** (Idan, 2026-11-01 ; doc 11 §9) : 1 jour de moins par niveau, au moins 1 jour.
 
-## 6 — Durée d’une blessure
+**Partir fatigué** (Idan, 2026-11-10) : un fatigué peut partir en mission (contrat, chasse, garde du corps, Mission
+Test) ; un blessé, non. Sa fatigue continue de s'écouler en route. S'il lui en reste au début du combat, il se bat **à
+80 %** tout ce combat : caractéristiques, résistances et compétences (armes, styles, écoles et sorts, Magie en armure,
+compagnon animal), l'équipement en pourcentage suivant. PV max et Réserve de mana restent entiers ; la fin de mission
+(§7) lit ses valeurs reposées. Fatigué pour 4 jours, sur une mission à 5 jours de marche, il arrive reposé (le choix de
+l'escouade dit « −20 % au combat » ou « reposé à l'arrivée »). Le reste du
+camp (entraînement, corvées, défi du capitaine) attend qu'il soit remis.
 
-La durée d’indisponibilité d’un blessé dépend au minimum de :
+## 6 — Durée d'une blessure
 
-- la gravité / profondeur du traumatisme ;
-- l’Endurance ;
-- les **capacités soignantes du camp**.
-
-**Formule PLAYTEST V1** (gravité : proposition Chatty, Issue #14 ; durée ajustée par Idan le 2026-10-03 : une blessure dure de 7 à 60 jours) :
+Elle dépend de la gravité, de l'Endurance et des **capacités soignantes du camp**. Formule PLAYTEST V1 (une blessure dure
+de 7 à 60 jours, Idan, 2026-10-03) :
 
 $$
 Gravite = Clamp\left(50 - 250 \times \frac{PV_{restants}}{PV_{max}},\ 0,\ 100\right)
@@ -142,60 +96,54 @@ $$
 JoursBlessure = Ceil\left(Clamp\left((7 + Gravite) \times \left(1 - \frac{Endurance}{300}\right) \times FacteurSoinsCamp,\ 7,\ 60\right)\right)
 $$
 
-Soit 7 jours, plus 1 jour par point de gravité, réduits par l’Endurance, entre 7 et 60 jours. En V1, `FacteurSoinsCamp = 1` ; les bâtiments médicaux le feront baisser. **Dispensaire** (Idan, 2026-11-01 ; doc 11 §9) : la durée ainsi bornée est ensuite multipliée par 1 − 0,1 × son niveau (au moins 1 jour) : 7 → 4 jours, 60 → 30 au niveau 5. Avec Endurance 50 : gravité 0 → 7 jours, 25 → 27 jours, 50 → 48 jours, 75 → 60 jours.
+Soit 7 jours, plus 1 jour par point de gravité, réduits par l'Endurance, entre 7 et 60 jours. `FacteurSoinsCamp = 1`.
+**Dispensaire** (Idan, 2026-11-01 ; doc 11 §9) : la durée bornée est ensuite multipliée par 1 − 0,1 × son niveau (au
+moins 1 jour) : 7 → 4 jours, 60 → 30 au niveau 5. Avec Endurance 50 : gravité 0 → 7 jours, 25 → 27, 50 → 48, 75 → 60.
 
 ## 7 — Chaîne de résolution post-mission
 
-Ordre retenu :
-
-1. `PV < 0` → jet de mort ; un mercenaire **relevé en zombie** par un nécromancien le rate forcément (Idan, 2026-10-28, doc 12) ;
+1. `PV < 0` → jet de mort ; un mercenaire **relevé en zombie** par un nécromancien le rate forcément (Idan, 2026-10-28,
+   doc 12) ;
 2. mort → fin du traitement du personnage ;
 3. survivant avec `PV < 0` → blessure automatique ;
 4. `0 à 50 % PV max` → jet de blessure ;
-5. tous les survivants non blessés → fatigue automatique, dont seule la durée varie ;
-6. résolution des récompenses, réputation, XP, butin et retour.
+5. tous les survivants non blessés → fatigue automatique, seule la durée varie ;
+6. récompenses, réputation, XP, butin et retour.
 
-Les sorties opérationnelles sont donc au minimum : **mort / blessé / fatigué / opérationnel** (après récupération).
+Sorties : **mort / blessé / fatigué / opérationnel** (après récupération).
 
 ## 8 — Retour et paiement
 
-La distance est comptée dans les deux sens : une équipe victorieuse n’est pas instantanément de retour au château.
-
-Règle de rémunération retenue : **la prime de mission individuelle n’est payée que si le mercenaire revient**.
+La distance compte dans les deux sens : une équipe victorieuse n'est pas instantanément de retour. **La prime de mission
+individuelle n'est payée que si le mercenaire revient.**
 
 ## 9 — Données à conserver dans MissionResult
 
-En complément des données déjà prévues dans l’architecture :
+En plus de l'architecture (doc 07) : dégâts cumulés subis par participant, PV de fin de combat, jet de mort éventuel,
+blessure et durée, fatigue, jour de retour prévu, statut de retour réel.
 
-- dégâts cumulés subis par chaque participant ;
-- PV de fin de combat ;
-- résultat du jet de mort si nécessaire ;
-- blessure éventuelle et durée ;
-- fatigue éventuelle ;
-- date / jour de retour prévu ;
-- statut de retour réel.
-
-**Décision d’Idan (2026-10-04) : la convalescence commence dès la fin du combat.** Le trajet de retour compte comme du repos : un blessé à 7 jours, sur une mission à 3 jours du camp, n’a plus que 4 jours d’indisponibilité en rentrant.
+**La convalescence commence dès la fin du combat** (Idan, 2026-10-04) : le retour compte comme du repos. Un blessé à
+7 jours, sur une mission à 3 jours du camp, n'a plus que 4 jours d'indisponibilité en rentrant.
 
 ## 10 — Points encore ouverts
 
-- coefficients PLAYTEST des formules de blessure, de fatigue et de durée, à ajuster en jeu ;
+- coefficients PLAYTEST de blessure, de fatigue et de durée, à ajuster en jeu ;
 - influence précise des bâtiments médicaux ;
 - séquelles permanentes (reportées, décision Idan) ;
-- sort exact des mercenaires ayant fui hors de la carte, capturés ou disparus, abandon et extraction des personnages laissés sur place (défaite d'une mission « Faire le ménage » : jet de mort à probabilité doublée, doc 17 §8).
+- sort exact des mercenaires sortis de la carte en fuite, capturés ou disparus ; abandon et extraction des personnages
+  laissés sur place (défaite d'une mission « Faire le ménage » : jet de mort à probabilité doublée, doc 17 §8) ;
+- un combat interrompu (page rechargée) revient à l'état d'avant le combat : un combat en cours n'est pas sauvegardé.
 
-## 11 — Implémentation (prototype)
+## 11 — Application à la compagnie
 
-- Les règles §3 à §7 sont codées dans `game-core/mission-end.js`, sans dépendance à l’interface. Toutes les valeurs PLAYTEST sont des constantes `mission.*` de `data/reference/formula-constants.json` : on les ajuste sans toucher au code.
-- Le moteur de combat tient le compteur de dégâts cumulés de chaque personnage : les PV perdus à chaque coup reçu, y compris sous 0 PV. Cette part sous 0 ne change aucun résultat, puisqu’un blessé n’a pas de compteur Fatigue.
-- Mission Test : à la fin du combat, votre équipe passe la chaîne §7 et un bilan s’affiche (mort, blessé ou fatigué, durée d’indisponibilité, détail des jets).
-- Ce bilan est **appliqué à la compagnie** (décisions Idan du 2026-10-03) :
-  - un mort quitte définitivement la compagnie ; s’il était Intendant, la compagnie n’a plus d’Intendant ;
-  - un blessé ou un fatigué reçoit un compteur de jours ; un blessé ne peut pas partir en mission tant qu’il n’est pas écoulé, un fatigué si (§5, « Partir fatigué ») ; chaque jour de `AdvanceTime` le diminue de 1, avant la Taverne ; la Mission Test n’ayant pas de trajet, le compteur part du jour du combat ;
-  - « Partir fatigué » : `campaign.js` (`isAvailable`, `fatigueOnArrival`, `departExpedition` refuse un blessé) ; au combat, `unit.fatigued` (posé par l'écran de combat) et `combat-engine.js` (`fatigueFactor`, `rested`, `skillValue`) ; le choix de l'escouade indique « −20 % au combat » ou « reposé à l’arrivée », le journal et la fiche de combat « Fatigué −20 % » ;
-  - la prime de mission (§8) est payée à chaque survivant sous contrat ; si la caisse ne suffit pas, au prorata, et le reste lui est dû (les dettes, doc 09 ; Idan, 2026-11-10) ;
-  - la mort du capitaine met fin à la partie : **la sauvegarde est effacée**.
-- Outil de test, pas une règle : un bouton « +1 000 (test) » ajoute de l’or à la compagnie.
-- Choix d’implémentation validés par Idan le 2026-10-20, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.
-- On ne quitte la Mission Test qu’une fois le combat résolu : le bouton de retour reste désactivé pendant le combat (review Chatty, PR #20). Une vraie retraite ou un abandon auront plus tard leur propre résolution.
-- Encore ouvert : recharger la page pendant un combat revient à l’état d’avant le combat, car un combat en cours n’est pas sauvegardé ; le capitaine n’a pas de contrat, donc pas de prime ; un trésor négatif n’a encore aucune conséquence. L’escouade initiale est sous contrat et les salaires sont versés chaque jour (`09-reputation-renown-and-salaries.md` §6).
+Décisions d'Idan du 2026-10-03 et du 2026-10-20 :
+
+- La chaîne §7 s'applique après une victoire comme après une défaite, et à un mercenaire sorti de la carte en fuite
+  (avec ses PV restants) ; pas aux ennemis.
+- Un mort quitte la compagnie ; s'il était intendant, la compagnie n'en a plus.
+- Blessé ou fatigué : un compteur de jours, −1 chaque jour (avant la Taverne) ; un blessé ne part pas en mission avant
+  la fin, un fatigué si (§5). Mission Test, sans trajet : le compteur part du jour du combat.
+- La prime de mission (§8) est payée à chaque survivant sous contrat ; si la caisse ne suffit pas, au prorata, et le
+  reste lui est dû (les dettes, doc 09 ; Idan, 2026-11-10). Le capitaine n'a pas de contrat, donc pas de prime.
+  L'escouade initiale est sous contrat ; les salaires sont versés chaque jour (doc 09 §6).
+- La mort du capitaine met fin à la partie : **la sauvegarde est effacée**.

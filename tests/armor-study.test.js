@@ -103,9 +103,11 @@ fourth.skills.camp={...(fourth.skills.camp||{}),"Transmission du savoir":48};
 daily=study.dailyChance(state,active);
 assert.equal(daily.masterBonus,9.6);
 assert.equal(Math.round(daily.chance),17,"avec un Vétéran à 48 : 17 % (6 jours)");
-delete fourth.skills.martial["Port d’armure lourde"];
+// Sans aucun port (selon le tirage, il peut aussi avoir reçu les ports légère et intermédiaire à sa génération).
+const fourthPorts=Object.fromEntries(Object.entries(fourth.skills.martial).filter(([k])=>/^Port d’armure/.test(k)));
+for(const k of Object.keys(fourthPorts)) delete fourth.skills.martial[k];
 assert.equal(study.dailyChance(state,active).masterBonus,0,"sans le port, le Vétéran n'aide pas");
-fourth.skills.martial["Port d’armure lourde"]=true;
+Object.assign(fourth.skills.martial,fourthPorts);
 state.company.camp.buildings.survival_academy.level=5;
 assert.ok(Math.abs(study.dailyChance(state,active).chance-Math.min(95,100/(1+Math.exp(-(66.1-100)/20))*1.5))<1e-9,"× (1 + 0,1 × niveau)");
 state.company.camp.buildings.survival_academy.level=1;

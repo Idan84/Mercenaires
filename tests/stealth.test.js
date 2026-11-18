@@ -184,6 +184,8 @@ assert.ok(logged(/tombe nez à nez avec .*, caché là !/));
 assert.equal(m.awareness.enemy.alert,true);
 // Bloqué (la première case coûte plus que tout son mouvement) : l'IA renonce à attaquer pour un second mouvement.
 const slow=m.players[0];
+// Un marcheur ordinaire : le tirage pourrait donner un Elfe sylvain, que la forêt ne ralentit pas (Déplacement sylvain).
+Object.assign(slow.character,{people:"Humain",culture:"Cités libres",ascendance:null});
 g1.q=12;g1.r=4;
 slow.movementRemaining=1;slow.attackAvailable=true;slow.secondMove=false;
 m.decor=[{q:7,r:4,code:"foret"},{q:7,r:3,code:"foret"},{q:6,r:5,code:"foret"},{q:7,r:5,code:"foret"},{q:5,r:4,code:"foret"},{q:5,r:5,code:"foret"},{q:6,r:3,code:"foret"}];

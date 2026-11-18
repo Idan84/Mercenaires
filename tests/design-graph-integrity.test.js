@@ -36,7 +36,10 @@ assert.ok(E.some(e=>e.a==="renommee"&&e.b==="missions"&&e.s==="implemented"),"le
 assert.ok(E.some(e=>e.a==="affinite"&&e.b==="negociation"&&e.s==="implemented"));
 assert.ok(E.some(e=>e.a==="affinite"&&e.b==="salaire"&&e.s==="implemented"));
 assert.ok(E.some(e=>e.a==="renommee"&&e.b==="recrues"&&e.s==="implemented"));
-assert.ok(E.some(e=>e.a==="renommee"&&e.b==="marchands"&&e.s==="planned"),"marchands : pas encore décidé");
+assert.ok(E.some(e=>e.a==="renommee"&&e.b==="marchands"&&e.s==="implemented"),"marchands : étoiles de renommée (merchants.js)");
+// Bois et pierre (Idan, 2026-11-18) : Cabane, Guilde et corvées ; la Force fait le rendement des ouvriers.
+for(const r of ["bois","pierre"]) assert.ok(E.some(e=>e.a==="corvees"&&e.b===r&&e.s==="implemented")&&E.some(e=>e.a==="camp"&&e.b===r),r);
+assert.ok(E.some(e=>e.a==="force"&&e.b==="corvees"&&e.s==="implemented"),"la Force fait le rendement des ouvriers");
 assert.ok(!E.some(e=>e.a==="chance"&&e.b==="toucher"),"Chance ne modifie pas directement Toucher V1");
 assert.ok(!E.some(e=>e.a==="kill"&&e.b==="heritage"),"Tuer un ennemi n'est pas l'héritage d'un mercenaire mort");
 console.log("Design Graph catalogue: "+N.length+" noeuds / "+E.length+" liens valides.");

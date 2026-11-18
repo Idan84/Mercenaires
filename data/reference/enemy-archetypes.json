@@ -11809,7 +11809,8 @@
         "puissance_perforante": 35,
         "attaques": 3
       },
-      "capture": "cerbere"
+      "capture": "cerbere",
+      "taille": "longue"
     },
     {
       "nom": "Cerbère",
@@ -11868,7 +11869,8 @@
         "puissance_perforante": 35,
         "attaques": 3
       },
-      "capture": "cerbere"
+      "capture": "cerbere",
+      "taille": "longue"
     },
     {
       "nom": "Cerbère vétéran",
@@ -11927,7 +11929,8 @@
         "puissance_perforante": 35,
         "attaques": 3
       },
-      "capture": "cerbere"
+      "capture": "cerbere",
+      "taille": "longue"
     },
     {
       "nom": "Cerbère d’élite",
@@ -11986,7 +11989,8 @@
         "puissance_perforante": 35,
         "attaques": 3
       },
-      "capture": "cerbere"
+      "capture": "cerbere",
+      "taille": "longue"
     },
     {
       "nom": "Molosse novice",

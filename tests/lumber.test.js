@@ -20,7 +20,9 @@ assert.equal(files.lumberDialogue,"lumber-dialogue.json","le jeu charge les text
 assert.equal(files.persuasionDialogue,"persuasion-dialogue.json");
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
-assert.deepEqual(["workers_per_level","days_per_worker","max_work_level","offer_offset","daily_affinity"].map(k=>constant("camp.lumber."+k)),[1,1,5,-30,-1]);
+assert.deepEqual(["workers_per_level","offer_offset","daily_affinity"].map(k=>constant("camp.lumber."+k)),[1,-30,-1]);
+assert.deepEqual(["start_wood","start_stone","hall_yield","hall_star_weight","worker_yield","worker_force_ref","worker_force_exponent"]
+  .map(k=>constant("camp.resources."+k)),[500,500,20,0.5,15,50,2]);
 assert.deepEqual(["intimidate.weight","intimidate.loss_factor","convince.weight","convince.loss_factor"].map(k=>constant("persuasion."+k)),[1,2,0.5,0.5]);
 assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
 
@@ -94,20 +96,19 @@ hurt.recovery={kind:"wounded",daysLeft:3};
 assert.equal(lumber.canSend(state,hurt).reason,"Il doit d’abord se remettre.");
 state.company.intendantId=null;
 
-// Les chantiers : le dortoir (1er agrandissement, 2 jours) et le Ludus (niveau 1, 4 jours) ; l'École de magie au niveau 6
-// (hors de portée : la Guilde des mineurs fait 6 à 10).
-assert.equal(rules.startDormitoryExpansion(state).ok,true);
-assert.equal(rules.startBuilding(state,"ludus").ok,true);
-state.company.camp.buildings.magic_school={level:5,construction:null};
-assert.equal(rules.startBuilding(state,"magic_school").ok,true);
-const day0=state.day,dorm=state.company.camp.construction,ludus=state.company.camp.buildings.ludus.construction,school=state.company.camp.buildings.magic_school.construction;
-assert.deepEqual([dorm.endDay-day0,ludus.endDay-day0,school.level],[2,4,6]);
-const before=[affinityOf(first),affinityOf(third)];
+// Le bois du matin (Idan, 2026-11-18 : « ils rapportent du bois » ; « Cabane et Guilde produisent ») : la Cabane, 20 × 0,5
+// × étoiles de renommée × niveau, même sans bûcheron ; chaque bûcheron, 15 × (Force ÷ 50)² (« envoyer un mec très fort,
+// c'est très utile, un gobelin avec 10 en force, ça rapporte rien »).
+assert.deepEqual([state.company.wood,state.company.stone],[500,500],"500 de chaque au départ");
+first.stats.Force=100;third.stats.Force=10;
+assert.deepEqual([lumber.workerOutput(first),lumber.workerOutput(third)],[60,1]);
+assert.equal(lumber.hallOutput(state),20,"Cabane niveau 2, compagnie à 1 étoile");
+const before=[affinityOf(first),affinityOf(third)],wood0=state.company.wood;
 dice=[];
 const [morning]=rules.advanceTime(state,1);
-// Le dortoir finit déjà demain matin : les deux jours vont au Ludus, le plus proche de la fin ensuite.
-assert.deepEqual(morning.lumber.reduced.map(r=>[r.name,r.days]),[["Ludus",2]]);
-assert.deepEqual([dorm.endDay-day0,ludus.endDay-day0,school.endDay-day0],[2,2,24]);
+assert.deepEqual([morning.lumber.resource,morning.lumber.hall,morning.lumber.total],["wood",20,81]);
+assert.deepEqual(morning.lumber.workers.map(w=>[w.id,w.output]),[[first.id,60],[third.id,1]]);
+assert.equal(state.company.wood-wood0,81);
 // Chaque jour de travail : −1 d'affinité, −0,5 s'il a été convaincu.
 assert.deepEqual(morning.lumber.workers.map(w=>[w.id,w.affinityDelta]),[[first.id,-0.5],[third.id,-1]]);
 assert.deepEqual([affinityOf(first)-before[0],affinityOf(third)-before[1]],[-0.5,-1]);
@@ -118,16 +119,13 @@ assert.ok(!morning.school.entries.some(e=>[first.id,third.id].includes(e.id)),"l
 const [next]=rules.advanceTime(state,1);
 assert.deepEqual(next.lumber.workers.map(w=>w.id),[first.id,third.id]);
 assert.deepEqual([affinityOf(first)-before[0],affinityOf(third)-before[1]],[-1,-2]);
-assert.equal(next.lumber.reduced.length,0,"le Ludus et le dortoir sont finis ce matin");
+assert.equal(state.company.wood-wood0,162);
 // On le retire : libre dès demain.
 assert.equal(lumber.withdraw(state,first.id).ok,true);
 assert.equal(lumber.withdraw(state,first.id).reason,"Il ne bûcheronne pas.");
 assert.equal(rules.studyBusy(state,first),null);
 const [third_day]=rules.advanceTime(state,1);
 assert.deepEqual(third_day.lumber.workers.map(w=>w.id),[third.id]);
-assert.equal(lumber.workLevel({kind:"dormitory",number:6}),6);
-assert.equal(lumber.workLevel({kind:"dormitory_quality",level:3}),3);
-assert.equal(lumber.workLevel({kind:"lieutenant_quarter",number:2}),2);
 // Anciennes sauvegardes ({ id, day } : une journée) : gardées à partir de ce jour-là ; les journées passées, oubliées.
 const old={day:9,company:{roster:[],camp:{lumberjacks:[{id:7,day:8,grudging:true},{id:8,day:10,grudging:false}]}}};
 assert.deepEqual(lumber.entriesOf(old),[{id:8,startDay:10,approach:null}]);
@@ -144,7 +142,8 @@ dice=[0.999,0];
 lumber.send(state,second.id);
 lumber.retry(state,second.id,"intimidate");
 html=ui.lumberHtml(state);
-assert.match(html,new RegExp(`<h4>Bûcherons \\(2 / 2\\)</h4>[\\s\\S]*<strong>${third.name}</strong></div>[\\s\\S]*<strong>${second.name}</strong><span>dès demain · intimidé</span>`));
+assert.match(html,new RegExp(`<h4>Bûcherons \\(2 / 2\\)</h4>[\\s\\S]*<strong>${third.name}</strong><span>\\+1 bois</span></div>[\\s\\S]*<strong>${second.name}</strong><span>dès demain · intimidé · \\+\\d+ bois</span>`));
+assert.match(html,/<p class="camp-work-output">Production : \+\d+ bois par jour<\/p>/);
 assert.match(html,new RegExp(`data-course="lumber" data-work-withdraw="${second.id}">Retirer`));
 const copy=reference.lumberDialogue,pers=reference.persuasionDialogue;
 assert.ok(copy.send.accepted.length>=3&&copy.send.refused.length>=3);
@@ -161,4 +160,4 @@ assert.ok(index.indexOf('<script src="/core/persuasion.js">')<index.indexOf('<sc
 assert.ok(index.indexOf('<script src="persuasion-ui.js">')<index.indexOf('<script src="spell-study-ui.js">'));
 assert.match(index,/<script src="lumber-ui\.js"><\/script>/);
 
-console.log("Cabane du bûcheron : 1 bûcheron par niveau, jusqu'au retrait, −1 d'affinité par jour, refus et relance, 1 jour de moins au chantier le plus proche (niveaux 1 à 5) — OK");
+console.log("Cabane du bûcheron : 1 bûcheron par niveau, jusqu'au retrait, −1 d'affinité par jour, refus et relance, le bois du matin (Cabane et bûcherons selon leur Force) — OK");

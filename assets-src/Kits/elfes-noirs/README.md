@@ -10,6 +10,7 @@ culture (`prototype-web/assets/pictos/culture-elfes-noirs.webp`), à la place de
 
 | Fichier | Nom d'origine | Taille | Rôle |
 |---|---|---|---|
+| `cadre.png` | `1c8f7d7e-…png` (Elfes.zip, 2026-11-18) | 1536 × 1024 | Le cadre en une pièce (Idan : « le cadre avait un léger décalage. J'ai fait faire un nouveau cadre en une partie à découper nous-même ») : coin, bordures, barre du milieu et jonctions en T du cadre de la fiche et des sangles des barres. Remplace `coin-sobre.png`, `bordure.png` et `raccord-t.png`, gardés pour mémoire. |
 | `logo.png` | `logo.png` | 1086 × 1448 | Logo de la culture : remplace le picto de culture (Idan : « Le logo, c'est bien ce qui remplace le picto actuel »). |
 | `texture.png` | `texture.png` | 1254 × 1254 | Cuir violet, répétable : fond du cartouche du nom. |
 | `bordure.png` | `brodure.png` | 824 × 268 | Bordure droite à gros clous, même sangle que le coin sobre ; le jeu en répète une cellule d'un clou. |
@@ -26,7 +27,17 @@ culture (`prototype-web/assets/pictos/culture-elfes-noirs.webp`), à la place de
 | `rond-central.png` | `rond_central.png` | 2752 × 1536 | Rond central de la barre du bas du camp, autour du bouton Jour suivant. |
 | `bouton-jour-suivant.png` | `boutton_play.png` | 669 × 670 | Bouton Jour suivant de la barre du bas du camp. |
 
-## Mesures (originaux, en pixels)
+## Le cadre en une pièce (`cadre.png`, en pixels)
+
+Bande du haut y 81–160 (80), bande de gauche x 32–113 (82), barre du milieu x 726–809 (84) : épaisseur constante (au
+plus 2,5 % d'écart, contre 5 % entre les bras de l'ancien coin sobre). Clous en x = 74,5 (coin), 143,5, 212,5, 288,5,
+364,5, 443, 522,5, 603, 685,5, 768 (T)… et en y = 119 (coin), 188, 260,5, 335, 409,5, 483, 558… : pas de 69 près des
+coins, 74 à 83 au milieu ; le jeu répète une cellule du milieu, son pas devient régulier. Découpes
+(`scripts/build-culture-kit.sh`) : coin 240 × 240 depuis l'angle extérieur (32, 81), bras coupés en x 218 et y 143 ;
+cellule du haut x 483–562 (un clou au milieu), de gauche y 446–519, de la barre du milieu y 446–519 ; jonction en T :
+x 686–849, y 137–172, bords fondus.
+
+## Mesures de l'ancien kit (originaux, en pixels)
 
 Relevées pour accorder les pièces du cadre (Idan : « avec les coins sobres et les T une bordure cohérente en taille et
 en répétition de motif ») ; reprises dans `data/reference/culture-kits.json`.

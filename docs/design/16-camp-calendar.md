@@ -35,15 +35,19 @@ lisibles ») :
   réglages sont dans `scripts/hud-bars-reglages.json`.
 - **Une culture peut avoir une autre version de sa barre** (Idan, 14 novembre : « un v2 pour toute la barre ») : les
   Steppes désertiques ont la v2.
-- **Une culture refaite avec son kit graphique** (Chatty, Idan ; les **Elfes noirs**, planche des barres d'Idan du
-  16 novembre : « Et voilà chef ! ») : ses deux barres sont faites des pièces du kit à la place de la barre du pack. En
-  haut, une bande de cuir violet entre deux sangles à gros clous, **ferrée à gauche** comme la barre des packs (elle part
-  du bord gauche de l'écran ; Idan : « la ferrer à gauche et qu'elle ne fasse pas forcément 100 % de la largeur »), à
-  40 px du haut, 1850 px de large et 50 px de haut sur un écran de 1920 px, l'emblème au bout, une chaîne suspendue
-  dessous à gauche ; les textes y sont déplacés. En bas, la bande de cuir sous une sangle à gros clous, le rond central
-  du kit autour de son bouton Jour suivant (98 px), les pictos écartés de 50 px, une couronne posée à droite. Réglages
-  dans `data/reference/culture-kits.json` (« barres »), posés par `prototype-web/hud-kit-ui.js` ; comme pour les packs,
-  tout garde les proportions de l'écran de 1920 px, en bandes B.
+- **Une culture refaite avec son kit graphique** (Chatty, Idan ; les **trois cultures elfes**, planche « Barres des
+  Elfes » d'Idan du 18 novembre, après celle des Elfes noirs du 16 : « Et voilà chef ! ») : ses deux barres sont faites
+  des pièces du kit à la place de la barre du pack. En haut, une bande du cuir de la culture entre deux sangles (la bande
+  du cadre de la fiche, son liseré tourné vers l'extérieur), **ferrée à gauche** comme la barre des packs (elle part du
+  bord gauche de l'écran ; Idan : « la ferrer à gauche et qu'elle ne fasse pas forcément 100 % de la largeur »), à 40 px
+  du haut, 1850 px de large et 50 px de haut sur un écran de 1920 px, l'emblème au bout, un ornement suspendu dessous à
+  gauche (chaîne, guirlande, drapé) ; les textes y sont déplacés. En bas, la bande de cuir sous une sangle, le rond
+  central du kit autour de son bouton Jour suivant (98 px), les pictos écartés de 50 px, un ornement posé à droite
+  (couronne des Elfes noirs, dragon couché des Elfes sylvains ; aucun pour les Grandes cités). Les **Grandes cités**, au
+  cuir ivoire non assombri, ont leurs textes et pictos **dorés** (Idan : « tous les textes en dorés », « pastilles or
+  pâle, chiffres à l'encre », pictos dorés avec moins d'ombre). Réglages dans `data/reference/culture-kits.json`
+  (« barres »), posés par `prototype-web/hud-kit-ui.js` ; comme pour les packs, tout garde les proportions de l'écran de
+  1920 px, en bandes B.
 - **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
   (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
   `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.
@@ -64,7 +68,9 @@ n'est pas fonctionnel immédiatement, on commence par la barre ») :
   donnent les salles), **Dortoir**, **Marchand** (grisé sans marchand), **Intendance**, **Construction** (l'actuel Ma
   Compagnie, à réorganiser). Ils se rangent contre l'anneau, à sa hauteur. Le picto du lieu où l'on est est grisé (Idan :
   « quand on est sur le château, on le grise ») ; au survol, un très léger grossissement ; au clic, il s'enfonce et
-  rebondit au relâchement.
+  rebondit au relâchement. **« Grisé » veut dire plus transparent** (Idan, 2026-11-18 : « il faut pas les laisser grisés.
+  On les met comme les autres mais avec une opacité à 50 ou 80 % ») : le lieu où l'on est et les pictos sans rien à faire
+  gardent leurs couleurs, à 50 % d'opacité.
 - **Le menu de l'accueil du camp est retiré** (Idan : « on peut retirer les boutons du menu principal ») : on se déplace
   avec la barre ; « Mes mercenaires » s'ouvre depuis les mercenaires de la barre du haut. Chaque lieu garde son bouton
   « ← Retour au camp », et la Taverne ses zones cliquables.

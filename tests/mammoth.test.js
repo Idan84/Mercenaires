@@ -87,19 +87,20 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,"
-  + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,missionUnits,missionMountOf};")
+  + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionGridMap,missionUnits,missionMountOf};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic, () => rules);
 api.setMissionMapSize({cols: 36, rows: 25});
+let mountedAtStart = 0;
 function battle(squad, foes) {
   const players = api.placeMissionArmy(squad.map((x, i) => api.makeMissionUnit(x, "player", i % 3)), "player");
   const enemies = api.placeMissionArmy(foes.map((x, i) => api.makeMissionUnit(x, "enemy", i % 3)), "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: []};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: []};
   for (const u of [...players, ...enemies]) u.camouflaged = false;
   // Au départ, une case par occupant (un cavalier est sur les cases de sa monture).
   const cells = new Map();
@@ -108,6 +109,8 @@ function battle(squad, foes) {
     assert.ok(!cells.has(k), "deux occupants sur " + k);
     cells.set(k, u);
   }
+  // L'ogre part bien à dos de mammouth (au départ : il peut tomber pendant le combat).
+  if (players.some(u => u.character?.id === 500 && u.mount)) mountedAtStart++;
   api.startMissionCamouflage(); api.selectNextMissionPlayer(); api.autoResolveMission();
   return game.mission;
 }
@@ -115,15 +118,14 @@ const ogre = generator.createMercenary({id: 500, captain, forcedPeople: "Ogre"})
 const ridden = {...generator.createItemByName("mount", "Mammouth de guerre"), owner: ogre.id, slot: "mount", tamedBy: ogre.id};
 ogre.items.push(ridden); ogre.equipment.slots.mount = ridden.id;
 assert.equal(api.missionMountOf(ogre)?.code, "mammouth", "l'ogre part à dos de mammouth");
-let over = 0, mounted = 0;
+let over = 0;
 for (let k = 0; k < 6; k++) {
   const squad = [ogre, ...[1, 2, 3].map(i => generator.createMercenary({id: 600 + 10 * k + i, captain}))];
   const m = battle(squad, Array.from({length: 4 + k % 3}, (_, i) => generator.createMercenary({id: 700 + 10 * k + i, captain})));
   if (m.over) over++;
-  if (m.players.some(u => u.character === ogre && u.mount)) mounted++;
 }
 assert.equal(over, 6, "avec un mammouth monté, chaque combat se termine");
-assert.ok(mounted > 0, "l'ogre est monté");
+assert.equal(mountedAtStart, 6, "l'ogre est monté à chaque combat");
 over = 0;
 for (let k = 0; k < 6; k++) {
   const squad = [1, 2, 3, 4, 5, 6].map(i => generator.createMercenary({id: 800 + 10 * k + i, captain}));

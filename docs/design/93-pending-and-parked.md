@@ -4,7 +4,7 @@ Page de suivi pour Idan, tenue par JC3 et relue par Chatty. Elle rassemble ce qu
 
 À chaque décision d'Idan, la règle part dans son document et la ligne quitte cette page. Les décisions récentes sont dans `docs/TEAM.md`.
 
-**Dernière mise à jour : 2026-11-16.**
+**Dernière mise à jour : 2026-11-17.**
 
 ## 0 — Feuille de route (Idan, 2026-11-06)
 
@@ -49,6 +49,10 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
 19. **Refonte de « Mes mercenaires »** (Idan, 2026-11-16) : filtres et tri. Pas de score de combat global (déjà
     écarté le 2026-10-31, [doc 19](/design/#doc=19-mercenary-profile.md)) ; piste de JC3 : trier par rôle avec les
     étoiles cachées du titre, sans les afficher.
+20. **Passage aux cases carrées** (Idan, 2026-11-17 : « On passe en carrés / top view ») : les règles sont décidées
+    ([doc 04](/design/#doc=04-combat.md), « Passage aux cases carrées »), le code reste à faire (moteur, terrain, écran
+    de combat, IA, tests). Avant : définir les obstacles, les couvertures sur les arêtes et les décors. Après : la vue
+    isométrique, puis le brouillard de guerre et la découverte à la X-COM (les notes de « Repérage »).
 
 ## 1 — Attend ta décision
 

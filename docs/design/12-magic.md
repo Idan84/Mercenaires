@@ -280,7 +280,7 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 | Attraction | principale | **1D6** contondant (puissance 25), puis la cible est **tirée de 2 + M/50 cases** vers le lanceur, jusqu'à son contact | **12 + M/10** (grande portée) | 15 |
 | Projection | principale | **1D8** contondant (puissance 35), puis la cible est **repoussée de 2 + M/50 cases** dans l'axe lanceur → cible | 6 + M/25, au plus 12 | 12 |
 | Déplacement | rapide | un allié ou un ennemi est **déplacé d'une case**, sur une case libre voisine choisie (deux clics : la cible, puis la case) | 6 + M/25, au plus 12 | 8 |
-| Entrechoc | principale | **deux ennemis côte à côte** (deux clics) : **2D8** contondant (puissance 55) **à chacun**, chacun avec son armure | 6 + M/25, au plus 12 | 20 |
+| Entrechoc | **rapide** (Idan, 2026-11-17 : « comme il est bien dur à lancer, on va le passer en action rapide » ; les deux ennemis doivent être en vue, un ennemi cache celui qui est derrière lui, doc 04) | **deux ennemis côte à côte** (deux clics) : **2D8** contondant (puissance 55) **à chacun**, chacun avec son armure | 6 + M/25, au plus 12 | 20 |
 | Champ de protection | principale | sur soi ou un allié, pendant **4 tours** : chaque **projectile** a **50 %** de chances d'être **dévié** | 3 + M/25 | 15 |
 | Lancer de pierre | rapide | un tir de **fronde** : jet de toucher comme le Trait de feu, puis **1D6** contondant (puissance 25, la Fronde) | **2 à 14** (la Fronde) | 6 |
 | Lancer d'arme | principale | l'**arme de corps à corps tenue** part et revient : ses **dés** × sa **qualité**, avec la **Puissance magique** au lieu de la Force, puis **Blesser** avec le meilleur type de l'arme (tranchant, perforant ou contondant) | 4 + M/25, au plus 10 | 15 |

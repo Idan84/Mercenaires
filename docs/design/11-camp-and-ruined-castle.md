@@ -540,6 +540,9 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   Le **mammouth de guerre** (Idan, 2026-11-16) : 50 PO d'entretien (15 000 PO de valeur), rang d'échange 4, neutre,
   « à dos de mammouth », **2 places** ; il se capture à la Chasse au mammouth (doc 17 §23) et il est vendu par Hroska
   Crocs-de-Neige, des Tribus nordiques (« Marchand Homme bête »). La fiche : doc 04.
+  Le **tricératops** (Idan, 2026-11-17 : « Vendu par le marchand cité temple ») : 70 PO d'entretien (21 000 PO de valeur),
+  rang d'échange 4, neutre, « à dos de tricératops », **2 places** ; il se capture à la Chasse au tricératops (doc 17 §23)
+  et il est vendu par Azhiss Kaal'Thesh, des Reptiliens des cités-temples. La fiche : doc 04.
 - **Entretien** : chaque matin, **10 PO par destrier** (`mounts.json`, `entretien`), avec les salaires (le journal et la notification du jour le disent). Si la caisse ne suffit pas (Idan, 2026-11-10) : l'entretien d'une monture est dû à son cavalier ; celui d'une monture sans propriétaire ou de celle du capitaine, au Dresseur ; sans Dresseur, elle est relâchée (les dettes, doc 09).
 - **Écran** : sous la Grange, dans Ma Compagnie, la liste des montures (d'où elles viennent, le jour de leur capture, leur entretien), places prises / places, **Relâcher** pour libérer une place (sans propriétaire), **Apprivoiser** (à un mercenaire, sa chance du jour au survol). Apprivoisée et équipée, il part à cheval (doc 04, « Combat à cheval »).
 - **Une monture est un objet** (Idan, 2026-11-07 : « On peut donc acheter et vendre des chevaux comme les autres biens ») : type `mount`, sans tier ni qualité ; sans propriétaire, à l'**Intendance** (onglet **Montures**) ; où qu'elle soit, elle loge aux Écuries (sa place, son entretien). Achat et vente chez les marchands : doc 18 §12 bis.

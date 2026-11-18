@@ -36,7 +36,9 @@ for(const s of skills.rows){
   for(const c of s.cultures) assert.ok(cultures.has(c),s.code+" : "+c);
   for(const a of s.ascendances) assert.ok(ancestries.has(a.nom)&&[1,2,3].includes(a.niveau_min),s.code+" : "+a.nom);
   for(const i of s.invocations) assert.ok(summons.has(i),s.code+" : "+i);
-  for(const d of Object.keys(s.decors)) assert.ok(decors.has(d),s.code+" : "+d);
+  // Grille carrée : par case (combat-cells.json).
+  for(const c of Object.keys(s.cases||{})) assert.ok(reference.combatCells.rows.some(x=>x.code===c),s.code+" : "+c);
+  assert.equal(s.decors,undefined,s.code+" : plus de réglage par décor");
 }
 const skill=code=>skills.rows.find(r=>r.code===code);
 assert.deepEqual(skill("vol").ascendances,[{nom:"Sang féerique",niveau_min:3},{nom:"Sang divin",niveau_min:3},{nom:"Sang de dragon",niveau_min:3}],
@@ -83,12 +85,14 @@ assert.equal(engine.aerialCharger(unitOf(fairy2)),false);
 const horse={alive:true,character:{name:"Destrier"}};
 assert.equal(engine.skillFlies({...unitOf(fairy3),mount:horse}),false,"à cheval, il ne vole pas");
 assert.equal(engine.aerialCharger({...unitOf(fairy3),mount:horse}),false);
-assert.deepEqual(engine.terrainEffect(unitOf(siren3),"eau_peu_profonde"),{cost:1,discretion:30,cover:"partielle"});
-assert.deepEqual(engine.terrainEffect(unitOf(siren3),"eau_profonde"),{cost:1,discretion:0,cover:"totale"});
-assert.deepEqual(engine.terrainEffect(unitOf(siren1),"eau_profonde"),{cost:undefined,discretion:0,cover:null},"sans Respiration aquatique, l'eau profonde reste infranchissable");
-assert.deepEqual(engine.terrainEffect(unitOf(lizard),"eau_peu_profonde"),{cost:1,discretion:30,cover:null});
-assert.deepEqual(engine.terrainEffect(unitOf(sylvan),"foret"),{cost:1,discretion:30,cover:null});
-assert.deepEqual(engine.terrainEffect(unitOf(sylvan),"eau_peu_profonde"),{cost:undefined,discretion:0,cover:null});
+// Grille carrée (doc 04, « Étape 1 : les cases ») : ce qu'elles donnent, case par case (PM, Discrétion, Esquive).
+const effect=(c,code)=>engine.grid.skillEffect(engine.terrainSkillsOf(unitOf(c)),code);
+assert.deepEqual(effect(siren3,"eau_peu_profonde"),{pm:1,discretion:30,esquive:25});
+assert.deepEqual(effect(siren3,"eau_profonde"),{pm:1,discretion:0,esquive:80});
+assert.deepEqual(effect(siren1,"eau_profonde"),{pm:2,discretion:0,esquive:0},"sang de sirène lointain : Déplacement aquatique, 2 PM dans l'eau profonde");
+assert.deepEqual(effect(lizard,"eau_peu_profonde"),{pm:1,discretion:30,esquive:0});
+assert.deepEqual(effect(sylvan,"foret"),{pm:1,discretion:30,esquive:0});
+assert.deepEqual(effect(sylvan,"eau_peu_profonde"),{pm:undefined,discretion:0,esquive:0});
 
 // 3. En combat : déplacement, couverture, Discrétion.
 const element=()=>({textContent:"",innerHTML:"",disabled:false,title:"",style:{},parentElement:{clientWidth:900},
@@ -98,7 +102,7 @@ const $=id=>elements[id]||(elements[id]=element());
 const game={campaign:null,captain,referenceData:reference};
 const mission=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd","MercenairesMagic",
-  mission+"\nreturn {makeMissionUnit,sortMissionInitiative,missionStepCost,occupiedMissionKeys,missionKey,missionFlies,missionCoverLevel,"
+  mission+"\nreturn {makeMissionUnit,sortMissionInitiative,missionStepCost,occupiedMissionKeys,missionKey,missionFlies,missionTerrainDodge,"
   +"missionTerrainStealth,missionReachablePaths,missionDecorBlocksMove};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 const squad=[plain,sylvan,siren3,fairy3].map((c,i)=>api.makeMissionUnit(c,"player",i));
@@ -109,8 +113,8 @@ game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference}),prog
   decor:[{q:5,r:4,code:"foret"},{q:6,r:4,code:"eau_peu_profonde"},{q:7,r:4,code:"eau_profonde"}]};
 const [man,elf,siren,fae]=squad,[foe]=foes;
 const forest={q:5,r:4},shallow={q:6,r:4},deep={q:7,r:4};
-assert.deepEqual([api.missionStepCost(forest,null,man),api.missionStepCost(forest,null,elf)],[2,1],"pas de malus en forêt");
-assert.deepEqual([api.missionStepCost(shallow,null,man),api.missionStepCost(shallow,null,siren)],[3,1],"pas de malus dans l'eau peu profonde");
+assert.deepEqual([api.missionStepCost(forest,null,man),api.missionStepCost(forest,null,elf)],[1.5,1],"pas de malus en forêt (grille carrée : 1,5 pour les autres)");
+assert.deepEqual([api.missionStepCost(shallow,null,man),api.missionStepCost(shallow,null,siren)],[2,1],"pas de malus dans l'eau peu profonde (2 pour les autres)");
 assert.equal(api.missionStepCost(deep,null,man),Infinity);
 assert.equal(api.missionStepCost(deep,null,siren),1,"il traverse l'eau profonde");
 assert.ok(api.occupiedMissionKeys(man).has(api.missionKey(7,4)),"l'eau profonde bloque les autres");
@@ -122,25 +126,26 @@ assert.equal(api.missionStepCost(deep,null,fae),1);
 assert.equal(api.missionFlies(man),false);
 // Monté, il se déplace comme sa monture.
 elf.mount={alive:true,offMap:false,character:{name:"Destrier"}};
-assert.equal(api.missionStepCost(forest,null,elf),2,"à cheval, la forêt freine le cheval");
+assert.equal(api.missionStepCost(forest,null,elf),1.5,"à cheval, la forêt freine le cheval");
 fae.mount={alive:true,offMap:false,character:{name:"Destrier"}};
 assert.equal(api.missionFlies(fae),false,"à cheval, il ne vole pas");
 delete elf.mount;delete fae.mount;
-// La couverture qu'il trouve sur sa case (Respiration aquatique) et la Discrétion gagnée (+30, tant qu'il y est).
+// L'Esquive qu'il trouve sur sa case (Respiration aquatique : +80 dans l'eau profonde, +25 dans l'eau peu profonde ; grille
+// carrée) et la Discrétion gagnée (+30, tant qu'il y est).
 foe.q=10;foe.r=4;
 siren.q=7;siren.r=4;
-assert.equal(api.missionCoverLevel(foe,siren),"totale","dans l'eau profonde : couverture totale");
+assert.equal(api.missionTerrainDodge(foe,siren),80,"dans l'eau profonde : +80 d'Esquive");
 siren.q=6;siren.r=4;
-assert.equal(api.missionCoverLevel(foe,siren),"partielle","dans l'eau peu profonde : partielle");
+assert.equal(api.missionTerrainDodge(foe,siren),25,"dans l'eau peu profonde : +25");
 assert.equal(api.missionTerrainStealth(siren),30);
 man.q=6;man.r=4;
-assert.deepEqual([api.missionCoverLevel(foe,man),api.missionTerrainStealth(man)],[null,0],"les autres, rien");
+assert.deepEqual([api.missionTerrainDodge(foe,man),api.missionTerrainStealth(man)],[0,0],"les autres, rien");
 elf.q=5;elf.r=4;man.q=5;man.r=4;
 assert.deepEqual([api.missionTerrainStealth(elf),api.missionTerrainStealth(man)],[30,0],"en forêt, +30 pour le sylvain");
 elf.q=2;elf.r=4;
 assert.equal(api.missionTerrainStealth(elf),0,"hors de la forêt, plus rien");
 // Le repérage en tient compte.
-assert.match(mission,/e\.coverDiscretion\(missionCoverLevel\(observer,target\)\)\+missionTerrainStealth\(target\)/);
+assert.match(mission,/missionHideBonus\(target\)\+missionTerrainStealth\(target\)/);
 
 // 4. Sur la fiche, avec les aptitudes (au survol : ce qu'elles donnent).
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");

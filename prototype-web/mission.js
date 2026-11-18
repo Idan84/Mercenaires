@@ -1,16 +1,17 @@
 "use strict";
 
-const HEX_DIRS=[
-  {q:1,r:0},{q:1,r:-1},{q:0,r:-1},
-  {q:-1,r:0},{q:-1,r:1},{q:0,r:1}
-];
-// Carte rectangulaire en coordonnées « offset » (lignes impaires décalées) ; la logique reste en axial (q, r).
-const MISSION_MAP={cols:13,rows:9,size:34,spawnRows:[3,4,5],spawnInset:2};
+// Cases carrées (doc 04, « Passage aux cases carrées », Idan, 2026-11-17) : q = la colonne, r = la ligne ; on se déplace
+// en ligne droite, vers les 4 cases voisines (est, nord, ouest, sud). Les noms « hex » viennent des hexagones d'avant.
+const HEX_DIRS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+// Carte rectangulaire ; size : la demi-largeur d'une case, en pixels.
+const MISSION_MAP={cols:13,rows:9,size:30,spawnRows:[3,4,5],spawnInset:2};
 // Taille de la carte : 13 × 9 pour la Mission Test, plus grande pour un contrat ou une chasse (doc 17 : 36 × 25, le camp au
 // centre ; Idan, 2026-11-09).
 function setMissionMapSize({cols=13,rows=9}={}){ MISSION_MAP.cols=cols; MISSION_MAP.rows=rows; }
-function missionColumn(q,r){ return q+((r-(r&1))>>1); }
-function missionAxial(col,r){ return {q:col-((r-(r&1))>>1),r}; }
+function missionColumn(q){ return q; }
+function missionAxial(col,r){ return {q:col,r}; }
+// Le journal compte en cases (grille carrée) : « 1 case », « 3 cases ».
+function missionCases(n){ return n+" case"+(Math.abs(n)>1?"s":""); }
 function missionCells(){
   const cells=[];
   for(let r=0;r<MISSION_MAP.rows;r++) for(let col=0;col<MISSION_MAP.cols;col++) cells.push(missionAxial(col,r));
@@ -69,70 +70,84 @@ function occupiedMissionKeys(except=null){
 // Décor (doc 04 ; Idan, 2026-11-06 ; terrain-decors.json) : m.decor = [{q, r, code}]. Trois réglages par décor : le
 // passage (coût de mouvement de la case : 1, 2, 3 ou 4 ; null : infranchissable), la vue, la couverture.
 function missionDecorRow(code){ return (game.referenceData?.terrainDecors?.rows||[]).find(d=>d.code===code)||null; }
+// Grille carrée (doc 04, « Le modèle de la case » ; game-core/combat-grid.js, porté par le moteur : engine.grid) : m.decor
+// mêle les cases ({q, r, code}) et les arêtes ({q, r, side, code} : entre la case et sa voisine du côté side, 0 est,
+// 1 nord, 2 ouest, 3 sud ; (q, r) est le côté défendu). Le code est un décor (son dessin) ou directement une case.
+const missionIsEdge=d=>d?.side!=null;
 function missionDecorAt(q,r){
-  const cell=(game.mission?.decor||[]).find(d=>d.q===q&&d.r===r);
-  return cell?missionDecorRow(cell.code):null;
+  const cell=(game.mission?.decor||[]).find(d=>d.q===q&&d.r===r&&!missionIsEdge(d));
+  return cell?missionDecorRow(cell.code)||missionGrid()?.cellRow(cell.code)||null:null;
 }
-// Capacités de terrain (doc 04 ; Idan, 2026-11-09 ; terrain-skills.json) : ce que celui qui est (ou entre) sur la case y
-// gagne (coût, Discrétion, couverture). Monté, il se déplace et se cache comme sa monture.
-function missionTerrainEffect(unit,c){
-  if(!unit?.character||!c) return null;
-  const cell=(game.mission?.decor||[]).find(d=>d.q===c.q&&d.r===c.r),e=missionEngine();
-  return cell&&e?.terrainEffect?e.terrainEffect(e.mountOf?.(unit)||unit,cell.code):null;
+const MISSION_GRID_MAPS=new WeakMap();
+function missionGrid(){ return game.mission?.engine?.grid||null; }
+function missionGridMap(){
+  const m=game.mission,grid=missionGrid();
+  if(!m||!grid) return null;
+  const decor=m.decor||[],known=MISSION_GRID_MAPS.get(m);
+  if(known&&known.decor===decor&&known.size===decor.length) return known.map;
+  const map=grid.createMap({decor:decor.filter(d=>!missionIsEdge(d)),edges:decor.filter(missionIsEdge)});
+  MISSION_GRID_MAPS.set(m,{decor,size:decor.length,map});
+  return map;
 }
+// Ses capacités de terrain (terrain-skills.json) ; monté, celles de sa monture.
+function missionTerrainSkills(unit){
+  const e=missionEngine();
+  return unit?.character&&e?.terrainSkillsOf?e.terrainSkillsOf(e.mountOf?.(unit)||unit):[];
+}
+// La case de la grille (sa règle, combat-cells.json) : le Terrain par défaut sans décor.
+function missionGridCell(q,r){ return missionGrid()?.cell(missionGridMap(),{q,r})||null; }
+// Une case trop chère pour y entrer à pied (100 PM : le mur, la montagne, le gouffre, l'eau profonde sans Respiration
+// aquatique ; Idan : « Juste une valeur de déplacement de 100 PM »).
 function missionDecorBlocksMove(q,r,unit=null){
-  const d=missionDecorAt(q,r);
-  return Boolean(d)&&d.cout_mouvement==null&&missionTerrainEffect(unit,{q,r})?.cost==null;
+  const grid=missionGrid();
+  return grid?grid.blocksMove(missionGridMap(),{q,r},{skills:missionTerrainSkills(unit)}):false;
 }
-// Points de mouvement du décor pour entrer dans la case (Idan : « vitesse réduite : mouvement à moitié / tiers / quart »).
+// Points de mouvement pour entrer dans la case, au quart de point (combat-cells.json ; ses capacités de terrain), sans
+// l'arête franchie (missionStepCost).
 function missionDecorCost(c,unit=null){
-  const d=missionDecorAt(c.q,c.r);
-  if(!d) return 1;
-  const own=missionTerrainEffect(unit,c)?.cost;
-  if(own!=null) return Math.max(1,own);
-  return d.cout_mouvement==null?Infinity:Math.max(1,Number(d.cout_mouvement)||1);
+  const grid=missionGrid();
+  if(!grid) return 1;
+  const pm=grid.stepCost(missionGridMap(),null,c,{skills:missionTerrainSkills(unit)});
+  return pm>=grid.IMPASSABLE?Infinity:pm;
 }
+// Le malus de l'arête entre deux cases voisines (0 sans arête).
+function missionEdgePm(a,b){ return a&&b?Number(missionGrid()?.edge(missionGridMap(),a,b)?.row.pm)||0:0; }
 // Discrétion gagnée sur sa case (Déplacement aquatique, Déplacement sylvain : +30 tant qu'il y est).
-function missionTerrainStealth(unit){ return unit?missionTerrainEffect(unit,{q:unit.q,r:unit.r})?.discretion||0:0; }
-// Altitude (doc 04 ; Idan, 2026-11-06 : « vas-y pour l'altitude ») : m.relief = [{q, r, h}], une hauteur de 0 à 3 par case.
-function missionHeightAt(q,r){ return (game.mission?.relief||[]).find(c=>c.q===q&&c.r===r)?.h||0; }
-function missionUnitHeight(u){ return u?missionHeightAt(u.q,u.r):0; }
-function missionAltitude(){ return game.mission?.engine?.ALTITUDE||{climbCost:1,cliff:2,hitPerLevel:10,max:3}; }
+function missionTerrainStealth(unit){
+  const grid=missionGrid(),cell=unit?missionGridCell(unit.q,unit.r):null;
+  return grid&&cell?grid.skillEffect(missionTerrainSkills(unit),cell.code).discretion:0;
+}
+// Pas d'altitude en phase 1 (doc 04, « Le modèle de la case » ; Idan, 2026-11-17 : « On retire l'altitude pour l'instant.
+// Trop complexe à gérer en phase 1 ») : plus de relief, de falaises ni de camp en hauteur.
 // Vol (les chauves-souris de la Cour de sang ; Idan, 2026-11-06 : « Elles volent donc ignorent les pénalités de
-// mouvement », « Elles survolent tout ») : 1 point par case, sans décor, montée ni falaise ; elles passent au-dessus d'un
+// mouvement », « Elles survolent tout ») : 1 point par case au plus, sans malus de décor ; elles passent au-dessus d'un
 // décor infranchissable, mais ne peuvent pas s'y arrêter. Monté sur un volant (le pégase ; Idan, 2026-11-09), le couple vole.
 function missionFlies(unit){
   return Boolean(unit?.character?.flies)||Boolean(missionEngine()?.mountOf?.(unit)?.character?.flies)||Boolean(missionEngine()?.skillFlies?.(unit));
 }
-// Un pas de from à c : le décor, plus la montée (+ climbCost par niveau ; descendre est gratuit) ; un écart de cliff niveaux
-// ou plus est une falaise, infranchissable dans les deux sens. Un volant (unit) : 1.
+// Un pas de from à c : le PM de la case, plus l'arête franchie (grille carrée). Un volant (unit) : au plus 1.
 function missionStepCost(c,from=null,unit=null){
-  if(missionFlies(unit)) return 1;
-  const decor=missionDecorCost(c,unit);
-  if(!from||!game.mission?.relief?.length) return decor;
-  const rise=missionHeightAt(c.q,c.r)-missionHeightAt(from.q,from.r),alt=missionAltitude();
-  if(Math.abs(rise)>=alt.cliff) return Infinity;
-  return decor+Math.max(0,rise)*alt.climbCost;
+  const grid=missionGrid();
+  if(missionFlies(unit)) return grid?grid.stepCost(missionGridMap(),from,c,{flies:true}):1;
+  const cell=missionDecorCost(c,unit);
+  return Number.isFinite(cell)?cell+missionEdgePm(from,c):cell;
 }
-// Un pas d'une grande créature (non volante : chaque case de son empreinte libre et franchissable, sans falaise sous elle ;
-// le pas coûte la case la plus lente qu'elle couvre, plus la montée de sa case d'ancrage) : {cost, facing}, ou null. Une
+// Un pas d'une grande créature (non volante : chaque case de son empreinte libre et franchissable ; le pas coûte la case la
+// plus lente qu'elle couvre, plus l'arête que franchit sa tête) : {cost, facing}, ou null. Une
 // créature longue (une monture) suit son pas : le corps prend la place de la tête ; un triangle prend le premier sens qui
 // passe ; une créature énorme n'a pas de sens.
 function missionLargeStep(mover,cur,next,blocked){
-  const e=game.mission.engine,size=e.sizeOf(mover),flyer=missionFlies(mover),alt=missionAltitude();
+  const e=game.mission.engine,size=e.sizeOf(mover),flyer=missionFlies(mover);
   const dir=HEX_DIRS.findIndex(d=>cur.q+d.q===next.q&&cur.r+d.r===next.r);
-  const facings=size==="longue"?[dir]:size==="grande"?[cur.facing??mover.facing??0,0,1,2,3,4,5]:[0];
+  const facings=size==="longue"?[dir]:size==="grande"?[cur.facing??mover.facing??0,0,1,2,3]:[0];
   for(const facing of new Set(facings)){
     const cells=e.footprintAt(next.q,next.r,size,facing);
     if(!cells.every(c=>validMissionHex(c.q,c.r)&&!blocked.has(missionKey(c.q,c.r)))) continue;
-    if(flyer) return {cost:1,facing};
-    const heights=cells.map(c=>missionHeightAt(c.q,c.r));
-    if(Math.max(...heights)-Math.min(...heights)>=alt.cliff) continue;
-    const rise=missionHeightAt(next.q,next.r)-missionHeightAt(cur.q,cur.r);
-    if(Math.abs(rise)>=alt.cliff) continue;
-    const decor=Math.max(...cells.map(c=>missionDecorCost(c,mover)));
+    if(flyer) return {cost:missionStepCost(next,cur,mover),facing};
+    // Sa tête franchit l'arête (« elle va dans la direction choisie depuis la case de sa tête »), le corps suit.
+    const decor=Math.max(...cells.map(c=>missionDecorCost(c,mover)))+missionEdgePm(cur,next);
     if(!Number.isFinite(decor)) continue;
-    return {cost:decor+Math.max(0,rise)*alt.climbCost,facing};
+    return {cost:decor,facing};
   }
   return null;
 }
@@ -153,75 +168,138 @@ function missionPathCost(path,start=null){
   for(const c of path||[]){ total+=missionStepCost(c,prev,unit); prev=c; }
   return total;
 }
-// « Forêt : mouvement ½, bloque la vue, couverture partielle ».
-const MISSION_DECOR_PACE={2:"½",3:"⅓",4:"¼"};
-function missionDecorLabel(d){
-  const parts=[d.cout_mouvement==null?"infranchissable":MISSION_DECOR_PACE[d.cout_mouvement]?"mouvement "+MISSION_DECOR_PACE[d.cout_mouvement]:"",
-    d.bloque_vue?"bloque la vue":"",d.couverture&&d.couverture!=="sans"?"couverture "+d.couverture:""].filter(Boolean);
-  return d.nom+(parts.length?" : "+parts.join(", "):"");
-}
-// Couverture (Idan, 2026-11-06 : « Au tir et en défense de charge ») : le décor collé à la cible sur la ligne qui vient de
-// from (pas la case de from : un muret collé au tireur ne le gêne pas), ou la case de la cible elle-même ; la meilleure.
-// shot : un tir (ou un sort qui vole) ; d'au moins un niveau plus haut, il passe par-dessus la couverture partielle.
-function missionCoverLevel(from,target,options={}){
-  // Une grande créature se couvre mal : la couverture de sa case la plus exposée.
-  if(missionLarge(target)){
-    const rank={totale:2,partielle:1};
-    return missionFootprint(target).map(c=>missionCellCover(from,c,options)).reduce((a,b)=>(rank[b]||0)<(rank[a]||0)?b:a,"totale");
+// Au survol d'une case (grille carrée) : « Buissons (Végétation souple) : 1,5 PM · Muret à l'est : +0,5 PM ».
+const missionPm=n=>String(Math.round(Number(n)*100)/100).replace(".",",");
+const MISSION_SIDE_NAMES=["à l’est","au nord","à l’ouest","au sud"];
+function missionCellLabel(q,r){
+  const grid=missionGrid(),map=missionGridMap();
+  if(!grid) return "";
+  const parts=[],cell=grid.cell(map,{q,r}),decor=missionDecorAt(q,r);
+  if(cell.code!=="terrain"){
+    const name=decor&&decor.nom!==cell.nom?decor.nom+" ("+cell.nom+")":cell.nom;
+    parts.push(name+" : "+(cell.pm>=grid.IMPASSABLE?"infranchissable à pied ("+missionPm(cell.pm)+" PM)":missionPm(cell.pm)+" PM")+(cell.bloque_vue?", bloque la vue":""));
   }
-  return missionCellCover(from,target,options);
+  grid.SIDES.forEach((d,i)=>{
+    const edge=grid.edge(map,{q,r},{q:q+d.q,r:r+d.r});
+    if(!edge) return;
+    const shown=missionDecorRow(edge.decor),name=shown&&shown.nom!==edge.row.nom?shown.nom+" ("+edge.row.nom+")":edge.row.nom;
+    const view=edge.row.vue==="bloque"?", bloque la vue":edge.row.vue==="sens"?(edge.defended.q===q&&edge.defended.r===r?", on voit dehors":", on ne voit pas dedans"):"";
+    parts.push(name+" "+MISSION_SIDE_NAMES[i]+" : +"+missionPm(edge.row.pm)+" PM"+view+(edge.row.corps_a_corps===false?", pas de corps à corps à travers":""));
+  });
+  return parts.join(" · ");
 }
-function missionCellCover(from,target,{shot=false}={}){
-  if(!game.mission?.decor?.length||!from||!target) return null;
-  const above=shot&&missionHeightAt(from.q,from.r)>=missionHeightAt(target.q,target.r)+1;
-  const line=game.mission.engine.hexLine(from,target),before=line[line.length-2];
-  const cells=[{q:target.q,r:target.r}];
-  if(before&&!(before.q===from.q&&before.r===from.r)) cells.push(before);
-  let best=null;
-  for(const c of cells){
-    // Respiration aquatique : la couverture qu'il trouve sur sa propre case (l'eau profonde : totale).
-    const own=c===cells[0]?missionTerrainEffect(target,c)?.cover:null;
-    const decor=missionDecorAt(c.q,c.r)?.couverture;
-    const level=[own,decor].includes("totale")?"totale":[own,decor].includes("partielle")?"partielle":null;
-    if(level==="totale") return "totale";
-    if(level==="partielle"&&!above) best="partielle";
-  }
-  return best;
+// L'Esquive du terrain (grille carrée, doc 04 ; Idan, 2026-11-17 : « On vire tout le système de couverture ») : celle de
+// la case de la cible et de l'arête qui fait face à from (combat-grid.js, dodge), avec ses capacités de terrain
+// (Respiration aquatique). Elle compte contre les tirs, les sorts qui volent et la charge (charge : double, sauf aérienne).
+// Une grande créature se couvre mal : l'Esquive de sa case la plus exposée.
+function missionTerrainDodge(from,target,{charge=false,aerial=false}={}){
+  const grid=missionGrid();
+  if(!grid||!from||!target) return 0;
+  const map=missionGridMap(),skills=target.character?missionTerrainSkills(target):[];
+  const origin={q:from.q,r:from.r};
+  const cells=target.character&&missionLarge(target)?missionFootprint(target):[{q:target.q,r:target.r}];
+  return Math.min(...cells.map(c=>grid.dodge(map,c,origin,{skills,charge,aerial})));
+}
+// Se cacher (Idan, 2026-11-17 : « Se cacher, c'est une action rapide. On choisit de se cacher au lieu de boire une potion.
+// Ça amène +10 en discrétion + bonus de la case. On peut le faire que si on n'est pas encore repéré ») : au repérage,
+// + combat.stealth.hide_bonus, plus le « Se cacher » de la case où il est (végétation souple, éboulis +30 ; eau peu
+// profonde +10), tant qu'on ne l'a pas repéré.
+function missionCanHide(u){ return Boolean(u?.alive&&!u.offMap&&u.camouflaged&&!u.hiding&&u.quickAvailable!==false); }
+function missionHideBonus(unit){
+  if(!unit?.hiding||!unit.camouflaged) return 0;
+  const cell=missionGridCell(unit.q,unit.r);
+  return (Number(missionEngine()?.HIDE_BONUS)||10)+(Number(cell?.se_cacher)||0);
+}
+function missionHide(u){
+  if(!missionCanHide(u)) return false;
+  u.hiding=true;u.quickAvailable=false;
+  missionFx(u,"Caché");
+  // Un ennemi caché ne se trahit pas dans le journal (brouillard de guerre).
+  if(missionShownToPlayer(u)) missionLog(u.character.name+" se cache (Discrétion +"+missionHideBonus(u)+" au repérage).","info");
+  return true;
+}
+function hideMissionUnit(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||m.phase!=="player"||m.over||!missionHide(u)) return;
+  renderMission();
 }
 // Vue (Idan, 2026-11-06 : « Derrière une forêt, on voit pas » ; dedans, « oui » : on n'y est vu qu'au contact).
 // Altitude : une case entre les deux dont le sommet (sa hauteur, + 1 si son décor bloque la vue) dépasse les deux personnages
 // coupe la vue ; plus haut, on voit par-dessus.
-function missionDecorBlocksSight(a,b){
-  if(!game.mission?.decor?.length&&!game.mission?.relief?.length) return false;
-  const e=game.mission.engine,blocks=c=>Boolean(missionDecorAt(c.q,c.r)?.bloque_vue);
-  if(e.axialDistance(a,b)>1&&(blocks(a)||blocks(b))) return true;
-  const eye=Math.max(missionHeightAt(a.q,a.r),missionHeightAt(b.q,b.r));
+// Grille carrée (doc 04, « Le modèle de la case ») : une case qui bloque la vue (la forêt, le mur) ; dedans, on n'est
+// ciblable qu'au contact, mais de sa case on voit dehors si rien d'autre ne coupe la ligne (« s'il est à l'orée de la
+// forêt »). Une arête qui bloque la vue, ou « un seul sens » vue de l'extérieur (la palissade, la meurtrière : on voit du côté
+// défendu vers l'extérieur). Par un coin, la ligne n'est coupée que si les deux détours le sont.
+function missionDecorBlocksSight(a,b,blockers=null){
+  if(!game.mission?.decor?.length&&!blockers?.size) return false;
+  const e=game.mission.engine,grid=missionGrid(),map=missionGridMap();
+  const decorBlocks=c=>Boolean(missionGridCell(c.q,c.r)?.bloque_vue);
+  const blocks=c=>decorBlocks(c)||Boolean(blockers?.has(missionKey(c.q,c.r)));
+  // Dans une case qui bloque la vue, on n'est ciblable qu'au contact ; le personnage qui se tient sur la case visée ne la
+  // cache pas, lui (seules les cases entre les deux comptent pour les personnages).
+  if(e.axialDistance(a,b)>1&&decorBlocks(b)) return true;
+  const edge=(x,y)=>Boolean(grid?.edgeBlocksSight(map,x,y));
+  const step=(x,y)=>{
+    if(x.q===y.q||x.r===y.r) return edge(x,y);
+    const m1={q:y.q,r:x.r},m2={q:x.q,r:y.r};
+    return (edge(x,m1)||edge(m1,y))&&(edge(x,m2)||edge(m2,y));
+  };
   // La ligne qui frôle le coin d'un décor (Idan, 2026-11-14 : « Frôler ne bloque pas ») : coupée seulement des deux côtés.
-  return e.hexLineSides(a,b).every(line=>line.slice(1,-1).some(c=>missionHeightAt(c.q,c.r)+(blocks(c)?1:0)>eye));
+  return e.hexLineSides(a,b).every(line=>line.slice(1,-1).some(blocks)
+    ||line.some((c,i)=>i>0&&step(line[i-1],c)));
 }
-// Mission Test (altitude) : 1 à 3 collines, centrées entre les deux lignes de déploiement, de hauteur 1 à 3 ; chaque case
-// prend la plus haute des collines, moins sa distance au sommet : deux cases voisines ne diffèrent jamais de plus d'un niveau
-// (pas de falaise au hasard).
-function generateMissionRelief(){
-  const max=game.mission?.engine?.ALTITUDE?.max??3;
-  const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
-  const hills=Array.from({length:1+Math.floor(Math.random()*3)},()=>({...inner[Math.floor(Math.random()*inner.length)],h:1+Math.floor(Math.random()*max)}));
-  const e=game.mission?.engine||combatEngine();
-  return missionCells().map(c=>({q:c.q,r:c.r,h:Math.max(0,...hills.map(hill=>hill.h-e.axialDistance(hill,c)))})).filter(c=>c.h>0);
-}
-// Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement.
+// Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement. Garde-fou
+// (Idan, 2026-11-18 : « on ne peut pas mettre d'enceinte totale de mur ») : on retire tant qu'une case où l'on peut se tenir
+// est enfermée (murs, palissade, muraille : combat-grid.js, closedPockets) ; au bout de 30 tirages, pas de décor.
+const MISSION_DECOR_TRIES=30;
 function generateMissionDecor(){
+  for(let i=0;i<MISSION_DECOR_TRIES;i++){
+    const decor=drawMissionDecor();
+    if(!missionDecorEnclosed(decor).length) return decor;
+  }
+  return [];
+}
+// Les cases enfermées par ce décor : celles qu'on n'atteint pas à pied depuis le bord ouest (où se déploie l'escouade, sans
+// décor) sans passer par un mur ni franchir une palissade ou une muraille.
+function missionDecorEnclosed(decor){
+  const grid=missionGrid();
+  if(!grid?.closedPockets) return [];
+  const map=grid.createMap({decor:decor.filter(d=>!missionIsEdge(d)),edges:decor.filter(missionIsEdge)});
+  const from=missionCells().filter(c=>missionColumn(c.q,c.r)===0);
+  return grid.closedPockets(map,{cols:MISSION_MAP.cols,rows:MISSION_MAP.rows,from});
+}
+function drawMissionDecor(){
   // La palissade sert à l'enceinte des camps de contrat (mission-landscapes.json), pas au hasard.
   const wall=game.referenceData?.missionLandscapes?.enceinte?.decor;
   // Les tonneaux restent à la cave (La Cave, generateCellarDecor).
   const rows=(game.referenceData?.terrainDecors?.rows||[]).filter(row=>row.code!==wall&&row.code!==CELLAR_DECOR);
+  // Grille carrée : les cases qu'aucun décor ne dessine encore (le plancher) s'y ajoutent, avec leur couleur.
+  const drawn=new Set(rows.map(row=>row.case).filter(Boolean));
+  for(const c of game.referenceData?.combatCells?.rows||[]) if(c.code!=="terrain"&&!drawn.has(c.code)) rows.push({code:c.code,case:c.code});
   if(!rows.length) return [];
   const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
   const isInner=c=>inner.some(x=>x.q===c.q&&x.r===c.r);
-  const decor=[],taken=new Set(),groups=4+Math.floor(Math.random()*3);
+  const decor=[],taken=new Set(),edges=new Set(),groups=4+Math.floor(Math.random()*3);
   for(let i=0;i<groups;i++){
     const row=rows[Math.floor(Math.random()*rows.length)],size=1+Math.floor(Math.random()*4);
     let cell=inner[Math.floor(Math.random()*inner.length)];
+    // Une maison (doc 04, étape 4) : un plan de 3 à 4 cases de côté, des murs autour, du plancher dedans, une porte.
+    if(row.plan&&missionGrid()){
+      const w=3+Math.floor(Math.random()*2),h=3+Math.floor(Math.random()*2);
+      const plan=missionGrid().housePlan(cell,w,h,{wall:row.code,floor:"plancher",door:Math.floor(Math.random()*2*(w+h))});
+      if(plan.every(c=>isInner(c)&&!taken.has(missionKey(c.q,c.r)))) for(const c of plan){ taken.add(missionKey(c.q,c.r)); decor.push(c); }
+      continue;
+    }
+    // Une arête (le muret, les caisses, la tombe : doc 04, étape 4) : une ligne de size arêtes le long d'un bord.
+    if(row.arete){
+      const side=Math.floor(Math.random()*4),along=side%2===0?{q:0,r:1}:{q:1,r:0};
+      for(let n=0;n<size&&cell&&isInner(cell);n++){
+        const d=HEX_DIRS[side],k=[missionKey(cell.q,cell.r),missionKey(cell.q+d.q,cell.r+d.r)].sort().join("|");
+        if(!edges.has(k)&&validMissionHex(cell.q+d.q,cell.r+d.r)){ edges.add(k); decor.push({q:cell.q,r:cell.r,side,code:row.code}); }
+        cell={q:cell.q+along.q,r:cell.r+along.r};
+      }
+      continue;
+    }
     for(let n=0;n<size&&cell;n++){
       const key=missionKey(cell.q,cell.r);
       if(!taken.has(key)){ taken.add(key); decor.push({q:cell.q,r:cell.r,code:row.code}); }
@@ -245,19 +323,48 @@ function missionStormAt(q,r){
   const e=game.mission?.engine;
   return (game.mission?.storms||[]).find(s=>e&&e.axialDistance(s.center,{q,r})<=s.radius)||null;
 }
-// Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
-// les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
-function missionLineOfSight(a,b){
+// Ligne de vue (doc 04 et 12) : le décor (cases et arêtes), le Brouillard et le Blizzard la coupent ; les personnages aussi,
+// pour les tirs et les sorts (doc 04, « Étape 3 : les personnages »). options.viewer : celui qui regarde, quand a est une
+// case (l'IA qui cherche d'où tirer) ; options.units:false : sans les personnages (le repérage : « Les personnages bloquent
+// la vue, pas la discrétion »).
+function missionLineOfSight(a,b,{viewer=null,units=true}={}){
   if(!a||!b) return true;
+  const blockers=units?missionSightBlockers(viewer||(a.character?a:null),b.character?b:null):null;
   // Une grande créature : on la voit si on voit une de ses cases (et elle voit depuis n'importe laquelle).
   if(missionLarge(a)||missionLarge(b)){
     const from=missionLarge(a)?missionFootprint(a):[a],to=missionLarge(b)?missionFootprint(b):[b];
-    return from.some(x=>to.some(y=>missionCellLineOfSight(x,y)));
+    return from.some(x=>to.some(y=>missionCellLineOfSight(x,y,blockers)));
   }
-  return missionCellLineOfSight(a,b);
+  return missionCellLineOfSight(a,b,blockers);
 }
-function missionCellLineOfSight(a,b){
-  if(missionDecorBlocksSight(a,b)) return false;
+// Les cases des personnages qui coupent la ligne de vue de viewer vers target (Idan, 2026-11-17 : « En gros, un ennemi bloque
+// ses alliés. Un allié ne bloque pas sa ligne de vue. Un plus petit ne bloque pas la ligne de vue par-dessus lui. » ; « un
+// allié devant permet de tirer mais un allié à 10 cases au cac d'un ennemi, bah on peut pas tirer ») :
+// - un ennemi de celui qui regarde cache ceux qui sont derrière lui ; un personnage caché aussi (sans qu'on sache pourquoi) ;
+// - un allié collé à celui qui regarde (les 8 cases autour) ne gêne pas ; plus loin sur la ligne, il empêche de tirer ;
+// - un plus petit ne cache pas un plus grand (le gabarit, comme pour les montures), allié comme ennemi ;
+// - au sol ou en vol, il ne cache rien ; une grosse créature cache sur toutes ses cases.
+function missionSightBlockers(viewer,target){
+  const m=game.mission,e=m?.engine;
+  const keys=new Set();
+  if(!e) return keys;
+  const near=viewer?missionFootprint(viewer):[];
+  const targetSize=target?.character?Number(e.bodySize?.(target))||1:1;
+  for(const u of missionUnits()){
+    if(!u.alive||u.offMap||u===viewer||u===target||u.raised||(viewer?.id&&u.id===viewer.id)) continue;
+    if(viewer&&(u===viewer.mount||u.rider===viewer)) continue;
+    if(target&&(u===target.mount||u.rider===target)) continue;
+    if(u.prone||missionFlies(u)) continue;
+    if((Number(e.bodySize?.(u))||1)<targetSize) continue;
+    const cells=missionFootprint(u);
+    const ally=viewer&&u.team===viewer.team;
+    if(ally&&cells.some(c=>near.some(n=>Math.max(Math.abs(c.q-n.q),Math.abs(c.r-n.r))<=1))) continue;
+    for(const c of cells) keys.add(missionKey(c.q,c.r));
+  }
+  return keys;
+}
+function missionCellLineOfSight(a,b,blockers=null){
+  if(missionDecorBlocksSight(a,b,blockers)) return false;
   if(!game.mission?.fog?.length&&!game.mission?.blizzards?.length) return true;
   return game.mission.engine.hexLineSides(a,b).some(line=>!line.some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r)));
 }
@@ -333,8 +440,8 @@ function resolveMissionDetection(){
   for(const observer of missionUnits()){
     if(!observer.alive||observer.offMap) continue;
     for(const target of missionOpponents(observer)){
-      if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target)) continue;
-      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),e.coverDiscretion(missionCoverLevel(observer,target))+missionTerrainStealth(target));
+      if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target,{units:false})) continue;
+      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),missionHideBonus(target)+missionTerrainStealth(target));
       if(!r.spotted) continue;
       target.camouflaged=false;
       missionAlert(observer.team,target);
@@ -444,7 +551,7 @@ function shortestMissionPath(start,end,except=null){
 
 function missionHexPixel(q,r){
   const s=MISSION_MAP.size;
-  return {x:44+Math.sqrt(3)*s*(q+r/2),y:44+1.5*s*r};
+  return {x:44+2*s*q,y:44+2*s*r};
 }
 
 // noMount : sans sa monture (le Défi du capitaine : « sans monture »).
@@ -507,7 +614,7 @@ function attachMissionMount(unit){
   const mount={id:unit.id+"-mount",character:horse,team:unit.team,isCaptain:false,isLieutenant:false,hp:pvMax,pvMax,alive:true,
     activeSet:1,prone:false,acted:true,movementRemaining:0,attackAvailable:false,quickAvailable:false,fleeing:false,fleeTurn:0,
     offMap:false,damageTaken:0};
-  unit.facing=unit.facing??(unit.team==="player"?0:3);
+  unit.facing=unit.facing??(unit.team==="player"?0:2);
   if(!rides){
     Object.assign(mount,{rider:null,follows:unit.id,master:unit,acted:false,attackAvailable:true,quickAvailable:true,facing:unit.facing});
     unit.companion=mount;
@@ -1230,7 +1337,7 @@ function startMissionFromSelection(){
     rules.applyArchetype(enemyChars[2],troll,{idPrefix:"test-troll",name:"Troll géant"});
     enemyChars[2].taille=Math.random()<0.5?"grande":"enorme";
   }
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
@@ -1242,7 +1349,6 @@ function startMissionFromSelection(){
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
   };
-  game.mission.relief=generateMissionRelief();
   game.mission.decor=generateMissionDecor();
   deployMissionCompanions();
 
@@ -1304,7 +1410,7 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   const offer=e.offer;
   setMissionMapSize(missionRules().mapSize(offer));
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=placeMissionArmy(chosen.map((c,i)=>makeMissionUnit(c,"player",i%3)),"player");
@@ -1317,7 +1423,7 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
     playerOrder:sortMissionInitiative(players,engine),
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
-    decor:terrain?.decor||[],relief:terrain?.relief||[]
+    decor:terrain?.decor||[]
   };
   $("expedition-dialog")?.close?.();
   $("game-panel").classList.add("hidden");
@@ -1484,7 +1590,7 @@ function startCaptainDuel(mercenaryId,{request=null,desertion=false}={}){
   if(!check.ok){ if(typeof tavernLog==="function") tavernLog(check.reason,"warn"); return false; }
   const C=rules.duelRules.constants,copy=duelCopy();
   setMissionMapSize({cols:C.cols,rows:C.rows});
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const me=makeMissionUnit(check.captain,"player",0,{noMount:true});
@@ -1499,7 +1605,6 @@ function startCaptainDuel(mercenaryId,{request=null,desertion=false}={}){
     duel:{mercenaryId:check.mercenary.id,captainId:check.captain.id,name:check.mercenary.name,request,desertion}
   };
   const m=game.mission;
-  m.relief=generateMissionRelief();
   // Le décor de l'arène, sans rien autour des deux combattants.
   m.decor=generateMissionDecor().filter(d=>![me,foe].some(u=>engine.axialDistance(u,d)<=1));
   // Personne ne se cache : chacun sait où est l'autre.
@@ -1626,7 +1731,7 @@ function startMutinyFight(){
   const allies=mutiny.rally(c).filter(a=>a.joins).map(a=>c.company.roster.find(m=>m.id===a.id)).filter(Boolean);
   const C=rules.duelRules.constants,copy=mutinyFightCopy();
   setMissionMapSize({cols:C.cols,rows:C.rows});
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const left=Math.floor((MISSION_MAP.cols-C.distance)/2);
@@ -1638,7 +1743,6 @@ function startMutinyFight(){
     mutiny:{captainId:captain.id,members:foes.map(m=>m.id),allies:allies.map(m=>m.id),verdicts:{},queue:[]}
   };
   const m=game.mission;
-  m.relief=generateMissionRelief();
   m.decor=generateMissionDecor().filter(d=>![...players,...enemies].some(u=>engine.axialDistance(u,d)<=1));
   m.awareness={player:{alert:true,lastKnown:{q:enemies[0].q,r:enemies[0].r},objective:null},enemy:{alert:true,lastKnown:{q:players[0].q,r:players[0].r},objective:null}};
   $("game-panel")?.classList?.add("hidden");
@@ -1728,7 +1832,7 @@ function resolveMissionMutiny(){
 // A la fin de son tour, le combat s'arrête » : l'avertissement (kind « warning ») ne compte pas (ni XP, ni morts, ni
 // blessures : « 6) Non ») ; leur retour (kind « final ») est un vrai combat, seul (« seul et dès son retour ») : gagné, l'XP
 // du capitaine et l'équipement des voleurs tombés, plus de dette ; perdu, la partie est finie. Le camp des voleurs du
-// contrat (one-shot-missions.json), son budget imposé ; la carte des contrats, sans relief de camp.
+// contrat (one-shot-missions.json), son budget imposé ; la carte des contrats.
 function usurerFightCopy(kind){ return game.referenceData?.usurerDialogue?.[kind]||{}; }
 function usurerArmy(){
   const c=game.campaign,rules=campaignRules(),mr=missionRules();
@@ -1746,7 +1850,7 @@ function startUsurerFight(kind){
   setMissionMapSize(missionRules().mapSize({code:"cleanup"}));
   const offer=usurerArmy();
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,gridMap:missionGridMap});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const me=makeMissionUnit(captain,"player",0,{noMount:true});
@@ -1758,7 +1862,6 @@ function startUsurerFight(kind){
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,usurer:{kind}
   };
   const m=game.mission;
-  m.relief=generateMissionRelief();
   m.decor=generateMissionDecor().filter(d=>![me,...enemies].some(u=>engine.axialDistance(u,d)<=1));
   m.awareness={player:{alert:true,lastKnown:{q:enemies[0]?.q??me.q,r:enemies[0]?.r??me.r},objective:null},enemy:{alert:true,lastKnown:{q:me.q,r:me.r},objective:null}};
   $("game-panel")?.classList?.add("hidden");
@@ -1817,8 +1920,8 @@ function finishUsurerFight(){
 // ---- La Cave (Idan, 2026-11-10 ; règles : game-core/cellar.js ; écran : cellar-ui.js) ----
 // Deux mercenaires règlent leur désaccord dans la cave de la taverne, armes à la main, jusqu'à ce que l'un tombe (fuir, c'est
 // perdre). Personne ne commande : chacun se bat seul (l'IA des ennemis), au rythme de l'IA ; on regarde. Le premier tiré à
-// gauche (camp « player »), son adversaire à droite (« enemy ») ; ni aura de capitaine ni de lieutenant. Une petite cave sans
-// relief, quelques tonneaux. Les cotes : la même bagarre jouée en coulisses sur des copies des deux fiches.
+// gauche (camp « player »), son adversaire à droite (« enemy ») ; ni aura de capitaine ni de lieutenant. Une petite cave,
+// quelques tonneaux. Les cotes : la même bagarre jouée en coulisses sur des copies des deux fiches.
 const CELLAR_DECOR="tonneaux";
 const CELLAR_MAX_TURNS=60;
 function cellarRulesOf(){ return game.campaign&&typeof campaignRules==="function"?campaignRules().cellarRules||null:null; }
@@ -1835,7 +1938,12 @@ function generateCellarDecor(engine,units){
     let cell=cells[Math.floor(Math.random()*cells.length)];
     for(let n=0,size=1+Math.floor(Math.random()*3);n<size&&cell;n++){
       const key=missionKey(cell.q,cell.r);
-      if(!taken.has(key)){ taken.add(key); decor.push({q:cell.q,r:cell.r,code:CELLAR_DECOR}); }
+      // Grille carrée : les tonneaux dessinent une arête (un muret, doc 04 étape 4), sur un côté de la case.
+      if(!taken.has(key)){
+        taken.add(key);
+        const side=[0,1,2,3].find(i=>{ const d=HEX_DIRS[(i+n)%4]; return validMissionHex(cell.q+d.q,cell.r+d.r); });
+        decor.push({q:cell.q,r:cell.r,side:side==null?0:(side+n)%4,code:CELLAR_DECOR});
+      }
       const next=missionNeighbors(cell).filter(c=>far(c)&&edge(c)&&!taken.has(missionKey(c.q,c.r)));
       cell=next[Math.floor(Math.random()*next.length)];
     }
@@ -1846,7 +1954,7 @@ function generateCellarDecor(engine,units){
 function buildCellarMission(a,b,{simulation=false}={}){
   const C=cellarRulesOf()?.constants||{cols:9,rows:9,distance:2};
   setMissionMapSize({cols:C.cols,rows:C.rows});
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,gridMap:missionGridMap});
   const left=makeMissionUnit(a,"player",0,{noMount:true}),right=makeMissionUnit(b,"enemy",0,{noMount:true});
   for(const u of [left,right]) Object.assign(u,{isCaptain:false,isLieutenant:false});
   const row=Math.floor(MISSION_MAP.rows/2),col=Math.floor((MISSION_MAP.cols-C.distance)/2);
@@ -1856,7 +1964,7 @@ function buildCellarMission(a,b,{simulation=false}={}){
     progression:MercenairesProgression.createProgressionRules({reference:game.referenceData}),
     players:[left],enemies:[right],playerOrder:[left],enemyOrder:[right],
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
-    relief:[],decor:generateCellarDecor(engine,[left,right]),
+    decor:generateCellarDecor(engine,[left,right]),
     // Chacun sait où est l'autre.
     awareness:{player:{alert:true,lastKnown:{q:right.q,r:right.r},objective:null},enemy:{alert:true,lastKnown:{q:left.q,r:left.r},objective:null}},
     cellar:{simulation,ids:[a.id,b.id]}};
@@ -2010,7 +2118,7 @@ function placeMissionArmy(units,team){
   // le chef au milieu, les autres autour de lui, au plus près d'abord.
   const chief=units[units.length-1],others=units.slice(0,-1);
   put(chief,Math.floor(cols/2),mid);
-  const away=c=>(Math.abs(c.q-chief.q)+Math.abs(c.r-chief.r)+Math.abs(c.q+c.r-chief.q-chief.r))/2;
+  const away=c=>Math.abs(c.q-chief.q)+Math.abs(c.r-chief.r);
   const ring=missionCells().filter(c=>away(c)>0).map((c,i)=>({c,i,d:away(c)})).sort((a,b)=>a.d-b.d||a.i-b.i);
   others.forEach((u,i)=>{ u.q=ring[i].c.q; u.r=ring[i].c.r; });
   return fitMissionLarge(units);
@@ -2480,9 +2588,8 @@ function logMissionAttackLines(a,d,result,kind){
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"")
-    +(result.cover?" (couverture "+result.cover+")":"")
+    +(result.terrainDodge?" (Esquive du terrain "+(result.terrainDodge>0?"+":"")+result.terrainDodge+")":"")
     +(result.aerialCharge?" (charge aérienne : × 1,2)":result.againstAerialCharge?" (contre une charge aérienne : toucher ÷ 2)":"")
-    +(result.heightDiff>0?" (d’en haut)":result.heightDiff<0?" (vers le haut)":"")
     // Squelettes : dégâts tranchants × 0,5, contondants × 1,5 (character.damageTypeFactors).
     +(result.typeFactor?" ("+result.matchup?.type+" × "+String(result.typeFactor).replace(".",",")+")":"");
 
@@ -2739,23 +2846,18 @@ function missionChargeCheck(unit,target){
   }
   // Un volant survole le décor, mais ne finit pas sa charge dessus.
   const last=charge.path[charge.path.length-1];
+  // Le coup de la charge passe l'arête entre la case d'arrivée et la cible : pas à travers une palissade ni une meurtrière.
+  if(last&&e.meleeReach&&!e.meleeReach({q:last.q,r:last.r},target)) return no("pas de corps à corps à travers "+(missionGrid()?.edge(missionGridMap(),last,e.footprint(target).find(c=>e.hexDistance(c,last)===1)||target)?.row.article||"l’arête"));
   if(last&&missionDecorBlocksMove(last.q,last.r,unit)) return no("arrivée sur un décor infranchissable ("+String(missionDecorAt(last.q,last.r)?.nom||"décor").toLowerCase()+")");
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
   const flyer=missionFlies(unit);
-  const slowSteps=flyer?0:charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h,unit)-1),0);
-  // Altitude (Idan, 2026-11-06) : pas de falaise sur la ligne, et pas de charge qui monte de plus d'un niveau (un volant
-  // survole tout).
-  if(game.mission?.relief?.length&&!flyer){
-    let prev={q:unit.q,r:unit.r},climb=0;
-    for(const h of charge.path){
-      const rise=missionHeightAt(h.q,h.r)-missionHeightAt(prev.q,prev.r);
-      if(Math.abs(rise)>=missionAltitude().cliff) return no("une falaise sur la ligne");
-      climb+=Math.max(0,rise);prev=h;
-    }
-    if(climb>1) return no("la course monte de plus d’un niveau");
-  }
-  return {charge:{...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target),...(aerial?{aerial:true}:{})},reason:null};
+  // Grille carrée : chaque pas compte sa case et l'arête franchie (un muret : +0,5).
+  const slowSteps=flyer?0:charge.path.reduce((acc,h)=>({prev:h,total:acc.total+Math.max(0,missionDecorCost(h,unit)+missionEdgePm(acc.prev,h)-1)}),{prev:{q:unit.q,r:unit.r},total:0}).total;
+  // L'Esquive du chargé (doc 04 : « Je charge face à la palissade, il a 120 d'esquive ») : sa case et l'arête qui fait face à
+  // la case d'arrivée du chargeur, doublées ; la charge aérienne y échappe.
+  const dodge=missionTerrainDodge(last||{q:unit.q,r:unit.r},target,{charge:true,aerial});
+  return {charge:{...charge,slowSteps,dodge,...(aerial?{aerial:true}:{})},reason:null};
 }
 // Ce qui barre la ligne de la charge : un personnage, le bourbier, une flaque de magma, un décor, le bord de la carte.
 function missionChargeBarrier(unit,h){
@@ -2824,7 +2926,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
       const result=e.resolveAttack(attacker,target,{
         mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
         chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel,aerialCharge:Boolean(charging&&charge.aerial),
-        chargeSlowSteps:charging?charge.slowSteps||0:0,cover:h.mode==="ranged"?missionCoverLevel(attacker,target,{shot:true}):charging?charge.cover:null
+        chargeSlowSteps:charging?charge.slowSteps||0:0,terrainDodge:h.mode==="ranged"?missionTerrainDodge(attacker,target):charging?charge.dodge||0:0
       });
       first=first||result;
       logMissionAttack(attacker,target,result,charging?"charge":"attack");
@@ -2927,7 +3029,7 @@ function applyMissionFlee(unit,source){
 function missionFollowFleePath(unit,path,verb){
   if(!path?.length){ missionLog(unit.character.name+" ne trouve aucune issue.","move"); return; }
   const moved=moveMissionUnitAlongPath(unit,path);
-  if(moved) missionLog(unit.character.name+" "+verb+" de "+moved+" hex.","move");
+  if(moved) missionLog(unit.character.name+" "+verb+" de "+missionCases(moved)+".","move");
 }
 
 // Ennemi actif = vivant et pas En Fuite (décision Idan, Issue #8).
@@ -2966,7 +3068,7 @@ function missionAiStandBy(unit){
   const path=threats.some(o=>e.axialDistance(unit,o)<=1)?missionBestPath(unit,budget,cell=>missionMinDistance(cell,threats))
     :unit.master?.alive&&!unit.master.offMap&&e.axialDistance(unit,unit.master)>2?missionBestPath(unit,budget,cell=>-e.axialDistance(cell,unit.master)):[];
   const moved=path.length?moveMissionUnitAlongPath(unit,path):0;
-  if(moved) missionLog(unit.character.name+" se tient à l’écart ("+moved+" hex).","move");
+  if(moved) missionLog(unit.character.name+" se tient à l’écart ("+missionCases(moved)+").","move");
 }
 function missionBestPath(unit,budget,score,forbidden=null){
   let best=[],bestScore=score({q:unit.q,r:unit.r});
@@ -3111,7 +3213,7 @@ function handleMissionHexClick(q,r){
       m.mode=null;
       if(second) missionTakeSecondMove(u);
       const moved=moveMissionUnitAlongPath(u,path);
-      if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
+      if(moved) missionLog(u.character.name+" se déplace de "+missionCases(moved)+".","move");
       if(missionActiveUnitLost()) return;
       renderMission();
     }
@@ -3162,7 +3264,7 @@ function handleMissionHexClick(q,r){
     const approach=missionCanAttack(u,victim,"melee")?null:missionMeleeApproach(u,victim);
     if(approach){
       const moved=moveMissionUnitAlongPath(u,approach.path);
-      if(moved) missionLog(u.character.name+" s’approche de "+victim.character.name+" ("+moved+" hex).","move");
+      if(moved) missionLog(u.character.name+" s’approche de "+victim.character.name+" ("+missionCases(moved)+").","move");
       if(missionActiveUnitLost()) return;
       if(!victim.alive||!missionCanAttack(u,victim,"melee")){ m.mode=null; renderMission(); return; }
       resolvePlayerMissionAttack(u,victim,"melee",m.engine.axialDistance(u,victim));
@@ -3311,10 +3413,9 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
     missionLog(spell.nom+" sur "+target.character.name+", à cheval : "+(shot.mount?"le cheval":"le cavalier")+" est dans la ligne ("+missionPercent(shot.p)+" pour le cheval, jet "+shot.roll+").","info");
     target=shot.target;
   }
-  // Un sort qui vole comme une flèche : la couverture de la cible compte (Idan, 2026-11-06).
+  // Un sort qui vole comme une flèche : l'Esquive du terrain de la cible compte (doc 04).
   const out=magic.cast(caster,target,code,{units:missionUnitsWithMounts(),cellFree:missionCellFree(spell.cible==="mort"?{q:target.q,r:target.r}:target),lineOfSight:missionLineOfSight(caster,target),
-    cover:spell.toucher==="distance"&&target?.character?missionCoverLevel(caster,target,{shot:true}):null,
-    heightDiff:target?.character?missionUnitHeight(caster)-missionUnitHeight(target):0,
+    terrainDodge:spell.toucher==="distance"&&target?.character?missionTerrainDodge(caster,target):0,
     destination:extra.destination,destinationFree:extra.destination?missionCellFree(extra.destination):undefined,
     second:extra.second,secondLineOfSight:extra.second?missionLineOfSight(caster,extra.second):true});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
@@ -3410,7 +3511,7 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
     effect=removed.length>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : fin "+removed.map(x=>LABELS[x]).join(", ")+".","magic");
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
-    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.cover?", couverture "+out.cover:"")+")";
+    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.terrainDodge?", Esquive du terrain "+(out.terrainDodge>0?"+":"")+out.terrainDodge:"")+")";
     effect=false;
     if(out.deflected){
       missionLog(name+" lance "+spell.nom+on+detail+" : le projectile est dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
@@ -4198,7 +4299,9 @@ function missionForcedMove(unit,out,caster){
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
     if(missionDecorBlocksMove(c.q,c.r,unit)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
-    if(Math.abs(missionHeightAt(c.q,c.r)-missionHeightAt(unit.q,unit.r))>=missionAltitude().cliff){ obstacle="la falaise"; break; }
+    // Une palissade ou une meurtrière l'arrête comme un mur (Idan, 2026-11-17 : « oui ») ; un muret, non.
+    const edge=missionGrid()?.edge(missionGridMap(),{q:unit.q,r:unit.r},c);
+    if(edge&&edge.row.corps_a_corps===false){ obstacle=edge.row.article||edge.row.nom; break; }
     unit.q=c.q;unit.r=c.r;moved++;
     missionFx(unit,"","",c);
   }
@@ -4240,8 +4343,7 @@ function handleMissionTwoStepSpell(spell,q,r,clicked){
 }
 // Crachat de venin (doc 12) : le tir de venin, par l'action rapide de celui qui a reçu le sort ; s'il blesse, il empoisonne.
 function spitMissionVenom(unit,target){
-  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),cover:missionCoverLevel(unit,target,{shot:true}),
-    heightDiff:missionUnitHeight(unit)-missionUnitHeight(target)});
+  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),terrainDodge:missionTerrainDodge(unit,target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   unit.quickAvailable=false;
   const name=unit.character.name,foe=target.character.name;
@@ -4249,7 +4351,7 @@ function spitMissionVenom(unit,target){
     missionLog(name+" crache du venin sur "+foe+" : dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
     return out;
   }
-  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.cover?", couverture "+out.cover:"")+")";
+  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.terrainDodge?", Esquive du terrain "+(out.terrainDodge>0?"+":"")+out.terrainDodge:"")+")";
   if(!out.hit){ missionLog(name+" crache du venin sur "+foe+" : raté"+aim+".","miss"); return out; }
   const hit=missionElementalHit(target,"poison",out.amount,unit);
   missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+hit.damage+" PV de poison"+missionProtectionNote(hit)+".","damage");
@@ -4426,7 +4528,7 @@ function missionAiSpell(unit){
       }
       if(best){
         const moved=moveMissionUnitAlongPath(unit,best.path);
-        if(moved) missionLog(unit.character.name+" se place pour lancer "+spell.nom+" ("+moved+" hex).","move");
+        if(moved) missionLog(unit.character.name+" se place pour lancer "+spell.nom+" ("+missionCases(moved)+").","move");
         if(!unit.alive||game.mission.over) return true;
         target=missionAiSpellTarget(unit,code,spell,opponents);
       }
@@ -4666,11 +4768,15 @@ function enemyMoveToward(unit,target,{second=true}={}){
     enemyMoveToward(unit,target,{second:false});
     return;
   }
+  const ambushBefore=unit.aiAmbush||0;
   if(best.path.length) best.path=missionAiKeepFormation(unit,best.path);
   if(best.path.length){
     const moved=moveMissionUnitAlongPath(unit,best.path);
-    if(moved) missionLog(unit.character.name+" avance de "+moved+" hex.","move");
+    if(moved) missionLog(unit.character.name+" avance de "+missionCases(moved)+".","move");
   }
+  // Se cacher en embuscade (Idan, 2026-11-18 : « oui ») : celui qui s'arrête hors de vue pour attendre en embuscade prend
+  // « Se cacher » avec son action rapide, puisqu'il n'en fait rien d'autre.
+  if((unit.aiAmbush||0)>ambushBefore) missionHide(unit);
 }
 // IA commune, premier jet (Idan, 2026-11-07) : se regrouper et se cacher, avant le contact.
 // - Se regrouper : un combattant de mêlée n'avance pas à plus de combat.ai.cohesion_hexes cases devant le plus en retard
@@ -4695,7 +4801,7 @@ function missionAiKeepFormation(unit,path){
     out=out.slice(0,keep);
   }
   if(unit.camouflaged&&out.length&&(unit.aiAmbush||0)<missionAiConstant("combat.ai.ambush_turns",2)){
-    const seen=c=>foes.some(o=>missionLineOfSight(o,missionAt(unit,c)));
+    const seen=c=>foes.some(o=>missionLineOfSight(o,missionAt(unit,c),{units:false}));
     const end=out[out.length-1],strike=(Number(e.movementBase(unit))||0)+1;
     if(!seen({q:unit.q,r:unit.r})&&seen(end)&&cellDist(end)>strike){
       let keep=out.length;
@@ -4741,7 +4847,7 @@ function missionAiRetreat(unit){
   // Déjà au plus loin : il reste là (avant, il revenait au combat puis reculait, tour après tour).
   if(!best){ missionLog(ch.name+" reste en retrait pour souffler.","move"); return true; }
   const moved=moveMissionUnitAlongPath(unit,best.path);
-  if(moved) missionLog(ch.name+" recule de "+moved+" hex pour souffler.","move");
+  if(moved) missionLog(ch.name+" recule de "+missionCases(moved)+" pour souffler.","move");
   return moved>0;
 }
 
@@ -4757,15 +4863,17 @@ function enemyMoveToShoot(unit,target){
   for(const path of missionReachablePaths(unit,budget).values()){
     if(!path.length) continue;
     const end=path[path.length-1];
-    if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(end,target)) continue;
+    const there={...unit,q:end.q,r:end.r,facing:end.facing??unit.facing};
+    if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(there,target)) continue;
     const risk=missionPathOpportunityCount(unit,path);
-    // Se cacher (IA commune, Idan, 2026-11-07) : à risque égal, la case la mieux couverte face à sa cible.
-    const cover={totale:2,partielle:1}[missionCoverLevel(target,missionAt(unit,end),{shot:true})]||0;
+    // Se cacher (IA commune, Idan, 2026-11-07) : à risque égal, la case où le terrain lui donne le plus d'Esquive face à sa
+    // cible (grille carrée).
+    const cover=missionTerrainDodge(target,{...missionAt(unit,end),character:unit.character,team:unit.team});
     if(!best||risk<best.risk||(risk===best.risk&&cover>best.cover)) best={path,risk,cover};
   }
   if(!best) return false;
   const moved=moveMissionUnitAlongPath(unit,best.path);
-  if(moved) missionLog(unit.character.name+" se place pour tirer ("+moved+" hex).","move");
+  if(moved) missionLog(unit.character.name+" se place pour tirer ("+missionCases(moved)+").","move");
   return moved>0;
 }
 
@@ -5067,7 +5175,21 @@ function missionHeldModes(u){
 function missionUsableHands(u,target){
   const e=game.mission.engine;
   if(missionHiddenFrom(target,u)) return [];
-  return e.usableHands(u,e.axialDistance(u,target)).filter(h=>h.mode!=="ranged"||missionLineOfSight(u,target));
+  const distance=e.axialDistance(u,target);
+  // Au contact, pas de corps à corps à travers une palissade ou une meurtrière (grille carrée, doc 04) ; à 2 cases (arme
+  // d'hast, fouet), pas par-dessus un ennemi debout.
+  return e.usableHands(u,distance).filter(h=>h.mode==="ranged"?missionLineOfSight(u,target)
+    :distance===1?!e.meleeReach||e.meleeReach(u,target):distance!==2||missionReachOver(u,target));
+}
+// L'arme d'hast (doc 04, étape 3 : « elle frappe par-dessus un allié collé ou un personnage au sol, pas par-dessus un
+// ennemi ») : entre les deux, en ligne droite la case du milieu ; en diagonale, les deux cases du coin (bloqué si les deux le
+// sont). Pour une grande créature, rien ne change.
+function missionReachOver(u,target){
+  if(missionLarge(u)||missionLarge(target)) return true;
+  const dq=target.q-u.q,dr=target.r-u.r;
+  const between=dq===0||dr===0?[[{q:u.q+Math.sign(dq),r:u.r+Math.sign(dr)}]]:[[{q:u.q+dq,r:u.r}],[{q:u.q,r:u.r+dr}]];
+  const enemyAt=c=>missionUnits().some(x=>x.alive&&!x.offMap&&!x.prone&&x.team!==u.team&&x!==target&&missionOccupies(x,c.q,c.r));
+  return between.some(path=>!path.some(enemyAt));
 }
 function missionCanAttack(u,target,mode){
   return missionUsableHands(u,target).some(h=>h.mode===mode);
@@ -5079,7 +5201,7 @@ function missionCanAttack(u,target,mode){
 // les ennemis aussi). Il y passe à la place de son attaque, et son activation s'arrête là. Bonus : game-core/combat-engine.js
 // (SENTINEL).
 function missionUnseen(unit){
-  return Boolean(unit.camouflaged)||!missionOpponents(unit).some(o=>!o.offMap&&missionLineOfSight(o,unit));
+  return Boolean(unit.camouflaged)||!missionOpponents(unit).some(o=>!o.offMap&&missionLineOfSight(o,unit,{units:false}));
 }
 function missionCanStandSentinel(unit){
   return Boolean(unit?.alive&&!unit.fleeing&&unit.attackAvailable&&!unit.sentinel&&missionHeldModes(unit).has("ranged")&&missionUnseen(unit));
@@ -5155,6 +5277,7 @@ function missionActionAvailability(){
     mountMelee:Boolean(horse?.attackAvailable&&missionHeldModes(horse).has("melee")),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
+    hide:missionCanHide(u),
     secondMove:missionCanSecondMove(u),
     dismount:Boolean(horse)&&u.quickAvailable!==false&&missionDismountCells(u).length>0,
     remount:Boolean(missionRemountable(u)),
@@ -5338,8 +5461,8 @@ const MISSION_ZOOM={min:0.3,max:2.4,fitMax:1.3,step:1.2};
 const missionView={mission:null,scale:1,x:0,y:0,fitted:true,activeId:null,drag:null,dragged:false};
 
 function missionMapSize(){
-  return {width:Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+0.5)),
-    height:Math.ceil(88+1.5*MISSION_MAP.size*(MISSION_MAP.rows-1)+2*MISSION_MAP.size)};
+  return {width:Math.ceil(88+2*MISSION_MAP.size*MISSION_MAP.cols),
+    height:Math.ceil(88+2*MISSION_MAP.size*MISSION_MAP.rows)};
 }
 function missionStageSize(){
   const stage=$("mission-map").parentElement;
@@ -5466,20 +5589,23 @@ function renderMission(){
     :m.phase==="deploy"?"Déploiement · rapport de l’éclaireur":"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
   $("mission-actions")?.classList?.toggle("deploying",m.phase==="deploy"&&!m.over);
   $("mission-active").textContent=u
-    ?"Actif : "+u.character.name+" · Mouvement "+u.movementRemaining+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
+    ?"Actif : "+u.character.name+" · Mouvement "+missionPm(u.movementRemaining)+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
     :"";
 
   // Décor (Idan : « des couleurs pour commencer ») : une couche de cases colorées sous les cases cliquables.
   let decorTiles="";
   for(const d of m.decor||[]){
-    const row=missionDecorRow(d.code),p=missionHexPixel(d.q,d.r);
-    if(row) decorTiles+=`<span class="hex-decor${row.cout_mouvement==null?" blocking":""}" data-decor="${esc(row.code)}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px;--decor:${row.couleur}"></span>`;
-  }
-  // Altitude : une couche par-dessus le décor, un peu plus claire à chaque niveau, avec son chiffre.
-  let reliefTiles="";
-  for(const c of m.relief||[]){
-    const p=missionHexPixel(c.q,c.r);
-    reliefTiles+=`<span class="hex-relief" data-level="${c.h}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></span>`;
+    const p=missionHexPixel(d.q,d.r),s=MISSION_MAP.size;
+    if(missionIsEdge(d)){
+      const edge=missionGrid()?.edgeRow(d.code);
+      if(!edge) continue;
+      const side=((Number(d.side)||0)%4+4)%4,flat=side%2===1,color=missionDecorRow(d.code)?.couleur||edge.couleur;
+      const x=side===0?p.x+s:side===2?p.x-s:p.x,y=side===3?p.y+s:side===1?p.y-s:p.y;
+      decorTiles+=`<span class="grid-edge${flat?" flat":""}${edge.vue==="sens"?" one-way":""}" data-edge="${esc(edge.code)}" data-side="${side}" style="left:${x}px;top:${y}px;--edge:${color}"></span>`;
+      continue;
+    }
+    const row=missionDecorRow(d.code)||missionGrid()?.cellRow(d.code);
+    if(row) decorTiles+=`<span class="hex-decor${missionDecorBlocksMove(d.q,d.r)?" blocking":""}" data-decor="${esc(row.code)}" style="left:${p.x-s}px;top:${p.y-s}px;--decor:${row.couleur}"></span>`;
   }
   const zones=m.mode==="move"&&u?missionMoveZones(u):null;
   let cells="";
@@ -5488,8 +5614,7 @@ function renderMission(){
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"||m.phase==="deploy"?"reachable":missionSpellMode()?"spell-target":"targetable");
     else if(inRange.has(key)) classes.push("in-range");
-    const decor=missionDecorAt(q,r),level=missionHeightAt(q,r);
-    const about=[decor?missionDecorLabel(decor):"",level?"altitude "+level:""].filter(Boolean).join(" · ");
+    const about=missionCellLabel(q,r);
     if(about) title=` title="${esc(about.charAt(0).toUpperCase()+about.slice(1))}"`;
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
@@ -5565,7 +5690,7 @@ function renderMission(){
     startMissionCamera(turnUnit,from);
   }
   applyMissionView();
-  map.innerHTML=decorTiles+reliefTiles+cells+tokens;
+  map.innerHTML=decorTiles+cells+tokens;
   missionHover.key=null;
   $("mission-hover-card").classList.add("hidden");
   scheduleMissionFx();
@@ -5574,7 +5699,7 @@ function renderMission(){
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],["mission-mount-attack-btn","mountMelee"],
     ["mission-dismount-btn","dismount"],["mission-remount-btn","remount"],
-    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-hide-btn","hide"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -5586,7 +5711,7 @@ function renderMission(){
   $("mission-move-btn").classList.toggle("is-second",secondOnly);
   $("mission-move-btn").title=secondOnly?"Renoncer à l’attaque pour un second mouvement":"";
   $("mission-charge-btn").title=availability.chargeNone
-    ?`Personne à charger : il faut une course de ${e.movementBase(u)} à ${2*e.movementBase(u)} cases en ligne droite, sans personne ni obstacle`:"";
+    ?`Personne à charger : il faut une course de ${e.movementBase(u)} à ${2*e.movementBase(u)} cases, tout droit ou en biais, sans personne ni obstacle`:"";
   // « Attaquer à deux mains » : seulement avec une arme « Au choix » tenue seule.
   const twoHandsBtn=$("mission-two-hands-btn");
   if(twoHandsBtn){
@@ -5784,11 +5909,10 @@ function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden,from=
   return hands.map(h=>e.withHand(u,h.hand,()=>{
     const item=e.activeWeaponItem(u),weapon=e.weaponTemplate(item);
     const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
-    const cover=h.mode==="ranged"?missionCoverLevel(u,target,{shot:true}):charge&&h.mode==="melee"?charge.cover:null;
-    const heightDiff=missionHeightAt(from.q,from.r)-missionUnitHeight(target);
+    const terrainDodge=h.mode==="ranged"?missionTerrainDodge(from,target):charge&&h.mode==="melee"?charge.dodge||0:0;
     // Charge aérienne (doc 04) : Toucher, Blesser et dégâts × 1,2.
     const factor=charge?.aerial&&h.mode==="melee"?Number(e.AERIAL?.bonus)||1:1;
-    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,heightDiff,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover,heightDiff,factor}),
+    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,terrainDodge,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,terrainDodge,factor}),
       ...(factor!==1?{aerial:true}:{})};
     if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
     if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
@@ -5832,8 +5956,7 @@ function renderMissionHoverCard(q,r){
         +(row.approach?`<dt>Approche</dt><dd>${row.approach.steps} case${row.approach.steps>1?"s":""}</dd>`
           +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
-        +(row.cover?`<dt>Couverture</dt><dd>${row.cover}</dd>`:"")
-        +(row.heightDiff?`<dt>Hauteur</dt><dd>${row.heightDiff>0?"d’en haut":"vers le haut"}${Math.abs(row.heightDiff)>1?` (${Math.abs(row.heightDiff)} niveaux)`:""}</dd>`:"")
+        +(row.terrainDodge?`<dt>Esquive du terrain</dt><dd>${row.terrainDodge>0?"+":""}${row.terrainDodge}</dd>`:"")
         +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
         +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
         +(row.pBlock!==undefined?`<dt>Bouclier</dt><dd>${Math.round(row.pBlock)} % de blocage</dd>`:"")
@@ -5874,9 +5997,9 @@ function missionSpellPreviewRows(u,code,q,r){
   const target=s.cible==="soi"?u:unit,foe=target&&target.team!==u.team?target:null;
   const rows=[`<dt>Réussite</dt>${missionOdds(magic.castChance(u,code).p)}`,`<dt>Coût</dt><dd>${magic.manaCost(u,code)} mana</dd>`];
   if(s.toucher==="distance"&&foe){
-    const cover=missionCoverLevel(u,foe,{shot:true}),heightDiff=missionUnitHeight(u)-missionUnitHeight(foe);
-    if(cover) rows.push(`<dt>Couverture</dt><dd>${cover}</dd>`);
-    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{cover,heightDiff}))}`);
+    const terrainDodge=missionTerrainDodge(u,foe);
+    if(terrainDodge) rows.push(`<dt>Esquive du terrain</dt><dd>${terrainDodge>0?"+":""}${terrainDodge}</dd>`);
+    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{terrainDodge}))}`);
   }
   if(s.deviation_max) rows.push(`<dt>Précision</dt>${missionOdds(magic.precisionChance(u,code,e.axialDistance(u,{q,r})))}`);
   const range=magic.effectRange(u,code);
@@ -6023,6 +6146,7 @@ function initializeMissionUi(){
   $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
   $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
+  $("mission-hide-btn").addEventListener("click",hideMissionUnit);
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-auto-btn").addEventListener("click",autoResolveMission);

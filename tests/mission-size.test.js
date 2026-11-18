@@ -29,9 +29,10 @@ const key = c => c.q + "," + c.r;
 const keys = cells => cells.map(key).sort();
 assert.deepEqual(engine.footprintAt(0, 0, "normale").length, 1);
 assert.deepEqual(keys(engine.footprintAt(5, 5, "longue", 0)), keys([{q: 5, r: 5}, {q: 4, r: 5}]), "longue : la tête et le corps derrière elle");
-assert.deepEqual(keys(engine.footprintAt(5, 5, "grande", 0)), keys([{q: 5, r: 5}, {q: 6, r: 5}, {q: 6, r: 4}]), "grande : un triangle");
-assert.equal(engine.footprintAt(5, 5, "enorme").length, 7, "énorme : une case et son anneau");
-for (const size of ["longue", "grande", "enorme"]) for (let f = 0; f < 6; f++) {
+// Cases carrées (doc 04 : « cheval 1×2 », « cerbère 2×2 », énorme 3×3).
+assert.deepEqual(keys(engine.footprintAt(5, 5, "grande", 0)), keys([{q: 5, r: 5}, {q: 5, r: 4}, {q: 4, r: 5}, {q: 4, r: 4}]), "grande : 2×2");
+assert.equal(engine.footprintAt(5, 5, "enorme").length, 9, "énorme : 3×3");
+for (const size of ["longue", "grande", "enorme"]) for (let f = 0; f < 4; f++) {
   const cells = engine.footprintAt(5, 5, size, f);
   assert.equal(new Set(cells.map(key)).size, cells.length);
   assert.ok(cells.every(c => cells.some(o => o !== c && engine.hexDistance(o, c) === 1)), size + " : des cases voisines");
@@ -58,25 +59,25 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "MercenairesMissionTerrain", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,"
-  + "selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,"
+  + "selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionGridMap,"
   + "missionReachablePaths,missionPathCost,moveMissionUnitAlongPath,missionCellFree,missionUnitAtCell,missionLineOfSight,"
   + "missionForcedMove,fitMissionLarge,enemyMissionAct,missionFootprint,missionExitPath};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic, Terrain, () => rules);
 api.setMissionMapSize({cols: 20, rows: 11});
 const troll = () => rules.applyArchetype(generator.createMercenary({id: ++uid, captain, forcedPeople: "Ogre", forcedCulture: "Ogres des montagnes"}),
   rules.archetype("troll"), {idPrefix: "t" + uid, name: "Troll géant"});
-function newMission(size, mercs = 2, {decor = [], relief = []} = {}) {
+function newMission(size, mercs = 2, {decor = []} = {}) {
   const t = troll(); t.taille = size;
   const squad = Array.from({length: mercs}, () => generator.createMercenary({id: ++uid, captain}));
   const players = api.placeMissionArmy(squad.map((c, i) => api.makeMissionUnit(c, "player", i % 3)), "player");
   const enemies = api.placeMissionArmy([api.makeMissionUnit(t, "enemy", 0)], "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor, relief};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor};
   for (const u of [...players, ...enemies]) u.camouflaged = false;
   return game.mission;
 }
@@ -85,7 +86,7 @@ function newMission(size, mercs = 2, {decor = [], relief = []} = {}) {
 let m = newMission("enorme");
 let beast = m.enemies[0];
 const cells = api.missionFootprint(beast);
-assert.equal(cells.length, 7);
+assert.equal(cells.length, 9, "3×3");
 assert.ok(cells.every(c => !api.missionCellFree(c) && api.missionUnitAtCell(c.q, c.r) === beast));
 // Placement : toute l'empreinte dans la carte.
 assert.ok(cells.every(c => c.r >= 0 && c.r < 11), "dans la carte");
@@ -101,33 +102,33 @@ assert.equal(combat.axialDistance(merc, beast), touching ? 1 : 2);
 api.setMissionMapSize({cols: 20, rows: 11});
 const wallCol = 10, gapRow = 5;
 const wall = [];
-for (let r = 0; r < 11; r++) if (r !== gapRow) wall.push({q: wallCol - Math.floor(r / 2), r, code: "mur"});
+for (let r = 0; r < 11; r++) if (r !== gapRow) wall.push({q: wallCol, r, code: "mur"});
 m = newMission("enorme", 1, {decor: wall});
 beast = m.enemies[0];
-const east = {q: 15 - Math.floor(gapRow / 2), r: gapRow}, west = {q: 4 - Math.floor(gapRow / 2), r: gapRow};
+const east = {q: 15, r: gapRow}, west = {q: 4, r: gapRow};
 beast.q = east.q; beast.r = east.r;
 const walker = m.players[0];
 walker.q = east.q - 1 + 4; walker.r = gapRow - 3;
 const far = new Map(api.missionReachablePaths(beast, 40));
-assert.ok(![...far.keys()].some(k => Number(k.split(",")[0]) + Math.floor(Number(k.split(",")[1]) / 2) < wallCol - 1), "l'énorme ne passe pas le couloir");
+assert.ok(![...far.keys()].some(k => Number(k.split(",")[0]) < wallCol - 1), "l'énorme ne passe pas le couloir");
 walker.q = east.q; walker.r = east.r + 2;
 beast.q = east.q + 2; beast.r = gapRow - 3;
 const path1 = api.missionReachablePaths(walker, 40);
-assert.ok(path1.has(key(west)) || [...path1.keys()].some(k => Number(k.split(",")[0]) + Math.floor(Number(k.split(",")[1]) / 2) < wallCol - 1), "le mercenaire passe");
+assert.ok(path1.has(key(west)) || [...path1.keys()].some(k => Number(k.split(",")[0]) < wallCol - 1), "le mercenaire passe");
 
 // Un marais sous une seule de ses cases : le pas coûte la case la plus lente.
 m = newMission("enorme", 1, {decor: [{q: 9, r: 5, code: "marais"}]});
 beast = m.enemies[0];
 beast.q = 9; beast.r = 4;
 const step = [{q: 9, r: 4}];
-const marsh = reference.terrainDecors.rows.find(d => d.code === "marais").cout_mouvement;
+const marsh = reference.combatCells.rows.find(c => c.code === "boue").pm; // le marais dessine de la boue (grille carrée)
 beast.q = 10; beast.r = 4;
 assert.equal(api.missionPathCost([{q: 9, r: 4}], beast), marsh, "la case la plus lente qu'elle couvre");
 
 // Longue (une monture) : le corps suit la tête, son sens suit le pas.
 m = newMission("longue", 1);
 beast = m.enemies[0];
-beast.q = 10; beast.r = 5; beast.facing = 3;
+beast.q = 10; beast.r = 5; beast.facing = 2; // vers l'ouest : le corps à l'est
 const before = keys(api.missionFootprint(beast));
 const reach = api.missionReachablePaths(beast, 3);
 const up = reach.get(key({q: 10, r: 4}));
@@ -135,14 +136,14 @@ assert.ok(up, "un pas vers le haut");
 beast.movementRemaining = 5;
 api.moveMissionUnitAlongPath(beast, up);
 assert.deepEqual(keys(api.missionFootprint(beast)), keys([{q: 10, r: 4}, {q: 10, r: 5}]), "le corps prend la place de la tête");
-assert.equal(beast.facing, 2);
+assert.equal(beast.facing, 1, "vers le nord");
 assert.notDeepEqual(before, keys(api.missionFootprint(beast)));
 
-// Grande (un triangle) : il tourne pour passer.
+// Grande (2×2) : elle tourne pour passer.
 m = newMission("grande", 1);
 beast = m.enemies[0];
 beast.q = 10; beast.r = 5; beast.facing = 0;
-assert.ok(api.missionReachablePaths(beast, 6).size > 10, "le triangle se déplace");
+assert.ok(api.missionReachablePaths(beast, 6).size > 10, "le 2×2 se déplace");
 
 // Zone : une boule de feu qui touche une case de l'anneau le touche, une seule fois.
 m = newMission("enorme", 1);
@@ -170,7 +171,7 @@ m = newMission("enorme", 1);
 beast = m.enemies[0];
 const exit = api.missionExitPath(beast, 40, m.players);
 assert.ok(exit && api.missionFootprint({...beast, q: exit.at(-1).q, r: exit.at(-1).r, facing: beast.facing}).some(c => c.r === 0 || c.r === 10
-  || c.q + Math.floor(c.r / 2) === 0 || c.q + Math.floor(c.r / 2) === 19), "une sortie");
+  || c.q === 0 || c.q === 19), "une sortie");
 
 // Plus facile à toucher : la même attaque, le même défenseur, en plus grand.
 const shooter = {character: generator.createMercenary({id: ++uid, captain}), activeSet: 1, q: 0, r: 0};

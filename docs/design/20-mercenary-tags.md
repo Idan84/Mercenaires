@@ -184,8 +184,9 @@ c'est pas utile en mission ? »).
   bas (4 dans le rôle : personne d'écarté ; 10 : les 2 derniers). « Ton seul soigneur, même médiocre, part toujours. »
 - **Camps et chasses** : l'intendant relève, dans les fiches des ennemis de chaque type de mission, les traits qui
   distinguent ce camp des autres (plus fréquents que la moyenne des camps), puis cherche qui a la réponse (Idan,
-  2026-11-16, avec les pégases : la moyenne est celle de tous les types de mission, chasses comprises ; la Cour de sang, une
-  fiche volante sur sept, n'est plus signalée pour le vol, « Accepter »). Table générique
+  2026-11-16, avec les pégases : la moyenne est celle de tous les types de mission, chasses comprises, « Accepter » ;
+  la Cour de sang, une fiche volante sur sept, est donc signalée pour le vol ou non selon cette moyenne, qui bouge avec
+  chaque bête ajoutée : plus avec les pégases, de nouveau avec le tricératops, 2026-11-17). Table générique
   trait → réponse : mort-vivant → Anti morts-vivants (Démoralisateur inutile) ; insensible au poison → Poison inutile ;
   encaisse mal ou bien un type de dégâts → ce type (× > 1), pas celui (× < 1) ; immunité physique → Magie ; vol → À
   distance ; régénération → Anti-soins ; cavaliers → armes d'hast et armes de tir (elles arrêtent les charges) ; lanceurs de

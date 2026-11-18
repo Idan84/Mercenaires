@@ -270,8 +270,8 @@
     // Toucher d'un sort « comme une flèche » (Trait de feu ; Idan, 2026-10-25 : « les mêmes règles que pour l'arc ») :
     // la formule de tir, la Maîtrise du sort à la place des compétences d'arme (catégorie et arme), la portée du sort pour
     // la perte avec la distance (au-delà du quart de la portée). over : {mastery, reach} pour un tir accordé par un sort
-    // (Crachat de venin : la Maîtrise du lanceur, la portée de la sarbacane). over.cover : la couverture de la cible
-    // (décor, doc 04 ; Idan, 2026-11-06 : « oui pour les sorts qui volent »), « partielle » ou « totale » ; over.heightDiff :
+    // (Crachat de venin : la Maîtrise du lanceur, la portée de la sarbacane). over.terrainDodge : l'Esquive du terrain de
+    // la cible (sa case et son arête ; grille carrée, doc 04 : « oui pour les sorts qui volent ») ; over.heightDiff :
     // hauteur du lanceur − hauteur de la cible (altitude, comme un tir).
     function hitChance(caster,target,code,over={}){
       const reach=over.reach??range(caster,code),distance=combat.axialDistance(caster,target),m=over.mastery??mastery(caster,code);
@@ -286,38 +286,38 @@
       delta+=(combat.ALTITUDE?.hitPerLevel??10)*(Number(over.heightDiff)||0);
       // Une grande créature est plus facile à toucher (combat-engine.js, sizeHitBonus).
       if(typeof combat.sizeHitBonus==="function") delta+=combat.sizeHitBonus(target);
-      const cover=over.cover&&typeof combat.coverHitFactor==="function"?combat.coverHitFactor(over.cover):1;
-      return clamp(10+80/(1+Math.exp(-delta/20)),10,90)*cover;
+      // L'Esquive du terrain de la cible (grille carrée, doc 04 : elle compte contre les sorts qui volent comme une flèche).
+      delta-=Number(over.terrainDodge)||0;
+      return clamp(10+80/(1+Math.exp(-delta/20)),10,90);
     }
     // Précision d'une zone (Boule de feu) : base + part × Maîtrise − perte × distance, de 10 à 95 %.
     function precisionChance(caster,code,distance){
       const s=spell(code);
       return clamp(num(s?.precision_base,100)+num(s?.precision_part_maitrise,0)*mastery(caster,code)-num(s?.precision_par_case,0)*distance,10,95);
     }
-    const HEX_DIRECTIONS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
-    const cartesian=h=>({x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r});
+    // Cases carrées (doc 04) : les 4 directions (est, nord, ouest, sud) ; q = la colonne, r = la ligne.
+    const HEX_DIRECTIONS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+    const cartesian=h=>({x:h.q,y:h.r});
     // Ligne (Tsunami) : de la case visée, voisine du lanceur, droit devant sur length cases.
     function lineCells(caster,target,length){
       const dir={q:target.q-caster.q,r:target.r-caster.r};
       return Array.from({length},(_,k)=>({q:target.q+dir.q*k,r:target.r+dir.r*k}));
     }
-    // Cône (Souffle ardent ; Idan, 2026-10-31, chiffres de JC3) : du lanceur vers la case voisine visée, toutes les cases à
-    // length cases au plus dont la direction s'écarte de 30° au plus de l'axe : 1 case, puis 3, puis 3.
+    // Cône (Souffle ardent ; Idan, 2026-10-31, chiffres de JC3 : 1 case, puis 3, puis 3) : du lanceur vers la case voisine
+    // visée, droit devant sur length cases ; la première rangée fait 1 case, les suivantes 3 (cases carrées : « les cônes
+    // seulement en ligne droite »).
     function coneCells(caster,target,length){
-      const a=cartesian(caster),b=cartesian(target),vx=b.x-a.x,vy=b.y-a.y,norm=Math.hypot(vx,vy)||1,cells=[];
-      for(let dq=-length;dq<=length;dq++) for(let dr=Math.max(-length,-dq-length);dr<=Math.min(length,-dq+length);dr++){
-        if(!dq&&!dr) continue;
-        const c=cartesian({q:dq,r:dr}),cos=(c.x*vx+c.y*vy)/(Math.hypot(c.x,c.y)*norm);
-        if(cos>=Math.cos(Math.PI/6)-1e-9) cells.push({q:caster.q+dq,r:caster.r+dr});
-      }
-      return cells.sort((x,y)=>combat.axialDistance(caster,x)-combat.axialDistance(caster,y));
+      const dir={q:Math.sign(target.q-caster.q),r:Math.sign(target.r-caster.r)},side={q:-dir.r,r:dir.q},cells=[];
+      for(let k=1;k<=length;k++) for(let o=k===1?0:-1;o<=(k===1?0:1);o++)
+        cells.push({q:caster.q+dir.q*k+side.q*o,r:caster.r+dir.r*k+side.r*o});
+      return cells;
     }
     // Mur (Brouillard) : length cases centrées sur la case visée, le long de l'axe de la grille le plus en travers de la
     // direction du lanceur (sur sa propre case : le premier axe).
     function wallCells(caster,center,length){
       const a=cartesian(caster),b=cartesian(center),vx=b.x-a.x,vy=b.y-a.y,norm=Math.hypot(vx,vy)||1;
       const across=d=>{ const c=cartesian(d); return Math.abs((c.x*vx+c.y*vy)/(Math.hypot(c.x,c.y)*norm)); };
-      const axis=HEX_DIRECTIONS.slice(0,3).reduce((best,d)=>across(d)<across(best)-1e-9?d:best);
+      const axis=HEX_DIRECTIONS.slice(0,2).reduce((best,d)=>across(d)<across(best)-1e-9?d:best);
       const from=-Math.floor((length-1)/2);
       return Array.from({length},(_,k)=>({q:center.q+axis.q*(from+k),r:center.r+axis.r*(from+k)}));
     }
@@ -433,14 +433,14 @@
     // amount : PV soignés ou dégâts ; zone : {center, radius} ; effect : la Régénération à poser sur la cible.
     // Toucher « comme une flèche » : le trait touche la cible, ou part dans la ligne de tir et peut toucher quelqu'un
     // d'autre (approximation des projectiles : P = toucher × 0,35, puis × 0,5 pour chaque candidat suivant).
-    function resolveSpellHit(caster,target,code,result,units,cover=null,heightDiff=0){
+    function resolveSpellHit(caster,target,code,result,units,terrainDodge=0,heightDiff=0){
       const shield=deflection(target);
       if(shield?.deflected){
         Object.assign(result,{deflected:true,pDeflect:shield.p,deflectRoll:shield.roll,hit:false,victim:null});
         return;
       }
-      const p=hitChance(caster,target,code,{cover,heightDiff}),hitRoll=d100();
-      Object.assign(result,{pHit:p,hitRoll,hit:hitRoll<=p,victim:hitRoll<=p?target:null,...(cover?{cover}:{})});
+      const p=hitChance(caster,target,code,{terrainDodge,heightDiff}),hitRoll=d100();
+      Object.assign(result,{pHit:p,hitRoll,hit:hitRoll<=p,victim:hitRoll<=p?target:null,...(terrainDodge?{terrainDodge}:{})});
       if(result.hit) return;
       const tries=[];
       let factor=combat.STRAY?.initial??0.35;
@@ -606,14 +606,14 @@
             const distance=combat.axialDistance(caster,aimed),p=precisionChance(caster,code,distance),precisionRoll=d100();
             precision={p,roll:precisionRoll,ok:precisionRoll<=p};
             if(!precision.ok){
-              const steps=die(num(s.deviation_max,1)),dir=HEX_DIRECTIONS[die(6)-1];
+              const steps=die(num(s.deviation_max,1)),dir=HEX_DIRECTIONS[die(4)-1];
               center={q:aimed.q+dir.q*steps,r:aimed.r+dir.r*steps};
               precision.deviation=steps;
             }
           }
           result.zone={center,aimed,radius,minDistance:num(s.zone_anneau_min,0),degressive:Boolean(s.zone_degressive),precision};
         }
-        if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[],options.cover||null,options.heightDiff||0);
+        if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[],Number(options.terrainDodge)||0,options.heightDiff||0);
         if(s.effet==="degats_rebonds") result.chain=chainTargets(caster,target,code,options.units||[]);
         if(s.effet==="degats_paire") result.second=options.second;
         // Dégâts physiques : l'écran de combat les fait passer par l'armure (combat.spellPhysicalHit).
@@ -653,9 +653,9 @@
       if(!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
       return {ok:true,distance};
     }
-    function spitChance(unit,target,cover=null,heightDiff=0){
+    function spitChance(unit,target,terrainDodge=0,heightDiff=0){
       const fx=unit.venom;
-      return hitChance(unit,target,fx.code,{mastery:fx.mastery,reach:fx.max,cover,heightDiff});
+      return hitChance(unit,target,fx.code,{mastery:fx.mastery,reach:fx.max,terrainDodge,heightDiff});
     }
     // Le tir : toucher comme un trait ; 1D4 de poison × la Puissance du lanceur ; s'il blesse, l'écran de combat empoisonne
     // la cible (poison : turns tours, le minimum du venin à chaque fois).
@@ -664,8 +664,8 @@
       if(!check.ok) return check;
       const fx=unit.venom,s=spell(fx.code),shield=deflection(target);
       if(shield?.deflected) return {ok:true,code:fx.code,element:fx.element,distance:check.distance,deflected:true,pDeflect:shield.p,deflectRoll:shield.roll,hit:false,dice:0,amount:0};
-      const pHit=spitChance(unit,target,options.cover||null,options.heightDiff||0),hitRoll=d100();
-      const result={ok:true,code:fx.code,element:fx.element,distance:check.distance,pHit,hitRoll,hit:hitRoll<=pHit,dice:0,amount:0,...(options.cover?{cover:options.cover}:{})};
+      const pHit=spitChance(unit,target,Number(options.terrainDodge)||0,options.heightDiff||0),hitRoll=d100();
+      const result={ok:true,code:fx.code,element:fx.element,distance:check.distance,pHit,hitRoll,hit:hitRoll<=pHit,dice:0,amount:0,...(options.terrainDodge?{terrainDodge:options.terrainDodge}:{})};
       if(result.hit){
         result.dice=rollDice(fx.code);
         result.amount=Math.ceil(num(s?.effet_base,10)*result.dice*fx.factor-1e-9);

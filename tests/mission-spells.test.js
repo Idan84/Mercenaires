@@ -421,7 +421,8 @@ for(const p of m.players) p.character.skills.magic.Eau=60;
 const wet=m.enemies[1],distant=m.enemies[2];
 // Le reste de l'escouade et des ennemis loin de la scène, pour que les cases utilisées soient libres.
 for(const x of [...m.players,...m.enemies]) if(![u,ally,wet,distant].includes(x)){ x.q=-50;x.r=-50; }
-u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=3;wet.r=4;distant.q=6;distant.r=4;
+// L’ennemi voisin au nord, hors de la ligne : un ennemi cache ce qui est derrière lui (doc 04, étape 3).
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=2;wet.r=3;distant.q=6;distant.r=4;
 for(const x of [ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false; }
 // Brouillard : un rideau de 5 cases en travers, devant le lanceur ; plus de ligne de vue à travers, ni tir, ni sort.
 reset();
@@ -456,7 +457,7 @@ assert.ok(logged(/Le brouillard se dissipe/));
 assert.equal(api.missionLineOfSight(u,distant),true);
 // Tsunami : une ligne de 3 + 1 cases depuis la case voisine ; l'ennemi voisin et celui du bout de la ligne sont frappés.
 reset();
-distant.q=5;distant.r=4;
+wet.q=3;wet.r=4;distant.q=5;distant.r=4;
 api.setMissionMode("spell:tsunami");
 cells=api.targetableMissionCells();
 assert.ok(cells.has(api.missionKey(3,4))&&!cells.has(api.missionKey(2,4))&&!cells.has(api.missionKey(5,4)),"seulement les cases voisines");
@@ -620,7 +621,7 @@ api.handleMissionHexClick(ally.q,ally.r);
 assert.ok(ally.hp>burnt);
 // Crachat de venin sur soi : le tir sert à la prochaine activation (l'action rapide vient d'être prise).
 reset();
-wet.q=u.q+3;wet.r=u.r;wet.hp=wet.pvMax;
+wet.q=u.q+3;wet.r=u.r;wet.hp=wet.pvMax;distant.q=u.q+4;distant.r=u.r+2;
 api.setMissionMode("spell:venom_spit");
 queue.push(0);
 api.handleMissionHexClick(u.q,u.r);
@@ -790,6 +791,8 @@ assert.ok(wet.hp<wet.pvMax&&distant.hp<distant.pvMax,"les deux sont sur l'arc");
 assert.equal(ally.hp,ally.pvMax,"l'allié, à côté, est épargné");
 assert.ok(logged(/lance Arc électrique \(ligne de 6 cases\).* PV de foudre pour chacun/));
 // Paralysie : la cible perd sa prochaine activation, sauf si D100 ≤ sa résistance (Constitution + protection − 30).
+// L’ennemi voisin s’écarte de la ligne : un ennemi cache ce qui est derrière lui (doc 04, étape 3).
+wet.q=3;wet.r=3;
 reset();
 api.setMissionMode("spell:paralysis");
 assert.ok(api.targetableMissionCells().has(api.missionKey(distant.q,distant.r)),"portée 6 + 2");
@@ -869,7 +872,8 @@ assert.ok(logged(/lance Déplacement sur .* est déplacée? d’une case/));
 assert.equal(u.quickAvailable,false);
 // Entrechoc : un ennemi, puis son voisin ; les deux sont frappés.
 reset();
-wet.q=5;wet.r=4;wet.hp=wet.pvMax;distant.hp=distant.pvMax;
+// Le voisin au nord de la première cible, pas derrière elle : un ennemi cache ce qui est derrière lui (doc 04, étape 3).
+wet.q=4;wet.r=3;wet.hp=wet.pvMax;distant.hp=distant.pvMax;
 api.setMissionMode("spell:clash");
 api.handleMissionHexClick(distant.q,distant.r);
 cells=api.targetableMissionCells();
@@ -878,6 +882,7 @@ queue.push(0,0.99,0.5,0.5,0,0,0,0);
 api.handleMissionHexClick(wet.q,wet.r);
 assert.ok(distant.hp<distant.pvMax&&wet.hp<wet.pvMax);
 assert.ok(logged(/lance Entrechoc sur .* et .* — .* PV contondants .* ; .* PV contondants/));
+assert.deepEqual([u.quickAvailable,u.attackAvailable],[false,true],"Entrechoc : action rapide (Idan, 2026-11-17)");
 // Lancer de pierre : un tir de fronde, pas au contact.
 reset();
 wet.hp=wet.pvMax;
@@ -1128,7 +1133,8 @@ for(const x of [u,ally,wet,distant]){ x.statBuffs=null;x.mindFog=null;x.asleep=n
 const charisma50=p=>{ p.character.stats.Charisme=50; const g=engine.statWithGear(p,"Charisme"); if(g!==50) p.character.stats.Charisme=2500/g; };
 for(const p of m.players){ p.character.skills.magic["Nécromancie"]=60; charisma50(p); }
 for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false;x.frenzy=null;x.statBuffs=null;x.regeneration=null; }
-u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=3;wet.r=4;distant.q=6;distant.r=4;
+// L’ennemi voisin au nord, hors de la ligne : un ennemi cache ce qui est derrière lui (doc 04, étape 3).
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=2;wet.r=3;distant.q=6;distant.r=4;
 assert.equal(magic.holdChance(u,"summon_specter").toFixed(1),"81.7");
 assert.equal(magic.upkeepCost(u,"summon_specter"),4);
 assert.equal(magic.zombieShare(u,"raise_dead"),55.25);
@@ -1421,7 +1427,8 @@ api.pruneMissionTerrain();
 assert.ok(logged(/Le bourbier sèche/));
 // Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
 // Nuée d'insectes : rayon 3, 2 tours ; les ennemis dedans perdent 32 % de Perception et de Dextérité, pas les alliés.
-caller.q=2;caller.r=4;f3.q=4;f3.r=4;f2.q=10;f2.r=4;
+// f3 hors de la ligne vers la case visée : un ennemi cache ce qui est derrière lui (doc 04, étape 3).
+caller.q=2;caller.r=4;f3.q=4;f3.r=3;f2.q=10;f2.r=4;
 for(const x of [caller,f2,f3]) x.statBuffs=null;
 recharge();
 const sharpBefore=engine.statWithGear(f3,"Perception");

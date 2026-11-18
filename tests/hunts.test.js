@@ -45,7 +45,7 @@ for (const def of [wolves, unicorns]) {
 
 // 2. Le tirage : renommée ± 2, les bêtes, la marche, la récompense.
 const renown = 0, base = rules.renownLevel(renown);
-const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0, hunt_boars: 0, hunt_pegasus: 0, hunt_mammoths: 0};
+const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0, hunt_boars: 0, hunt_pegasus: 0, hunt_mammoths: 0, hunt_triceratops: 0};
 for (let i = 0; i < 1000; i++) {
   const offer = rules.createHunt({day: 1, renown});
   seen[offer.code]++;
@@ -68,6 +68,7 @@ assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs", "hunt_butterflies", 
 assert.equal(seen.hunt_cerberus, 0, "pas de cerbère avant le niveau 6");
 assert.equal(seen.hunt_pegasus, 0, "pas de pégase avant 3★");
 assert.equal(seen.hunt_mammoths, 0, "pas de mammouth avant 6★");
+assert.equal(seen.hunt_triceratops, 0, "pas de tricératops avant 7★");
 // Le cerbère (dès le niveau 6) et les chiens sauvages (jusqu'à 6 : « au dessus elle n'est pas proposée ») ; Idan, 2026-11-09.
 const cerberus = rules.definition("hunt_cerberus"), dogs = rules.definition("hunt_wild_dogs");
 assert.deepEqual([cerberus.bete.code, cerberus.bete.des, cerberus.bete.faces, cerberus.niveau.min], ["cerbere", 1, 3, 6]);
@@ -95,6 +96,12 @@ const mammoths = rules.definition("hunt_mammoths");
 assert.deepEqual([mammoths.bete.code, mammoths.bete.nom, mammoths.bete.des, mammoths.bete.faces, mammoths.bete.faction, mammoths.niveau.min], ["mammouth", "Mammouth", 1, 2, "Mammouths", 6]);
 assert.ok(!kinds(5).has("hunt_mammoths") && kinds(6).has("hunt_mammoths") && kinds(15).has("hunt_mammoths"), "le mammouth dès 6★");
 assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_mammoths").length, 2, "hunt_mammoths : deux lettres");
+// Le tricératops (Idan, 2026-11-17 : « Chasse : à partir de 7* » ; 1D2 par étoile) : deux lettres.
+const trikes = rules.definition("hunt_triceratops");
+assert.deepEqual([trikes.bete.code, trikes.bete.des, trikes.bete.faces, trikes.bete.faction, trikes.niveau.min], ["triceratops", 1, 2, "Tricératops", 7]);
+assert.ok(!kinds(6).has("hunt_triceratops") && kinds(7).has("hunt_triceratops"), "le tricératops dès 7★");
+assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === "hunt_triceratops").length, 2, "hunt_triceratops : deux lettres");
+assert.equal(rules.placePhrases("Jungle des trois cornes", "Brume").au, "à la jungle des trois cornes de Brume");
 // Le lieu avec son article (Idan, 2026-11-16 : « le vallée des défenses » corrigé) : féminin, pluriel, élision, masculin.
 assert.deepEqual(rules.placePhrases("Vallée des défenses", "Mornecombe"),
   {le: "la vallée des défenses de Mornecombe", au: "à la vallée des défenses de Mornecombe", du: "de la vallée des défenses de Mornecombe"});
@@ -162,11 +169,11 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: state, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, gridMap: () => api.missionGridMap()});
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,setMissionMapSize,"
-  + "placeMissionArmy,missionUnitHeight,selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,missionCapturedMounts,"
+  + "placeMissionArmy,missionGridMap,selectNextMissionPlayer,startMissionCamouflage,autoResolveMission,missionCapturedMounts,"
   + "contractResultLines};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => rules, () => campaign);
@@ -181,7 +188,7 @@ for (const code of ["hunt_wolves", "hunt_wolves", "hunt_unicorn", "hunt_unicorn"
   const enemies = api.placeMissionArmy(rules.buildEnemies(o).map((c, i) => api.makeMissionUnit(c, "enemy", i % 3)), "enemy");
   game.mission = {engine: combat, endRules: MissionEnd.createMissionEndRules({reference}), progression: Progression.createProgressionRules({reference}),
     players, enemies, playerOrder: api.sortMissionInitiative(players, combat), enemyOrder: api.sortMissionInitiative(enemies, combat),
-    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], relief: [], contract: o};
+    activeUnit: null, phase: "player", turn: 1, mode: null, log: [], over: false, winner: null, aftermath: null, decor: [], contract: o};
   api.startMissionCamouflage(); api.selectNextMissionPlayer(); api.autoResolveMission();
   if (game.mission.over) over++;
   if (game.mission.winner === "player") { wins++; game.campaign = state; captured += api.missionCapturedMounts(game.mission).length; game.campaign = null; }

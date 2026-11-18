@@ -58,10 +58,19 @@ assert.equal(placeAmong([],3),0);
 const types=steward.missionTypes({},3);
 const traitsOf=faction=>types.find(t=>t.faction===faction)?.traits.map(t=>t.code)||[];
 assert.ok(traitsOf("Culte des morts").includes("mort_vivant"),"le Culte des morts : des morts-vivants");
-// Le vol (Idan, 2026-11-16, avec les pégases : « Accepter ») : papillons et pégases volent tous ; la Cour de sang, une fiche
-// sur sept (les chauves-souris), passe sous la moyenne des missions : l'intendant ne la signale plus.
+// Le vol (Idan, 2026-11-16, avec les pégases : « Accepter » la moyenne de tous les types de mission) : papillons et
+// pégases volent tous ; la Cour de sang (une fiche sur sept, les chauves-souris) n'est signalée que si elle dépasse la
+// moyenne, qui bouge avec chaque bête ajoutée (sous elle avec les pégases, au-dessus avec le tricératops).
 assert.ok(["Papillons","Pégases"].every(f=>traitsOf(f).includes("vol")),"papillons et pégases : des bêtes qui volent");
-assert.ok(!traitsOf("Cour de sang").includes("vol"),"la Cour de sang : trop peu de chauves-souris");
+{
+  const flies=s=>Boolean(s.vol||s.physiologie?.Vol===true);
+  const missions=reference.oneShotMissions.missions;
+  const campShare=f=>{ const rows=reference.enemyArchetypes.rows.filter(a=>a.faction===f); return rows.filter(flies).length/Math.max(1,rows.length); };
+  const camps=[...new Set(missions.flatMap(m=>(m.camps||[]).map(c=>c.faction)))].map(campShare);
+  const hunts=missions.filter(m=>m.bete).map(m=>flies(reference.mounts.rows.find(r=>r.code===m.bete.code))?1:0);
+  const mean=[...camps,...hunts].reduce((a,b)=>a+b,0)/(camps.length+hunts.length);
+  assert.equal(traitsOf("Cour de sang").includes("vol"),campShare("Cour de sang")>mean,"la Cour de sang : signalée selon la moyenne ("+campShare("Cour de sang").toFixed(3)+" contre "+mean.toFixed(3)+")");
+}
 assert.ok(traitsOf("Voleurs").includes("monture"),"les Voleurs : des cavaliers");
 assert.deepEqual(traitsOf("Orcs"),[],"un camp sans trait distinctif n'est pas tagué");
 

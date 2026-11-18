@@ -1,10 +1,12 @@
 "use strict";
 
 (function(root,factory){
-  const api=factory();
+  // La grille carrée (game-core/combat-grid.js) : les cases et les arêtes du décor.
+  const grid=typeof module!=="undefined"&&module.exports?require("./combat-grid.js"):root.MercenairesCombatGrid;
+  const api=factory(grid);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCombat=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(){
+})(typeof globalThis!=="undefined"?globalThis:this,function(CombatGrid){
   const PHYSICAL_TYPES=[
     {name:"tranchant",weapon:"puissance_tranchante_base",armor:"resistance_tranchant"},
     {name:"perforant",weapon:"puissance_perforante_base",armor:"resistance_perforant"},
@@ -23,8 +25,12 @@
     const random=options.random||Math.random;
     // Altitude (doc 04 ; Idan, 2026-11-06) : options.heightOf(unit) = la hauteur de sa case (0 à 3), donnée par la carte.
     const heightOf=typeof options.heightOf==="function"?options.heightOf:null;
+    // Grille carrée : options.gridMap() = la carte des cases et des arêtes (combat-grid.js, createMap), donnée par l'écran.
+    const gridMapOf=typeof options.gridMap==="function"?options.gridMap:()=>null;
     const rows={};
     for(const [name,payload] of Object.entries(reference||{})) rows[name]=payload?.rows||[];
+    // Grille carrée (doc 04, « Le modèle de la case ») : le coût d'un pas, l'Esquive du terrain, la vue des arêtes.
+    const grid=CombatGrid?CombatGrid.createCombatGrid({reference}):null;
 
     const weapons=rows.weapons||[];
     const armors=rows.baseArmors||[];
@@ -97,8 +103,10 @@
       scale:constant("combat.stealth.scale",15),
       min:constant("combat.stealth.min",5),
       max:constant("combat.stealth.max",95),
-      partialCover:constant("combat.stealth.cover_partial",30),
-      totalCover:constant("combat.stealth.cover_total",60),
+      // L'éclaireur se cache comme derrière une couverture totale (Idan, 2026-11-09) : + scoutCover à sa Discrétion.
+      scoutCover:constant("combat.stealth.cover_total",60),
+      // Se cacher (Idan, 2026-11-17) : action rapide, s'il n'est pas encore repéré ; + hide, plus le « Se cacher » de sa case.
+      hide:constant("combat.stealth.hide_bonus",10),
       scoutDistance:constant("combat.scout.distance",8)
     };
     const POISON={
@@ -107,17 +115,12 @@
       min:constant("combat.poison.resist_min",5),
       max:constant("combat.poison.resist_max",95)
     };
-    // Décor (doc 04 ; Idan, 2026-11-06) : derrière une couverture partielle ou totale, le Toucher au tir et en charge est
-    // multiplié par ce facteur ; une case lente traversée par une charge ajoute fallPerSlowStep × (coût − 1) % de chute.
-    const COVER={
-      partielle:constant("combat.cover.partial_hit_factor",0.5),
-      totale:constant("combat.cover.total_hit_factor",0.25)
-    };
+    // Décor (doc 04 ; Idan, 2026-11-06) : une case lente traversée par une charge ajoute fallPerSlowStep × (coût − 1) % de
+    // chute. (La couverture est remplacée par l'Esquive du terrain : grille carrée, Idan, 2026-11-17.)
     const CHARGE_FALL={
       base:constant("combat.charge.base_fall_probability",2),
       perSlowStep:constant("combat.charge.fall_per_slow_step",5)
     };
-    const coverHitFactor=level=>COVER[level]??1;
     // Altitude : + hitPerLevel au Toucher par niveau au-dessus de la cible, autant de moins par niveau en dessous.
     const ALTITUDE={
       hitPerLevel:constant("combat.altitude.hit_per_level",10),
@@ -125,16 +128,20 @@
       cliff:constant("combat.altitude.cliff",2),
       max:constant("combat.altitude.max",3)
     };
-    // Taille (créatures sur plusieurs cases ; Idan, 2026-11-06 : tailles 1, 3 et 7 cases « Parfait », « Un cheval, deux
-    // cases », une grande créature plus facile à toucher « Oui ») : character.taille = normale (1 case), longue (2 cases :
-    // la tête et le corps derrière elle, dans le sens du déplacement, une monture), grande (3 cases en triangle) ou énorme
-    // (7 cases : une case et son anneau). unit.q, unit.r = sa case d'ancrage (la tête, la pointe, le centre) ; unit.facing =
-    // son sens (0 à 5). Toutes les distances se mesurent de case la plus proche à case la plus proche.
+    // Taille (créatures sur plusieurs cases ; Idan, 2026-11-06 : « Un cheval, deux cases », une grande créature plus facile
+    // à toucher « Oui » ; cases carrées, 2026-11-17 : « cheval 1×2 », « cerbère 2×2 », énorme 3×3, « Il se déplace par
+    // rapport à sa tête ») : character.taille = normale (1 case), longue (1×2 : la tête et le corps derrière elle, une
+    // monture), grande (2×2 : la tête, sa voisine à main gauche, et les deux cases derrière) ou énorme (3×3 : une case et les
+    // 8 autour). unit.q, unit.r = sa case d'ancrage (la tête, le centre) ; unit.facing = son sens (0 est, 1 nord, 2 ouest,
+    // 3 sud). Toutes les distances se mesurent de case la plus proche à case la plus proche.
     const SIZE={
       hit:{normale:0,longue:constant("combat.taille.toucher_longue",0),grande:constant("combat.taille.toucher_grande",10),
         enorme:constant("combat.taille.toucher_enorme",20)}
     };
-    const HEX_DIRS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
+    // Cases carrées (doc 04, « Passage aux cases carrées ») : q = la colonne, r = la ligne ; les 4 directions (est, nord,
+    // ouest, sud) et les 8 autour (avec les diagonales).
+    const HEX_DIRS=[{q:1,r:0},{q:0,r:-1},{q:-1,r:0},{q:0,r:1}];
+    const AROUND=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1},{q:1,r:1}];
     const SIZES=["normale","longue","grande","enorme"];
     // Combat à cheval (Idan, 2026-11-07 ; doc 04) : unit.mount = son cheval, une unité à part entière (PV, effets), posée
     // sous lui (mêmes cases) tant qu'il le monte ; mount.rider = le cavalier. Le couple a la taille du cheval (un destrier :
@@ -169,20 +176,7 @@
         ||(s.invocations||[]).includes(c.archetype)
         ||(s.ascendances||[]).some(a=>a.nom===c.ascendance&&(Number(c.ascendanceLevel)||0)>=(Number(a.niveau_min)||1)));
     }
-    // Ce qu'elles lui donnent sur une case de ce décor : cost (remplace le coût du décor ; undefined : celui du décor), le
-    // plus bas ; discretion, les bonus additionnés ; cover, la meilleure couverture.
-    function terrainEffect(unit,decorCode){
-      const out={cost:undefined,discretion:0,cover:null},rank={partielle:1,totale:2};
-      if(!decorCode) return out;
-      for(const s of terrainSkillsOf(unit)){
-        const d=s.decors?.[decorCode];
-        if(!d) continue;
-        if(d.cout_mouvement!=null) out.cost=out.cost==null?Number(d.cout_mouvement):Math.min(out.cost,Number(d.cout_mouvement));
-        out.discretion+=Number(d.discretion)||0;
-        if(d.couverture&&(rank[d.couverture]||0)>(rank[out.cover]||0)) out.cover=d.couverture;
-      }
-      return out;
-    }
+    // Ce qu'elles lui donnent, case par case (grille carrée : terrain-skills.json, cases) : combat-grid.js, skillEffect.
     // Il vole par lui-même (le sang féerique) ; monté, c'est sa monture qui compte.
     function skillFlies(unit){ return !mountOf(unit)&&terrainSkillsOf(unit).some(s=>s.vol===true); }
     const MOUNT_SHARED=["Courage","Volonté"];
@@ -207,10 +201,10 @@
     function isLarge(unit){ return sizeOf(unit)!=="normale"; }
     // Les cases d'une taille posée en (q, r) avec le sens facing.
     function footprintAt(q,r,size="normale",facing=0){
-      const f=((Number(facing)||0)%6+6)%6,d=HEX_DIRS[f],e=HEX_DIRS[(f+1)%6];
+      const f=((Number(facing)||0)%4+4)%4,d=HEX_DIRS[f],e=HEX_DIRS[(f+1)%4];
       if(size==="longue") return [{q,r},{q:q-d.q,r:r-d.r}];
-      if(size==="grande") return [{q,r},{q:q+d.q,r:r+d.r},{q:q+e.q,r:r+e.r}];
-      if(size==="enorme") return [{q,r},...HEX_DIRS.map(x=>({q:q+x.q,r:r+x.r}))];
+      if(size==="grande") return [{q,r},{q:q+e.q,r:r+e.r},{q:q-d.q,r:r-d.r},{q:q+e.q-d.q,r:r+e.r-d.r}];
+      if(size==="enorme") return [{q,r},...AROUND.map(x=>({q:q+x.q,r:r+x.r}))];
       return [{q,r}];
     }
     // Les cases d'un personnage (une case, ou son empreinte) ; d'une simple case, elle-même.
@@ -221,8 +215,6 @@
     // Plus facile à toucher : + SIZE.hit[taille] au Toucher (corps à corps, tir, sorts qui visent).
     function sizeHitBonus(defender){ return Number(SIZE.hit[sizeOf(defender)])||0; }
     const heightDiffOf=(attacker,defender)=>heightOf?(Number(heightOf(attacker))||0)-(Number(heightOf(defender))||0):0;
-    // Le bonus de Discrétion d'une couverture, pour le repérage (doc 04 : +30 partielle, +60 totale).
-    const coverDiscretion=level=>level==="totale"?STEALTH.totalCover:level==="partielle"?STEALTH.partialCover:0;
     // Mode sentinelle (Idan, 2026-11-06) : le tir de sentinelle gagne en précision (au Toucher) et enchaîne comme au corps à
     // corps (Enchaînement de tirs : diviseur par N au lieu de 1,5 × N).
     const SENTINEL={
@@ -241,10 +233,8 @@
       max:constant("combat.shield.block.max_probability",80)
     };
 
-    function hexDistance(a,b){
-      const dq=a.q-b.q,dr=a.r-b.r;
-      return (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr))/2;
-    }
+    // Distance en losange (cases carrées) : une case en diagonale est à 2 cases. Le nom vient des hexagones.
+    function hexDistance(a,b){ return Math.abs(a.q-b.q)+Math.abs(a.r-b.r); }
     // Distance entre deux personnages ou cases : de case la plus proche à case la plus proche (une grande créature).
     function axialDistance(a,b){
       if(!isLarge(a)&&!isLarge(b)) return hexDistance(a,b);
@@ -252,17 +242,15 @@
       for(const x of footprint(a)) for(const y of footprint(b)) best=Math.min(best,hexDistance(x,y));
       return best;
     }
-    // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Un petit
-    // décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
+    // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Sur les
+    // cases carrées, la ligne avance d'une case par pas, en diagonale quand il le faut (« si rien n'est dans la diago, ça
+    // passe »). Un petit décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
     function hexLine(a,b,nudge={q:1e-6,r:1e-6}){
-      const n=axialDistance(a,b),cells=[];
+      const n=Math.max(Math.abs(b.q-a.q),Math.abs(b.r-a.r)),cells=[];
       for(let i=0;i<=n;i++){
         const t=n?i/n:0;
-        const x=a.q+(b.q-a.q)*t+nudge.q,z=a.r+(b.r-a.r)*t+nudge.r,y=-x-z;
-        let rx=Math.round(x),ry=Math.round(y),rz=Math.round(z);
-        const dx=Math.abs(rx-x),dy=Math.abs(ry-y),dz=Math.abs(rz-z);
-        if(dx>dy&&dx>dz) rx=-ry-rz; else if(dy<=dz) rz=-rx-ry;
-        cells.push({q:rx||0,r:rz||0}); // jamais −0 (une ligne poussée vers le négatif)
+        const x=a.q+(b.q-a.q)*t+(i&&i<n?nudge.q:0),y=a.r+(b.r-a.r)*t+(i&&i<n?nudge.r:0);
+        cells.push({q:Math.round(x)||0,r:Math.round(y)||0}); // jamais −0 (une ligne poussée vers le négatif)
       }
       return cells;
     }
@@ -707,7 +695,7 @@
     // Discrétion et camouflage (doc 04 ; Idan, 2026-10-28) : un personnage que l'ennemi n'a jamais vu est camouflé
     // (unit.camouflaged) ; au début de chaque tour, chaque personnage tente de repérer chaque ennemi encore camouflé dans sa
     // ligne de vue : P = 100 / (1 + e^(−Δ/15)), Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance, de 5 à 95 %.
-    // cover : le bonus de couverture (STEALTH.partialCover, STEALTH.totalCover), quand le décor existera.
+    // cover : un bonus de Discrétion (grille carrée : le « Se cacher » de sa case ; l'éclaireur : STEALTH.scoutCover).
     // Un cavalier (Idan, 2026-11-07 : « Quand un cavalier est sur une monture, c'est la discrétion minimale des deux qui est
     // prise en compte. ( Dur de se camoufler sur un dragon) ») : la plus basse du cavalier et de sa monture.
     function stealthOf(unit){
@@ -736,7 +724,7 @@
     function resolveScouting(scout,enemies=[]){
       const alone={character:scout?.character,activeSet:scout?.activeSet||1},d=STEALTH.scoutDistance,capture=[];
       for(const foe of enemies){
-        const r=rollDetection(foe,alone,d,STEALTH.totalCover);
+        const r=rollDetection(foe,alone,d,STEALTH.scoutCover);
         capture.push({foe,...r});
         if(r.spotted) return {captured:true,by:foe,capture,looks:[],spotted:[]};
       }
@@ -844,9 +832,12 @@
           delta-=40*(distance-free)/(range.max-free);
         }
       }
-      // Couverture (doc 04 ; Idan, 2026-11-06) : context.cover, « partielle » ou « totale », au tir et en défense de charge.
+      // Esquive du terrain (grille carrée, doc 04 ; Idan, 2026-11-17 : « On vire tout le système de couverture ») :
+      // context.terrainDodge, l'Esquive de la case et de l'arête de la cible (déjà doublée en charge), s'ajoute à la sienne :
+      // face à une attaque à 50 %, +20 la ramène à 32 % environ, +40 à 20 % ; jamais sous 10 %.
+      delta-=Number(context.terrainDodge)||0;
       // context.factor : la charge aérienne (× 1,2 pour le chargeur, × 0,5 pour la contre-charge), au plus 100 %.
-      return Math.min(100,clamp(logistic(delta),10,90)*coverHitFactor(context.cover)*(Number(context.factor)||1));
+      return Math.min(100,clamp(logistic(delta),10,90)*(Number(context.factor)||1));
     }
 
     // Charge à cheval (Idan, 2026-11-07) : la moitié de la Force du cheval s'ajoute à celle du cavalier.
@@ -1052,21 +1043,21 @@
 
       // Tir de sentinelle (Idan, 2026-11-06) : + SENTINEL.precision au Toucher.
       const sentinel=mode==="ranged"&&Boolean(options.sentinel);
-      // Couverture : au tir, et contre une charge (options.cover : « partielle » ou « totale »).
-      const cover=(mode==="ranged"||chargePower>0)&&COVER[options.cover]?options.cover:null;
+      // Esquive du terrain : au tir, et contre une charge (options.terrainDodge, celle de sa case et de son arête).
+      const terrainDodge=mode==="ranged"||chargePower>0?Number(options.terrainDodge)||0:0;
       const heightDiff=options.heightDiff??heightDiffOf(attacker,defender);
       // Charge aérienne (doc 04 ; Idan, 2026-11-09) : options.aerialCharge, une arme qui frappe dans la charge (Toucher,
       // Blesser et dégâts × AERIAL.bonus) ; options.againstAerialCharge, une contre-charge contre elle (Toucher × AERIAL.counter).
       const aerial=mode==="melee"&&Boolean(options.aerialCharge);
       const hitFactor=(aerial?AERIAL.bonus:1)*(options.againstAerialCharge?AERIAL.counter:1);
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{}),...(heightDiff?{heightDiff}:{}),
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(terrainDodge?{terrainDodge}:{}),...(heightDiff?{heightDiff}:{}),
         ...(aerial?{aerialCharge:true}:{}),...(options.againstAerialCharge?{againstAerialCharge:true}:{})};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
         if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
       }
-      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover,heightDiff,factor:hitFactor});
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,terrainDodge,heightDiff,factor:hitFactor});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
@@ -1190,7 +1181,7 @@
 
     // Approximation projectile V1. Couloir de tir (Idan, 2026-10-08) : cône de 30° depuis le tireur, centré sur
     // l'axe tireur → cible, compté de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
-    function cartesian(h){ return {x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r}; }
+    function cartesian(h){ return {x:h.q,y:h.r}; }
     // maxRange : portée du tir (celle de l'arme active par défaut ; un sort comme Trait de feu donne la sienne).
     function inFiringCorridor(shooter,target,unit,maxRange=weaponRange(shooter).max){
       const reach=axialDistance(shooter,unit);
@@ -1235,7 +1226,18 @@
     // attaques d'opportunités ? » ; « oui »).
     function threatens(unit,hex){
       if(!unit?.alive||unit.fleeing) return false;
-      return usableHands(unit,axialDistance(unit,hex)).some(h=>h.mode==="melee");
+      const distance=axialDistance(unit,hex);
+      if(distance===1&&!meleeReach(unit,hex)) return false;
+      return usableHands(unit,distance).some(h=>h.mode==="melee");
+    }
+    // Au contact, on frappe à travers l'arête qui sépare les deux (grille carrée : pas à travers une palissade ni une
+    // meurtrière, « on ne tape pas au cac à travers une meurtrière » ; « du bois plein. On fait le tour »). Une grande
+    // créature frappe si l'une de ses cases au contact le peut.
+    function meleeReach(a,b){
+      const map=gridMapOf();
+      if(!grid||!map) return true;
+      const from=a?.character?footprint(a):[a],to=b?.character?footprint(b):[b];
+      return from.some(x=>to.some(y=>hexDistance(x,y)===1&&grid.meleeThrough(map,x,y)));
     }
 
     // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
@@ -1266,11 +1268,15 @@
       return opponents.filter(o=>o!==target&&!inert(o)&&threatens(o,shooter));
     }
 
-    // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC,
-    // sur des cases de contact non adjacentes entre elles.
+    // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC. Cases carrées (doc 04, Idan,
+    // 2026-11-17 : « deux adversaires sur des côtés opposés », pris en tenaille) : l'un à l'est et l'autre à l'ouest de
+    // ses cases, ou l'un au nord et l'autre au sud.
     function isEncircled(target,opponents){
       const contact=opponents.filter(o=>axialDistance(o,target)===1&&threatens(o,target));
-      return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
+      const cells=footprint(target).length?footprint(target):[target];
+      const qs=cells.map(c=>c.q),rs=cells.map(c=>c.r),box={q0:Math.min(...qs),q1:Math.max(...qs),r0:Math.min(...rs),r1:Math.max(...rs)};
+      const has=side=>contact.some(o=>footprint(o.character?o:{q:o.q,r:o.r}).some(c=>side(c)));
+      return (has(c=>c.q<box.q0)&&has(c=>c.q>box.q1))||(has(c=>c.r<box.r0)&&has(c=>c.r>box.r1));
     }
 
     // Intimidation de l'adversaire, avec la Culotte d'Intimidation (Idan, 2026-10-24). Un couple (Idan, 2026-11-07 : « pour
@@ -1434,6 +1440,18 @@
       return true;
     }
 
+    // La ligne de cases la plus droite de a vers b, sans diagonale (un pas par un côté à chaque fois) : un escalier en
+    // biais, d'axialDistance(a, b) pas. Elle commence par a et finit par b.
+    function squareWalk(a,b){
+      const nq=Math.abs(b.q-a.q),nr=Math.abs(b.r-a.r),sq=Math.sign(b.q-a.q),sr=Math.sign(b.r-a.r),cells=[{q:a.q,r:a.r}];
+      let q=a.q,r=a.r;
+      for(let iq=0,ir=0;iq<nq||ir<nr;){
+        if((0.5+iq)/nq<(0.5+ir)/nr){ q+=sq;iq++; } else { r+=sr;ir++; }
+        cells.push({q,r});
+      }
+      return cells;
+    }
+
     function chargeData(attacker,defender){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       if(!isMeleeWeapon(weapon)) return {valid:false};
@@ -1449,7 +1467,10 @@
       const distance=axialDistance(attacker,defender);
       if(distance<2) return {valid:false};
       const aim=footprint(defender).reduce((best,c)=>!best||hexDistance(attacker,c)<hexDistance(attacker,best)?c:best,null);
-      const path=hexLine(attacker,aim).slice(1,-1);
+      // Cases carrées (Idan, 2026-11-17 : « 2 pour la diagonale ») : dans n'importe quelle direction ; en biais, la course
+      // va de case en case par les côtés (squareWalk), au plus près de la ligne droite : elle se compte en losange, et le
+      // chargeur finit collé à la cible par un côté.
+      const path=squareWalk(attacker,aim).slice(1,-1);
       const destination=path[path.length-1];
       const step={q:aim.q-destination.q,r:aim.r-destination.r};
 
@@ -1479,7 +1500,7 @@
       stealthOf,
       mentalStat,
       mountChargeForce,
-      aerialCharger,terrainSkillsOf,terrainEffect,skillFlies,
+      aerialCharger,terrainSkillsOf,skillFlies,grid,meleeReach,
       AERIAL,
       mountHitChance,
       rollShotTarget,
@@ -1493,11 +1514,9 @@
       POISON,
       STEALTH,
       SENTINEL,
-      COVER,
       CHARGE_FALL,
       ALTITUDE,
-      coverHitFactor,
-      coverDiscretion,resolveScouting,
+      SCOUT_COVER:STEALTH.scoutCover,HIDE_BONUS:STEALTH.hide,resolveScouting,
       detectionChance,
       rollDetection,
       spellWoundChance,

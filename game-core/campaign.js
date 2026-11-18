@@ -99,6 +99,9 @@
   // merchants (facultatif) : createMerchantRules(...) de game-core/merchants.js (le marchand du jour, doc 18).
   function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null,statOf=null,random=Math.random}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
+    // Bois et pierre (Idan, 2026-11-18 : « Stock de départ : fixe à 500 pour l'instant »).
+    const STARTING_WOOD=referenceConstant(reference,"camp.resources.start_wood",500);
+    const STARTING_STONE=referenceConstant(reference,"camp.resources.start_stone",500);
     // Régénération (sang de troll ; Idan, 2026-11-01) : une blessure guérit plus vite au camp (regeneration.js).
     const regeneration=Regeneration?Regeneration.createRegenerationRules({reference}):null;
     // Dispensaire (Idan, 2026-11-01) : la durée, déjà bornée de 7 à 60 jours, × (1 − 10 % par niveau), au moins 1 jour.
@@ -534,6 +537,8 @@
         company:{
           name:companyName||"Compagnie de "+captain.name,
           gold:STARTING_GOLD,
+          wood:STARTING_WOOD,
+          stone:STARTING_STONE,
           captainId:captain.id,
           roster:[captain,...squad],
           intendantId:null,
@@ -851,10 +856,10 @@
     const tamingRules=Taming?Taming.createTamingRules({reference,random,progression,camp:{
       buildingLevel,expeditionOf,trainerOf:holderOfPost("trainer"),busyElsewhere:elsewhere("taming")}}):null;
     // Cabane du bûcheron (Idan, 2026-11-03) et Guilde des mineurs (Idan, 2026-11-04) (règles : lumber.js) : les bûcherons et
-    // les mineurs du jour, retenus au camp toute la journée.
-    const campWorks=state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean);
+    // les mineurs du jour, retenus au camp toute la journée ; le bois et la pierre de la journée (Idan, 2026-11-18).
     const campWorkRules=course=>Lumber?Lumber.createLumberRules({reference,random,affinity,course,camp:{
-      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,busyElsewhere:elsewhere(course),
+      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),companyLevel:state=>companyRenownLevel(state),
+      busyElsewhere:elsewhere(course),
       masterOf:holderOfPost("pleasureMaster"),
       // Politique sociale : plus le salaire de la corvée est haut, moins il perd d'affinité (× (2 − taux ÷ 100)).
       lossFactor:state=>social?social.choreLossFactor(state,course):1}}):null;
@@ -1183,7 +1188,7 @@
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);
       const buildings=advanceBuildings(state);
-      // Les bûcherons (niveaux 1 à 5) et les mineurs (6 à 10) du jour : un jour de moins sur les chantiers qui finissent le plus tôt.
+      // La Cabane et ses bûcherons : du bois ; la Guilde et ses mineurs : de la pierre.
       const lumber=lumberjacks?lumberjacks.morning(state):null;
       const mine=miners?miners.morning(state):null;
       // Le Palais des plaisirs : l'or de la journée.

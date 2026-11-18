@@ -231,6 +231,13 @@ function renderGameHud(){
   $("hud-gold-stat").title="Trésor de la compagnie : "+fmt(gold)+" PO"+(debts?" · Dettes : "+fmt(debts)+" PO":"");
   $("hud-gold-stat").classList.toggle("hud-stat--debt",gold<0||debts>0);
   hudGoldDelta(gold);
+  // Bois et pierre (Idan, 2026-11-18) : la réserve, et au survol ce qu'elle gagne par jour (bâtiment et ouvriers).
+  for(const [key,course,label] of [["wood","lumberjacks","Bois"],["stone","miners","Pierre"]]){
+    const stock=Math.round(Number(company[key])||0);
+    const daily=rules?.[course]&&typeof resourceDaily==="function"?resourceDaily(rules[course],game.campaign):0;
+    $("hud-"+key).textContent=hudNumber(stock);
+    $("hud-"+key+"-stat").title=label+" de la compagnie : "+fmt(stock)+(daily?" · +"+fmt(daily)+" par jour":"");
+  }
   $("hud-upkeep").textContent=hudNumber(rules?rules.payroll(game.campaign):0)+" PO/j";
   // Places occupées au dortoir (un ogre en prend deux, un halfling, un gnome ou un gobelin une demi ; ni le capitaine ni
   // l'intendant).

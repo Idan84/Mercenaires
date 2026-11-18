@@ -373,10 +373,8 @@ un Alchimiste à 48), 10 % les meilleurs ~3 jours ; l'Alchimiste gagne 20 XP de 
 seul apprentissage à la fois (sort, armure ou empoisonnement). Constantes `poison_study.daily.*` ; code
 `game-core/armor-study.js` (course "poison") ; test `tests/poison-study.test.js`.
 
-**La Cabane du bûcheron** (Idan, 2026-11-03 : « On aura une salle d'entraînement aux haches, mais l'idée c'est d'envoyer des
-mercenaires bûcheronner pour accélérer la construction du camp. Pas une ressource de bois […] sur les constructions
-actuelles de niveau 1 à 5 (y'aura la mine pour 6 à 10). On peut envoyer 1 mercenaire par niveau de cabane » ; « Pas de chef
-pour l'instant » ; « Parfait. ») — salle principale **Le Billot** : **Haches** (« On fend du bois toute la journée. Le bois,
+**La Cabane du bûcheron** (Idan, 2026-11-03 : « On peut envoyer 1 mercenaire par niveau de cabane » ; « Pas de chef pour
+l'instant ») — salle principale **Le Billot** : **Haches** (« On fend du bois toute la journée. Le bois,
 lui, ne se défend pas. »), apprises avec la **Force** ; même barème et mêmes places que les autres bâtiments, entraînement
 libre compris ; pas d'aile.
 
@@ -397,15 +395,21 @@ refuser. -1 par jour c'est bien ») :
   été convaincu ; l'affinité perdue ne revient pas quand on le retire. Le capitaine ne perd rien. Le salaire de la corvée se
   règle à l'Intendance (« Politique sociale », doc 09 §7) : de 0 à 200 %, la perte du jour × (2 − taux ÷ 100) ; −1 à 100 %
   (par défaut), 0 à 200 %. Même chose pour les mineurs et le Palais, un curseur par corvée.
-- **Effet fixe** : chaque bûcheron retire **1 jour** (`camp.lumber.days_per_worker`) au chantier **qui finit le plus tôt**
-  (« A »), parmi ceux de **niveau 1 à 5** (`camp.lumber.max_work_level`) : un bâtiment (son niveau en construction) et le
-  dortoir (« Oui ») — qualité : le niveau visé ; agrandissement : son rang ; quartier du lieutenant : son numéro. Un
-  chantier finit au plus tôt le lendemain matin ; s'il n'y en a aucun, la journée est perdue. Le journal du matin dit les
-  jours gagnés, chantier par chantier.
-- Carte de la Cabane : « Bûcherons (2 / 3) », chacun avec « dès demain », « intimidé » ou « convaincu » s'il y a lieu.
+- **Effet : du bois** (Idan, 2026-11-18) : voir « Bois et pierre » ci-dessous.
+- Carte de la Cabane : la production du jour, « Bûcherons (2 / 3) », chacun avec ce qu'il rapporte et « dès demain »,
+  « intimidé » ou « convaincu » s'il y a lieu.
   Statuts : « Bûcheronne demain », « Bûcheronne ». Constantes `camp.lumber.*` ; code `game-core/lumber.js` ; textes
-  `lumber-dialogue.json` ; test `tests/lumber.test.js`. La **Guilde des mineurs** fait de même pour les chantiers de
-  niveau 6 à 10.
+  `lumber-dialogue.json` ; test `tests/lumber.test.js`. La **Guilde des mineurs** fait de même avec la pierre.
+
+**Bois et pierre** (Idan, 2026-11-18 : « Les mercenaires qui vont bucheronner ou miner vont rapporter du bois et de la
+pierre » ; « Cabane et Guilde produisent » ; « Pour l'instant, on accumule sans en dépenser ») :
+
+- **Stock de départ** : 500 bois, 500 pierre (`camp.resources.start_*`) ; affichés dans la barre du haut, à côté de l'or.
+- **Chaque matin**, la Cabane rapporte du bois, la Guilde de la pierre, même sans ouvrier :
+  **20 × 0,5 × étoiles de renommée de la compagnie × niveau du bâtiment** (`camp.resources.hall_*`).
+- **Chaque ouvrier** en plus : **15 × (Force ÷ 50)²** (`camp.resources.worker_*` ; « un mec très fort, c'est très utile,
+  un gobelin avec 10 en force, ça rapporte rien ») : Force 10 → 1, 35 → 7, 55 → 18, 77 → 36, 110 → 73.
+- **Usages** : à venir (coût des bâtiments, bourse permanente or ↔ ressources). Code `game-core/lumber.js`.
 
 **Relance après un refus** (Idan, 2026-11-04 : « On peut retenter via deux options de dialogues (ou laisser tomber) :
 Intimider, Convaincre. On refait le test en ajoutant son intimidation ou son charisme (moitié du cha). En intimidation, ça
@@ -433,8 +437,7 @@ double la perte d'affinité. En charisme, ça la divise par deux » ; « valable
   perdu s'il a été intimidé (il pourra être flatté une autre fois), gardé s'il a été convaincu ; accepté, rien ne change ;
 - **la relance a échoué** : en plus de « Partir », « **Au cachot !** », s'il reste une cellule (§11, Le Cachot).
 
-**La Guilde des mineurs** (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 et on y
-apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y
+**La Guilde des mineurs** (Idan, 2026-11-04 : « on y apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y
 descend avec une lanterne, on en remonte avec un marteau. »), apprises avec la **Force** ; même barème et mêmes places,
 entraînement libre compris ; pas d'aile, pas de chef.
 
@@ -443,9 +446,7 @@ Deuxième fonction, **les mineurs** — comme les bûcherons :
 - **1 mineur par niveau** de la Guilde (`camp.mine.workers_per_level`), envoyé la veille (« Envoyer à la mine »), jusqu'à
   ce qu'on le retire ; mêmes exclusions.
 - **Même test, même relance, même perte par jour** (« pareil ») : `camp.lumber.offer_offset`, `camp.lumber.daily_affinity`.
-- **Effet** : chaque mineur retire **1 jour** (`camp.mine.days_per_worker`) au chantier de **niveau 6 à 10**
-  (`camp.mine.min_work_level`, `camp.mine.max_work_level`) qui finit le plus tôt, dortoir compris (même lecture du niveau) ;
-  les bûcherons ne touchent que les niveaux 1 à 5.
+- **Effet : de la pierre** (voir « Bois et pierre »).
 - **Une seule corvée à la fois** : pour passer de la Cabane à la mine, on le retire d'abord ; il peut descendre à la mine
   dès le lendemain.
 - Statuts : « À la mine demain », « À la mine ». Code `game-core/lumber.js` (course "mine") et `prototype-web/lumber-ui.js` ;

@@ -201,7 +201,7 @@ c'est pas utile en mission ? »).
 - **Garde du corps** (les autres) : s'il atteint le plus bas niveau d'offre (renommée de la compagnie − 4).
 - **Job** (les autres), seulement si le bâtiment est construit : **Palais** si ce qu'il y rapporterait (Charisme × (1 + 0,2
   × niveau de réputation)) est au-dessus de la médiane de la bande ; **Bûcheron**, **Mines** pour ceux qui n'ont pas le
-  niveau Mission (le travail retire un jour de chantier, qui que ce soit).
+  niveau Mission (le travail rapporte du bois ou de la pierre, selon sa Force).
 - **Entraînement** (« pour entraînement et équipement, il faut déjà connaître le rôle » ; « Le plus intéressant pour
   lui… ses faiblesses utiles ») : là où le camp entraîne (bâtiment construit), les 3 choses les plus basses (sa place dans
   la bande) parmi ce qui sert son rôle principal (`usages`), la plus basse en plein ; le style conseillé ; le port

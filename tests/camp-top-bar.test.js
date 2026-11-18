@@ -16,8 +16,9 @@ const js=fs.readFileSync(path.join(WEB,"screen-ui.js"),"utf8");
 // --- La barre ------------------------------------------------------------------------------------------------------------
 const top=html.slice(html.indexOf('<div class="game-top-bar">'),html.indexOf('<div class="game-bottom-bar">'));
 const ids=part=>[...part.matchAll(/\bid="([\w-]+)"/g)].map(m=>m[1]);
-assert.deepEqual(ids(top),["hud-company","hud-renown","hud-gold-stat","hud-gold","hud-upkeep","hud-roster","hud-calendar","hud-date","hud-day","hud-pause-btn"],
-  "à gauche : nom, étoiles, puis or, salaires, mercenaires ; à droite : la date et le bouton menu");
+assert.deepEqual(ids(top),["hud-company","hud-renown","hud-gold-stat","hud-gold","hud-wood-stat","hud-wood","hud-stone-stat","hud-stone",
+  "hud-upkeep","hud-roster","hud-calendar","hud-date","hud-day","hud-pause-btn"],
+  "à gauche : nom, étoiles, puis or, bois et pierre (Idan, 2026-11-18 : « deux petits carrés comme l'or »), salaires, mercenaires ; à droite : la date et le bouton menu");
 assert.doesNotMatch(top+js+css,/hud-blason|--bl-|BLASON_BODIES/,"plus de blason dans la barre (Idan, 2026-11-14 : l'essai sans blason)");
 assert.ok(!html.includes('<script src="blason-bodies.js"></script>'));
 assert.match(top,/<div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-center"><\/span><span class="hud-bar-piece hud-bar-right"><\/span><\/div>/,

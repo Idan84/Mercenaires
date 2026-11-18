@@ -75,6 +75,9 @@ Les gros chantiers à venir, dans l'ordre d'Idan.
   ([doc 15](/design/#doc=15-biographies-and-narrative-tags.md)).
 - **Prime de risque** selon le danger de la mission ([doc 14](/design/#doc=14-tavern-recruitment.md)).
 - **Siège du château** ([doc 11](/design/#doc=11-camp-and-ruined-castle.md)).
+- **Sonner l'alerte** (Idan, 2026-11-18) : un ennemi qui sonne l'alerte change le comportement de l'IA. Le
+  comportement dépendra de la mission : aujourd'hui c'est nous qui attaquons, l'IA garde ou fait sa ronde tant qu'elle
+  n'a repéré personne (doc 04, « IA aveugle »).
 - **Équilibrage** en général (Idan, 2026-10-03 ; section 3).
 - **Passe sur le texte de l'interface** : retirer tout ce qui est évident, pour l'immersion (Idan, 2026-10-30 : « on va
   virer du texte un peu partout »).

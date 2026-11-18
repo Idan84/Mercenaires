@@ -51,7 +51,7 @@ Cases carrées vues de dessus (« on se rapproche de Dofus ») ; une vue isomét
 - **Charge** : dans toute direction, sans contourner d'obstacle ; tout droit sur une colonne ou une ligne, sinon en
   escalier par les côtés, au plus près de la ligne droite (elle franchit les arêtes comme un déplacement). Course
   comptée en losange ; le chargeur finit collé à la cible par un côté ; un personnage sur l'escalier barre la charge.
-- **Grosses créatures** : cheval 1×2 ; mammouth, tricératops et **cerbère** 2×2 ; énorme 3×3. Elles se déplacent depuis
+- **Grosses créatures** : cheval et **cerbère** 1×2 (Idan, 2026-11-18) ; mammouth et tricératops 2×2 ; énorme 3×3. Elles se déplacent depuis
   la case de leur **tête**.
 - **Déplacement forcé** (repousser, attirer) : arrêté par une palissade ou une meurtrière comme par un mur ; il passe un
   muret.
@@ -361,13 +361,12 @@ contact, non.
 - **Camouflé** : un personnage qu'aucun ennemi n'a encore vu est **invisible pour l'armée ennemie** ; au début du
   combat, tout le monde l'est.
 - **Repérage** : au **début de chaque tour** (et du combat), chacun teste chaque ennemi camouflé **dans sa ligne de
-  vue** (le Brouillard l'empêche) : **P = 100 / (1 + e^(−Δ/15))**, **Δ = 2 × (Perception − (Discrétion + couverture)) +
+  vue** (le Brouillard l'empêche) : **P = 100 / (1 + e^(−Δ/15))**, **Δ = 2 × (Perception − (Discrétion + bonus « Se cacher »)) +
   40 − 5 × distance**, de **0,1** à 95 %, jet au centième. Un succès : l'ennemi est **repéré par toute l'armée, pour
   toute la partie**.
 - **Armure** (Idan, 2026-11-12) : elle retire de la Discrétion les mêmes points que de l'Esquive, × le malus de sa
   qualité : Plates 16, Écailles 12, Brigandine 9, Mailles 8, Cuir renforcé 5, Cuir 3, Gambison 2, Vêtements 0
   (`data/reference/base-armors.json`) ; éclaireur compris ; la fiche le montre.
-- **Couverture** : **+30** de Discrétion derrière une couverture partielle, **+60** derrière une totale.
 - **Se cacher** (Idan, 2026-11-17) : une **action rapide**, pour qui est encore camouflé : au repérage, **+10** de
   Discrétion plus le bonus « Se cacher » de sa case, tant qu'il n'est pas repéré. Il peut se déplacer caché : le +10 le
   suit, le bonus de case suit la case.
@@ -375,9 +374,8 @@ contact, non.
   attaque d'opportunité ni contre-charge contre lui.
 - **Il agit sans se découvrir** : son attaque est une **attaque non détectée**, donc une **Frappe dans le dos** ; un
   sort qui vole ignore aussi la Perception de la cible.
-- **Exemples** : Perception 62 contre Discrétion 30 : 95 % à 3 comme à 8 cases ; à 6 cases, 72 % en couverture
-  partielle, 4,5 % en totale ; sous Avancée cachée (+52), 12 % à 6 cases, 0,1 % en totale ; Perception 43 : 60 % à 12
-  cases ; Perception 60 contre Discrétion 100 à 5 cases : 1,3 %.
+- **Exemples** : Perception 62 contre Discrétion 30 : 95 % à 3 comme à 8 cases ; Perception 43 : 60 % à 12 cases ;
+  Perception 60 contre Discrétion 100 à 5 cases : 1,3 %.
 - **Brouillard de guerre** : un ennemi camouflé **n'apparaît nulle part** (carte, liste, ordre d'initiative ; le journal
   dit « Un ennemi invisible », sans ses déplacements). Qui entre dans sa case **tombe nez à nez** avec lui : il
   s'arrête, l'ennemi est repéré, les deux camps donnent l'alerte.
@@ -390,8 +388,8 @@ contact, non.
 - **Second mouvement de l'IA** : qui ne peut pas avancer d'une seule case renonce à attaquer pour un second mouvement.
 - **L'éclaireur** (Idan, 2026-11-09) : à l'arrivée d'un contrat ou d'une chasse (après la marche), la fenêtre « Escouade
   sur place » propose **Envoyer un éclaireur**, pris dans l'escouade (les plus discrets d'abord) ; un compagnon animal
-  ne part pas seul, il suit son maître. Chaque ennemi tente de le repérer à **8 cases**, lui derrière une **couverture
-  totale** (+60), avec sa propre Discrétion : Perception 60 contre Discrétion 30, **1,8 %** ; contre 80, 0,1 %. **Un
+  ne part pas seul, il suit son maître. Chaque ennemi tente de le repérer à **8 cases**, lui avec **+60** de Discrétion (il se faufile),
+  en plus de la sienne : Perception 60 contre Discrétion 30, **1,8 %** ; contre 80, 0,1 %. **Un
   succès : capturé**, avec son animal, il quitte le combat ; **victoire** : libéré **indemne** ; **défaite** : **mort**,
   son animal aussi. Parti seul et capturé : pas de combat, mission perdue. **Pas vu**, il cherche à son tour chaque
   ennemi, à 8 cases, à découvert : ceux qu'il voit **commencent le combat repérés** (il peut en manquer).
@@ -433,9 +431,9 @@ Paysages : `data/reference/mission-landscapes.json`.
 - **Garde-fou du décor** (Idan, 2026-11-18) : toute case où l'on peut se tenir se rejoint à pied depuis l'escouade sans
   traverser de mur ni franchir de palissade ou de muraille (un muret n'enferme pas) ; sinon, nouveau tirage (contrats et
   Mission Test).
-- **L'IA** suit le vrai chemin, autour du décor. Sans personne en vue, elle va chercher l'ennemi le plus proche (elle
-  sait à peu près où il est) et l'attaque si elle le voit alors ; sinon, un tireur que personne ne voit passe en
-  sentinelle.
+- **L'IA** suit le vrai chemin, autour du décor. Elle ne fonce pas vers un ennemi qu'elle ne voit pas : sans personne
+  en vue ni alerte, elle garde son poste ou fait sa ronde (« IA aveugle ») ; un tireur que personne ne voit passe en
+  sentinelle. Dans les missions actuelles, c'est nous qui attaquons (Idan, 2026-11-18).
 - **Tireur mal placé** (trop près : arc et arbalète ne tirent pas à moins de 2 cases ; trop loin ; hors de vue) : il va
   sur la case la moins chère de son mouvement d'où il a portée et vue, avec le moins d'attaques d'opportunité ; sinon il
   avance.
@@ -525,8 +523,8 @@ Fiches des ennemis : `data/reference/enemy-archetypes.json`.
   - **Déplacement** : toute l'empreinte doit passer (dans la carte, sans personnage ni décor infranchissable) ; un pas
     coûte la case la plus lente couverte ; la longue suit son pas. Volante : 1 PM par case, sans s'arrêter sur un
     infranchissable. En fuite, elle sort dès qu'une de ses cases touche le bord.
-  - **Toucher** : +10 contre une grande, +20 contre une énorme (CAC, tir, sorts qui visent ; chiffres proposés) ; sa
-    couverture est celle de sa case la plus exposée.
+  - **Toucher** : +10 contre une grande, +20 contre une énorme (CAC, tir, sorts qui visent ; chiffres proposés) ; l'Esquive
+    du terrain est celle de sa case la plus exposée.
   - Une **zone** la touche une fois ; **ni poussée ni attraction** ; on la **voit** si on voit une de ses cases. Elle ne
     charge pas encore ; la charge contre elle vise sa case la plus proche.
   - **Placement** : la case la plus proche où toute l'empreinte tient ; un gros pion au centre. **Mission Test** : le

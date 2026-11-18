@@ -78,7 +78,7 @@ assert.match(css,/\.hud-nav-label\{position:absolute;width:1px;height:1px;overfl
 assert.match(css,/\.hud-nav:hover,\.hud-nav:focus-visible\{transform:scale\(1\.08\);/,"un très léger grossissement au survol");
 assert.match(css,/\.hud-nav:active\{transform:scale\(\.94\);/,"enfoncé au clic, puis un petit rebond au relâchement");
 assert.match(css,/\.hud-nav\{[^}]*transition:transform \.22s cubic-bezier\(\.34,1\.56,\.64,1\)/);
-assert.match(css,/\.hud-nav\.is-current,\.hud-nav:disabled\{transform:none;filter:grayscale\(1\)/,"grisé : le lieu où l'on est (« quand on est sur le château, on le grise »)");
+assert.match(css,/\.hud-nav\.is-current,\.hud-nav:disabled\{transform:none;filter:none;opacity:var\(--hud-inactifs,\.5\)/,"grisé : le lieu où l'on est (« quand on est sur le château, on le grise ») ; grisé = plus transparent, à 50 % (Idan, 2026-11-18)");
 assert.match(css,/body\[data-screen="camp"\] \.app-shell\{padding-bottom:calc\(var\(--hud-bottom-h\) \+ 36px\)\}/,"les lieux s'arrêtent au-dessus de la barre");
 
 // --- La barre du bas de chaque culture (hud-bars.js, bas) ----------------------------------------------------------------

@@ -1556,6 +1556,18 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .has-kit .hud-bar-art{display:none}
 .game-bottom-bar.has-kit .hud-play{margin-left:calc(var(--hb-B) * var(--bb-bouton-dx,0))}
 .game-bottom-bar.has-kit .hud-play-img{width:100%;height:100%}
+/* Un kit au cuir clair (les Grandes cités, Idan, 2026-11-18 : « tous les textes en dorés », « pastilles or pâle, chiffres
+   à l'encre », pictos dorés avec moins d'ombre ; hud-kit-ui.js, screen-ui.js : .is-dore). */
+.game-top-bar.is-dore #hud-company,.game-top-bar.is-dore #hud-date,.game-top-bar.is-dore #hud-day{color:#94681a;text-shadow:0 1px 0 rgba(255,248,228,.7)}
+.game-top-bar.is-dore .hud-stat{background:linear-gradient(180deg,#f6e9c4,#e6cf94);box-shadow:inset 0 1px 1px #fffa,0 0 0 1px #c29b52,0 1px 2px #0003}
+.game-top-bar.is-dore .hud-stat--link:hover,.game-top-bar.is-dore .hud-stat--link:focus-visible,.game-top-bar.is-dore .hud-stat--link.is-current{background:linear-gradient(180deg,#fbf2da,#eedba8);box-shadow:inset 0 1px 1px #fffa,0 0 0 2px #94681a}
+.game-top-bar.is-dore .hud-stat dd{color:#2c1d0c;text-shadow:none}
+.game-top-bar.is-dore .hud-stat--debt dd{color:#a8321c}
+.game-top-bar.is-dore .hud-picto{filter:drop-shadow(0 1px 1px #0004)}
+.game-top-bar.is-dore .hud-calendar{border-left-color:#c29b52}
+.game-top-bar.is-dore #hud-pause-btn{color:#94681a;border-color:#c29b52;background:linear-gradient(180deg,#f6e9c4,#e6cf94)}
+.game-top-bar.is-dore #hud-pause-btn:hover,.game-top-bar.is-dore #hud-pause-btn:focus-visible{color:#6e4c10;border-color:#94681a}
+.game-bottom-bar.is-dore .hud-nav-img{filter:sepia(1) saturate(2.4) hue-rotate(-8deg) brightness(1.02) drop-shadow(0 1px 1.5px #0006)}
 /* Le bouton du lieu, à droite des pictos (Idan, 2026-11-14) : caché là où il n'y a rien ; un rond sombre provisoire, en
    attendant son dessin (« on va le designer ce bouton pour qu'il soit joli »). Son menu s'ouvre vers le haut, calé à droite. */
 .hud-context{position:relative;flex:none;width:calc(var(--hb-B) * var(--bb-picto));height:calc(var(--hb-B) * var(--bb-picto))}
@@ -1605,7 +1617,9 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-nav:hover,.hud-nav:focus-visible{transform:scale(1.08);filter:brightness(1.15);outline:none}
 .hud-nav:active{transform:scale(.94);filter:brightness(.95);transition-duration:.06s}
 .hud-nav:focus-visible{box-shadow:0 0 0 2px #f0c050aa}
-.hud-nav.is-current,.hud-nav:disabled{transform:none;filter:grayscale(1) brightness(.65);opacity:.6;cursor:default}
+/* Le lieu où l'on est et les pictos sans rien à faire : comme les autres, seulement plus transparents (Idan, 2026-11-18 :
+   « il faut pas les laisser grisés. On les met comme les autres mais avec une opacité à 50 ou 80 % »). */
+.hud-nav.is-current,.hud-nav:disabled{transform:none;filter:none;opacity:var(--hud-inactifs,.5);cursor:default}
 @media (prefers-reduced-motion:reduce){.hud-nav:hover,.hud-nav:focus-visible,.hud-nav:active{transform:none}}
 #game-action-lines li{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 #game-action-lines small{color:#c9a461;margin-right:6px}
@@ -2476,7 +2490,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Les cultures à kit graphique (data/reference/culture-kits.json, hover-card-ui.js) : le cuir du kit derrière le nom,
    en tuile, assombri ; l'ornement du titre à la hauteur choisie par Idan (sa boîte commune, la partie vide vers
    l'extérieur rattrapée par une marge négative) ; le cadre posé par-dessus la carte, ses ornements peuvent déborder. */
-.hover-card[data-kit] .hc-banner{background:linear-gradient(rgba(12,2,16,var(--hc-kit-sombre)),rgba(12,2,16,var(--hc-kit-sombre))),var(--hc-texture) 50% 50%/var(--hc-kit-grain) repeat,#1d1220}
+.hover-card[data-kit] .hc-banner{background:linear-gradient(rgba(var(--hc-kit-voile,12,2,16),var(--hc-kit-sombre)),rgba(var(--hc-kit-voile,12,2,16),var(--hc-kit-sombre))),var(--hc-texture) 50% 50%/var(--hc-kit-grain) repeat,#1d1220}
 /* Plus d'air sous le titre, au-dessus de la sangle sous le nom (Idan, 2026-11-16 : « 4-5 px de plus de marge sous le titre »,
    puis « sous le titre, pas sous le nom… encore 4-5 px de plus ») : le bas réservé remonte le nom et le titre (centrés) de
    sa moitié, puis le titre seul remonte de 5 px vers le nom, le nom restant en place. */
@@ -2488,6 +2502,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hover-card[data-kit] .hc-orn{width:var(--hc-orn-w);height:var(--hc-orn-h)}
 .hover-card[data-kit] .hc-orn--l{margin:0 var(--hc-orn-ecart) 0 calc(var(--hc-orn-vide) * -1)}
 .hover-card[data-kit] .hc-orn--r{margin:0 calc(var(--hc-orn-vide) * -1) 0 var(--hc-orn-ecart)}
+/* Le nom à l'encre, sur un cuir clair (les Grandes cités, planche d'Idan du 2026-11-18) : lettres brun foncé, un liseré
+   clair dessous ; l'ornement du titre à l'encre aussi. */
+.hover-card[data-kit-nom="encre"] .hc-banner h3,.hover-card[data-kit-nom="encre"] .hc-title span{background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#2c1d0c;color:#2c1d0c;filter:drop-shadow(0 1px 0 rgba(255,250,235,.55))}
+.hover-card[data-kit-nom="encre"] .hc-orn{background:#2c1d0c}
 .hc-cadre{position:absolute;inset:0;z-index:2;pointer-events:none}
 .hc-cadre>*,.hc-cadre span>img{position:absolute;display:block;max-width:none}
 /* Dans le choix de l'escouade (mission.js) : la fiche à côté du portrait survolé, à sa taille, plus petite seulement si

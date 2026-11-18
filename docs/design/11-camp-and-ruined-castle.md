@@ -183,7 +183,7 @@ Apprentissage des sorts, entraînement des écoles de magie, développement des 
   Illusion, Invocation, Transmutation, Télékinésie), **10 niveaux** chacune, **au plus au niveau de l'École** (un niveau
   en chantier ne compte pas) ;
 - **barème des bâtiments du camp** (en attendant les prix d'Idan) : niveau n = **500 × n² PO** et **4 × n jours**
-  (niveau 10 : 100 000 PO et 40 jours ; 385 000 PO pour les dix) ; **un chantier par bâtiment et par salle**, en
+  (niveau 10 : 50 000 PO et 40 jours ; 192 500 PO pour les dix) ; **un chantier par bâtiment et par salle**, en
   parallèle entre eux et avec le dortoir ; or payé au lancement, niveau atteint le matin du dernier jour ;
 - **places** : **1 + ⌊niveau ÷ 2⌋**, pour l'École elle-même (la salle généraliste : Puissance magique, Réserve de mana)
   comme pour chaque salle ; **60 places** quand tout est au niveau 10 ;
@@ -215,7 +215,7 @@ camp ») :
   magique en salle généraliste) ; sans directeur, ces facteurs valent 1. Salle 1 sans directeur (Intelligence 54)
   **95 XP** ; salle 3, directeur à 100, Transmission 48 **332 XP** ; salle 10, directeur à 120, Transmission 70,
   Intelligence 70 **838 XP** ;
-- **gain ailleurs** : 20 × carac / 50 × (1 + 0,1 × niveau) × (1 + niveau du maître / 100) × (1 + Transmission du maître
+- **gain ailleurs** : 80 × carac / 50 × (1 + 0,1 × niveau) × (1 + niveau du maître / 100) × (1 + Transmission du maître
   / 100), la carac selon le bâtiment (**Endurance** au Ludus, **Volonté** à l'Académie, **Dextérité** au Cercle…) ;
 - à l'École, l'XP va à l'école de la salle, dont les **deux écoles opposées perdent chacune un quart** (doc 12) ; en
   salle généraliste, à la **Puissance magique** ; ailleurs, caractéristiques et résistances montent, et une arme, une
@@ -419,14 +419,14 @@ par jour ; trois, 1,6 %. Cerbère : (20 + 60) ÷ 2. Le rang 3 est celui du destr
   restée KO, et chaque **loup de la Cour de sang**, passe le **test de survie** : le jet de mort de nos mercenaires (doc
   10 §3 : à 0 PV ou plus, elle vit ; sous 0, mort = −1 000 × PV ÷ PV max − Volonté ÷ 20 %). Un cheval qui a fui, ou qui
   est parti avec son cavalier, est perdu.
-- **Arrivée** : après un contrat, les montures rentrent **avec l'escouade** et prennent une place aux Écuries, sinon
-  elles sont **relâchées** (dans la Mission Test, tout de suite).
-- **Entretien** : chaque matin, **10 PO par destrier**, avec les salaires ; il compte tous nos animaux. Si la caisse ne
-  suffit pas (Idan, 2026-11-10) : celui d'une monture est dû à son cavalier ; sans propriétaire ou à celle du capitaine,
+- **Arrivée** : après un contrat, les montures rentrent **avec l'escouade** et prennent une place dans leur aile
+  (tableau), sinon elles sont **relâchées**.
+- **Entretien** : chaque matin, par animal (destrier 10 PO, licorne 30 PO, loup 10 PO ; les autres : tableau), avec les
+  salaires. Si la caisse ne suffit pas (Idan, 2026-11-10) : celui d'une monture est dû à son cavalier ; sans propriétaire ou à celle du capitaine,
   au Dresseur ; sans Dresseur, elle est relâchée (les dettes, doc 09). Relâcher une monture sans propriétaire libère sa
   place.
 - **Une monture est un objet**, qui s'achète et se vend, sans tier ni qualité ; sans propriétaire, à l'Intendance ; où
-  qu'elle soit, elle loge aux Écuries (sa place, son entretien). Achat et vente : doc 18 §12 bis.
+  qu'elle soit, elle loge dans son aile (sa place, son entretien). Achat et vente : doc 18 §12 bis.
 - **Son nom** : tiré de la liste de son animal (24 noms chacun), qu'aucun autre de nos animaux ne porte (liste épuisée :
   suivi d'un numéro) ; **renommable**. Elle garde son espèce (« Destrier ») pour les marchands ; en combat, celles d'en
   face restent « Destrier de … ».
@@ -478,11 +478,11 @@ la durée des blessures.
 
 | Niveau | Prix | Jours | Total |
 |---:|---:|---:|---:|
-| 1 | 1 000 | 4 | 1 000 |
-| 2 | 4 000 | 8 | 5 000 |
-| 3 | 9 000 | 12 | 14 000 |
-| 4 | 16 000 | 16 | 30 000 |
-| 5 | 25 000 | 20 | 55 000 |
+| 1 | 500 | 4 | 500 |
+| 2 | 2 000 | 8 | 2 500 |
+| 3 | 4 500 | 12 | 7 000 |
+| 4 | 8 000 | 16 | 15 000 |
+| 5 | 12 500 | 20 | 27 500 |
 
 - **Dispensaire** : la durée d'une blessure (doc 10 §6, de 7 à 60 jours) est multipliée par **1 − 0,1 × niveau** (au
   moins 1 jour), pour les blessures reçues après la construction. Niveau 5 : 7 → 4 jours, 27 → 14, 48 → 24, 60 → 30.

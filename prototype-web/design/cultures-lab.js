@@ -15,7 +15,6 @@ const CulturesLab=(()=>{
   const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
   const RES=[[1280,720],[1366,768],[1600,900],[1920,1080],[1920,1200],[2560,1080],[2560,1440],[3440,1440],[3840,2160]];
   const PANNEAUX=[{cle:"barres",titre:"Barres du camp"},{cle:"fiche",titre:"Fiche au survol"},{cle:"plein",titre:"Fiche complète"}];
-  const PLEIN_DEFAUT={largeur:"ecran",haut:150,gauche:440,marge:0,cadre:{ep:20},separations:{ep:20},ornements:{echelle:1}};
   const ANGLES={hg:{nom:"Haut gauche",sx:-1,sy:-1},hd:{nom:"Haut droit",sx:1,sy:-1},bd:{nom:"Bas droit",sx:1,sy:1},bg:{nom:"Bas gauche",sx:-1,sy:1}};
   const NOMS={miroir:"miroir",rotation:"tourné",aucune:"aucune",aucun:"aucun",bande:"la bande du cadre",barre:"la barre du milieu",
     clair:"clair",or:"doré",dore:"doré",cuir:"cuir",uni:"noir uni",ecran:"tout l'écran","16:9":"plafonnée à 16:9",
@@ -25,10 +24,14 @@ const CulturesLab=(()=>{
     "sur-bas-gauche":"sur la barre du bas, à gauche","sur-bas-droite":"sur la barre du bas, à droite",
     "sous-haut-gauche":"sous la barre du haut, à gauche","sous-haut-centre":"sous la barre du haut, au centre",
     "sous-haut-droite":"sous la barre du haut, à droite","sur-haut":"sur la barre du haut","sur-bas":"sur la barre du bas",
-    riche:"riche",leger:"léger",courbe:"courbe"};
+    riche:"riche",leger:"léger",courbe:"courbe",
+    "bas-colonne":"bas de la colonne","bas-principale":"bas de la partie principale","haut-colonne":"haut de la colonne",
+    "haut-principale":"haut de la partie principale","bande-colonne":"sur la bande, côté colonne","bande-centre":"sur la bande, au centre",
+    "bande-principale":"sur la bande, côté principal","sous-bande-colonne":"sous la bande, côté colonne",
+    "sous-bande-principale":"sous la bande, côté principal",bande:"la bande sous la barre du haut"};
   const nom=v=>NOMS[v]??String(v).charAt(0).toUpperCase()+String(v).slice(1);
   const PREFS="cultures-lab";
-  const state={data:null,cle:null,panneau:"plein",res:"1920x1080",edits:{},bases:{},pret:false,frame:null,timer:null,onOpen:null,ecoute:false};
+  const state={data:null,cle:null,panneau:"plein",res:"1920x1080",edits:{},bases:{},pret:false,frame:null,timer:null,onOpen:null,ecoute:false,tirage:0};
   try{ Object.assign(state,JSON.parse(localStorage.getItem(PREFS)||"{}")); }catch(e){}
   state.pret=false;state.frame=null;state.edits={};state.bases={};
   const prefs=()=>{ try{ localStorage.setItem(PREFS,JSON.stringify({panneau:state.panneau,res:state.res})); }catch(e){} };
@@ -60,42 +63,60 @@ const CulturesLab=(()=>{
   const note=txt=>({t:"note",txt});
   function groupes(panneau,kit){
     const G=kit.geometrie;
+    // Les groupes communs à la fiche au survol et à la fiche complète (Idan, 2026-11-18 : « les mêmes réglages »).
+    const modeles=["aucun",...Object.keys(G.ornementsCoin)],poses=Object.keys(G.poses);
+    const cadre=[num("cadre.ep","Épaisseur",6,48),pos("cotes.haut","Côté haut",60),pos("cotes.bas","Côté bas",60),
+      pos("cotes.gauche","Côté gauche",60),pos("cotes.droite","Côté droit",60)];
+    const lesCoins={titre:"Les coins",champs:Object.entries(ANGLES).flatMap(([a,A])=>[{t:"sous",l:A.nom},choix(`coins.${a}.sens`,"Sens",["miroir","rotation"]),
+      pos(`coins.${a}.dx`,"X",60),pos(`coins.${a}.dy`,"Y",60),{t:"miroir",l:"Copier sur les 4 coins (en miroir)",groupe:"coins",angle:a}])};
+    const ornCoins={titre:"Les ornements de coin",champs:Object.entries(ANGLES).flatMap(([a,A])=>[{t:"sous",l:A.nom},choix(`ornementsCoin.${a}.modele`,"Modèle",modeles),
+      choix(`ornementsCoin.${a}.sens`,"Sens",["miroir","rotation"]),num(`ornementsCoin.${a}.taille`,"Taille",20,280),
+      pos(`ornementsCoin.${a}.dx`,"X",120),pos(`ornementsCoin.${a}.dy`,"Y",120),{t:"miroir",l:"Copier sur les 4 coins (en miroir)",groupe:"ornementsCoin",angle:a}])};
+    const ornPose=places=>({titre:"L'ornement posé",champs:[...(poses.length>1?[choix("pose.modele","Modèle",poses)]:[]),choix("pose.place","Place",places),
+      num("pose.taille","Largeur",40,460),pos("pose.dx","X",600),pos("pose.dy","Y",300),oui("pose.retourne","Retourné (tête en bas)")]});
+    const ornSuspendu=places=>({titre:"L'ornement suspendu",champs:[choix("suspendu.place","Place",places),
+      num("suspendu.taille","Largeur",40,460),pos("suspendu.dx","X",600),pos("suspendu.dy","Y",300)]});
+    const ornAllonge=places=>({titre:"L'ornement allongé",champs:[choix("allonge.place","Place",places),
+      num("allonge.taille","Grosseur",8,80,.5),num("allonge.longueur","Longueur",5,100,1,"%"),num("allonge.espacement","Espacement",-40,80,.5),
+      pos("allonge.dx","X",600),pos("allonge.dy","Y",300)]});
     if(panneau==="plein") return [
-      {titre:"L'écran",champs:[choix("largeur","Largeur",["ecran","16:9"]),num("marge","Marge autour",0,80),
-        note("Plafonnée à 16:9 : sur un écran plus large (21:9), la fiche garde la largeur d'un 16:9 et se centre.")]},
-      {titre:"Les zones",champs:[num("haut","Barre du haut",90,260),num("gauche","Colonne de gauche",300,640),
-        note("En pixels d'un écran de 1080 px de haut : tout suit la hauteur de l'écran.")]},
-      {titre:"Le cadre",champs:[num("cadre.ep","Épaisseur du cadre",6,48),num("separations.ep","Épaisseur des séparations",4,48),
-        num("ornements.echelle","Ornements de coin",0,2,.05,"×"),note("Les ornements de coin sont ceux de la fiche au survol, à l'échelle de l'écran (0 : aucun).")]}];
-    if(panneau==="fiche"){
-      const modeles=["aucun",...Object.keys(G.ornementsCoin)],poses=Object.keys(G.poses);
-      return [
-        {titre:"Le cadre",champs:[num("cadre.ep","Épaisseur",6,48),pos("cotes.haut","Côté haut",60),pos("cotes.bas","Côté bas",60),
-          pos("cotes.gauche","Côté gauche",60),pos("cotes.droite","Côté droit",60)]},
-        {titre:"Les coins",champs:Object.entries(ANGLES).flatMap(([a,A])=>[{t:"sous",l:A.nom},choix(`coins.${a}.sens`,"Sens",["miroir","rotation"]),
-          pos(`coins.${a}.dx`,"X",60),pos(`coins.${a}.dy`,"Y",60),{t:"miroir",l:"Copier sur les 4 coins (en miroir)",groupe:"coins",angle:a}])},
-        {titre:"La barre du milieu",champs:[num("separation.ep","Épaisseur",3,48),pos("separation.dx","X",60),oui("separation.jonctions","Jonctions en T"),
-          pos("separation.tHaut.dx","Jonction du haut : X",40),pos("separation.tHaut.dy","Jonction du haut : Y",40),
-          pos("separation.tBas.dx","Jonction du bas : X",40),pos("separation.tBas.dy","Jonction du bas : Y",40)]},
-        {titre:"La bande sous le nom",champs:[num("sousNom.ep","Épaisseur",3,32),pos("sousNom.dy","Y",60),oui("sousNom.jonctions","Jonctions en T"),
-          pos("sousNom.tPortrait.dx","Côté portrait : X",40),pos("sousNom.tPortrait.dy","Côté portrait : Y",40),
-          pos("sousNom.tBord.dx","Côté bord : X",40),pos("sousNom.tBord.dy","Côté bord : Y",40)]},
-        {titre:"Les ornements de coin",champs:Object.entries(ANGLES).flatMap(([a,A])=>[{t:"sous",l:A.nom},choix(`ornementsCoin.${a}.modele`,"Modèle",modeles),
-          choix(`ornementsCoin.${a}.sens`,"Sens",["miroir","rotation"]),num(`ornementsCoin.${a}.taille`,"Taille",20,280),
-          pos(`ornementsCoin.${a}.dx`,"X",120),pos(`ornementsCoin.${a}.dy`,"Y",120),{t:"miroir",l:"Copier sur les 4 coins (en miroir)",groupe:"ornementsCoin",angle:a}])},
-        {titre:"L'ornement posé",champs:[...(poses.length>1?[choix("pose.modele","Modèle",poses)]:[]),
-          choix("pose.place","Place",["aucune","bas-page","bas-centre","bas-portrait","haut-page","haut-centre","haut-portrait"]),
-          num("pose.taille","Largeur",40,460),pos("pose.dx","X",300),pos("pose.dy","Y",300),oui("pose.retourne","Retourné (tête en bas)")]},
-        {titre:"L'ornement suspendu",champs:[choix("suspendu.place","Place",["aucune","haut-portrait","haut-page","sous-nom","coin-g","coin-d"]),
-          num("suspendu.taille","Largeur",40,460),pos("suspendu.dx","X",300),pos("suspendu.dy","Y",300)]},
-        {titre:"L'ornement allongé",champs:[choix("allonge.place","Place",["aucune","separation","gauche","droite","bas","haut"]),
-          num("allonge.taille","Grosseur",8,80,.5),num("allonge.longueur","Longueur",5,100,1,"%"),num("allonge.espacement","Espacement",-40,80,.5),
-          pos("allonge.dx","X",300),pos("allonge.dy","Y",300)]},
-        {titre:"Le titre et le cartouche",champs:[num("titre.hauteur","Ornement du titre : hauteur",4,44,.5),pos("titre.ecart","Ornement du titre : écart",40),
-          choix("nom","Nom",["clair","or"]),num("cuir.grain","Grain du cuir",20,250,5,"%"),num("cuir.sombre","Assombrir le cuir",0,85,1,"%")]}];
-    }
+      {titre:"La barre du haut",champs:[num("haut","Hauteur",90,260),num("barre.margeGauche","Marge à gauche (selon le coin)",0,300),
+        num("barre.margeDroite","Marge à droite",0,300),num("barre.avatarMarge","Avatar : marge en haut et en bas",0,60),
+        num("barre.ecart","Écart entre les éléments",0,80),num("barre.nom","Taille du nom",20,90,.5),num("barre.titre","Taille du titre",12,60,.5),
+        choix("nom","Nom",["clair","or"]),num("cuir.grain","Grain du cuir",20,400,5,"%"),num("cuir.sombre","Assombrir le cuir",0,95,1,"%"),
+        note("Les marges partent du bord intérieur du cadre. Le nom et le titre ont l'encre de la fiche au survol.")]},
+      {titre:"La colonne de gauche",champs:[num("gauche","Largeur",250,700),
+        note("Le portrait en pied prend toute la largeur de la colonne.")]},
+      {titre:"L'écran",champs:[choix("largeur","Largeur",["ecran","16:9"]),
+        note("Plafonnée à 16:9 : sur un écran plus large (21:9), la fiche garde la largeur d'un 16:9 et se centre. Tout est en pixels d'un écran de 1080 px de haut et suit la hauteur de l'écran.")]},
+      {titre:"Le cadre",champs:cadre},
+      lesCoins,
+      {titre:"La bande sous la barre du haut",champs:[num("bande.ep","Épaisseur",3,48),pos("bande.dy","Y",60),oui("bande.jonctions","Jonctions en T"),
+        pos("bande.tGauche.dx","Jonction de gauche : X",40),pos("bande.tGauche.dy","Jonction de gauche : Y",40),
+        pos("bande.tDroite.dx","Jonction de droite : X",40),pos("bande.tDroite.dy","Jonction de droite : Y",40)]},
+      {titre:"La séparation de la colonne",champs:[num("separation.ep","Épaisseur",3,48),pos("separation.dx","X",60),oui("separation.jonctions","Jonctions en T"),
+        pos("separation.tHaut.dx","Jonction du haut : X",40),pos("separation.tHaut.dy","Jonction du haut : Y",40),
+        pos("separation.tBas.dx","Jonction du bas : X",40),pos("separation.tBas.dy","Jonction du bas : Y",40)]},
+      ornCoins,
+      ornPose(["aucune","bas-colonne","bas-centre","bas-principale","haut-colonne","haut-centre","haut-principale","bande-colonne","bande-centre","bande-principale"]),
+      ornSuspendu(["aucune","sous-bande-colonne","sous-bande-principale","coin-g","coin-d"]),
+      ornAllonge(["aucune","separation","gauche","droite","bas","haut","bande"])];
+    if(panneau==="fiche") return [
+      {titre:"Le cadre",champs:cadre},
+      lesCoins,
+      {titre:"La barre du milieu",champs:[num("separation.ep","Épaisseur",3,48),pos("separation.dx","X",60),oui("separation.jonctions","Jonctions en T"),
+        pos("separation.tHaut.dx","Jonction du haut : X",40),pos("separation.tHaut.dy","Jonction du haut : Y",40),
+        pos("separation.tBas.dx","Jonction du bas : X",40),pos("separation.tBas.dy","Jonction du bas : Y",40)]},
+      {titre:"La bande sous le nom",champs:[num("sousNom.ep","Épaisseur",3,32),pos("sousNom.dy","Y",60),oui("sousNom.jonctions","Jonctions en T"),
+        pos("sousNom.tPortrait.dx","Côté portrait : X",40),pos("sousNom.tPortrait.dy","Côté portrait : Y",40),
+        pos("sousNom.tBord.dx","Côté bord : X",40),pos("sousNom.tBord.dy","Côté bord : Y",40)]},
+      ornCoins,
+      ornPose(["aucune","bas-page","bas-centre","bas-portrait","haut-page","haut-centre","haut-portrait"]),
+      ornSuspendu(["aucune","haut-portrait","haut-page","sous-nom","coin-g","coin-d"]),
+      ornAllonge(["aucune","separation","gauche","droite","bas","haut"]),
+      {titre:"Le titre et le cartouche",champs:[num("titre.hauteur","Ornement du titre : hauteur",4,44,.5),pos("titre.ecart","Ornement du titre : écart",40),
+        choix("nom","Nom",["clair","or"]),num("cuir.grain","Grain du cuir",20,250,5,"%"),num("cuir.sombre","Assombrir le cuir",0,85,1,"%")]}];
     // Les barres du camp.
-    const poses=Object.keys(G.poses);
     const sangle=(p,l)=>[{t:"sous",l},choix(p+".style","Sangle",["bande","barre","aucune"]),num(p+".ep","Épaisseur",4,48),pos(p+".dy","Y",60)];
     return [
       {titre:"La barre du haut",champs:[choix("haut.bande.cale","Position",["gauche","centre","droite"],{noms:{gauche:"ferrée à gauche",centre:"au centre",droite:"ferrée à droite"}}),
@@ -136,7 +157,8 @@ const CulturesLab=(()=>{
       <div class="cul-outils"><label>Résolution <select id="cul-res">${res}</select></label>
         <span class="cul-actions"><button type="button" class="btn primary" id="cul-save">Enregistrer</button>
           <button type="button" class="btn" id="cul-jeu" title="Revenir aux réglages du jeu pour ce panneau">Valeurs du jeu</button>
-          <button type="button" class="btn" id="cul-copy" title="Copier les réglages de ce panneau (à me coller dans le chat)">Copier</button></span></div>
+          <button type="button" class="btn" id="cul-copy" title="Copier les réglages de ce panneau (à me coller dans le chat)">Copier</button>
+          <button type="button" class="btn" id="cul-autre" title="Un autre capitaine de cette culture, tiré au hasard (nom, titre, portrait)">Autre mercenaire</button></span></div>
       <p id="cul-statut" class="cul-statut" role="status"></p>
       <div class="cul-main">
         <div class="cul-stage"><div class="cul-box" id="cul-box"><iframe id="cul-frame" title="Aperçu du jeu" src="/index.html?apercu" tabindex="-1"></iframe></div>
@@ -148,14 +170,20 @@ const CulturesLab=(()=>{
   const culture=()=>state.data.cultures.find(c=>c.cle===state.cle)||null;
   const sale=(cle,panneau)=>state.edits[cle]?.[panneau]!=null&&JSON.stringify(state.edits[cle][panneau])!==JSON.stringify(state.bases[cle]?.[panneau]?.valeurs);
   const dernier=(cle,panneau)=>state.data.reglages.find(r=>r.culture===cle&&r.panneau===panneau)||null;
-  function jeu(kit,panneau){ return panneau==="plein"?{...clone(PLEIN_DEFAUT),...clone(kit.plein||{})}:clone(kit[panneau]); }
+  function jeu(kit,panneau){ return clone(kit[panneau]); }
+  // Un enregistrement repris sur les réglages du jeu : seulement les réglages que le jeu connaît encore, du même type
+  // (les réglages changent de forme quand on en ajoute).
+  function fondre(base,depot){
+    if(base&&typeof base==="object"&&!Array.isArray(base)) return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,fondre(v,depot?.[k])]));
+    return typeof depot===typeof base?depot:base;
+  }
 
   // Les réglages en cours d'une culture : son dernier enregistrement pour chaque panneau, sinon ceux du jeu.
   function preparer(c){
     if(!c.kit||state.edits[c.cle]) return;
     state.edits[c.cle]={};state.bases[c.cle]={};
     for(const {cle:p} of PANNEAUX){
-      const r=dernier(c.cle,p),valeurs=r?clone(r.reglages):jeu(c.kit,p);
+      const r=dernier(c.cle,p),valeurs=r?fondre(jeu(c.kit,p),r.reglages):jeu(c.kit,p);
       state.bases[c.cle][p]={valeurs:clone(valeurs),date:r?.date||null};
       state.edits[c.cle][p]=valeurs;
     }
@@ -245,7 +273,7 @@ const CulturesLab=(()=>{
     state.timer=setTimeout(()=>{
       const c=culture(),frame=document.getElementById("cul-frame");
       if(!c||!frame||!state.pret) return;
-      frame.contentWindow.postMessage({type:"apercu",culture:c.nom,panneau:state.panneau,kit:kitEnCours(c)},location.origin);
+      frame.contentWindow.postMessage({type:"apercu",culture:c.nom,panneau:state.panneau,kit:kitEnCours(c),tirage:state.tirage},location.origin);
     },80);
   }
   function ecouter(){
@@ -291,6 +319,7 @@ const CulturesLab=(()=>{
     });
     root.querySelector("#cul-res").addEventListener("change",e=>{ state.res=e.target.value;prefs();taille(); });
     root.querySelector("#cul-save").addEventListener("click",enregistrer);
+    root.querySelector("#cul-autre").addEventListener("click",()=>{ state.tirage+=1; envoyer(); });
     root.querySelector("#cul-jeu").addEventListener("click",()=>{
       const c=culture();if(!c?.kit) return;
       state.edits[c.cle][state.panneau]=jeu(c.kit,state.panneau);
@@ -336,6 +365,6 @@ const CulturesLab=(()=>{
     statut();envoyer();
   }
 
-  // groupes, lire, PLEIN_DEFAUT : pour les tests (tests/full-sheet.test.js).
-  return {compute,meta,nav,render,wire,open,anchor,groupes,lire,PLEIN_DEFAUT,PANNEAUX};
+  // groupes, lire, fondre : pour les tests (tests/full-sheet.test.js).
+  return {compute,meta,nav,render,wire,open,anchor,groupes,lire,fondre,PANNEAUX};
 })();

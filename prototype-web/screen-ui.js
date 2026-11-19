@@ -305,7 +305,8 @@ function setHudActionMenu(button,items=[]){
   menu.hidden=!open;
   menu.dataset.action=open?button.dataset.hudAction:"";
   menu.innerHTML=open?items.map(x=>`<li role="none"><button type="button" role="menuitem" data-hud-pick="${esc(x.key)}">${esc(x.label)}</button></li>`).join(""):"";
-  if(open){ menu.style.left=button.offsetLeft+"px"; menu.setAttribute("aria-label",button.title||""); }
+  // Tout proportionnel : le menu est mis à l'échelle (zoom), pas le bouton : on divise sa position.
+  if(open){ menu.style.left=button.offsetLeft/(menu.currentCSSZoom||1)+"px"; menu.setAttribute("aria-label",button.title||""); }
 }
 // Combat (Idan, 2026-11-14 : « ça ouvre les missions qui doivent avoir un combat aujourd'hui » ; « juste commencer le
 // combat, sinon grisé ») : les escouades arrivées sur place ; leur fenêtre « Commencer le combat » (contract-ui.js).

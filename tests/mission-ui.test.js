@@ -302,7 +302,7 @@ assert.match(css,/\.hex-cell\.in-range\{/);
 assert.match(css,/\.hex-cell\.aoe,/);
 // En combat, pas de barre du bas (Idan, 2026-11-06 : « Ça permet d'agrandir un peu la carte ») : la carte prend sa place.
 assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/);
-assert.match(css,/\.mission-panel\{[^}]*height:calc\(100dvh - 16px\)/);
+assert.match(css,/\.mission-panel\{[^}]*height:calc\(calc\(100 \* var\(--dvh\)\) - 16px\)/);
 assert.doesNotMatch(css,/body\[data-screen="mission"\] \.app-shell\{[^}]*74px/);
 
 console.log("Écran de combat : charge en ligne et en biais, portée et zone en surbrillance, approche au corps à corps, rythme du tour ennemi, aperçu des sorts — OK");

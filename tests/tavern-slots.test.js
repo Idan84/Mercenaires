@@ -77,9 +77,14 @@ assert.doesNotMatch(css,/\.recruit-nav[^{]*\{[^}]*display:none/,"les flèches re
 // flèches suivent l'écran d'un bloc (zoom par --ui-scale).
 assert.match(css,/#tavern-recruits-view\{--board-w:1935\.5px;/);
 assert.match(css,/--recruit-portrait-w:clamp\(100px,calc\(\(1080px - 364px - 81\.6px \* var\(--bb-h\) - 81\.6px \* var\(--ht-barre\) \* \(var\(--ht-top\) \+ 1\.3\)\) \* 9 \/ 16\),280px\);/,"le portrait : la hauteur libre entre les barres, en 1080");
-assert.match(css,/\.recruit-carousel\{position:relative;z-index:1;zoom:var\(--ui-scale,1\);/,"tout suit l'écran d'un bloc");
+// … avec tout le contenu (.app-shell, puis les fenêtres), plus de zoom propre au carrousel ; ses marges en part d'écran
+// se prennent sur l'écran « de référence » (--vw).
+assert.match(css,/\.app-shell,dialog,\.game-pause-panel\{zoom:var\(--ui-scale,1\)\}/,"tout suit l'écran d'un bloc");
+assert.doesNotMatch(css,/\.recruit-carousel\{[^}]*zoom:/,"pas de double mise à l'échelle");
+assert.match(css,/\.recruit-carousel\{[^}]*margin-inline:calc\(-1 \* max\(0px,\(calc\(100 \* var\(--vw\)\) - 1200px\) \/ 2\) - 20px \+ 16px\)/,"les marges sur l'écran de référence");
 assert.doesNotMatch(css.slice(css.indexOf("#tavern-recruits-view{"),css.indexOf("#tavern-recruits-view::before{")),/100vw|100vh|100dvh/,"plus rien ne dépend de la taille de l'écran dans les réglages");
-assert.match(css,/\.mission-board\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
+// Le panneau des missions couvre l'écran « de référence » (tout proportionnel : --vw, --vh) ; 1935,5 px en 1920 × 1080.
+assert.match(css,/\.mission-board\{--board-w:max\(calc\(100 \* var\(--vw\)\),calc\(100 \* var\(--vh\)\) \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
 assert.match(css,/#tavern-recruits-view\{[^}]*--recruit-fleche-w:calc\(var\(--board-w\) \* \.088\)/,"la flèche du panneau : 8,8 % de sa largeur");
 assert.match(css,/\.recruit-nav\{[^}]*width:var\(--recruit-fleche-w\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
 assert.doesNotMatch(css,/\.recruit-nav::(before|after)/,"plus de plaque sous les flèches (« c'est horrible ! »)");

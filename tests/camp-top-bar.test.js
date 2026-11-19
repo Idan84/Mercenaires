@@ -59,8 +59,10 @@ assert.match(css,/\.game-top-bar:not\(\.has-art\) \.hud-bar-art\{/,"un cadre pro
 assert.match(css,/#hud-company\.is-two-lines\{[^}]*-webkit-line-clamp:2;/,"un nom trop long passe sur deux lignes");
 assert.match(css,/\.game-top-bar #hud-day::before\{content:"\\00a0·\\00a0";/,"la date sur une ligne : « 1 Brumecendre · Jour 1 »");
 assert.match(css,/body\[data-screen="camp"\] \.topbar\{display:none\}/,"plus de logo au camp, même sur l'accueil");
-assert.match(css,/body\[data-screen="camp"\]:not\(\[data-camp-scene="home"\]\) \.app-shell\{padding-top:calc\(var\(--hud-top-h\) \+ 24px\)\}/,"chaque lieu commence sous la barre");
-assert.match(css,/body\[data-screen="camp"\]\[data-camp-scene="home"\] \.app-shell\{padding-top:calc\(var\(--hud-top-h\) \+ 18px\)\}/);
+// Le contenu (.app-shell) est mis à l'échelle (zoom) : la hauteur de la barre s'y prend en valeur de 1080 (--hud-top-z).
+assert.match(css,/body\[data-screen="camp"\]:not\(\[data-camp-scene="home"\]\) \.app-shell\{padding-top:calc\(var\(--hud-top-z\) \+ 24px\)\}/,"chaque lieu commence sous la barre");
+assert.match(css,/--hud-top-z:calc\(var\(--hud-top-h\) \/ var\(--ui-scale,1\)\);/,"la barre en valeur de 1080");
+assert.match(css,/body\[data-screen="camp"\]\[data-camp-scene="home"\] \.app-shell\{padding-top:calc\(var\(--hud-top-z\) \+ 18px\)\}/);
 assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/,"en combat, aucune des deux barres");
 assert.ok(html.indexOf('<script src="hud-bars.js"></script>')>0&&html.indexOf('<script src="hud-bars.js"></script>')<html.indexOf('<script src="screen-ui.js"></script>'));
 

@@ -1122,10 +1122,12 @@ function placeStatPopover(value){
   const grid=value.closest(".sheet-stats"),pop=value.querySelector(".sheet-stat-pop"),row=value.closest(".sheet-stat");
   if(!grid||!pop||!row) return;
   const box=grid.getBoundingClientRect(),line=row.getBoundingClientRect(),first=grid.querySelector(".sheet-stat-group")?.getBoundingClientRect();
-  pop.style.left=((first?first.left:box.left)-box.left)+"px";
+  // Tout proportionnel : les écarts se mesurent en pixels d'écran, la fiche est mise à l'échelle (zoom) : on divise.
+  const z=pop.currentCSSZoom||1;
+  pop.style.left=((first?first.left:box.left)-box.left)/z+"px";
   const below=line.top-box.top<box.height/2;
-  pop.style.top=below?(line.bottom-box.top+6)+"px":"auto";
-  pop.style.bottom=below?"auto":(box.bottom-line.top+6)+"px";
+  pop.style.top=below?(line.bottom-box.top+6*z)/z+"px":"auto";
+  pop.style.bottom=below?"auto":(box.bottom-line.top+6*z)/z+"px";
   pop.classList.toggle("is-above",!below);
 }
 // Onglet Caractéristiques rangé par fonction (Idan, 2026-10-31) : Attaque et Défense ; Vitesse, Magie, Moral et

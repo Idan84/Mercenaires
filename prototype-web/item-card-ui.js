@@ -174,8 +174,10 @@ function showItemCard(tile){
   if(left+card.width>innerWidth-margin) left=box.left-gap-card.width;
   left=Math.max(margin,Math.min(left,innerWidth-margin-card.width));
   const top=Math.max(margin,Math.min(row.top+row.height/2-card.height/2,innerHeight-margin-card.height));
-  float.style.left=left+"px";
-  float.style.top=top+"px";
+  // Tout proportionnel : la position se calcule en pixels d'écran, l'élément est mis à l'échelle (zoom) : on divise.
+  const z=float.currentCSSZoom||1;
+  float.style.left=left/z+"px";
+  float.style.top=top/z+"px";
 }
 
 function hideItemCard(){

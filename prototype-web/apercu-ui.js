@@ -6,14 +6,14 @@
 // son kit (data/reference/culture-kits.json) : les barres du camp, la fiche au survol du capitaine ou sa fiche complète en
 // plein écran. Ce que l'on règle est donc ce que le joueur verra.
 // Rien n'est sauvegardé (saveGame ne fait rien), aucune musique ; il n'écoute que la page qui l'ouvre (même site).
-// Messages reçus : {type:"apercu", culture, panneau:"barres"|"fiche"|"plein", kit} (kit : la ligne du kit réglée, ou
-// null). Envoyés : {type:"apercu-pret"}, puis {type:"apercu-rendu", culture, panneau} ou {type:"apercu-erreur", message}.
+// Messages reçus : {type:"apercu", culture, panneau:"barres"|"fiche"|"plein", kit, tirage} (kit : la ligne du kit
+// réglée, ou null ; tirage : change pour tirer un autre capitaine de la culture). Envoyés : {type:"apercu-pret"}, puis {type:"apercu-rendu", culture, panneau} ou {type:"apercu-erreur", message}.
 const Apercu=(()=>{
   const actif=(()=>{ try{ return new URLSearchParams(location.search).has("apercu")&&window.parent!==window; }catch(e){ return false; } })();
   if(!actif) return {actif:false};
   game.apercu=true;
   document.documentElement.classList.add("is-apercu");
-  let pret=false,attente=null,kitsDuJeu=null,culturePartie=null;
+  let pret=false,attente=null,kitsDuJeu=null,culturePartie=null,tiragePartie=null;
   const envoyer=message=>window.parent.postMessage(message,location.origin);
 
   // Le jeu est prêt quand ses données sont chargées et la création du capitaine remplie (ui.js, init).
@@ -66,7 +66,8 @@ const Apercu=(()=>{
     if(!pret){ attente=message; return; }
     try{
       poserKit(message.kit||null);
-      if(culturePartie!==message.culture) nouvellePartie(message.culture);
+      // Une autre culture, ou « Autre mercenaire » dans le Design Lab : une nouvelle partie, un autre capitaine.
+      if(culturePartie!==message.culture||tiragePartie!==(message.tirage||0)){ nouvellePartie(message.culture); tiragePartie=message.tirage||0; }
       // Les barres du camp, redessinées avec les réglages en cours (screen-ui.js garde la dernière culture posée).
       hudBarShown="";
       applyHudBar(pictoSlug(message.culture));

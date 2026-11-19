@@ -13,10 +13,6 @@ const REGLAGES_MAX_OCTETS = 32768;
 const REGLAGES_PROFONDEUR = 6;
 // Des clés que le jeu lit sans qu'elles soient toujours écrites (les pictos inactifs des barres dorées).
 const REGLAGES_CLES_EN_PLUS = ['inactifs'];
-// Les réglages de la fiche complète d'un kit qui n'en a pas encore (prototype-web/full-sheet-ui.js).
-const REGLAGES_PLEIN_DEFAUT = ['largeur' => 'ecran', 'haut' => 150, 'gauche' => 440, 'marge' => 0, 'cadre' => ['ep' => 20],
-    'separations' => ['ep' => 20], 'ornements' => ['echelle' => 1]];
-
 // Les kits du jeu, par clé de culture, tels que publiés avec le site.
 function reglages_kits(string $site): array
 {
@@ -36,9 +32,6 @@ function reglages_kits(string $site): array
 // Les réglages du jeu pour ce panneau de ce kit (la référence de forme).
 function reglages_reference(array $kit, string $panneau): ?array
 {
-    if ($panneau === 'plein') {
-        return array_replace_recursive(REGLAGES_PLEIN_DEFAUT, is_array($kit['plein'] ?? null) ? $kit['plein'] : []);
-    }
     return is_array($kit[$panneau] ?? null) ? $kit[$panneau] : null;
 }
 

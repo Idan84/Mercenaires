@@ -121,7 +121,7 @@ l'aubergiste.
 | Titre | ligne vide | « Qu'est-ce qu'on dit de lui ? » | Aubergiste | son titre | précision de l'aubergiste : le titre recalculé sur ses estimations |
 | Origines | visibles | — | — | — | — |
 | Réputation | visible | — | — | — | — |
-| Affinité | vide | « Il m'apprécierait, à ton avis ? » | Aubergiste seul | Hostile / Neutre / Amical | précision de l'aubergiste sur le score, puis le palier |
+| Affinité | vide | « Il m'apprécierait, à ton avis ? » | Aubergiste seul | un mot à la place des cœurs : Hostile, Neutre ou Amical | précision de l'aubergiste, comme pour le titre |
 | Salaire et prime | vides | « Combien demandes-tu ? » | Candidat | sa demande, puis ses contre-propositions | aucun |
 | Set 1 | vide | « Quelle arme de corps à corps manies-tu ? » | Candidat | l'arme qu'il porte (pas sa meilleure) | aucun |
 | Set 2 | vide | « Quelle arme de tir as-tu ? » | Candidat | l'arme de tir qu'il porte | aucun |
@@ -172,8 +172,10 @@ Arrondi(
 )
 ```
 
-Pour l'affinité, l'estimation du score (−100 à +100) est ramenée à trois zones égales (Idan, 2026-11-19) : **Hostile**
-sous −33,3, **Neutre** de −33,3 à +33,3, **Amical** au-dessus de +33,3.
+**L'affinité** (Idan, 2026-11-19) : l'aubergiste la calcule comme le jeu (doc 02 : de −100 à +100, que la fiche au survol
+montre en 0 à 10 cœurs), puis y ajoute son biais, comme pour le titre. Sur la fiche du candidat, les cœurs deviennent un
+mot, chacun pour un tiers de l'échelle : **Hostile** (le premier tiers, sous −33,3), **Neutre** (le tiers du milieu),
+**Amical** (le dernier tiers, au-dessus de +33,3).
 
 ### En suspens : 3 questions et estimation de l'Intendant
 

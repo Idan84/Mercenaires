@@ -137,7 +137,7 @@ function renderFullSheet(c,{W,H,tab=FULL_SHEET_TABS[0]}={}){
     return `<div class="fs-zone ${cls}" style="left:${hcPx(z.x0)};top:${hcPx(z.y0)};width:${hcPx(z.x1-z.x0)};height:${hcPx(z.y1-z.y0)};padding:${hcPx(p.t)} ${hcPx(p.r)} ${hcPx(p.b)} ${hcPx(p.l)};${style}">${inner}</div>`;
   };
   const place=(label,cls="")=>`<div class="fs-place ${cls}">${esc(label)}</div>`;
-  const cuir=kit?`--fs-texture:url("${kit.dossier}/${kit.geometrie.texture}");--fs-voile:${kit.geometrie.voile};--fs-sombre:${P.cuir.sombre/100};--fs-grain:${hcPx(256*P.cuir.grain/100*s)}`:"";
+  const cuir=kit?`--fs-texture:url('${kit.dossier}/${kit.geometrie.texture}');--fs-voile:${kit.geometrie.voile};--fs-sombre:${P.cuir.sombre/100};--fs-grain:${hcPx(256*P.cuir.grain/100*s)}`:"";
   const titre=typeof mercenaryHoverData==="function"?mercenaryHoverData(c).title:"";
   const avatar=kind=>typeof renderAvatar==="function"?renderAvatar(c,{variant:"detail",kind}):"";
   const picto=kind=>c?.[kind]&&typeof renderPicto==="function"?renderPicto(kind,c[kind],{size:"md"}):"";

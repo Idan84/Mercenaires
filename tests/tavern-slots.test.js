@@ -58,8 +58,8 @@ const leave=createTavernRules({random:()=>0,reference});
 const morning=leave.tavernMorning(state.tavern,state.day+1,()=>generator.createMercenary({id:999,captain}),4);
 assert.deepEqual([morning.departures.length,morning.arrivals.length,state.tavern.candidates.length],[present.length,4,4]);
 
-// Le carrousel : la rangée, une flèche sur chaque bord ; l'accroche sur chaque carte ; rangée centrée quand tout tient, sans
-// rien couper quand elle déborde (marges automatiques) ; recalculé quand la rangée change de taille.
+// Le carrousel : la rangée, une flèche de chaque côté ; l'accroche sur chaque carte ; trois candidats par écran, trois de plus
+// à chaque flèche (Idan, 2026-11-19) ; moins de trois : centrés (marges automatiques) ; recalculé quand la place change.
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<div class="recruit-carousel">\s*<button type="button" class="recruit-nav" data-recruit-scroll="-1" aria-label="Candidats précédents">‹<\/button>\s*<div id="tavern-candidates" class="recruit-track"><\/div>\s*<button type="button" class="recruit-nav" data-recruit-scroll="1" aria-label="Candidats suivants">›<\/button>/);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
@@ -67,13 +67,22 @@ assert.match(css,/\.recruit-track\{[^}]*overflow-x:auto;[^}]*scroll-snap-type:x 
 assert.match(css,/\.recruit-track \.recruit-card\{[^}]*scroll-snap-align:start\}/);
 assert.match(css,/\.recruit-track>:first-child\{margin-left:auto\}\n\.recruit-track>:last-child\{margin-right:auto\}/);
 assert.match(css,/\.recruit-track\{[^}]*scroll-padding-inline:2px/);
-assert.match(css,/\.recruit-nav\{position:absolute;/,"les flèches ne prennent pas de place");
-assert.match(css,/\.recruit-carousel\.is-static \.recruit-nav\{display:none\}/);
+// « Flèche en permanence : les mêmes que pour les missions » : jamais cachées, l'équerre de fer du panneau à sa taille.
+assert.doesNotMatch(css,/\.recruit-nav[^{]*\{[^}]*display:none/,"les flèches restent affichées");
+assert.match(css,/\.recruit-carousel\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/);
+assert.match(css,/\.mission-board\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
+assert.match(css,/\.recruit-nav::after\{[^}]*inset:calc\(var\(--board-w\) \* \.007\) calc\(var\(--board-w\) \* \.01\);background:url\("assets\/taverne\/fleche-fer\.webp"\)/);
+assert.match(css,/\.recruit-nav\{[^}]*width:calc\(var\(--board-w\) \* \.108\);height:calc\(var\(--board-w\) \* \(\.088 \* 284 \/ 640 \+ \.014\)\)/,"la flèche du panneau (8,8 %) et sa marge");
+assert.match(css,/\.recruit-nav::before\{[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 22px stretch/,"sur un bout de parchemin");
+assert.match(css,/\.mission-board-arrow\{[^}]*width:calc\(var\(--board-w\) \* \.088\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
 assert.doesNotMatch(css,/\.recruit-grid\{/);
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
 assert.match(ui,/updateRecruitCarousel\(\);\n\}/,"après chaque rendu de la Taverne");
 assert.match(ui,/if\(view==="recruits"\) updateRecruitCarousel\(\);/,"à l'ouverture de « Recruter »");
-assert.match(ui,/new ResizeObserver\(\(\)=>updateRecruitCarousel\(\)\)\.observe\(track\)/);
+assert.match(ui,/new ResizeObserver\(\(\)=>updateRecruitCarousel\(\)\)\.observe\(carousel\)/);
+assert.match(ui,/const RECRUITS_PER_PAGE=3;/);
+assert.match(ui,/track\.style\.width=page\?`\$\{RECRUITS_PER_PAGE\*page\.step-page\.gap\+page\.pad\}px`:"";/,"la largeur de trois cartes");
+assert.match(ui,/track\.scrollBy\(\{left:direction\*\(page\?RECRUITS_PER_PAGE\*page\.step:track\.clientWidth\),behavior:"smooth"\}\)/,"trois de plus");
 
 // La carte refaite (Idan, 2026-11-19 : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire
 // capitaine) pour aller lui parler ») : pas de bouton retour, le parchemin d'Idan, le bouton de la charte à sa taille.

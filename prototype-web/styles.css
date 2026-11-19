@@ -1429,23 +1429,32 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur le parchemin d'Idan (celui de la création
    du capitaine et du dortoir, coins jamais déformés), l'encre et les polices de la charte, et le bouton de la charte
    (jamais déformé) ; pas de bouton retour, la barre du bas mène partout. */
-/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), une flèche posée sur
-   chaque bord, effacée au bout ; quand tout tient, la rangée est centrée (marges automatiques : rien n'est coupé si elle
-   déborde) et les flèches disparaissent. Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
+/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), trois cartes par écran
+   (Idan, 2026-11-19 : « Toujours 3 candidats par écran. On slide pour en avoir 3 autres » ; tavern-ui.js lui donne la
+   largeur de trois cartes) et une flèche de chaque côté, hors des cartes, toujours affichée. Moins de trois candidats : ils
+   sont centrés (marges automatiques). Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
 /* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins une marge de chaque côté. */
-.recruit-carousel{position:relative;display:flow-root;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
-.recruit-track{display:flex;gap:22px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
+.recruit-carousel{--board-w:max(100vw,100vh * 2000 / 1116);position:relative;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
+.recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:22px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
 .recruit-track::-webkit-scrollbar{display:none}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}
 .recruit-track .recruit-card{flex:0 0 auto;scroll-snap-align:start}
 .recruit-track .recruit-empty{flex:1}
-.recruit-nav{position:absolute;top:calc(50% - 42px);z-index:2;width:40px;height:72px;padding:0;border:1px solid #b58a45;border-radius:10px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#f0d395;font:700 30px/1 Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer;transition:opacity .2s}
-.recruit-nav[data-recruit-scroll="-1"]{left:-4px}
-.recruit-nav[data-recruit-scroll="1"]{right:-4px}
-.recruit-nav:hover,.recruit-nav:focus-visible{border-color:#ffe1ac;color:#ffe1ac;outline:none}
-.recruit-nav:disabled{opacity:0;pointer-events:none}
-.recruit-carousel.is-static .recruit-nav{display:none}
+/* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), l'équerre de fer
+   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur un petit bout du parchemin des cartes
+   pour qu'elle se lise (Idan, 2026-11-19 : « il leur faut un support … Pose les sur un petit bout de parchemin ») ; survol
+   et grisé au bout comme sur le panneau, sur la flèche seule. */
+.recruit-nav{all:unset;position:relative;isolation:isolate;flex:none;box-sizing:border-box;width:calc(var(--board-w) * .108);height:calc(var(--board-w) * (.088 * 284 / 640 + .014));font-size:0;cursor:pointer}
+.recruit-nav::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:22px;border-image:url("assets/creation/parchemin.webp") 180 fill / 22px stretch;filter:drop-shadow(0 8px 12px rgba(0,0,0,.6))}
+.recruit-nav::after{content:"";position:absolute;inset:calc(var(--board-w) * .007) calc(var(--board-w) * .01);background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+.recruit-nav[data-recruit-scroll="-1"]::after{transform:scaleX(-1)}
+.recruit-nav:focus-visible{outline:2px solid var(--or-clair,#f0d395);outline-offset:3px}
+.recruit-nav:hover::after,.recruit-nav:focus-visible::after{filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.recruit-nav[data-recruit-scroll="1"]:hover::after,.recruit-nav[data-recruit-scroll="1"]:focus-visible::after{translate:calc(var(--board-w) * .003) 0}
+.recruit-nav[data-recruit-scroll="-1"]:hover::after,.recruit-nav[data-recruit-scroll="-1"]:focus-visible::after{translate:calc(var(--board-w) * -.003) 0}
+.recruit-nav:disabled{cursor:default}
+.recruit-nav:disabled::after{translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
 /* La carte : le portrait en pied et au moins 20 px de parchemin de chaque côté ; au moins 288 px de large, pour que le texte
    (260 px) tienne toujours en deux lignes, même l'origine la plus longue (« Homme-bête des clans des grandes steppes au sang
    de démon »). Le portrait prend toute la hauteur libre entre les

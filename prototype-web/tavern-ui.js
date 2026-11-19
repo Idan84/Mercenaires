@@ -106,21 +106,31 @@ function renderTavern(){
   updateRecruitCarousel();
 }
 
-// Les candidats en carrousel (Idan, 2026-11-04 : « fais un système qui défile comme un carousel ») : une rangée qui défile,
-// une flèche sur chaque bord (effacée au bout), la molette ou le doigt ; tout tient à l'écran : rangée centrée, sans flèches.
+// Les candidats en carrousel (Idan, 2026-11-04 : « fais un système qui défile comme un carousel »), trois par écran (Idan,
+// 2026-11-19 : « Flèche en permanence : les mêmes que pour les missions. Toujours 3 candidats par écran. On slide pour en
+// avoir 3 autres ») : la rangée a la largeur de trois cartes, chaque flèche fait glisser de trois cartes ; les flèches
+// restent affichées, grisées quand on ne peut plus aller de ce côté. La molette ou le doigt font aussi défiler.
+const RECRUITS_PER_PAGE=3;
+function recruitPage(track){
+  const card=track.querySelector(".recruit-card");
+  if(!card?.offsetWidth) return null;
+  const cs=getComputedStyle(track),gap=parseFloat(cs.columnGap)||0;
+  return {step:card.offsetWidth+gap,gap,pad:(parseFloat(cs.paddingLeft)||0)+(parseFloat(cs.paddingRight)||0)};
+}
 function updateRecruitCarousel(){
   const track=$("tavern-candidates"),carousel=track?.closest(".recruit-carousel");
   if(!carousel) return;
-  const overflow=track.scrollWidth-track.clientWidth>1;
-  carousel.classList.toggle("is-static",!overflow);
+  const page=recruitPage(track);
+  track.style.width=page?`${RECRUITS_PER_PAGE*page.step-page.gap+page.pad}px`:"";
   const [prev,next]=carousel.querySelectorAll("[data-recruit-scroll]");
-  if(prev) prev.disabled=!overflow||track.scrollLeft<=1;
-  if(next) next.disabled=!overflow||track.scrollLeft+track.clientWidth>=track.scrollWidth-1;
+  if(prev) prev.disabled=track.scrollLeft<=1;
+  if(next) next.disabled=track.scrollLeft+track.clientWidth>=track.scrollWidth-1;
 }
-// Une page de cartes à la fois ; l'accroche des cartes (scroll-snap) cale la rangée sur un portrait.
+// Trois cartes de plus ; l'accroche des cartes (scroll-snap) cale la rangée sur un portrait. Au bout, la dernière page
+// montre les trois derniers candidats.
 function scrollRecruits(direction){
-  const track=$("tavern-candidates");
-  track.scrollBy({left:direction*Math.max(1,track.clientWidth-12),behavior:"smooth"});
+  const track=$("tavern-candidates"),page=recruitPage(track);
+  track.scrollBy({left:direction*(page?RECRUITS_PER_PAGE*page.step:track.clientWidth),behavior:"smooth"});
 }
 function initializeRecruitCarousel(){
   const track=$("tavern-candidates"),carousel=track?.closest(".recruit-carousel");
@@ -138,8 +148,8 @@ function initializeRecruitCarousel(){
     event.preventDefault();
     track.scrollBy({left:event.deltaY});
   },{passive:false});
-  // Recalculé dès que la rangée change de taille (vue ouverte, fenêtre, écran de téléphone tourné).
-  if(typeof ResizeObserver==="function") new ResizeObserver(()=>updateRecruitCarousel()).observe(track);
+  // Recalculé dès que la place change (vue ouverte, fenêtre) : celle du carrousel, la rangée prenant la largeur qu'on lui donne.
+  if(typeof ResizeObserver==="function") new ResizeObserver(()=>updateRecruitCarousel()).observe(carousel);
   else window.addEventListener("resize",updateRecruitCarousel);
 }
 

@@ -69,11 +69,11 @@ assert.match(css,/\.recruit-track>:first-child\{margin-left:auto\}\n\.recruit-tr
 assert.match(css,/\.recruit-track\{[^}]*scroll-padding-inline:2px/);
 // « Flèche en permanence : les mêmes que pour les missions » : jamais cachées, l'équerre de fer du panneau à sa taille.
 assert.doesNotMatch(css,/\.recruit-nav[^{]*\{[^}]*display:none/,"les flèches restent affichées");
-assert.match(css,/\.recruit-carousel\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/);
+assert.match(css,/#tavern-recruits-view\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/);
 assert.match(css,/\.mission-board\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
-assert.match(css,/\.recruit-nav::after\{[^}]*inset:calc\(var\(--board-w\) \* \.007\) calc\(var\(--board-w\) \* \.01\);background:url\("assets\/taverne\/fleche-fer\.webp"\)/);
-assert.match(css,/\.recruit-nav\{[^}]*width:calc\(var\(--board-w\) \* \.108\);height:calc\(var\(--board-w\) \* \(\.088 \* 284 \/ 640 \+ \.014\)\)/,"la flèche du panneau (8,8 %) et sa marge");
-assert.match(css,/\.recruit-nav::before\{[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 22px stretch/,"sur un bout de parchemin");
+assert.match(css,/#tavern-recruits-view\{[^}]*--recruit-fleche-w:calc\(var\(--board-w\) \* \.088\)/,"la flèche du panneau : 8,8 % de sa largeur");
+assert.match(css,/\.recruit-nav\{[^}]*width:var\(--recruit-fleche-w\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
+assert.doesNotMatch(css,/\.recruit-nav::(before|after)/,"plus de plaque sous les flèches (« c'est horrible ! »)");
 assert.match(css,/\.mission-board-arrow\{[^}]*width:calc\(var\(--board-w\) \* \.088\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
 assert.doesNotMatch(css,/\.recruit-grid\{/);
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
@@ -89,14 +89,24 @@ assert.match(ui,/track\.scrollBy\(\{left:direction\*\(page\?RECRUITS_PER_PAGE\*p
 const recruitsView=index.slice(index.indexOf('<section id="tavern-recruits-view"'),index.indexOf("</section>",index.indexOf('<section id="tavern-recruits-view"')));
 assert.doesNotMatch(recruitsView,/data-tavern-view="home"|Retour à la taverne/,"plus de bouton retour");
 assert.doesNotMatch(css,/\.tavern-back\{/);
-assert.match(css,/\.recruit-card::before\{[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 40px stretch/);
+// Les feuilles des annonces de missions (« Le parchemin des mercenaires varie et reprend ceux des missions »), en neuf
+// parts, au teint de leur papier, avec l'ombre portée des annonces.
+assert.match(css,/\.recruit-card::before\{[^}]*border-image:var\(--feuille\) 80 fill \/ 34px stretch;[^}]*filter:brightness\(var\(--tone,1\)\) hue-rotate\(var\(--hue,0deg\)\) saturate\(var\(--sat,1\)\) drop-shadow\(calc\(var\(--board-w\) \* -\.004\) calc\(var\(--board-w\) \* \.008\) calc\(var\(--board-w\) \* \.006\) rgba\(0,0,0,\.65\)\)/);
+for(let n=2;n<=8;n++) assert.ok(css.includes(`.recruit-card[data-paper="${n}"]{--feuille:url("assets/taverne/feuille-${n}.webp")}`),"feuille "+n);
+const tavernVm=require("node:vm"),paperBox={};
+tavernVm.runInNewContext(ui.slice(ui.indexOf("function recruitPaper("),ui.indexOf("function renderTavernCard(")).concat(";box.f=recruitPaper;"),{box:paperBox});
+const papers=Array.from({length:400},(_,i)=>paperBox.f(i));
+assert.deepEqual(new Set(papers.map(p=>p.paper)).size,8,"les huit feuilles");
+assert.deepEqual(paperBox.f(42),paperBox.f(42),"toujours le même papier pour le même candidat");
+assert.ok(papers.every(p=>/^--tone:(0\.9\d*|1\.0[0-2]\d*);--hue:-?\d+\.\d deg;--sat:(1|\.72)$/.test(p.style.replace("deg"," deg"))),"teint des annonces");
 assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="\$\{m\.id\}">Aller lui parler<\/button>/);
 // Réglages du même jour (« un background noir 60% + floutage », « Garde de l'espace quand le texte doit faire deux lignes »,
 // « Réduis un peu le bouton … par rapport aux icônes d'interface », tailles réglées sur les barres des Elfes).
-assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;background:rgba\(0,0,0,\.6\);[^}]*backdrop-filter:blur\(8px\)/);
+assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch/,"un grand parchemin sur tout l'écran, à la place du voile");
 assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
 assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");
-assert.match(css,/\.recruit-card\{[^}]*width:max\(288px,calc\(var\(--recruit-portrait-w\) \+ 40px\)\);padding:22px 14px 16px/,"l'origine la plus longue tient en deux lignes");
+assert.match(css,/--recruit-card-w:max\(288px,calc\(var\(--recruit-portrait-w\) \+ 40px\)\)/,"l'origine la plus longue tient en deux lignes");
+assert.match(css,/\.recruit-card\{[^}]*width:var\(--recruit-card-w\);padding:22px 14px 16px/);
 assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:13\.5px\}/,"180 × 61, aux proportions de l'image");
 assert.ok(Math.abs(180/61-760/257)<.01,"le bouton garde les proportions de bouton.webp");
 assert.match(ui,/originPhrase\(\{people:m\.people\|\|"",culture:m\.culture\|\|"",ascendance:m\.ascendance\|\|""\}\)/,"l'origine comme sur la fiche au survol, ascendance comprise");

@@ -1420,21 +1420,25 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-btn{background:linear-gradient(180deg,#64492e,#3b2a1b);color:#ffe1ac}
 .talk-offer-back{border-color:#7a5c3c;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1ac;outline:none}
-#tavern-recruits-view{margin-top:-8px;margin-bottom:-48px}
-/* Un voile noir à 60 % et flou sur la taverne, sous les cartes et les barres (Idan, 2026-11-19 : « que la taverne soit
-   moins présente »). */
-#tavern-recruits-view::before{content:"";position:fixed;inset:0;z-index:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none}
+#tavern-recruits-view{--board-w:max(100vw,100vh * 2000 / 1116);
+  --recruit-portrait-w:clamp(110px,calc((100dvh - 360px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
+  --recruit-card-w:max(288px,calc(var(--recruit-portrait-w) + 40px));--recruit-fleche-w:calc(var(--board-w) * .088);
+  margin-top:-8px;margin-bottom:-48px}
+/* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
+   à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
+   puis « Le grand parchemin passe sous les barres mais 100% en largeur et hauteur ») : tout l'écran, sous les barres. */
+#tavern-recruits-view::before{content:"";position:fixed;inset:0;z-index:0;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;pointer-events:none}
 /* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. Refait le
    2026-11-19 (Idan : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire capitaine) pour aller lui
-   parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur le parchemin d'Idan (celui de la création
-   du capitaine et du dortoir, coins jamais déformés), l'encre et les polices de la charte, et le bouton de la charte
-   (jamais déformé) ; pas de bouton retour, la barre du bas mène partout. */
+   parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur une feuille des annonces de missions, posée
+   sur un grand parchemin (plus bas), l'encre et les polices de la charte, et le bouton de la charte (jamais déformé) ; pas
+   de bouton retour, la barre du bas mène partout. */
 /* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), trois cartes par écran
    (Idan, 2026-11-19 : « Toujours 3 candidats par écran. On slide pour en avoir 3 autres » ; tavern-ui.js lui donne la
    largeur de trois cartes) et une flèche de chaque côté, hors des cartes, toujours affichée. Moins de trois candidats : ils
    sont centrés (marges automatiques). Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
 /* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins une marge de chaque côté. */
-.recruit-carousel{--board-w:max(100vw,100vh * 2000 / 1116);position:relative;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
+.recruit-carousel{position:relative;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
 .recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:22px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
 .recruit-track::-webkit-scrollbar{display:none}
 .recruit-track>:first-child{margin-left:auto}
@@ -1442,19 +1446,14 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-track .recruit-card{flex:0 0 auto;scroll-snap-align:start}
 .recruit-track .recruit-empty{flex:1}
 /* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), l'équerre de fer
-   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur un petit bout du parchemin des cartes
-   pour qu'elle se lise (Idan, 2026-11-19 : « il leur faut un support … Pose les sur un petit bout de parchemin ») ; survol
-   et grisé au bout comme sur le panneau, sur la flèche seule. */
-.recruit-nav{all:unset;position:relative;isolation:isolate;flex:none;box-sizing:border-box;width:calc(var(--board-w) * .108);height:calc(var(--board-w) * (.088 * 284 / 640 + .014));font-size:0;cursor:pointer}
-.recruit-nav::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:22px;border-image:url("assets/creation/parchemin.webp") 180 fill / 22px stretch;filter:drop-shadow(0 8px 12px rgba(0,0,0,.6))}
-.recruit-nav::after{content:"";position:absolute;inset:calc(var(--board-w) * .007) calc(var(--board-w) * .01);background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
-.recruit-nav[data-recruit-scroll="-1"]::after{transform:scaleX(-1)}
-.recruit-nav:focus-visible{outline:2px solid var(--or-clair,#f0d395);outline-offset:3px}
-.recruit-nav:hover::after,.recruit-nav:focus-visible::after{filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
-.recruit-nav[data-recruit-scroll="1"]:hover::after,.recruit-nav[data-recruit-scroll="1"]:focus-visible::after{translate:calc(var(--board-w) * .003) 0}
-.recruit-nav[data-recruit-scroll="-1"]:hover::after,.recruit-nav[data-recruit-scroll="-1"]:focus-visible::after{translate:calc(var(--board-w) * -.003) 0}
-.recruit-nav:disabled{cursor:default}
-.recruit-nav:disabled::after{translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol et grisé
+   au bout comme sur le panneau. */
+.recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:640/284;font-size:0;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+.recruit-nav[data-recruit-scroll="-1"]{transform:scaleX(-1)}
+.recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
+.recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
+.recruit-nav:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
 /* La carte : le portrait en pied et au moins 20 px de parchemin de chaque côté ; au moins 288 px de large, pour que le texte
    (260 px) tienne toujours en deux lignes, même l'origine la plus longue (« Homme-bête des clans des grandes steppes au sang
    de démon »). Le portrait prend toute la hauteur libre entre les
@@ -1463,9 +1462,20 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    308 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes restent alignées.
    La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
 .recruit-card{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
-  --recruit-portrait-w:clamp(110px,calc((100dvh - 360px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
-  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:max(288px,calc(var(--recruit-portrait-w) + 40px));padding:22px 14px 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
-.recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:40px;border-image:url("assets/creation/parchemin.webp") 180 fill / 40px stretch;filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
+  --feuille:url("assets/taverne/feuille-1.webp");
+  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:var(--recruit-card-w);padding:22px 14px 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
+/* Le papier : une des huit feuilles des annonces de missions (data-paper, recruitPaper dans tavern-ui.js), en neuf parts
+   (coins jamais déformés : la feuille, presque carrée, s'allonge par ses bords), au teint de son papier (--tone, --hue,
+   --sat) ; l'ombre portée des annonces sur le grand parchemin, pour qu'elles s'en détachent. */
+.recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:34px;border-image:var(--feuille) 80 fill / 34px stretch;
+  filter:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1)) drop-shadow(calc(var(--board-w) * -.004) calc(var(--board-w) * .008) calc(var(--board-w) * .006) rgba(0,0,0,.65))}
+.recruit-card[data-paper="2"]{--feuille:url("assets/taverne/feuille-2.webp")}
+.recruit-card[data-paper="3"]{--feuille:url("assets/taverne/feuille-3.webp")}
+.recruit-card[data-paper="4"]{--feuille:url("assets/taverne/feuille-4.webp")}
+.recruit-card[data-paper="5"]{--feuille:url("assets/taverne/feuille-5.webp")}
+.recruit-card[data-paper="6"]{--feuille:url("assets/taverne/feuille-6.webp")}
+.recruit-card[data-paper="7"]{--feuille:url("assets/taverne/feuille-7.webp")}
+.recruit-card[data-paper="8"]{--feuille:url("assets/taverne/feuille-8.webp")}
 .avatar-frame--recruit{flex:none;width:var(--recruit-portrait-w);aspect-ratio:9 / 16;margin:0;border:1px solid rgba(44,27,16,.55);border-radius:3px;box-shadow:0 3px 8px rgba(60,40,20,.4)}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
 .recruit-card-body{display:flex;flex:1;flex-direction:column;align-items:center;gap:7px;width:100%;padding:12px 0 6px;text-align:center}

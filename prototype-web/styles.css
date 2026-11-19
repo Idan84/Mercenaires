@@ -1421,8 +1421,8 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-back{border-color:#7a5c3c;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1ac;outline:none}
 #tavern-recruits-view{--board-w:max(100vw,100vh * 2000 / 1116);
-  --recruit-portrait-w:clamp(110px,calc((100dvh - 360px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
-  --recruit-card-w:max(288px,calc(var(--recruit-portrait-w) + 40px));--recruit-fleche-w:calc(var(--board-w) * .088);
+  --recruit-portrait-w:clamp(110px,calc((100dvh - 364px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
+  --recruit-pad:clamp(16px,calc((100vw - 1155px) / 6),30px);--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .088);
   margin-top:-8px;margin-bottom:-48px}
 /* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
    à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
@@ -1433,42 +1433,49 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur une feuille des annonces de missions, posée
    sur un grand parchemin (plus bas), l'encre et les polices de la charte, et le bouton de la charte (jamais déformé) ; pas
    de bouton retour, la barre du bas mène partout. */
-/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), trois cartes par écran
+/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée de cartes qui glissent d'une page, trois cartes par écran
    (Idan, 2026-11-19 : « Toujours 3 candidats par écran. On slide pour en avoir 3 autres » ; tavern-ui.js lui donne la
    largeur de trois cartes) et une flèche de chaque côté, hors des cartes, toujours affichée. Moins de trois candidats : ils
    sont centrés (marges automatiques). Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
-/* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins une marge de chaque côté. */
-.recruit-carousel{position:relative;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
-.recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:22px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
-.recruit-track::-webkit-scrollbar{display:none}
+/* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins 16 px de chaque côté ; les cartes
+   écartées de 32 px (Idan, 2026-11-19 : « On a beaucoup d'espace sur les côtés … On écarte de 10px de plus les fiches »). */
+.recruit-carousel{position:relative;overflow-x:clip;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + 16px)}
+.recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:32px;padding:4px 2px 44px;margin-bottom:-32px}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}
-.recruit-track .recruit-card{flex:0 0 auto;scroll-snap-align:start}
+/* Les cartes glissent d'une page (--recruit-shift, tavern-ui.js) ; hors de la page, elles s'effacent. */
+.recruit-track .recruit-card{flex:0 0 auto;translate:var(--recruit-shift,0px) 0;transition:translate .5s ease,opacity .4s ease}
+.recruit-track .recruit-card.is-off{opacity:0;visibility:hidden;pointer-events:none;transition:translate .5s ease,opacity .4s ease,visibility 0s .4s}
 .recruit-track .recruit-empty{flex:1}
 /* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), l'équerre de fer
-   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol et grisé
-   au bout comme sur le panneau. */
+   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol comme
+   sur le panneau ; au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en
+   grisée », sur le panneau des missions aussi) : elle garde sa place, la rangée ne bouge pas. */
 .recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:640/284;font-size:0;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
 .recruit-nav[data-recruit-scroll="-1"]{transform:scaleX(-1)}
 .recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
 .recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
-.recruit-nav:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
-/* La carte : le portrait en pied et au moins 20 px de parchemin de chaque côté ; au moins 288 px de large, pour que le texte
-   (260 px) tienne toujours en deux lignes, même l'origine la plus longue (« Homme-bête des clans des grandes steppes au sang
-   de démon »). Le portrait prend toute la hauteur libre entre les
-   barres, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») : la carte commence 20 px sous la
-   barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (360 px : le reste de la carte,
-   308 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes restent alignées.
+.recruit-nav:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
+/* La carte (#tavern-recruits-view : --recruit-card-w) : le portrait en pied, ou le texte s'il est plus large, et 30 px de
+   papier de chaque côté (--recruit-pad ; Idan, 2026-11-19 : « on augmente le padding gauche - droite à l'intérieur des
+   parchemins »). Le texte a au moins 260 px, pour tenir toujours en deux lignes, même l'origine la plus longue
+   (« Homme-bête des clans des grandes steppes au sang de démon »). Le portrait prend toute la hauteur libre entre les
+   barres, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») ; sur un écran étroit (1280 px),
+   la marge rétrécit jusqu'à 16 px pour que les trois cartes et les flèches tiennent. La carte commence 20 px sous la
+   barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (364 px : le reste de la carte,
+   311 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes restent alignées.
    La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
 .recruit-card{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
   --feuille:url("assets/taverne/feuille-1.webp");
-  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:var(--recruit-card-w);padding:22px 14px 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
+  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:var(--recruit-card-w);padding:22px var(--recruit-pad) 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
 /* Le papier : une des huit feuilles des annonces de missions (data-paper, recruitPaper dans tavern-ui.js), en neuf parts
    (coins jamais déformés : la feuille, presque carrée, s'allonge par ses bords), au teint de son papier (--tone, --hue,
-   --sat) ; l'ombre portée des annonces sur le grand parchemin, pour qu'elles s'en détachent. */
+   --sat) ; une ombre portée sur le grand parchemin, pour qu'elles s'en détachent, plus grande et plus floue que celle des
+   annonces (Idan, 2026-11-19 : « elles ne suivent pas vraiment les contours du parchemin déchiré … plus grande et plus
+   floue, ça passera mieux »). */
 .recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:34px;border-image:var(--feuille) 80 fill / 34px stretch;
-  filter:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1)) drop-shadow(calc(var(--board-w) * -.004) calc(var(--board-w) * .008) calc(var(--board-w) * .006) rgba(0,0,0,.65))}
+  filter:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1)) drop-shadow(calc(var(--board-w) * -.005) calc(var(--board-w) * .011) calc(var(--board-w) * .014) rgba(0,0,0,.6))}
 .recruit-card[data-paper="2"]{--feuille:url("assets/taverne/feuille-2.webp")}
 .recruit-card[data-paper="3"]{--feuille:url("assets/taverne/feuille-3.webp")}
 .recruit-card[data-paper="4"]{--feuille:url("assets/taverne/feuille-4.webp")}
@@ -1486,11 +1493,13 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-emblems .picto{display:block;width:34px;height:34px;margin:0;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(36,24,12,.5))}
 .recruit-origin{display:flex;align-items:center;justify-content:center;min-height:calc(2em * 1.15);font:600 17px/1.15 var(--police-texte);color:var(--encre);text-wrap:balance}
 .recruit-card .rep-stars{font-size:20px}
-.recruit-days{font:italic 500 15px/1.2 var(--police-texte);color:var(--encre-2)}
+/* « La petite phrase en italique un peu plus grosse et plus grasse » (Idan, 2026-11-19 : le papier, très travaillé, nuit à la
+   lisibilité). */
+.recruit-days{font:italic 600 17px/1.2 var(--police-texte);color:var(--encre-2);white-space:nowrap}
 /* Le bouton de la charte (.mission-btn), réduit à la hauteur des icônes de la barre du bas (Idan, 2026-11-19 : « Réduis un
    peu le bouton … par rapport aux icônes d'interface » ; 61 px avec les barres des Elfes en 1920 × 1080) : 180 × 61, aux
-   proportions de l'image (760 × 257, jamais déformée), le texte réduit d'autant (18 px × 0,75). */
-.recruit-card .recruit-talk-btn{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:13.5px}
+   proportions de l'image (760 × 257, jamais déformée), le texte un peu plus petit encore (12,5 px ; Idan, même jour). */
+.recruit-card .recruit-talk-btn{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:12.5px}
 .recruit-empty{color:#f4e5c7;text-align:center;text-shadow:0 2px 8px #000}
 
 
@@ -2406,14 +2415,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-board-light::after{left:86%;top:22%;width:calc(var(--board-w) * .0013);animation-duration:34s;animation-delay:-12s}
 @keyframes bougie{0%,100%{opacity:1}18%{opacity:.86}24%{opacity:.97}47%{opacity:.9}61%{opacity:1}74%{opacity:.84}83%{opacity:.95}}
 @keyframes poussiere{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--board-w) * -.025),calc(var(--board-w) * -.03))}88%{opacity:1}100%{transform:translate(calc(var(--board-w) * -.05),calc(var(--board-w) * -.06));opacity:0}}
-/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre. */
+/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre.
+   Au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en grisée »). */
 .mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .088);aspect-ratio:640/284;padding:0;border:0;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
 .mission-board-arrow--prev{left:14.2%;transform:translate(-50%,-50%) scaleX(-1)}
 .mission-board-arrow--next{left:85.8%}
 .mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
 .mission-board-arrow--next:hover,.mission-board-arrow--next:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .mission-board-arrow--prev:hover,.mission-board-arrow--prev:focus-visible{translate:calc(var(--board-w) * -.003) 0}
-.mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
 .mission-board-arrow[hidden]{display:none}
 /* Au clic, l'annonce s'avance ; la fiche s'ouvre ensuite en grand, d'un petit zoom. */
 .mission-detail[open]{animation:mission-detail-in .22s ease-out}

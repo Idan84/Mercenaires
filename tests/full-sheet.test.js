@@ -64,6 +64,12 @@ const barre=page.slice(page.indexOf('class="fs-zone fs-haut"'),page.indexOf('cla
 assert.match(barre,/fs-fleche[\s\S]*fs-fleche[\s\S]*fs-avatar[\s\S]*fs-nom">Lytha Voile-noir<[\s\S]*fs-fermer/,"flèches, avatar, nom, croix");
 assert.match(barre,/padding:10px 50.5px 10px 80.5px/,"marge à gauche 70 px et à droite 40 px depuis le bord intérieur du cadre");
 assert.match(barre,/--fs-avatar-marge:10px/);
+// Le cuir de la culture dans la barre du haut (Idan, 2026-11-19 : « Y'a pas la texture dans la barre du haut ») : les
+// réglages du cuir restent dans l'attribut style de la fiche (des guillemets doubles dans url() le coupaient).
+const styleFiche=(page.match(/<section class="full-sheet[^>]*style="([^"]*)"/)||[])[1]||"";
+assert.ok(styleFiche.includes("--fs-texture:url('assets/fiche/kits/elfes-noirs/texture.webp')"),"texture du kit");
+assert.match(styleFiche,/--fs-voile:12,2,16;--fs-sombre:0\.3;--fs-grain:256px/,"voile, assombri et grain du cuir");
+assert.match(page,/<section class="full-sheet[^>]*aria-label="Fiche de Lytha Voile-noir">/,"la balise de la fiche reste entière");
 assert.match(page.slice(page.indexOf('class="fs-zone fs-gauche"')),/^[^>]*>\s*<div class="fs-pied">/,"le portrait en pied en haut de la colonne");
 // Les ornements posé, suspendu et allongé, à leur place.
 assert.ok(!page.includes("couronne.webp"),"pas d'ornement posé par défaut");

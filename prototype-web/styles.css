@@ -1473,17 +1473,15 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
 .recruit-nav:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
-/* La carte (#tavern-recruits-view : --recruit-card-w) : le portrait en pied, ou le texte s'il est plus large, et 50 px de
-   papier de chaque côté (--recruit-pad ; Idan, 2026-11-19 : « on augmente le padding gauche - droite à l'intérieur des
-   parchemins », puis « On rajoute 20 de padding left et 20 de padding right »). Le texte a au moins 260 px, pour tenir toujours en deux lignes, même l'origine la plus longue
-   (« Homme-bête des clans des grandes steppes au sang de démon »). Le portrait prend toute la hauteur libre entre les
-   barres, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») ; sur un écran plus étroit, la
-   marge rétrécit pour que les trois cartes (260 px de texte, 42 px d'écart), les flèches et leurs 24 px tiennent dans
-   l'écran moins 16 px de chaque côté (904 px : ces largeurs fixes, et 4 px de jeu) : 34 px en 1440 × 900, 28 en 1366,
-   16 en 1280. La carte commence 20 px sous la
-   barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (364 px : le reste de la carte,
-   311 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes restent alignées.
-   La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
+/* La carte (#tavern-recruits-view : --recruit-card-w), réglée pour 1920 × 1080 puis mise à l'échelle avec tout l'écran :
+   le portrait en pied, ou le texte s'il est plus large, et 50 px de papier de chaque côté (--recruit-pad ; Idan,
+   2026-11-19 : « on augmente le padding gauche - droite à l'intérieur des parchemins », puis « On rajoute 20 de padding
+   left et 20 de padding right »). Le texte a au moins 260 px, pour tenir toujours en deux lignes, même l'origine la plus
+   longue (« Homme-bête des clans des grandes steppes au sang de démon »). Le portrait prend toute la hauteur libre entre
+   les barres en 1080, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») : la carte commence
+   20 px sous la barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (364 px : le
+   reste de la carte, 311 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes
+   restent alignées. La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
 .recruit-card{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
   --feuille:url("assets/taverne/feuille-1.webp");
   position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:var(--recruit-card-w);padding:22px var(--recruit-pad) 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}

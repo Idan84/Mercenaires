@@ -72,7 +72,13 @@ assert.match(css,/\.recruit-nav:disabled\{cursor:default;translate:0 0;opacity:0
 assert.match(css,/\.mission-board-arrow:disabled\{cursor:default;translate:0 0;opacity:0;pointer-events:none\}/,"sur le panneau des missions aussi");
 // « Flèche en permanence : les mêmes que pour les missions » : jamais cachées, l'équerre de fer du panneau à sa taille.
 assert.doesNotMatch(css,/\.recruit-nav[^{]*\{[^}]*display:none/,"les flèches restent affichées");
-assert.match(css,/#tavern-recruits-view\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/);
+// Tout proportionnel (Idan, 2026-11-19 : « A, on part sur tout proportionnel ») : l'écran est réglé pour 1920 × 1080 (le
+// panneau des missions y fait 1080 × 2000 / 1116 = 1935,5 px de large ; barres à 81,6 px de bande), puis les cartes et les
+// flèches suivent l'écran d'un bloc (zoom par --ui-scale).
+assert.match(css,/#tavern-recruits-view\{--board-w:1935\.5px;/);
+assert.match(css,/--recruit-portrait-w:clamp\(100px,calc\(\(1080px - 364px - 81\.6px \* var\(--bb-h\) - 81\.6px \* var\(--ht-barre\) \* \(var\(--ht-top\) \+ 1\.3\)\) \* 9 \/ 16\),280px\);/,"le portrait : la hauteur libre entre les barres, en 1080");
+assert.match(css,/\.recruit-carousel\{position:relative;z-index:1;zoom:var\(--ui-scale,1\);/,"tout suit l'écran d'un bloc");
+assert.doesNotMatch(css.slice(css.indexOf("#tavern-recruits-view{"),css.indexOf("#tavern-recruits-view::before{")),/100vw|100vh|100dvh/,"plus rien ne dépend de la taille de l'écran dans les réglages");
 assert.match(css,/\.mission-board\{--board-w:max\(100vw,100vh \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
 assert.match(css,/#tavern-recruits-view\{[^}]*--recruit-fleche-w:calc\(var\(--board-w\) \* \.088\)/,"la flèche du panneau : 8,8 % de sa largeur");
 assert.match(css,/\.recruit-nav\{[^}]*width:var\(--recruit-fleche-w\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
@@ -142,7 +148,7 @@ assert.match(css,/#tavern-recruits-view::after\{content:"";mix-blend-mode:soft-l
 assert.match(css,/\.recruit-carousel\{position:relative;z-index:1;/,"les cartes et les flèches passent au-dessus de la texture");
 assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
 assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");
-assert.match(css,/--recruit-pad:clamp\(16px,calc\(\(100vw - 904px - 2 \* \(var\(--board-w\) \* \.088 \+ 24px\)\) \/ 6\),50px\);--recruit-card-w:calc\(max\(260px,var\(--recruit-portrait-w\)\) \+ 2 \* var\(--recruit-pad\)\)/,"260 px de texte : l'origine la plus longue tient en deux lignes ; 50 px de marge");
+assert.match(css,/--recruit-pad:50px;--recruit-card-w:calc\(max\(260px,var\(--recruit-portrait-w\)\) \+ 2 \* var\(--recruit-pad\)\)/,"260 px de texte : l'origine la plus longue tient en deux lignes ; 50 px de marge");
 assert.match(css,/\.recruit-card\{[^}]*width:var\(--recruit-card-w\);padding:22px var\(--recruit-pad\) 16px/);
 assert.match(css,/\.recruit-track\{[^}]*gap:42px;/,"les cartes écartées de 42 px");
 assert.match(css,/\.recruit-days\{font:italic 600 17px\/1\.2 var\(--police-texte\);[^}]*white-space:nowrap\}/,"la petite phrase plus grosse et plus grasse");

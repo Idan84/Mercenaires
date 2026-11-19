@@ -9,6 +9,7 @@ Blood & Wages est un jeu de gestion de mercenaires en dark fantasy. L'écran mon
 5. Navigation dans le parchemin, centrée en bas : « ‹ Retour » (absent du premier écran) et le bouton d'Idan, éteint tant que le choix manque.
 6. Ce qu'on choisit : une image s'allume d'un halo doré qui épouse sa forme (jamais de cerclage) ; un texte se coche d'une croix tracée à la plume (`Ornements de la charte/croix.svg`).
 7. Le cachet de cire (`Interface/cachet.webp`) signe le registre seulement.
+8. Tout proportionnel (Idan, 2026-11-19) : chaque écran est réglé pour 1920 × 1080, puis suit la taille de l'écran d'un bloc, barres comprises, sans plancher ni plafond : échelle = le plus petit des rapports largeur / 1920 et hauteur / 1080 (`--ui-scale`, posée par `screen-ui.js` ; l'échelle d'interface d'Unreal au portage).
 
 ## Écriture
 

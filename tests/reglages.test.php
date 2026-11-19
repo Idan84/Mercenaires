@@ -22,6 +22,7 @@ mkdir($site . '/data', 0755, true);
 copy($root . '/data/reference/culture-kits.json', $site . '/data/culture-kits.json');
 $kits = reglages_kits($site);
 check(isset($kits['elfes-noirs'], $kits['elfes-sylvains'], $kits['elfes-des-grandes-cites']), 'les trois kits elfes');
+check(isset($kits['nains-des-montagnes'], $kits['nains-du-chaos'], $kits['nains-esclaves']), 'les trois kits nains');
 
 // Les réglages du jeu sont acceptés tels quels, pour les trois panneaux.
 foreach ($kits as $cle => $kit) {

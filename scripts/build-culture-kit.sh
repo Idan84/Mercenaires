@@ -3,12 +3,13 @@
 # prototype-web/assets/fiche/kits/<cle>/, posées par prototype-web/hover-card-ui.js (le cadre de la fiche au survol) et
 # prototype-web/hud-kit-ui.js (les barres du camp) d'après data/reference/culture-kits.json (mesures et réglages).
 # Les trois cultures elfes (Idan, 2026-11-18, Elfes.zip) : les Elfes noirs, les Elfes sylvains, les Elfes des grandes cités.
+# Les trois cultures naines (Idan, 2026-11-19, nains.zip) : les Nains des montagnes, les Nains du chaos, les Nains esclaves.
 # Le cadre de chacun vient d'un « cadre en une pièce » (Idan : « J'ai fait faire un nouveau cadre en une partie à découper
 # nous-même »), découpé ici aux mesures relevées sur le master (assets-src/Kits/<cle>/README.md) : un coin (son angle
 # extérieur en haut à gauche de l'image), une cellule de la bande du haut, de la bande de gauche et de la barre du milieu
-# (avec des clous, un pas entre deux milieux de clous ; sans clous, un morceau suivi de son reflet, pour ne pas voir de
-# joint), la barre du milieu couchée, et la jonction en T (la moitié intérieure de la bande, où son liseré tourne dans la
-# barre, bords fondus pour se poser sur la bordure).
+# (avec des clous ou des maillons, un pas entre deux milieux ; sans motif régulier, un morceau suivi de son reflet, pour
+# ne pas voir de joint), la barre du milieu couchée, et la jonction en T (la moitié intérieure de la bande, où son liseré
+# tourne dans la barre, bords fondus pour se poser sur la bordure).
 # Usage : bash scripts/build-culture-kit.sh   (ImageMagick, potrace, python3)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -59,6 +60,17 @@ cadre elfes-noirs 240x240+32+81 80x80+483+81 "" 82x74+32+446 "" 84x74+726+446 ""
 cadre elfes-sylvains 280x280+56+65 120x91+300+65 flop 80x120+56+290 flip 87x120+725+300 flip 65 91 725 811 45 40 45 20 18 22
 # Elfes des grandes cités : bande du haut y 34–134, de gauche x 32–130, barre du milieu x 721–814 ; sans clous.
 cadre elfes-des-grandes-cites 280x280+32+34 150x101+260+34 flop 99x150+32+260 flip 94x150+721+300 flip 34 101 721 814 50 45 50 22 20 25
+# Nains des montagnes : bande du haut y 33–115, de gauche x 35–115, barre du milieu x 729–807 ; acier poli, coins en
+# onglet, sans clous.
+cadre nains-des-montagnes 280x280+35+33 120x83+279+33 flop 81x120+35+258 flip 79x120+729+300 flip 33 83 729 807 34 40 45 20 6 22
+# Nains du chaos (cadre plus petit, 1376 × 768) : bande du haut y 28–114, de gauche x 47–139, barre du milieu x 629–748
+# (large : les bords des deux panneaux et la bande entre eux). Le coin : l'équerre seule (les runes commencent juste
+# après) ; cellules du haut et de gauche avec leur groupe de runes (+ reflet) ; barre du milieu prise sans runes.
+cadre nains-du-chaos 110x110+47+28 400x87+150+28 flop 93x305+47+130 flip 120x90+629+585 flip 28 87 629 748 46 40 45 20 8 22
+# Nains esclaves : des chaînes sur une plaque ; bande du haut y 37–137, de gauche x 40–148, barre du milieu x 715–820.
+# Maillons au pas de 132 (un de face, un de chant) : cellules d'un pas, d'un milieu de maillon de chant au suivant, sans
+# reflet (comme les clous des Elfes noirs) ; jonction en T réduite au bas de la plaque.
+cadre nains-esclaves 280x280+40+37 132x101+307+37 "" 109x132+40+266 "" 106x132+715+264 "" 37 101 715 820 88 12 30 15 6 8
 
 # ---- Ornements, cuir, ornement du titre, pièces des barres ----
 # Elfes noirs : les pièces du premier kit (2026-11-16), validées dans le jeu.
@@ -96,9 +108,10 @@ open(sys.argv[2], "w").write(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="
 print(sys.argv[2], f"motif {w:.2f} × {h} dans 104 × 24")
 PY
 
-# Elfes sylvains et Elfes des grandes cités : ornements recadrés sur leur dessin (alpha dès 6 %), au plus 700 px ; le cuir
-# en tuile de 512 px ; l'ornement du titre (une silhouette : le CSS s'en sert comme masque) à 500 px de large ; le rond
-# central recadré sur son dessin (1200 px de large), le bouton (320 × 320), l'emblème (480 px de large).
+# Elfes sylvains, Elfes des grandes cités et les trois cultures naines : ornements recadrés sur leur dessin (alpha dès
+# 6 %), au plus 700 px ; le cuir en tuile de 512 px ; l'ornement du titre (une silhouette : le CSS s'en sert comme masque)
+# à 500 px de large ; le rond central recadré sur son dessin (1200 px de large), le bouton (320 × 320), l'emblème (480 px
+# de large).
 orn(){ rogne "$1" "$tmp/o.png"; webp "$tmp/o.png" -resize 700x700\> -strip -quality 90 "$2"; }
 communs(){
   local key=$1; local src=assets-src/Kits/$key out=prototype-web/assets/fiche/kits/$key
@@ -126,3 +139,24 @@ for piece in coin-orne-riche coin-orne-leger coin-orne-courbe; do orn "$SRC/$pie
 orn "$SRC/ornement-arc.png" "$OUT/pose-arc.webp"
 orn "$SRC/ornement-drape.png" "$OUT/suspendu.webp"
 orn "$SRC/ornement-treillis.png" "$OUT/allonge.webp"
+
+# Les trois cultures naines (nains.zip) : comme les Elfes des grandes cités.
+SRC=assets-src/Kits/nains-des-montagnes; OUT=prototype-web/assets/fiche/kits/nains-des-montagnes
+communs nains-des-montagnes
+for piece in coin-orne-riche coin-orne-leger coin-orne-courbe; do orn "$SRC/$piece.png" "$OUT/$piece.webp"; done
+orn "$SRC/ornement-belier.png" "$OUT/pose-belier.webp"
+orn "$SRC/ornement-cor.png" "$OUT/suspendu.webp"
+orn "$SRC/ornement-hache.png" "$OUT/allonge.webp"
+SRC=assets-src/Kits/nains-du-chaos; OUT=prototype-web/assets/fiche/kits/nains-du-chaos
+communs nains-du-chaos
+for piece in coin-orne-riche coin-orne-leger coin-orne-courbe; do orn "$SRC/$piece.png" "$OUT/$piece.webp"; done
+orn "$SRC/ornement-accelerateur.png" "$OUT/pose-accelerateur.webp"
+orn "$SRC/ornement-ampoule.png" "$OUT/suspendu.webp"
+orn "$SRC/ornement-sonde.png" "$OUT/allonge.webp"
+SRC=assets-src/Kits/nains-esclaves; OUT=prototype-web/assets/fiche/kits/nains-esclaves
+communs nains-esclaves
+for piece in coin-orne-riche coin-orne-leger coin-orne-courbe; do orn "$SRC/$piece.png" "$OUT/$piece.webp"; done
+orn "$SRC/ornement-chopes.png" "$OUT/pose-chopes.webp"
+orn "$SRC/ornement-outils.png" "$OUT/pose-outils.webp"
+orn "$SRC/ornement-lanterne.png" "$OUT/suspendu.webp"
+orn "$SRC/ornement-pioche.png" "$OUT/allonge.webp"

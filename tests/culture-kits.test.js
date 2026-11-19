@@ -4,7 +4,8 @@
 // (scripts/build-culture-kit.sh), le cadre posé sur la fiche au survol (prototype-web/hover-card-ui.js) et les barres du
 // camp (prototype-web/hud-kit-ui.js). Les trois cultures elfes (Idan, 2026-11-18) : un cadre en une pièce découpé (coin,
 // bordures retournées, barre du milieu, jonctions en T), puis les ornements, aux réglages choisis par Idan dans ses
-// planches « Fiches des Elfes » et « Barres des Elfes ».
+// planches « Fiches des Elfes » et « Barres des Elfes ». Les trois cultures naines (Idan, 2026-11-19) : leur cadre mesuré
+// de la même façon, les réglages de départ repris des Elfes sylvains (à régler dans le Design Lab).
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -19,7 +20,7 @@ const kits = json("culture-kits.json"), colors = json("culture-colors.json");
 
 // 1. Les données : une ligne par kit, sa culture, ses pièces.
 assert.equal(kits.row_count, kits.rows.length);
-assert.deepEqual(kits.rows.map(k => k.cle), ["elfes-noirs", "elfes-sylvains", "elfes-des-grandes-cites"]);
+assert.deepEqual(kits.rows.map(k => k.cle), ["elfes-noirs", "elfes-sylvains", "elfes-des-grandes-cites", "nains-des-montagnes", "nains-du-chaos", "nains-esclaves"]);
 assert.deepEqual(kits.columns.map(c => c.key), ["cle", "culture", "dossier", "geometrie", "fiche", "barres", "plein"]);
 for (const kit of kits.rows) {
   assert.equal(HUD_BARS[kit.cle]?.culture, kit.culture, kit.cle + " : culture de sa barre");
@@ -41,6 +42,8 @@ for (const kit of kits.rows) {
   assert.equal(imageSize(piece(K.m.f)).w, K.m.coeur, kit.cle + " : barre du milieu");
   assert.deepEqual(imageSize(piece(K.mh.f)), {w: imageSize(piece(K.m.f)).h, h: K.m.coeur}, kit.cle + " : barre du milieu couchée");
   assert.deepEqual([K.jonction.barre, K.jonction.tige], [K.h.coeur, K.m.coeur], kit.cle + " : la jonction rejoint la bande et la barre");
+  // Une cellule fait un pas (un clou, un maillon, ou un morceau et son reflet).
+  assert.deepEqual([imageSize(piece(K.h.f)).w, imageSize(piece(K.v.f)).h, imageSize(piece(K.m.f)).h], [K.h.pas, K.v.pas, K.m.pas], kit.cle + " : cellules d'un pas");
   assert.ok(fs.existsSync(path.join(WEB, "assets/pictos/culture-" + kit.cle + ".webp")), kit.cle + " : logo en picto");
   assert.deepEqual(imageSize(path.join(WEB, "assets/pictos/culture-" + kit.cle + ".webp")), {w: 256, h: 256});
   assert.ok(fs.existsSync(path.join(ROOT, "assets-src/Kits", kit.cle, "logo.png")), kit.cle + " : logo du kit");
@@ -151,7 +154,7 @@ assert.match(css, /\.hover-card\[data-kit-nom="or"\] \.hc-title span\{background
 assert.match(css, /\.hover-card\[data-kit\] \.hc-orn\{width:var\(--hc-orn-w\);height:var\(--hc-orn-h\)\}/);
 assert.match(css, /\.hc-cadre\{position:absolute;inset:0;z-index:2;pointer-events:none\}/);
 assert.match(read("prototype-web/reference-data.js"), /cultureKits: "culture-kits\.json"/);
-assert.match(read("data/reference/CATALOG.md"), /\| culture-kits\.json \| 3 \| cle, culture, dossier, geometrie, fiche, barres, plein /);
+assert.match(read("data/reference/CATALOG.md"), /\| culture-kits\.json \| 6 \| cle, culture, dossier, geometrie, fiche, barres, plein /);
 assert.match(read("scripts/build-pictos.sh"), /for src in assets-src\/Kits\/\*\/logo\.png; do/);
 assert.match(read("prototype-web/godmode.css"), /\.godmode-preview-scale\{width:860px;margin:25px;transform:scale\(\.45\)/, "l'aperçu du mode dieu montre les ornements qui débordent");
 
@@ -226,7 +229,47 @@ assert.equal(forKit("elfes-noirs"), elfes);
 assert.equal(forKit("elfes-sylvains"), sylvains);
 assert.equal(forKit("cites-libres"), null);
 
-// 6. Le jeu (screen-ui.js) : les pièces du kit à la place de la barre du pack, le bouton du kit ; une autre culture
+// 6. Les trois cultures naines (Idan, 2026-11-19) : leur cadre mesuré sur leurs masters (assets-src/Kits/<cle>/README.md),
+// les réglages de départ repris des Elfes sylvains, à régler par Idan dans le Design Lab : seuls changent les modèles
+// d'ornements posés (ceux du kit), le bouton Jour suivant, qui remplit le trou du rond comme chez les Elfes sylvains, et
+// la hauteur des textes de la barre du haut, à la même place que chez les trois cultures elfes (la barre du pack de
+// chaque culture les met ailleurs).
+const montagnes = byKey["nains-des-montagnes"], chaos = byKey["nains-du-chaos"], esclaves = byKey["nains-esclaves"];
+assert.deepEqual([montagnes, chaos, esclaves].map(k => k.culture), ["Nains des montagnes", "Nains du chaos", "Nains esclaves"]);
+assert.deepEqual([montagnes, chaos, esclaves].map(k => Object.keys(k.geometrie.poses)), [["belier"], ["accelerateur"], ["chopes", "outils"]]);
+const posesNaines = {"nains-des-montagnes": ["belier", "belier"], "nains-du-chaos": ["accelerateur", "accelerateur"], "nains-esclaves": ["chopes", "outils"]};
+const ratioBouton = sylvains.barres.bas.bouton.taille / (sylvains.barres.bas.rond.taille * sylvains.geometrie.rond.trou);
+for (const kit of [montagnes, chaos, esclaves]) {
+  const [fiche, barres] = posesNaines[kit.cle], copie = JSON.parse(JSON.stringify(sylvains));
+  copie.fiche.pose.modele = fiche; copie.plein.pose.modele = fiche; copie.barres.ornements.pose.modele = barres;
+  copie.barres.bas.bouton.taille = kit.barres.bas.bouton.taille; copie.barres.haut.textes.dy = kit.barres.haut.textes.dy;
+  assert.deepEqual([kit.fiche, kit.barres, kit.plein], [copie.fiche, copie.barres, copie.plein], kit.cle + " : réglages de départ des Elfes sylvains");
+  const trou = kit.barres.bas.rond.taille * kit.geometrie.rond.trou * ratioBouton;
+  assert.ok(Math.abs(kit.barres.bas.bouton.taille - trou) < 1, `${kit.cle} : le bouton remplit le trou du rond (${kit.barres.bas.bouton.taille} pour ${trou.toFixed(1)})`);
+  assert.equal(kit.geometrie.ornementTitre.f, "titre.webp", kit.cle + " : ornement du titre en silhouette");
+}
+const hautTextes = kit => { const bar = HUD_BARS[kit.cle]; return kitUi.hudKitBars(kit, bar).haut.top * B * bar.haut.barre; };
+for (const kit of kits.rows) assert.ok(Math.abs(hautTextes(kit) - hautTextes(sylvains)) < .3, `${kit.cle} : textes de la barre du haut à ${hautTextes(kit).toFixed(2)} px`);
+// Le cadre des Nains du chaos (plus petit) : le coin, l'équerre seule ; la barre du milieu, large (les bords des deux
+// panneaux). Celui des Nains esclaves : des maillons au pas de 132, sans reflet (comme les clous des Elfes noirs).
+assert.deepEqual([chaos.geometrie.cadre.coin.n, chaos.geometrie.cadre.m.coeur, chaos.geometrie.cadre.h.pas], [110, 120, 800]);
+assert.deepEqual([esclaves.geometrie.cadre.h.pas, esclaves.geometrie.cadre.v.pas, esclaves.geometrie.cadre.m.pas], [132, 132, 132]);
+const kitScript = read("scripts/build-culture-kit.sh");
+assert.match(kitScript, /\ncadre nains-des-montagnes 280x280\+35\+33 120x83\+279\+33 flop /);
+assert.match(kitScript, /\ncadre nains-du-chaos 110x110\+47\+28 400x87\+150\+28 flop /);
+assert.match(kitScript, /\ncadre nains-esclaves 280x280\+40\+37 132x101\+307\+37 "" 109x132\+40\+266 "" 106x132\+715\+264 "" /, "chaînes : cellules d'un pas, sans reflet");
+// La fiche et les barres des Nains : leur cadre, leurs ornements, leur bouton.
+assert.equal(api.hoverCultureFrame("Nains du chaos").kit, chaos);
+assert.ok(api.hoverCultureFrame("Nains esclaves").vars.includes('--hc-orn:url("assets/fiche/kits/nains-esclaves/titre.webp")'));
+assert.equal(srcsOf(api.hoverKitFrame(montagnes)).filter(s => s.endsWith("/pose-belier.webp")).length, 1, "le bélier en bas de la fiche");
+assert.equal(srcsOf(api.hoverKitFrame(esclaves)).filter(s => s.endsWith("/pose-chopes.webp")).length, 1, "les chopes en bas de la fiche");
+assert.equal(forKit("nains-esclaves"), esclaves);
+const Le = kitUi.hudKitBars(esclaves, HUD_BARS["nains-esclaves"]);
+assert.ok(Le.piecesBas.includes("nains-esclaves/pose-outils.webp"), "marteau et pioche sur la barre du bas");
+assert.equal(Le.bouton, "assets/fiche/kits/nains-esclaves/bouton-jour-suivant.webp");
+near(Le.bas.bouton * B, 144, "bouton des Nains esclaves");
+
+// 7. Le jeu (screen-ui.js) : les pièces du kit à la place de la barre du pack, le bouton du kit ; une autre culture
 // retrouve sa barre et le bouton d'Idan.
 {
   const js = read("prototype-web/screen-ui.js");

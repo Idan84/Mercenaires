@@ -1420,19 +1420,22 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-btn{background:linear-gradient(180deg,#64492e,#3b2a1b);color:#ffe1ac}
 .talk-offer-back{border-color:#7a5c3c;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1ac;outline:none}
-#tavern-recruits-view{margin-top:24px}
-/* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. */
-.tavern-back{margin-bottom:16px;padding:8px 14px;border:1px solid #b58a45;border-radius:10px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#f0d395;font:600 14px Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer}
-.tavern-back:hover,.tavern-back:focus-visible{border-color:#ffe1ac;color:#ffe1ac;outline:none}
+#tavern-recruits-view{margin-top:8px;margin-bottom:-48px}
+/* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. Refait le
+   2026-11-19 (Idan : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire capitaine) pour aller lui
+   parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur le parchemin d'Idan (celui de la création
+   du capitaine et du dortoir, coins jamais déformés), l'encre et les polices de la charte, et le bouton de la charte
+   (240 × 81, jamais déformé) ; pas de bouton retour, la barre du bas mène partout. */
 /* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), une flèche posée sur
    chaque bord, effacée au bout ; quand tout tient, la rangée est centrée (marges automatiques : rien n'est coupé si elle
-   déborde) et les flèches disparaissent. Cartes de 150 à 220 px de large ; de la marge dessous pour leur ombre. */
-.recruit-carousel{position:relative}
-.recruit-track{display:flex;gap:12px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
+   déborde) et les flèches disparaissent. Cartes de 280 px de large ; de la marge dessous pour leur ombre. */
+/* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins une marge de chaque côté. */
+.recruit-carousel{position:relative;display:flow-root;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
+.recruit-track{display:flex;gap:22px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
 .recruit-track::-webkit-scrollbar{display:none}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}
-.recruit-track .recruit-card{flex:0 0 auto;width:clamp(150px,calc((100dvh - 316px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),220px);max-width:none;scroll-snap-align:start}
+.recruit-track .recruit-card{flex:0 0 auto;scroll-snap-align:start}
 .recruit-track .recruit-empty{flex:1}
 .recruit-nav{position:absolute;top:calc(50% - 42px);z-index:2;width:40px;height:72px;padding:0;border:1px solid #b58a45;border-radius:10px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#f0d395;font:700 30px/1 Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer;transition:opacity .2s}
 .recruit-nav[data-recruit-scroll="-1"]{left:-4px}
@@ -1440,16 +1443,26 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-nav:hover,.recruit-nav:focus-visible{border-color:#ffe1ac;color:#ffe1ac;outline:none}
 .recruit-nav:disabled{opacity:0;pointer-events:none}
 .recruit-carousel.is-static .recruit-nav{display:none}
-.recruit-card{display:flex;flex-direction:column;width:100%;max-width:min(220px,calc((100dvh - 316px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16));overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:0 12px 30px #000b;color:#eadcbc}
-.avatar-frame--recruit{width:100%;aspect-ratio:9 / 16;margin:0;border:0;border-bottom:1px solid #7a5c3c;border-radius:0;box-shadow:none}
+/* La carte : 280 px de large (le bouton et sa marge) ; le portrait en pied suit la hauteur de l'écran (110 à 240 px de large),
+   pour que la carte reste au-dessus de la barre du bas, même avec un nom et une origine sur deux lignes (370 px : tout ce qui
+   n'est pas le portrait). La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
+.recruit-card{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
+  --recruit-portrait-w:clamp(110px,calc((100dvh - 370px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),240px);
+  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:280px;padding:22px 20px 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
+.recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:40px;border-image:url("assets/creation/parchemin.webp") 180 fill / 40px stretch;filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
+.avatar-frame--recruit{flex:none;width:var(--recruit-portrait-w);aspect-ratio:9 / 16;margin:0;border:1px solid rgba(44,27,16,.55);border-radius:3px;box-shadow:0 3px 8px rgba(60,40,20,.4)}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
-.recruit-card-body{display:flex;flex:1;flex-direction:column;gap:5px;padding:10px 12px 12px}
-.recruit-name{color:#ffe1ac;font:700 17px/1.2 Georgia,serif}
-.recruit-origin{display:flex;align-items:center;gap:6px;color:#cdb38c;font-size:13px;line-height:1.3}
-.recruit-card .rep-stars{font-size:17px}
-.recruit-days{color:#bb9a6e;font-size:12px}
-.recruit-talk-btn{margin-top:auto;padding:9px 10px;border:1px solid #c9a461;border-radius:9px;background:linear-gradient(180deg,#64492e,#3b2a1b);color:#ffe1ac;font:700 14px Georgia,serif;letter-spacing:.03em;cursor:pointer}
-.recruit-talk-btn:hover,.recruit-talk-btn:focus-visible{border-color:#ffe1ac;background:linear-gradient(180deg,#7a5c3c,#4a3424);outline:none}
+.recruit-card-body{display:flex;flex:1;flex-direction:column;align-items:center;gap:7px;width:100%;padding:12px 0 6px;text-align:center}
+.recruit-name{max-width:100%;font:700 22px/1.08 var(--police-texte);color:var(--encre);text-wrap:balance}
+/* L'origine comme sur la fiche au survol (.hc-origins) : les pictos, puis « Elfe noir ». Un filet au-dessus. */
+.recruit-origins{display:grid;justify-items:center;gap:4px;width:100%;padding-top:7px;background:linear-gradient(90deg,transparent,rgba(100,73,46,.55),transparent) top center/70% 1px no-repeat}
+.recruit-emblems{display:flex;justify-content:center;gap:10px;line-height:0}
+.recruit-emblems .picto{display:block;width:34px;height:34px;margin:0;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(36,24,12,.5))}
+.recruit-origin{font:600 17px/1.15 var(--police-texte);color:var(--encre);text-wrap:balance}
+.recruit-card .rep-stars{font-size:20px}
+.recruit-days{font:italic 500 15px/1.2 var(--police-texte);color:var(--encre-2)}
+/* Le bouton de la charte (.mission-btn) à sa taille fixe : 240 × 81. */
+.recruit-card .recruit-talk-btn{flex:none;width:240px;min-width:0;padding:0 0 2px}
 .recruit-empty{color:#f4e5c7;text-align:center;text-shadow:0 2px 8px #000}
 
 

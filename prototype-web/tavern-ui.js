@@ -76,18 +76,21 @@ function presenceText(candidate){
   return (female?"Présente":"Présent")+" à l’auberge depuis "+days+" jour"+(days>1?"s":"");
 }
 
+// La carte sur parchemin (Idan, 2026-11-19 : « Fond parchemin … Notre bouton (celui du formulaire capitaine) pour aller lui
+// parler. On optimise un peu la présentation de la fiche ») : l'origine comme sur la fiche au survol (les pictos du peuple et
+// de la culture, puis « Elfe noir »), et le bouton de la charte.
 function renderTavernCard(candidate){
   const m=candidate.mercenary;
+  const origin=typeof originPhrase==="function"?originPhrase({people:m.people||"",culture:m.culture||""}):[m.people,m.culture].filter(Boolean).join(" · ");
   return `<article class="recruit-card">
     ${renderAvatar(m,{variant:"recruit",kind:"full"})}
     <div class="recruit-card-body">
       <strong class="recruit-name">${esc(m.name)}</strong>
-      <span class="recruit-origin">${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)}</span>
-      <span class="recruit-origin">${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}</span>
+      <div class="recruit-origins"><span class="recruit-emblems">${renderPicto("people",m.people,{size:null})}${renderPicto("culture",m.culture,{size:null})}</span><span class="recruit-origin">${esc(origin)}</span></div>
       ${renderReputationStars(m)}
       <small class="recruit-days">${presenceText(candidate)}</small>
-      <button type="button" class="recruit-talk-btn" data-tavern-open="${m.id}">Aller lui parler</button>
     </div>
+    <button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="${m.id}">Aller lui parler</button>
   </article>`;
 }
 

@@ -75,4 +75,14 @@ assert.match(ui,/updateRecruitCarousel\(\);\n\}/,"après chaque rendu de la Tave
 assert.match(ui,/if\(view==="recruits"\) updateRecruitCarousel\(\);/,"à l'ouverture de « Recruter »");
 assert.match(ui,/new ResizeObserver\(\(\)=>updateRecruitCarousel\(\)\)\.observe\(track\)/);
 
+// La carte refaite (Idan, 2026-11-19 : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire
+// capitaine) pour aller lui parler ») : pas de bouton retour, le parchemin d'Idan, le bouton de la charte à sa taille.
+const recruitsView=index.slice(index.indexOf('<section id="tavern-recruits-view"'),index.indexOf("</section>",index.indexOf('<section id="tavern-recruits-view"')));
+assert.doesNotMatch(recruitsView,/data-tavern-view="home"|Retour à la taverne/,"plus de bouton retour");
+assert.doesNotMatch(css,/\.tavern-back\{/);
+assert.match(css,/\.recruit-card::before\{[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 40px stretch/);
+assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="\$\{m\.id\}">Aller lui parler<\/button>/);
+assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:240px;min-width:0;padding:0 0 2px\}/,"240 × 81, jamais déformé");
+assert.match(ui,/originPhrase\(\{people:m\.people\|\|"",culture:m\.culture\|\|""\}\)/,"l'origine comme sur la fiche au survol");
+
 console.log("Taverne : 3 + niveau de renommée (4 à 18 places), personne chassé si elle baisse, candidats en carrousel — OK");

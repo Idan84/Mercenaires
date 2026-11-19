@@ -1548,8 +1548,10 @@ body[data-screen="camp"] .app-shell{padding-bottom:calc(var(--hud-bottom-h) + 36
    taille de la barre (« une barre plus fine » : sa bande sombre fait --ht-B) ; --ht-embout, la largeur de l'embout droit ;
    en bandes --ht-B : --ht-haut, l'écart avec le haut de l'écran ; --ht-top, celui de la bande sombre ; --ht-s, la taille du
    contenu ; --ht-fonds, la hauteur des fonds sombres ; --ht-marge, l'air à droite du menu. Sans pack, un cadre provisoire. */
+/* Tout proportionnel, calé sur 1080 (Idan, 2026-11-19 : « Oui, retire le plafond des barres. En phase A, on calibre tout
+   sur 1080 ») : 81,6 px en 1920 × 1080, puis l'échelle de l'interface (--ui-scale, screen-ui.js), sans plancher ni plafond. */
 :root{
-  --hb-B:clamp(52px,4.25vw,85px);
+  --hb-B:calc(81.6px * var(--ui-scale,1));
   --ht-barre:1;--ht-embout:1;--ht-haut:.3;--ht-top:.5;--ht-s:1;--ht-fonds:.54;--ht-marge:.6;
   --ht-B:calc(var(--hb-B) * var(--ht-barre));
   --ht-u:calc(var(--ht-B) * var(--ht-s));

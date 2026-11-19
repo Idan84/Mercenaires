@@ -1421,8 +1421,8 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-back{border-color:#7a5c3c;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1ac;outline:none}
 #tavern-recruits-view{--board-w:max(100vw,100vh * 2000 / 1116);
-  --recruit-portrait-w:clamp(110px,calc((100dvh - 364px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
-  --recruit-pad:clamp(16px,calc((100vw - 1155px) / 6),30px);--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .088);
+  --recruit-portrait-w:clamp(100px,calc((100dvh - 364px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
+  --recruit-pad:clamp(16px,calc((100vw - 904px - 2 * (var(--board-w) * .088 + 24px)) / 6),50px);--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .088);
   margin-top:-8px;margin-bottom:-48px}
 /* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
    à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
@@ -1438,9 +1438,10 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    largeur de trois cartes) et une flèche de chaque côté, hors des cartes, toujours affichée. Moins de trois candidats : ils
    sont centrés (marges automatiques). Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
 /* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins 16 px de chaque côté ; les cartes
-   écartées de 32 px (Idan, 2026-11-19 : « On a beaucoup d'espace sur les côtés … On écarte de 10px de plus les fiches »). */
+   écartées de 42 px (Idan, 2026-11-19 : « On écarte de 10px de plus les fiches », puis « On ajoute 10 de marge entre chaque
+   parchemin »). */
 .recruit-carousel{position:relative;overflow-x:clip;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + 16px)}
-.recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:32px;padding:4px 2px 44px;margin-bottom:-32px}
+.recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:42px;padding:4px 2px 44px;margin-bottom:-32px}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}
 /* Les cartes glissent d'une page (--recruit-shift, tavern-ui.js) ; hors de la page, elles s'effacent. */
@@ -1457,12 +1458,14 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
 .recruit-nav:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
-/* La carte (#tavern-recruits-view : --recruit-card-w) : le portrait en pied, ou le texte s'il est plus large, et 30 px de
+/* La carte (#tavern-recruits-view : --recruit-card-w) : le portrait en pied, ou le texte s'il est plus large, et 50 px de
    papier de chaque côté (--recruit-pad ; Idan, 2026-11-19 : « on augmente le padding gauche - droite à l'intérieur des
-   parchemins »). Le texte a au moins 260 px, pour tenir toujours en deux lignes, même l'origine la plus longue
+   parchemins », puis « On rajoute 20 de padding left et 20 de padding right »). Le texte a au moins 260 px, pour tenir toujours en deux lignes, même l'origine la plus longue
    (« Homme-bête des clans des grandes steppes au sang de démon »). Le portrait prend toute la hauteur libre entre les
-   barres, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») ; sur un écran étroit (1280 px),
-   la marge rétrécit jusqu'à 16 px pour que les trois cartes et les flèches tiennent. La carte commence 20 px sous la
+   barres, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») ; sur un écran plus étroit, la
+   marge rétrécit pour que les trois cartes (260 px de texte, 42 px d'écart), les flèches et leurs 24 px tiennent dans
+   l'écran moins 16 px de chaque côté (904 px : ces largeurs fixes, et 4 px de jeu) : 34 px en 1440 × 900, 28 en 1366,
+   16 en 1280. La carte commence 20 px sous la
    barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (364 px : le reste de la carte,
    311 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes restent alignées.
    La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */

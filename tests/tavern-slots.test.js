@@ -126,9 +126,9 @@ assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data
 assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch/,"un grand parchemin sur tout l'écran, à la place du voile");
 assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
 assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");
-assert.match(css,/--recruit-pad:clamp\(16px,calc\(\(100vw - 1155px\) \/ 6\),30px\);--recruit-card-w:calc\(max\(260px,var\(--recruit-portrait-w\)\) \+ 2 \* var\(--recruit-pad\)\)/,"260 px de texte : l'origine la plus longue tient en deux lignes ; 30 px de marge");
+assert.match(css,/--recruit-pad:clamp\(16px,calc\(\(100vw - 904px - 2 \* \(var\(--board-w\) \* \.088 \+ 24px\)\) \/ 6\),50px\);--recruit-card-w:calc\(max\(260px,var\(--recruit-portrait-w\)\) \+ 2 \* var\(--recruit-pad\)\)/,"260 px de texte : l'origine la plus longue tient en deux lignes ; 50 px de marge");
 assert.match(css,/\.recruit-card\{[^}]*width:var\(--recruit-card-w\);padding:22px var\(--recruit-pad\) 16px/);
-assert.match(css,/\.recruit-track\{[^}]*gap:32px;/,"les cartes écartées de 10 px de plus");
+assert.match(css,/\.recruit-track\{[^}]*gap:42px;/,"les cartes écartées de 42 px");
 assert.match(css,/\.recruit-days\{font:italic 600 17px\/1\.2 var\(--police-texte\);[^}]*white-space:nowrap\}/,"la petite phrase plus grosse et plus grasse");
 assert.match(index,/family=EB\+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap/,"l'italique gras chargé");
 assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:12\.5px\}/,"180 × 61, aux proportions de l'image");

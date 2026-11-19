@@ -82,7 +82,14 @@ assert.doesNotMatch(recruitsView,/data-tavern-view="home"|Retour à la taverne/,
 assert.doesNotMatch(css,/\.tavern-back\{/);
 assert.match(css,/\.recruit-card::before\{[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 40px stretch/);
 assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="\$\{m\.id\}">Aller lui parler<\/button>/);
-assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:240px;min-width:0;padding:0 0 2px\}/,"240 × 81, jamais déformé");
+// Réglages du même jour (« un background noir 60% + floutage », « Garde de l'espace quand le texte doit faire deux lignes »,
+// « Réduis un peu le bouton … par rapport aux icônes d'interface », tailles réglées sur les barres des Elfes).
+assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;background:rgba\(0,0,0,\.6\);[^}]*backdrop-filter:blur\(8px\)/);
+assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
+assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");
+assert.match(css,/\.recruit-card\{[^}]*width:max\(288px,calc\(var\(--recruit-portrait-w\) \+ 40px\)\);padding:22px 14px 16px/,"l'origine la plus longue tient en deux lignes");
+assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:13\.5px\}/,"180 × 61, aux proportions de l'image");
+assert.ok(Math.abs(180/61-760/257)<.01,"le bouton garde les proportions de bouton.webp");
 assert.match(ui,/originPhrase\(\{people:m\.people\|\|"",culture:m\.culture\|\|"",ascendance:m\.ascendance\|\|""\}\)/,"l'origine comme sur la fiche au survol, ascendance comprise");
 assert.match(ui,/\$\{m\.ascendance\?renderPicto\("ascendance",m\.ascendance,\{size:null\}\):""\}/,"la goutte de l'ascendance, s'il en a une");
 

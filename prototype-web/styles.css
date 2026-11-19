@@ -1420,15 +1420,18 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-btn{background:linear-gradient(180deg,#64492e,#3b2a1b);color:#ffe1ac}
 .talk-offer-back{border-color:#7a5c3c;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1ac;outline:none}
-#tavern-recruits-view{margin-top:8px;margin-bottom:-48px}
+#tavern-recruits-view{margin-top:-8px;margin-bottom:-48px}
+/* Un voile noir à 60 % et flou sur la taverne, sous les cartes et les barres (Idan, 2026-11-19 : « que la taverne soit
+   moins présente »). */
+#tavern-recruits-view::before{content:"";position:fixed;inset:0;z-index:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none}
 /* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. Refait le
    2026-11-19 (Idan : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire capitaine) pour aller lui
    parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur le parchemin d'Idan (celui de la création
    du capitaine et du dortoir, coins jamais déformés), l'encre et les polices de la charte, et le bouton de la charte
-   (240 × 81, jamais déformé) ; pas de bouton retour, la barre du bas mène partout. */
+   (jamais déformé) ; pas de bouton retour, la barre du bas mène partout. */
 /* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), une flèche posée sur
    chaque bord, effacée au bout ; quand tout tient, la rangée est centrée (marges automatiques : rien n'est coupé si elle
-   déborde) et les flèches disparaissent. Cartes de 280 px de large ; de la marge dessous pour leur ombre. */
+   déborde) et les flèches disparaissent. Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
 /* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins une marge de chaque côté. */
 .recruit-carousel{position:relative;display:flow-root;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,3vw))}
 .recruit-track{display:flex;gap:22px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
@@ -1443,26 +1446,32 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-nav:hover,.recruit-nav:focus-visible{border-color:#ffe1ac;color:#ffe1ac;outline:none}
 .recruit-nav:disabled{opacity:0;pointer-events:none}
 .recruit-carousel.is-static .recruit-nav{display:none}
-/* La carte : 280 px de large (le bouton et sa marge) ; le portrait en pied suit la hauteur de l'écran (110 à 240 px de large),
-   pour que la carte reste au-dessus de la barre du bas, même avec un nom et une origine sur deux lignes (370 px : tout ce qui
-   n'est pas le portrait). La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
+/* La carte : le portrait en pied et au moins 20 px de parchemin de chaque côté ; au moins 288 px de large, pour que le texte
+   (260 px) tienne toujours en deux lignes, même l'origine la plus longue (« Homme-bête des clans des grandes steppes au sang
+   de démon »). Le portrait prend toute la hauteur libre entre les
+   barres, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») : la carte commence 20 px sous la
+   barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (360 px : le reste de la carte,
+   308 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes restent alignées.
+   La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
 .recruit-card{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
-  --recruit-portrait-w:clamp(110px,calc((100dvh - 370px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),240px);
-  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:280px;padding:22px 20px 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
+  --recruit-portrait-w:clamp(110px,calc((100dvh - 360px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),280px);
+  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:max(288px,calc(var(--recruit-portrait-w) + 40px));padding:22px 14px 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
 .recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:40px;border-image:url("assets/creation/parchemin.webp") 180 fill / 40px stretch;filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
 .avatar-frame--recruit{flex:none;width:var(--recruit-portrait-w);aspect-ratio:9 / 16;margin:0;border:1px solid rgba(44,27,16,.55);border-radius:3px;box-shadow:0 3px 8px rgba(60,40,20,.4)}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
 .recruit-card-body{display:flex;flex:1;flex-direction:column;align-items:center;gap:7px;width:100%;padding:12px 0 6px;text-align:center}
-.recruit-name{max-width:100%;font:700 22px/1.08 var(--police-texte);color:var(--encre);text-wrap:balance}
+.recruit-name{display:flex;align-items:center;justify-content:center;max-width:100%;min-height:calc(2em * 1.08);font:700 22px/1.08 var(--police-texte);color:var(--encre);text-wrap:balance}
 /* L'origine comme sur la fiche au survol (.hc-origins) : les pictos, puis « Elfe noir ». Un filet au-dessus. */
 .recruit-origins{display:grid;justify-items:center;gap:4px;width:100%;padding-top:7px;background:linear-gradient(90deg,transparent,rgba(100,73,46,.55),transparent) top center/70% 1px no-repeat}
 .recruit-emblems{display:flex;justify-content:center;gap:10px;line-height:0}
 .recruit-emblems .picto{display:block;width:34px;height:34px;margin:0;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(36,24,12,.5))}
-.recruit-origin{font:600 17px/1.15 var(--police-texte);color:var(--encre);text-wrap:balance}
+.recruit-origin{display:flex;align-items:center;justify-content:center;min-height:calc(2em * 1.15);font:600 17px/1.15 var(--police-texte);color:var(--encre);text-wrap:balance}
 .recruit-card .rep-stars{font-size:20px}
 .recruit-days{font:italic 500 15px/1.2 var(--police-texte);color:var(--encre-2)}
-/* Le bouton de la charte (.mission-btn) à sa taille fixe : 240 × 81. */
-.recruit-card .recruit-talk-btn{flex:none;width:240px;min-width:0;padding:0 0 2px}
+/* Le bouton de la charte (.mission-btn), réduit à la hauteur des icônes de la barre du bas (Idan, 2026-11-19 : « Réduis un
+   peu le bouton … par rapport aux icônes d'interface » ; 61 px avec les barres des Elfes en 1920 × 1080) : 180 × 61, aux
+   proportions de l'image (760 × 257, jamais déformée), le texte réduit d'autant (18 px × 0,75). */
+.recruit-card .recruit-talk-btn{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:13.5px}
 .recruit-empty{color:#f4e5c7;text-align:center;text-shadow:0 2px 8px #000}
 
 

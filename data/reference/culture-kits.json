@@ -9,7 +9,7 @@
     {"key": "geometrie", "source": "Les pièces (prototype-web/<dossier>/) et leurs mesures dans les masters (pixels des originaux)"},
     {"key": "fiche", "source": "Réglages d'Idan pour la fiche au survol (planche « Fiches des Elfes », 2026-11-18)"},
     {"key": "barres", "source": "Réglages d'Idan pour les barres du camp (planche « Barres des Elfes », 2026-11-18)"},
-    {"key": "plein", "source": "La fiche complète en plein écran (Idan, 2026-11-18 : « deux parties fixes, une barre en haut, une colonne à gauche ») : places et épaisseurs en pixels d'un écran de 1080 px de haut ; réglable par culture dans le Design Lab (onglet Cultures)"}
+    {"key": "plein", "source": "La fiche complète en plein écran (Idan, 2026-11-18 : « deux parties fixes, une barre en haut, une colonne à gauche ») : mêmes réglages de cadre que la fiche au survol, plus la barre du haut ; places et épaisseurs en pixels d'un écran de 1080 px de haut ; réglable par culture dans le Design Lab (onglet Cultures)"}
   ],
   "rows": [
     {
@@ -99,7 +99,23 @@
         },
         "contenu": "clair"
       },
-      "plein": {"largeur": "ecran", "haut": 150, "gauche": 440, "marge": 0, "cadre": {"ep": 20}, "separations": {"ep": 20}, "ornements": {"echelle": 1}}
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {"ep": 20, "dy": 0, "jonctions": true, "tGauche": {"dx": 0, "dy": 0}, "tDroite": {"dx": 0, "dy": 0}},
+        "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 176, "sens": "miroir", "dx": -20, "dy": -29.5}, "hd": {"modele": "leger", "taille": 158, "sens": "rotation", "dx": 29, "dy": -21.5}, "bd": {"modele": "leger", "taille": 176, "sens": "rotation", "dx": 20, "dy": 29.5}, "bg": {"modele": "leger", "taille": 176, "sens": "miroir", "dx": -20, "dy": 29.5}},
+        "pose": {"modele": "couronne", "place": "aucune", "taille": 220, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 178, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 29, "longueur": 61, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 30}
+      }
     },
     {
       "cle": "elfes-sylvains",
@@ -190,7 +206,23 @@
         },
         "contenu": "clair"
       },
-      "plein": {"largeur": "ecran", "haut": 150, "gauche": 440, "marge": 0, "cadre": {"ep": 20}, "separations": {"ep": 20}, "ornements": {"echelle": 1}}
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {"ep": 20, "dy": 0, "jonctions": true, "tGauche": {"dx": 0, "dy": 0}, "tDroite": {"dx": 0, "dy": 0}},
+        "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "pose": {"modele": "dryade", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
     },
     {
       "cle": "elfes-des-grandes-cites",
@@ -280,7 +312,23 @@
         "contenu": "dore",
         "inactifs": 50
       },
-      "plein": {"largeur": "ecran", "haut": 150, "gauche": 440, "marge": 0, "cadre": {"ep": 20}, "separations": {"ep": 20}, "ornements": {"echelle": 1}}
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {"ep": 20, "dy": 0, "jonctions": true, "tGauche": {"dx": 0, "dy": 0}, "tDroite": {"dx": 0, "dy": 0}},
+        "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 223, "sens": "miroir", "dx": -27, "dy": -39.5}, "hd": {"modele": "leger", "taille": 280, "sens": "rotation", "dx": 32, "dy": -26}, "bd": {"modele": "aucun", "taille": 130, "sens": "miroir", "dx": 16, "dy": 14}, "bg": {"modele": "leger", "taille": 280, "sens": "miroir", "dx": -25, "dy": 30.5}},
+        "pose": {"modele": "arc", "place": "aucune", "taille": 220, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 58.5, "longueur": 40, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "or",
+        "cuir": {"grain": 100, "sombre": 0}
+      }
     }
   ],
   "row_count": 3

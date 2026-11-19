@@ -43,7 +43,8 @@ $b['inactifs'] = 50;
 check(reglages_verifier($kits, 'elfes-noirs', 'barres', $b) === null, 'barres dorées, pictos inactifs');
 $p = reglages_reference($kits['elfes-noirs'], 'plein');
 $p['largeur'] = '16:9';
-$p['ornements']['echelle'] = 0.85;
+$p['barre']['margeGauche'] = 85.5;
+$p['ornementsCoin']['hg']['modele'] = 'aucun';
 check(reglages_verifier($kits, 'elfes-noirs', 'plein', $p) === null, 'fiche complète plafonnée à 16:9');
 
 // Refusés : culture sans kit, panneau inconnu, clé inconnue ou manquante, mauvais type, texte libre, liste, trop profond.
@@ -73,7 +74,7 @@ sleep(1);
 $deux = reglages_enregistrer($dossier, ['culture' => 'elfes-sylvains', 'panneau' => 'fiche', 'reglages' => $kits['elfes-sylvains']['fiche'], 'note' => '', 'auteur' => '']);
 $index = json_decode((string) file_get_contents($dossier . '/index.json'), true);
 check(count($index['reglages']) === 2 && $index['reglages'][0]['id'] === $deux['id'], 'index : le plus récent d\'abord');
-check($index['reglages'][1]['reglages']['ornements']['echelle'] === 0.85 && $index['reglages'][1]['reglages']['largeur'] === '16:9', 'réglages gardés tels quels');
+check($index['reglages'][1]['reglages']['barre']['margeGauche'] === 85.5 && $index['reglages'][1]['reglages']['largeur'] === '16:9', 'réglages gardés tels quels');
 check(is_file($dossier . '/' . $un['id'] . '/reglage.json'), 'fiche de l\'enregistrement');
 
 exec('rm -rf ' . escapeshellarg($site));

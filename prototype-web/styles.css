@@ -1431,10 +1431,15 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* Plus foncé que les feuilles des candidats, avec une texture plus marquée (Idan, 2026-11-19 : « Tu peux la foncer et ajouter
    une texture plus marquée. On doit être plus foncé que les parchemins des mercenaires ») : le parchemin assombri (filtre
    ci-dessus), puis par-dessus, découpés à sa forme, le papier froissé des annonces (papier-froisse.webp) et un bord plus
-   sombre, en mode produit. Les cartes et les flèches passent au-dessus (.recruit-carousel, z-index 1). */
-#tavern-recruits-view::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:multiply;opacity:.7;
-  background:radial-gradient(ellipse 75% 70% at 50% 48%,transparent 45%,rgba(60,34,12,.45) 100%),url("assets/taverne/papier-froisse.webp") center/512px repeat;
+   sombre, en mode produit (.recruit-froisse, premier enfant de la vue) ; enfin, en plus, la texture de papier vieilli
+   d'Idan (papier-vieilli.webp : fibres, taches, bords brûlés) en lumière douce (Idan, 2026-11-19 : « Le papier froissé
+   fait un peu fake », puis « ma texture c'est à poser en sus en mode soft light … en sus du parchemin du papier
+   froissé »). Les cartes et les flèches passent au-dessus (.recruit-carousel, z-index 1). */
+.recruit-froisse,#tavern-recruits-view::after{position:fixed;inset:0;z-index:0;pointer-events:none;
   -webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;mask-border:url("assets/creation/parchemin.webp") 180 fill / 80px stretch}
+.recruit-froisse{mix-blend-mode:multiply;opacity:.7;
+  background:radial-gradient(ellipse 75% 70% at 50% 48%,transparent 45%,rgba(60,34,12,.45) 100%),url("assets/taverne/papier-froisse.webp") center/512px repeat}
+#tavern-recruits-view::after{content:"";mix-blend-mode:soft-light;background:url("assets/taverne/papier-vieilli.webp") center/cover no-repeat}
 /* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. Refait le
    2026-11-19 (Idan : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire capitaine) pour aller lui
    parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur une feuille des annonces de missions, posée
@@ -1484,15 +1489,20 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    --sat) ; une ombre portée sur le grand parchemin, pour qu'elles s'en détachent, plus grande et plus floue que celle des
    annonces (Idan, 2026-11-19 : « elles ne suivent pas vraiment les contours du parchemin déchiré … plus grande et plus
    floue, ça passera mieux »). */
-.recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:34px;border-image:var(--feuille) 80 fill / 34px stretch;
+.recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:var(--bord,34px);border-image:var(--feuille) var(--tranche,80) fill / var(--bord,34px) stretch;
   filter:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1)) drop-shadow(calc(var(--board-w) * -.005) calc(var(--board-w) * .011) calc(var(--board-w) * .014) rgba(0,0,0,.6))}
-.recruit-card[data-paper="2"]{--feuille:url("assets/taverne/feuille-2.webp")}
+/* Du papier autour du contenu (Idan, 2026-11-19 : « On fait en sorte d'avoir de la marge en déplaçant / déformant des
+   parchemins, sinon, on prend les autres ») : là où une déchirure ou une encoche entre trop dans la feuille, son bord est
+   affiné (une tranche plus large de l'image, --tranche, dans un bord plus fin, --bord), pour garder au moins 12 px de
+   papier autour du portrait et 8 autour du texte et du bouton, de 1280 × 720 à 2560 × 1440. La feuille 5 (encoche en
+   bas à droite, trop profonde) n'est plus tirée (recruitPaper). */
+.recruit-card[data-paper="1"]{--tranche:110 110 80 80;--bord:23px 33px 34px 34px}
+.recruit-card[data-paper="2"]{--feuille:url("assets/taverne/feuille-2.webp");--bord:24px 24px 34px 29px}
 .recruit-card[data-paper="3"]{--feuille:url("assets/taverne/feuille-3.webp")}
-.recruit-card[data-paper="4"]{--feuille:url("assets/taverne/feuille-4.webp")}
-.recruit-card[data-paper="5"]{--feuille:url("assets/taverne/feuille-5.webp")}
-.recruit-card[data-paper="6"]{--feuille:url("assets/taverne/feuille-6.webp")}
-.recruit-card[data-paper="7"]{--feuille:url("assets/taverne/feuille-7.webp")}
-.recruit-card[data-paper="8"]{--feuille:url("assets/taverne/feuille-8.webp")}
+.recruit-card[data-paper="4"]{--feuille:url("assets/taverne/feuille-4.webp");--bord:24px 34px 34px 34px}
+.recruit-card[data-paper="6"]{--feuille:url("assets/taverne/feuille-6.webp");--tranche:80 280 80 200;--bord:34px 59px 24px 42px}
+.recruit-card[data-paper="7"]{--feuille:url("assets/taverne/feuille-7.webp");--tranche:80 80 80 110;--bord:17px 34px 34px 47px}
+.recruit-card[data-paper="8"]{--feuille:url("assets/taverne/feuille-8.webp");--bord:34px 34px 17px 34px}
 .avatar-frame--recruit{flex:none;width:var(--recruit-portrait-w);aspect-ratio:9 / 16;margin:0;border:1px solid rgba(44,27,16,.55);border-radius:3px;box-shadow:0 3px 8px rgba(60,40,20,.4)}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
 .recruit-card-body{display:flex;flex:1;flex-direction:column;align-items:center;gap:7px;width:100%;padding:12px 0 6px;text-align:center}

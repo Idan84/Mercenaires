@@ -112,12 +112,19 @@ assert.doesNotMatch(recruitsView,/data-tavern-view="home"|Retour à la taverne/,
 assert.doesNotMatch(css,/\.tavern-back\{/);
 // Les feuilles des annonces de missions (« Le parchemin des mercenaires varie et reprend ceux des missions »), en neuf
 // parts, au teint de leur papier, avec l'ombre portée des annonces.
-assert.match(css,/\.recruit-card::before\{[^}]*border-image:var\(--feuille\) 80 fill \/ 34px stretch;[^}]*filter:brightness\(var\(--tone,1\)\) hue-rotate\(var\(--hue,0deg\)\) saturate\(var\(--sat,1\)\) drop-shadow\(calc\(var\(--board-w\) \* -\.005\) calc\(var\(--board-w\) \* \.011\) calc\(var\(--board-w\) \* \.014\) rgba\(0,0,0,\.6\)\)/,"une ombre plus grande et plus floue");
-for(let n=2;n<=8;n++) assert.ok(css.includes(`.recruit-card[data-paper="${n}"]{--feuille:url("assets/taverne/feuille-${n}.webp")}`),"feuille "+n);
+assert.match(css,/\.recruit-card::before\{[^}]*border-width:var\(--bord,34px\);border-image:var\(--feuille\) var\(--tranche,80\) fill \/ var\(--bord,34px\) stretch;[^}]*filter:brightness\(var\(--tone,1\)\) hue-rotate\(var\(--hue,0deg\)\) saturate\(var\(--sat,1\)\) drop-shadow\(calc\(var\(--board-w\) \* -\.005\) calc\(var\(--board-w\) \* \.011\) calc\(var\(--board-w\) \* \.014\) rgba\(0,0,0,\.6\)\)/,"une ombre plus grande et plus floue");
+for(const n of [2,3,4,6,7,8]) assert.ok(css.includes(`.recruit-card[data-paper="${n}"]{--feuille:url("assets/taverne/feuille-${n}.webp")`),"feuille "+n);
+// Du papier autour du contenu (Idan, 2026-11-19 : « On fait en sorte d'avoir de la marge en déplaçant / déformant des
+// parchemins, sinon, on prend les autres ») : les bords déchirés affinés, la feuille 5 retirée (marges mesurées de
+// 1280 × 720 à 2560 × 1440 : au moins 12 px autour du portrait, 8 autour du texte et du bouton).
+assert.ok(css.includes('.recruit-card[data-paper="1"]{--tranche:110 110 80 80;--bord:23px 33px 34px 34px}'),"feuille 1 : coin haut droit affiné");
+assert.ok(css.includes('--feuille:url("assets/taverne/feuille-6.webp");--tranche:80 280 80 200;--bord:34px 59px 24px 42px}'),"feuille 6 : encoche haut gauche affinée");
+assert.ok(!css.includes('.recruit-card[data-paper="5"]'),"plus de feuille 5");
+assert.match(ui,/const RECRUIT_PAPERS=\[1,2,3,4,6,7,8\];/);
 const tavernVm=require("node:vm"),paperBox={};
-tavernVm.runInNewContext(ui.slice(ui.indexOf("function recruitPaper("),ui.indexOf("function renderTavernCard(")).concat(";box.f=recruitPaper;"),{box:paperBox});
+tavernVm.runInNewContext(ui.slice(ui.indexOf("const RECRUIT_PAPERS="),ui.indexOf("function renderTavernCard(")).concat(";box.f=recruitPaper;"),{box:paperBox});
 const papers=Array.from({length:400},(_,i)=>paperBox.f(i));
-assert.deepEqual(new Set(papers.map(p=>p.paper)).size,8,"les huit feuilles");
+assert.deepEqual([...new Set(papers.map(p=>p.paper))].sort(),[1,2,3,4,6,7,8],"sept feuilles, sans la 5");
 assert.deepEqual(paperBox.f(42),paperBox.f(42),"toujours le même papier pour le même candidat");
 assert.ok(papers.every(p=>/^--tone:(0\.9\d*|1\.0[0-2]\d*);--hue:-?\d+\.\d deg;--sat:(1|\.72)$/.test(p.style.replace("deg"," deg"))),"teint des annonces");
 assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="\$\{m\.id\}">Aller lui parler<\/button>/);
@@ -125,9 +132,13 @@ assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data
 // « Réduis un peu le bouton … par rapport aux icônes d'interface », tailles réglées sur les barres des Elfes).
 assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch/,"un grand parchemin sur tout l'écran, à la place du voile");
 // Plus foncé que les feuilles, texture plus marquée (Idan, 2026-11-19 : « On doit être plus foncé que les parchemins des
-// mercenaires ») : le parchemin assombri, le papier froissé découpé à sa forme par-dessus, les cartes au-dessus des deux.
+// mercenaires ») : le parchemin assombri, le papier froissé découpé à sa forme par-dessus, puis en plus la texture d'Idan
+// en lumière douce (« à poser en sus en mode soft light … en sus du parchemin du papier froissé »), les cartes au-dessus.
 assert.match(css,/#tavern-recruits-view::before\{[^}]*filter:brightness\(\.66\)/,"le grand parchemin est assombri");
-assert.match(css,/#tavern-recruits-view::after\{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:multiply;[^}]*url\("assets\/taverne\/papier-froisse\.webp"\)[^}]*mask-border:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch\}/,"la texture froissée, découpée à la forme du parchemin");
+assert.match(index,/<section id="tavern-recruits-view" class="hidden">\s*<div class="recruit-froisse" aria-hidden="true"><\/div>\s*<div class="recruit-carousel">/,"le calque du papier froissé, avant les cartes");
+assert.match(css,/\.recruit-froisse,#tavern-recruits-view::after\{position:fixed;inset:0;z-index:0;pointer-events:none;\s*-webkit-mask-box-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch;mask-border:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch\}/,"les deux textures, découpées à la forme du parchemin");
+assert.match(css,/\.recruit-froisse\{mix-blend-mode:multiply;opacity:\.7;\s*background:[^}]*url\("assets\/taverne\/papier-froisse\.webp"\)/,"le papier froissé en mode produit");
+assert.match(css,/#tavern-recruits-view::after\{content:"";mix-blend-mode:soft-light;background:url\("assets\/taverne\/papier-vieilli\.webp"\) center\/cover no-repeat\}/,"la texture d'Idan en lumière douce, par-dessus");
 assert.match(css,/\.recruit-carousel\{position:relative;z-index:1;/,"les cartes et les flèches passent au-dessus de la texture");
 assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
 assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");

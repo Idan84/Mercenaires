@@ -80,14 +80,16 @@ function presenceText(candidate){
 // parler. On optimise un peu la présentation de la fiche ») : l'origine comme sur la fiche au survol (les pictos du peuple, de
 // la culture et de l'ascendance s'il en a une, puis « Ogre des steppes au sang de dragon » ; l'ascendance ajoutée le même jour :
 // « on ajoute »), et le bouton de la charte.
-// Le papier de la carte (Idan, 2026-11-19 : « Le parchemin des mercenaires varie et reprend ceux des missions ») : une des
-// huit feuilles des annonces (feuille-1…8.webp), au teint de leur papier (noticeLook, contract-ui.js : jamais vers le
+// Le papier de la carte (Idan, 2026-11-19 : « Le parchemin des mercenaires varie et reprend ceux des missions ») : une
+// des feuilles des annonces (feuille-1…8.webp), au teint de leur papier (noticeLook, contract-ui.js : jamais vers le
 // rouge, les plus vieux moins saturés), tirés de l'identifiant du candidat : toujours le même papier pour le même candidat.
+// Les feuilles tirées : toutes celles des annonces sauf la 5, dont l'encoche entre trop dans la carte (styles.css).
+const RECRUIT_PAPERS=[1,2,3,4,6,7,8];
 function recruitPaper(id){
   let h=2166136261;
   for(const ch of "recrue-"+id){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); }
   const r=()=>{ h^=h>>>13; h=Math.imul(h,0x5bd1e995); h^=h>>>15; return (h>>>0)/4294967296; };
-  const paper=1+Math.floor(r()*8),tone=.9+r()*.12,hue=(r()*2-1)*7,old=hue<-3;
+  const paper=RECRUIT_PAPERS[Math.floor(r()*RECRUIT_PAPERS.length)],tone=.9+r()*.12,hue=(r()*2-1)*7,old=hue<-3;
   return {paper,style:`--tone:${tone.toFixed(3)};--hue:${(old?1:hue<0?hue*.3:hue).toFixed(1)}deg;--sat:${old?".72":"1"}`};
 }
 function renderTavernCard(candidate){

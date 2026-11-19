@@ -93,10 +93,10 @@ et de meilleures recrues demandent un meilleur salaire. L'écran Taverne affiche
 
 ## 6 — Informations visibles avant entretien
 
-L'écran Recruter montre seulement le **portrait en pied**, le **nom**, le **peuple**, la **culture**, la **réputation**
-et le **nombre de jours** à l'auberge (Idan, 2026-10-21). Le reste se découvre en lui parlant (§6 bis) : salaire et prime
-par ses prétentions, l'affinité par le ton de sa salutation, le profil (CAC / Distance / Magie) et les prédilections par
-ses réponses.
+L'écran Recruter montre seulement le **portrait en pied**, le **nom**, le **peuple**, la **culture**, l'**ascendance**
+s'il en a une (ajoutée par Idan le 2026-11-19), la **réputation** et le **nombre de jours** à l'auberge (Idan, 2026-10-21).
+Le reste se découvre en lui parlant (§6 bis) : salaire et prime par ses prétentions, l'affinité par le ton de sa
+salutation, le profil (CAC / Distance / Magie) et les prédilections par ses réponses.
 
 - L'alignement du candidat reste caché ; le détail peuple / culture / alignement de l'affinité (doc 02, de −100 à +100)
   ne s'affiche que sur la fiche, après l'embauche.

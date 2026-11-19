@@ -77,16 +77,17 @@ function presenceText(candidate){
 }
 
 // La carte sur parchemin (Idan, 2026-11-19 : « Fond parchemin … Notre bouton (celui du formulaire capitaine) pour aller lui
-// parler. On optimise un peu la présentation de la fiche ») : l'origine comme sur la fiche au survol (les pictos du peuple et
-// de la culture, puis « Elfe noir »), et le bouton de la charte.
+// parler. On optimise un peu la présentation de la fiche ») : l'origine comme sur la fiche au survol (les pictos du peuple, de
+// la culture et de l'ascendance s'il en a une, puis « Nain esclave au sang céleste » ; l'ascendance ajoutée le même jour :
+// « on ajoute »), et le bouton de la charte.
 function renderTavernCard(candidate){
   const m=candidate.mercenary;
-  const origin=typeof originPhrase==="function"?originPhrase({people:m.people||"",culture:m.culture||""}):[m.people,m.culture].filter(Boolean).join(" · ");
+  const origin=typeof originPhrase==="function"?originPhrase({people:m.people||"",culture:m.culture||"",ascendance:m.ascendance||""}):[m.people,m.culture,m.ascendance].filter(Boolean).join(" · ");
   return `<article class="recruit-card">
     ${renderAvatar(m,{variant:"recruit",kind:"full"})}
     <div class="recruit-card-body">
       <strong class="recruit-name">${esc(m.name)}</strong>
-      <div class="recruit-origins"><span class="recruit-emblems">${renderPicto("people",m.people,{size:null})}${renderPicto("culture",m.culture,{size:null})}</span><span class="recruit-origin">${esc(origin)}</span></div>
+      <div class="recruit-origins"><span class="recruit-emblems">${renderPicto("people",m.people,{size:null})}${renderPicto("culture",m.culture,{size:null})}${m.ascendance?renderPicto("ascendance",m.ascendance,{size:null}):""}</span><span class="recruit-origin">${esc(origin)}</span></div>
       ${renderReputationStars(m)}
       <small class="recruit-days">${presenceText(candidate)}</small>
     </div>

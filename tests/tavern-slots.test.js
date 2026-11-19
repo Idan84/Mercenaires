@@ -83,6 +83,7 @@ assert.doesNotMatch(css,/\.tavern-back\{/);
 assert.match(css,/\.recruit-card::before\{[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 40px stretch/);
 assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="\$\{m\.id\}">Aller lui parler<\/button>/);
 assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:240px;min-width:0;padding:0 0 2px\}/,"240 × 81, jamais déformé");
-assert.match(ui,/originPhrase\(\{people:m\.people\|\|"",culture:m\.culture\|\|""\}\)/,"l'origine comme sur la fiche au survol");
+assert.match(ui,/originPhrase\(\{people:m\.people\|\|"",culture:m\.culture\|\|"",ascendance:m\.ascendance\|\|""\}\)/,"l'origine comme sur la fiche au survol, ascendance comprise");
+assert.match(ui,/\$\{m\.ascendance\?renderPicto\("ascendance",m\.ascendance,\{size:null\}\):""\}/,"la goutte de l'ascendance, s'il en a une");
 
 console.log("Taverne : 3 + niveau de renommée (4 à 18 places), personne chassé si elle baisse, candidats en carrousel — OK");

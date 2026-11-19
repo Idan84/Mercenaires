@@ -1,5 +1,13 @@
 "use strict";
 
+// L'échelle de l'interface (Idan, 2026-11-19 : « A, on part sur tout proportionnel ») : un écran est réglé pour
+// 1920 × 1080, puis suit la taille de l'écran d'un bloc, comme l'échelle d'interface d'Unreal : --ui-scale, le plus petit
+// des rapports largeur / 1920 et hauteur / 1080 (0,67 en 1280 × 720, 1,33 en 2560 × 1440).
+function updateUiScale(){
+  document.documentElement.style.setProperty("--ui-scale",String(Math.min(innerWidth/1920,innerHeight/1080)));
+}
+updateUiScale();
+
 // Écran courant sur <body data-screen> : accueil, création, camp, mission ou fin de partie.
 // Il se déduit des panneaux visibles, sans toucher aux modules qui les affichent ; styles.css
 // en tire la mise en page (accueil = logo + menu sur le château). Purement visuel.
@@ -451,7 +459,7 @@ function initializeScreenUi(){
     setHudActionMenu(null);
     toggleHudJournal(false);
   },true);
-  window.addEventListener("resize",()=>fitHudCompanyName());
+  window.addEventListener("resize",()=>{ updateUiScale(); fitHudCompanyName(); });
   for(const slot of document.querySelectorAll("#game-hud [data-hud-icon]")) slot.innerHTML=hudIcon(slot.dataset.hudIcon);
   $("game-pause").addEventListener("click",event=>{
     // Un clic hors du menu de pause reprend la partie, comme Échap.

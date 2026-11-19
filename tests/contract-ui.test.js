@@ -441,7 +441,8 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.equal(d.origin, "Orc des steppes");
   assert.equal(api.originPhrase({people: "Nain", culture: "Nains des montagnes"}), "Nain des montagnes", "« Nains / Nains des montagnes devient Nains des montagnes ! »");
   assert.equal(api.originPhrase({people: "Humain", culture: "Cités libres"}), "Humain des cités libres");
-  assert.equal(api.originPhrase({people: "Humain", culture: "Montagnes du Nord"}), "Humain des montagnes du Nord");
+  // Les Montagnes du Nord devenues l'Empire de la nuit blanche (Idan, 2026-11-19) : « de l'empire », pas « des empire ».
+  assert.equal(api.originPhrase({people: "Humain", culture: "Empire de la nuit blanche"}), "Humain de l'empire de la nuit blanche");
   assert.equal(api.originPhrase({people: "Gobelin", culture: "Caravanes de ferrailleurs"}), "Gobelin des caravanes de ferrailleurs");
   assert.equal(api.originPhrase({people: "Nain", culture: "Nains des montagnes", ascendance: "Sang de dragon"}), "Nain des montagnes au sang de dragon");
   assert.equal(api.originPhrase({people: "Elfe", culture: "Elfes noirs", ascendance: "Sang d’orc"}), "Elfe noir au sang d’orc");

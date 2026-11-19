@@ -100,7 +100,7 @@ fs.rmSync(tmp,{recursive:true,force:true});
 // Le script reconnaît la culture d'un pack par son dossier (peuple, puis mots).
 const {cultureOfPack}=require("../scripts/build-hud-bars.js");
 const packCulture=pack=>cultureOfPack(pack,cultures)?.nom;
-assert.equal(packCulture("Humains/nordique"),"Montagnes du Nord","un humain nordique : pas les Tribus nordiques (hommes-bêtes)");
+assert.equal(packCulture("Humains/nordique"),"Empire de la nuit blanche","un humain nordique : pas les Tribus nordiques (hommes-bêtes)");
 assert.equal(packCulture("Orcs/orques-noirs"),"Orcs noirs");
 assert.equal(packCulture("Gnomes/gnomes-forets"),"Gnomes des forêts");
 assert.equal(packCulture("Gobelins/gobelins-cavernes-ferrailleurs"),"Caravanes de ferrailleurs");

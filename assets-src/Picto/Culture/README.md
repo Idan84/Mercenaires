@@ -24,7 +24,7 @@ les « Nains du chaos ».
 | Gobelins des villes | `gobelins-des-villes.jpg` | City_Goblins_emblem_with_dagger_20261022215821.jpg | oui |
 | Halflings des cités humaines | `halflings-des-cites-humaines.jpg` | Dark_fantasy_emblem_logo_20261022215821.jpg | validé |
 | Halflings des villages isolés | `halflings-des-villages-isoles.jpg` | Dark_fantasy_village_emblem_20261022215821.jpg | validé |
-| Montagnes du Nord | `montagnes-du-nord.jpg` | Axe_and_wolf_emblem_design_20261022215821.jpg | validé |
+| Empire de la nuit blanche | `empire-de-la-nuit-blanche.jpg` | Axe_and_wolf_emblem_design_20261022215821.jpg | validé |
 | Nains des montagnes | `nains-des-montagnes.jpg` | Mountain_dwarf_heraldic_logo_20261022215821.jpg | oui |
 | Nains du chaos | `nains-du-chaos.jpg` | Chaos_Dwarf_demonic_skull_emblem_20261022215821.jpg | validé |
 | Nains esclaves | `nains-esclaves.jpg` | Iron_shackle_and_broken_hammer_20261022215821.jpg | oui |

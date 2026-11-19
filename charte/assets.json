@@ -109,6 +109,12 @@
           "type": "image/webp"
         },
         {
+          "name": "empire-de-la-nuit-blanche.webp",
+          "source": "prototype-web/assets/pictos/culture-empire-de-la-nuit-blanche.webp",
+          "size": 19440,
+          "type": "image/webp"
+        },
+        {
           "name": "explorateurs.webp",
           "source": "prototype-web/assets/pictos/culture-explorateurs.webp",
           "size": 23794,
@@ -154,12 +160,6 @@
           "name": "halflings-des-villages-isoles.webp",
           "source": "prototype-web/assets/pictos/culture-halflings-des-villages-isoles.webp",
           "size": 25144,
-          "type": "image/webp"
-        },
-        {
-          "name": "montagnes-du-nord.webp",
-          "source": "prototype-web/assets/pictos/culture-montagnes-du-nord.webp",
-          "size": 19440,
           "type": "image/webp"
         },
         {
@@ -579,7 +579,7 @@
           "size": 1053,
           "type": "image/svg+xml",
           "cultures": [
-            "montagnes-du-nord"
+            "empire-de-la-nuit-blanche"
           ]
         },
         {
@@ -906,8 +906,8 @@
           "type": "image/webp"
         },
         {
-          "name": "montagnes-du-nord.webp",
-          "source": "prototype-web/assets/hud/barres/montagnes-du-nord/center.webp",
+          "name": "empire-de-la-nuit-blanche.webp",
+          "source": "prototype-web/assets/hud/barres/empire-de-la-nuit-blanche/center.webp",
           "size": 25282,
           "type": "image/webp"
         },

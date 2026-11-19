@@ -136,15 +136,15 @@ const ornament={attrs:{},hidden:true,setAttribute(k,v){this.attrs[k]=v;}};
 const doc={documentElement:{style:{setProperty:(k,v)=>{rootProps[k]=v;},removeProperty:k=>{delete rootProps[k];}}},
   querySelector:sel=>({".game-top-bar":topBar,".game-bottom-bar":bottomBar,".hud-ornament":ornament})[sel]||null};
 const ui=hud(doc,HUD_BARS);
-ui.applyHudBar("montagnes-du-nord");
-const nord=HUD_BARS["montagnes-du-nord"];
+ui.applyHudBar("empire-de-la-nuit-blanche");
+const nord=HUD_BARS["empire-de-la-nuit-blanche"];
 assert.deepEqual(bottomBar.props,topBar.props,"la même barre en haut et en bas");
-assert.equal(bottomBar.pieces.center.style.backgroundImage,'url("assets/hud/barres/montagnes-du-nord/center.webp")');
+assert.equal(bottomBar.pieces.center.style.backgroundImage,'url("assets/hud/barres/empire-de-la-nuit-blanche/center.webp")');
 assert.ok(bottomBar.classes.has("has-art")&&bottomBar.classes.has("has-ornament"));
 const names={artBas:"art-bas",artHaut:"art-haut",centre:"centre",bouton:"bouton",anneau:"anneau",picto:"picto",ecart:"ecart",pictosDroite:"pictos-droite",pictosGauche:"pictos-gauche",pictosY:"pictos-y",hauteur:"h"};
 assert.deepEqual(Object.fromEntries(Object.entries(rootProps).filter(([k])=>k.startsWith("--bb-"))),
   Object.fromEntries(Object.entries(names).map(([k,n])=>["--bb-"+n,String(nord.bas[k])])),"les réglages d'Idan pour la barre du bas");
-assert.deepEqual([ornament.attrs.src,ornament.hidden],["assets/hud/barres/montagnes-du-nord/ornement.webp",false]);
+assert.deepEqual([ornament.attrs.src,ornament.hidden],["assets/hud/barres/empire-de-la-nuit-blanche/ornement.webp",false]);
 ui.applyHudBar("culture-a-venir");
 assert.ok(!bottomBar.classes.has("has-art")&&!topBar.classes.has("has-art")&&!bottomBar.classes.has("has-ornament"),"sans pack : le cadre provisoire et le bouton seul");
 assert.deepEqual([bottomBar.props,rootProps,ornament.hidden],[{},{},true],"et les valeurs de départ de styles.css");

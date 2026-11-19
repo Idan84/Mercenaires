@@ -17,7 +17,7 @@
 const ORIGIN_PLURALS={"Humain":"Humains","Nain":"Nains","Elfe":"Elfes","Gnome":"Gnomes","Halfling":"Halflings","Ogre":"Ogres",
   "Orc":"Orcs","Gobelin":"Gobelins","Reptilien":"Reptiliens","Homme-bête":"Hommes-bêtes"};
 // Les cultures qui ne commencent ni par leur peuple ni ne se disent « des … ».
-const ORIGIN_CULTURE_WORDS={"Explorateurs":"explorateur"};
+const ORIGIN_CULTURE_WORDS={"Explorateurs":"explorateur","Empire de la nuit blanche":"de l'empire de la nuit blanche"};
 function originPhrase({people="",culture="",ascendance=""}={}){
   const lower=text=>text?text[0].toLocaleLowerCase("fr")+text.slice(1):"";
   const plural=ORIGIN_PLURALS[people]||people+"s";
@@ -138,7 +138,7 @@ const HOVER_TITLE_ORNAMENTS={
   "gnomes-des-forets":"gland","gnomes-des-cavernes":"bougie","gnomes-des-villes":"cle-ailee",
   "halflings-des-cites-humaines":"couronne-croix","halflings-des-villages-isoles":"epi","explorateurs":"tentacule-sabre",
   "elfes-noirs":"pointe-epines","elfes-des-grandes-cites":"rinceau","elfes-sylvains":"branche",
-  "cites-libres":"lys","montagnes-du-nord":"flocon","tribus-de-la-jungle":"fleur",
+  "cites-libres":"lys","empire-de-la-nuit-blanche":"flocon","tribus-de-la-jungle":"fleur",
   "terres-des-deux-fleuves":"croissant-haut","royaumes-du-soleil-levant":"dragon",
   "reptiliens-des-villes":"oeil","reptiliens-des-marecages":"crapaud","reptiliens-des-cites-temples":"triangle"
 };

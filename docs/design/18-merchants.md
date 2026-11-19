@@ -133,7 +133,7 @@ marchands. ⚠ : moins de deux marchands.
 | Drusk Sabot-de-Poussière | Clans des grandes steppes | Arc, Lance, Sabre, Bottes de vitesse, Bague du courage, Ceinture de courage, Manuels de Feu | 7 |
 | Gorma Porte-Tonneau | Ogres des cités humaines | Hallebarde, Masse d’armes, Brigandine, Gants de force, Culotte d’Intimidation, Potion de soins | 6 |
 | Rasz Tzel'Varr | Reptiliens des villes | Estoc, Sarbacane, Cuir renforcé, Chapeau d’intelligence, Bague de la télékinésie, Amulette de puissance magique, Manuels de Télékinésie | 7 |
-| Gudrun Isfjell | Montagnes du Nord | Hache double, Épée à deux mains, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Gudrun Isfjell | Empire de la nuit blanche | Hache double, Épée à deux mains, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Isska Ssul'Varek | Reptiliens des marécages | Trident, Sarbacane, Armure d'écailles, Fiole de poison, Bague de l’Eau, Potion de soins, Manuels d’Eau | 7 |
 | Calaena Ombrevenin | Elfes noirs | Dague, Arbalète, Fouet, Cape de discrétion, Fiole de poison, Bague de la Foudre, Manuels de Foudre | 7 |
 | Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie, Papillon vénéneux | 8 |

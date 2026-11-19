@@ -172,8 +172,8 @@ Arrondi(
 )
 ```
 
-Pour l'affinité, l'estimation du score (−100 à +100) est ramenée à **Hostile**, **Neutre** ou **Amical** (paliers à
-définir, §13).
+Pour l'affinité, l'estimation du score (−100 à +100) est ramenée à trois zones égales (Idan, 2026-11-19) : **Hostile**
+sous −33,3, **Neutre** de −33,3 à +33,3, **Amical** au-dessus de +33,3.
 
 ### En suspens : 3 questions et estimation de l'Intendant
 
@@ -422,10 +422,9 @@ les candidats ne restent pas plusieurs jours), la renommée, la capacité du Dor
 2. coefficients de la prime de mission ;
 3. coefficients de négociation ;
 4. qualité du mensonge du candidat (`Rand 1.10–3.00`) ;
-5. les paliers Hostile / Neutre / Amical de l'affinité estimée par l'aubergiste (§7) ;
-6. les questions sur les tags, avec leurs biais de niveau et de précision (§6 bis, refonte des tags du doc 20) ;
-7. renégociation après recrutement ;
-8. licenciement / indemnités ;
-9. **prime de risque** éventuelle, séparée de la prime de mission fixe.
+5. les questions sur les tags, avec leurs biais de niveau et de précision (§6 bis, refonte des tags du doc 20) ;
+6. renégociation après recrutement ;
+7. licenciement / indemnités ;
+8. **prime de risque** éventuelle, séparée de la prime de mission fixe.
 
 Ces points s'équilibrent sans remettre en cause la boucle.

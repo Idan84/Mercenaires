@@ -124,6 +124,11 @@ assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data
 // Réglages du même jour (« un background noir 60% + floutage », « Garde de l'espace quand le texte doit faire deux lignes »,
 // « Réduis un peu le bouton … par rapport aux icônes d'interface », tailles réglées sur les barres des Elfes).
 assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch/,"un grand parchemin sur tout l'écran, à la place du voile");
+// Plus foncé que les feuilles, texture plus marquée (Idan, 2026-11-19 : « On doit être plus foncé que les parchemins des
+// mercenaires ») : le parchemin assombri, le papier froissé découpé à sa forme par-dessus, les cartes au-dessus des deux.
+assert.match(css,/#tavern-recruits-view::before\{[^}]*filter:brightness\(\.66\)/,"le grand parchemin est assombri");
+assert.match(css,/#tavern-recruits-view::after\{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:multiply;[^}]*url\("assets\/taverne\/papier-froisse\.webp"\)[^}]*mask-border:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch\}/,"la texture froissée, découpée à la forme du parchemin");
+assert.match(css,/\.recruit-carousel\{position:relative;z-index:1;/,"les cartes et les flèches passent au-dessus de la texture");
 assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
 assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");
 assert.match(css,/--recruit-pad:clamp\(16px,calc\(\(100vw - 904px - 2 \* \(var\(--board-w\) \* \.088 \+ 24px\)\) \/ 6\),50px\);--recruit-card-w:calc\(max\(260px,var\(--recruit-portrait-w\)\) \+ 2 \* var\(--recruit-pad\)\)/,"260 px de texte : l'origine la plus longue tient en deux lignes ; 50 px de marge");

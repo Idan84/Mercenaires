@@ -1427,7 +1427,14 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
    à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
    puis « Le grand parchemin passe sous les barres mais 100% en largeur et hauteur ») : tout l'écran, sous les barres. */
-#tavern-recruits-view::before{content:"";position:fixed;inset:0;z-index:0;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;pointer-events:none}
+#tavern-recruits-view::before{content:"";position:fixed;inset:0;z-index:0;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:brightness(.66) sepia(.3) saturate(1.15) contrast(1.05);pointer-events:none}
+/* Plus foncé que les feuilles des candidats, avec une texture plus marquée (Idan, 2026-11-19 : « Tu peux la foncer et ajouter
+   une texture plus marquée. On doit être plus foncé que les parchemins des mercenaires ») : le parchemin assombri (filtre
+   ci-dessus), puis par-dessus, découpés à sa forme, le papier froissé des annonces (papier-froisse.webp) et un bord plus
+   sombre, en mode produit. Les cartes et les flèches passent au-dessus (.recruit-carousel, z-index 1). */
+#tavern-recruits-view::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:multiply;opacity:.7;
+  background:radial-gradient(ellipse 75% 70% at 50% 48%,transparent 45%,rgba(60,34,12,.45) 100%),url("assets/taverne/papier-froisse.webp") center/512px repeat;
+  -webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;mask-border:url("assets/creation/parchemin.webp") 180 fill / 80px stretch}
 /* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. Refait le
    2026-11-19 (Idan : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire capitaine) pour aller lui
    parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur une feuille des annonces de missions, posée
@@ -1440,7 +1447,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins 16 px de chaque côté ; les cartes
    écartées de 42 px (Idan, 2026-11-19 : « On écarte de 10px de plus les fiches », puis « On ajoute 10 de marge entre chaque
    parchemin »). */
-.recruit-carousel{position:relative;overflow-x:clip;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + 16px)}
+.recruit-carousel{position:relative;z-index:1;overflow-x:clip;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + 16px)}
 .recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:42px;padding:4px 2px 44px;margin-bottom:-32px}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}

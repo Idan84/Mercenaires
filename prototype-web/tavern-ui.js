@@ -78,7 +78,7 @@ function presenceText(candidate){
 
 // La carte sur parchemin (Idan, 2026-11-19 : « Fond parchemin … Notre bouton (celui du formulaire capitaine) pour aller lui
 // parler. On optimise un peu la présentation de la fiche ») : l'origine comme sur la fiche au survol (les pictos du peuple, de
-// la culture et de l'ascendance s'il en a une, puis « Nain esclave au sang céleste » ; l'ascendance ajoutée le même jour :
+// la culture et de l'ascendance s'il en a une, puis « Ogre des steppes au sang de dragon » ; l'ascendance ajoutée le même jour :
 // « on ajoute »), et le bouton de la charte.
 function renderTavernCard(candidate){
   const m=candidate.mercenary;

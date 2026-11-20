@@ -2,6 +2,8 @@
 
 > Décisions d'Idan du 2026-11-12. Données : `data/reference/mercenary-tags.json`, `data/reference/steward-tags.json`, la
 > colonne `tags` de `spells.json`.
+>
+> Idan, 2026-11-20 : niveaux des tags retirés (un tag est allumé ou éteint).
 
 ## 1 — Pourquoi
 
@@ -68,8 +70,8 @@ sort, arme, armure, bonus d'objet ou un nouvel animal a son tag sans toucher au 
 leur ordre ; les nouveaux viennent ensuite. Une famille d'animaux du Compagnon animal (Rapaces, Félins…) apparaît le
 jour où elle a son premier animal.
 
-L'identifiant d'un tag est son chemin (`role/degats/brulant`). Le mercenaire garde avec lui ses tags et leur niveau :
-ceux du joueur, ceux de l'intendant, et les tags de l'intendant que le joueur a éteints.
+L'identifiant d'un tag est son chemin (`role/degats/brulant`). Le mercenaire garde avec lui ses tags : ceux du joueur,
+ceux de l'intendant, et les tags de l'intendant que le joueur a éteints.
 
 ## 4 — L'onglet Rôle et occupations (phase 1)
 
@@ -81,9 +83,7 @@ ceux du joueur, ceux de l'intendant, et les tags de l'intendant que le joueur a 
 - Trois colonnes en accordéon ; une couleur par colonne, plus claire à chaque niveau. Une petite flèche à droite du tag
   ouvre la sous-catégorie ; ce qui est ouvert le reste d'une fiche à l'autre. Sur téléphone, les colonnes passent l'une
   sous l'autre.
-- Pas de case à cocher : des tags grisés ou non, à trois niveaux (pâle, moyen, plein). Le clic fait le tour grisé →
-  pâle → moyen → plein → grisé ; un tag est au moins aussi fort que son sous-tag le plus fort ; éteindre un tag éteint
-  ses sous-tags.
+- Pas de case à cocher : des tags grisés ou non. Le clic allume ou éteint ; éteindre un tag éteint ses sous-tags.
 - Les tags de l'intendant portent un petit point ; le joueur l'emporte. Avec un intendant nommé, « Demander à
   l'intendant » en haut de l'onglet (sans intendant : « Nommez un intendant : il proposera ses tags. ») ; à
   l'Intendance, « Retaguer la compagnie ».
@@ -106,8 +106,6 @@ constats, mis en phrases.
 - **Les sorts** portent leurs tags dans leurs données (préremplis d'après l'effet et la description, relus par Idan) :
   un nouveau sort arrive avec ses tags.
 - **Dynamique** : rien d'écrit en dur sur les camps, les monstres ou les missions (on en ajoutera).
-- **Niveaux** (importants pour le joueur et pour le générateur de titres) : l'intendant met plein pour son rôle
-  principal (là où il est le mieux classé), moyen au-dessus de la médiane, pâle sinon.
 - **Ses tags et ceux du joueur** : un clic sur un tag de l'intendant l'éteint et l'intendant retient le refus ;
   **retaguer** (un bouton à l'Intendance pour toute la compagnie, un dans l'onglet pour un mercenaire) ne remplace que
   ses tags, jamais ceux que le joueur a cochés. Il compare toujours à toute la bande.
@@ -184,7 +182,7 @@ Magie, Animal, Régénération et Vol comptent pour Mission comme les autres rô
   0,2 × niveau de réputation)) est au-dessus de la médiane de la bande ; **Bûcheron**, **Mines** pour ceux qui n'ont pas
   le niveau Mission (le travail rapporte du bois ou de la pierre, selon sa Force).
 - **Entraînement** (ses faiblesses utiles) : là où le camp entraîne (bâtiment construit), les 3 choses les plus basses
-  (sa place dans la bande) parmi ce qui sert son rôle principal, la plus basse en plein ; le style conseillé ; le port
+  (sa place dans la bande) parmi ce qui sert son rôle principal ; le style conseillé ; le port
   d'armure suivant si une armure plus lourde que celles qu'il sait porter le rendait plus efficace (Académie de la
   survie : ils s'apprennent dans l'ordre) ; 3 sorts de ses écoles qui servent son rôle principal (École de magie) ; ses
   montures pas encore apprivoisées (Grange du dresseur).

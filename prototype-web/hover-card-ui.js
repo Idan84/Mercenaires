@@ -41,7 +41,7 @@ const HOVER_TAG_BRANCHES=["occupation/mission","occupation/garde-du-corps","role
 const HOVER_TAG_MAX=5;
 function hoverTagPlates(tags,max=HOVER_TAG_MAX){
   const extra=tags.length>max?tags.length-(max-1):0;
-  const plates=extra?[...tags.slice(0,max-1),{name:`${extra} autres rôles`,tone:"bleu",mission:false,level:1,more:true,hidden:tags.slice(max-1).map(tag=>tag.name)}]:tags.slice(0,max);
+  const plates=extra?[...tags.slice(0,max-1),{name:`${extra} autres rôles`,tone:"bleu",mission:false,more:true,hidden:tags.slice(max-1).map(tag=>tag.name)}]:tags.slice(0,max);
   return plates.map((plate,i)=>{
     const row=i<3?0:1,inRow=row?plates.length-3:Math.min(3,plates.length),pos=row?i-3:i;
     return {...plate,col:1+(3-inRow)+2*pos};
@@ -65,9 +65,7 @@ function mercenaryHoverData(c,{missionTag=null}={}){
     .filter(id=>HOVER_TAG_BRANCHES.some(branch=>id===branch||id.startsWith(branch+"/")));
   const toneOf=id=>rules?.columns.find(col=>col.code===String(id).split("/")[0])?.teinte||"";
   const isMission=id=>Boolean(missionTag)&&(id===missionTag||id.startsWith(missionTag+"/"));
-  // Le niveau de chaque tag (1 à 3 : la vue de l'arbre des tags), que la plaque montre (Idan, 2026-11-16).
-  const shown=rules&&typeof rules.view==="function"?rules.view(c):{};
-  const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id),level:shown[id]?.level||3}))
+  const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id)}))
     .sort((a,b)=>Number(b.mission)-Number(a.mission));
   for(const tag of tags){
     if(tags.filter(other=>other.name===tag.name).length<2) continue;
@@ -343,7 +341,7 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const magic=rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
   const steed=d.mount?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
-  const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}${tag.level<3?` is-n${tag.level}`:""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
+  const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>

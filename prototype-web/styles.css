@@ -2636,14 +2636,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-tag--vert{--t1:#2f6b3b;--t2:#1b3a21}
 .hc-tag--bleu{--t1:#38598c;--t2:#1b2f52}
 .hc-tag.is-mission{--t1:#64492e;--t2:#3b2a1b;background:linear-gradient(#fff3cf,#e0a95a 40%,#8a6120 62%,#f0c77f);color:#ffe1ac}
-/* Le niveau du tag (Idan, 2026-11-16 : « les tags ont 3 niveaux. Le premier niveau : contour de couleur et fond transparent.
-   Au second niveau, fond à 50 %. Niveau 3, c'est plein ») : la plaque pleine ci-dessus est le niveau 3 ; aux niveaux 1 et 2,
-   un contour de 2 px dans la couleur du tag (la mission aussi : « laisse tomber » l'or ici) autour du parchemin, rempli à 50 % au niveau 2, le
-   texte dans la couleur foncée du tag. La plaque « N autres rôles » a le contour seul. */
-.hc-tag.is-n1,.hc-tag.is-n2{background:none;color:var(--t2);text-shadow:0 1px 0 rgba(255,250,236,.55)}
-.hc-tag.is-n1::after,.hc-tag.is-n2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
-.hc-tag.is-n1::before{opacity:0}
-.hc-tag.is-n2::before{opacity:.5}
+/* Un tag allumé : la plaque pleine ci-dessus (les tags n'ont plus de niveau, Idan, 2026-11-20). La plaque « N autres
+   rôles » a le contour seul (Idan, 2026-11-16) : un contour de 2 px dans la couleur du tag autour du parchemin, le texte
+   dans la couleur foncée du tag. */
+.hc-tag.is-more{background:none;color:var(--t2);text-shadow:0 1px 0 rgba(255,250,236,.55)}
+.hc-tag.is-more::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
+.hc-tag.is-more::before{opacity:0}
 /* L'équipement en trois colonnes égales (Idan, 2026-11-16) : les armes du set 1, celles du set 2, l'armure ; les noms seuls
    (sans « Set 1 », « Set 2 » ni « Armure »), sur la même ligne. Entre les colonnes, et entre les écoles de magie, la fente
    du parchemin (Idan : « Oui »). */
@@ -2991,13 +2989,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .tag-pill{border:1px solid #4d3c2f;border-radius:999px;background:#2e231c;color:#81796f;padding:4px 11px;font-family:inherit;font-weight:600;font-size:13px;line-height:1.25;text-align:left;overflow-wrap:anywhere;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .tag-depth-1>.tag-row>.tag-pill{padding:5px 13px;font-size:14px}
 .tag-pill:hover{color:#d8c6a4;border-color:var(--tag-3)}
-/* Trois niveaux (Idan : « mets arc plus important ») : pâle, moyen, plein ; un point sur ceux de l'intendant. */
-.tag-pill.is-on{--tag-bg:var(--tag-1);color:#f4f1ec;border-color:transparent;background:color-mix(in srgb,var(--tag-bg) var(--tag-mix,100%),#2e231c)}
+/* Allumé ou éteint, sans niveau (Idan, 2026-11-20) : allumé, la couleur pleine de sa colonne ; un point sur ceux de
+   l'intendant. */
+.tag-pill.is-on{--tag-bg:var(--tag-1);color:#f4f1ec;border-color:transparent;background:var(--tag-bg)}
 .tag-depth-2>.tag-row>.tag-pill.is-on{--tag-bg:var(--tag-2)}
 .tag-depth-3>.tag-row>.tag-pill.is-on{--tag-bg:var(--tag-3)}
 .tag-depth-4>.tag-row>.tag-pill.is-on{--tag-bg:var(--tag-4)}
-.tag-pill.lvl-1{--tag-mix:38%;color:#d8c6a4}
-.tag-pill.lvl-2{--tag-mix:68%}
 .tag-pill.is-steward::after{content:"";display:inline-block;width:6px;height:6px;margin-left:7px;border-radius:50%;background:currentColor;vertical-align:2px;opacity:.85}
 .tag-pill:focus-visible,.tag-open:focus-visible{outline:2px solid var(--tag-head);outline-offset:2px}
 .tag-open{display:grid;place-items:center;width:24px;height:24px;flex:none;padding:0;border:0;border-radius:50%;background:none;color:#a69578;font-size:12px;line-height:1;cursor:pointer;transition:transform .15s,color .15s,background .15s}

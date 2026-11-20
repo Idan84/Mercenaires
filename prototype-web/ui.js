@@ -1630,10 +1630,9 @@ function renderSheetTab(c, tab) {
 // Onglet Rôle et occupations (les tags) (Idan, 2026-11-12 ; doc 20) : une phrase qui dit à quoi servent les tags ; trois
 // colonnes en accordéon (Occupations principales en rouge, Équipement en vert, Rôle au combat en bleu) ; « Pas de case à
 // cocher. Des tags grisés ou pas grisés » ; « Une petite flèche à droite du tag pour ouvrir la sous-catégorie » ; tous se
-// cochent, à trois niveaux (pâle, moyen, plein : le clic fait le tour) ; un point sur ceux de l'intendant. Les règles :
+// cochent : le clic allume ou éteint, sans niveau (Idan, 2026-11-20) ; un point sur ceux de l'intendant. Les règles :
 // game-core/mercenary-tags.js. Ce qui est ouvert le reste d'une fiche à l'autre, pendant la partie.
 const TAGS_OPEN = new Set();
-const TAG_LEVELS = ["", "pâle", "moyen", "plein"];
 function tagRules() {
   const reference = game.referenceData;
   if (!reference || !globalThis.MercenairesTags) return null;
@@ -1665,21 +1664,21 @@ function stewardRetag(ids = null) {
     if (ids && !ids.includes(m.id)) continue;
     const found = out.get(m.id);
     if (!found) continue;
-    rules.setSteward(m, found.levels);
+    rules.setSteward(m, found.tags);
     count++;
   }
   saveGame();
   return count;
 }
 function tagNodeHtml(node, shown, depth) {
-  const lit = shown[node.id], level = lit?.level || 0, kids = node.enfants.length > 0, open = kids && TAGS_OPEN.has(node.id);
+  const lit = shown[node.id], kids = node.enfants.length > 0, open = kids && TAGS_OPEN.has(node.id);
   const listId = "tags-" + node.id.replace(/[^a-z0-9]+/gi, "-");
   const opener = kids
     ? `<button type="button" class="tag-open" data-tag-open="${esc(node.id)}" aria-expanded="${open}"${open ? ` aria-controls="${listId}"` : ""} aria-label="${open ? "Fermer" : "Ouvrir"} ${esc(node.nom)}" title="${open ? "Fermer" : "Ouvrir"}">▸</button>`
     : "";
-  const tip = level ? `${TAG_LEVELS[level][0].toLocaleUpperCase("fr")}${TAG_LEVELS[level].slice(1)}${lit.steward ? " · proposé par l’intendant" : ""}` : "";
+  const tip = lit?.steward ? "Proposé par l’intendant" : "";
   return `<li class="tag-item tag-depth-${Math.min(depth, 4)}${open ? " is-open" : ""}"><span class="tag-row">`
-    + `<button type="button" class="tag-pill${level ? ` is-on lvl-${level}` : ""}${lit?.steward ? " is-steward" : ""}" data-tag-toggle="${esc(node.id)}" aria-pressed="${level > 0}"${tip ? ` title="${esc(tip)}" aria-label="${esc(node.nom)} (${esc(tip)})"` : ""}>${esc(node.nom)}</button>${opener}</span>`
+    + `<button type="button" class="tag-pill${lit ? " is-on" : ""}${lit?.steward ? " is-steward" : ""}" data-tag-toggle="${esc(node.id)}" aria-pressed="${Boolean(lit)}"${tip ? ` title="${esc(tip)}" aria-label="${esc(node.nom)} (${esc(tip)})"` : ""}>${esc(node.nom)}</button>${opener}</span>`
     + (open ? `<ul class="tag-list" id="${listId}">${node.enfants.map(child => tagNodeHtml(child, shown, depth + 1)).join("")}</ul>` : "")
     + `</li>`;
 }
@@ -1716,7 +1715,7 @@ function onTagClick(event) {
     return;
   }
   if (toggle) {
-    if (!rules.cycle(c, toggle.dataset.tagToggle).ok) return;
+    if (!rules.toggle(c, toggle.dataset.tagToggle).ok) return;
     saveGame();
     renderSheet();
     refocusTag("toggle", toggle.dataset.tagToggle);

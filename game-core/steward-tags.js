@@ -7,7 +7,7 @@
 // La bande : ceux qui peuvent partir en mission (pas l'intendant, le médecin ni les maîtres à leur poste), capitaine
 // compris. Données : data/reference/steward-tags.json (seuils, ce qui sert chaque rôle, traits des camps, postes) et les
 // tags de chaque sort (spells.json, tags). Rien d'écrit en dur sur les camps, les monstres ou les missions.
-// Sortie : pour chaque mercenaire, ses tags et leur niveau (1 pâle, 2 moyen, 3 plein), à poser avec
+// Sortie : pour chaque mercenaire, ses tags (une liste d'identifiants, sans niveau : un tag est posé ou non), à poser avec
 // mercenary-tags.js (setSteward), plus ce qu'il a constaté (facts) pour les questions à venir.
 (function(root,factory){
   const api=factory();
@@ -400,10 +400,10 @@
       for(const m of ms.values()) m.counted=countedAttacks(null,m,B);
       const roles=roleTable(roster,ms,band);
       const out=new Map();
-      const result=c=>{ if(!out.has(c.id)) out.set(c.id,{levels:{},facts:{}}); return out.get(c.id); };
-      const put=(c,id,level)=>{ if(!id||!tags.has(id)) return; const r=result(c).levels; r[id]=Math.max(r[id]||0,level); };
+      const result=c=>{ if(!out.has(c.id)) out.set(c.id,{tags:[],facts:{}}); return out.get(c.id); };
+      const put=(c,id)=>{ if(!id||!tags.has(id)) return; const r=result(c).tags; if(!r.includes(id)) r.push(id); };
 
-      // Rôle principal, niveaux, Mission, « les meilleurs ».
+      // Rôle principal, Mission, « les meilleurs ».
       const meilleur=new Set(),eligible=new Set(),main=new Map();
       // Mission : rôle par rôle, pas dans les 20 % les moins bons de ceux de la bande qui le tiennent (arrondi vers le bas).
       const holderPcts=key=>band.map(x=>roles.get(x.id)?.[key]?.pct).filter(v=>v!=null);
@@ -425,26 +425,25 @@
 
       // Rôle au combat.
       for(const c of roster){
-        const own=roles.get(c.id)||{},m=ms.get(c.id),mainKey=main.get(c.id);
-        const lvl=key=>key===mainKey?3:(own[key]?.pct>=MEDIAN?2:1);
-        for(const key of Object.keys(own)) put(c,"role/"+key,lvl(key));
+        const own=roles.get(c.id)||{},m=ms.get(c.id);
+        for(const key of Object.keys(own)) put(c,"role/"+key);
         // Sous-tags des sorts qui comptent pour leur rôle.
         for(const known of knownSpells(c)){
           for(const id of spellTags(known.code)){
             const key=id.split("/")[1];
             if(key==="degats"||!own[key]) continue;
             if(castP(c,known.code)<=0) continue;
-            put(c,id,lvl(key));
+            put(c,id);
           }
         }
-        if(own.entrave&&m.intimidation>0&&placeAmong(B.map(x=>x.intimidation),m.intimidation)>=TOP_QUARTER) put(c,"role/entrave/demoralisateur",lvl("entrave"));
+        if(own.entrave&&m.intimidation>0&&placeAmong(B.map(x=>x.intimidation),m.intimidation)>=TOP_QUARTER) put(c,"role/entrave/demoralisateur");
         if(own.soutien||own.commandement) for(const item of auraItems(c)){
-          if(own.soutien) put(c,"role/soutien/enchantements",lvl("soutien"));
-          if(own.commandement&&weaponByName.get(item.name)?.aura_caracteristique==="Courage") put(c,"role/commandement",lvl("commandement"));
+          if(own.soutien) put(c,"role/soutien/enchantements");
+          if(own.commandement&&weaponByName.get(item.name)?.aura_caracteristique==="Courage") put(c,"role/commandement");
         }
         if(own.protection) for(const [element,tag] of [["feu","contre-le-feu"],["froid","contre-le-froid"],["foudre","contre-la-foudre"]]){
           if(placeAmong(B.map(x=>x.resist[element]),m.resist[element])>=TOP_QUARTER&&m.resist[element]>0)
-            put(c,"role/protection/protection-elementaire/"+tag,lvl("protection"));
+            put(c,"role/protection/protection-elementaire/"+tag);
         }
         // Magie : les écoles qui comptent (3 au plus).
         if(own.magie){
@@ -453,29 +452,28 @@
           const keep=schools.filter(([school,v],i)=>i===0||v>=THREE_QUARTERS*top||placeAmong(mages.filter(x=>x.schools[school]!=null).map(x=>x.schools[school]),v)>=MEDIAN)
             .slice(0,seuil("ecoles_max",3));
           result(c).facts.schools=keep.map(([s])=>s);
-          for(const [school] of keep) put(c,T(tags.childNamed("role/magie",school)),lvl("magie"));
+          for(const [school] of keep) put(c,T(tags.childNamed("role/magie",school)));
         }
         if(own.animal) for(const item of tamedMounts(c)){
           const sheet=mountRows.get(item.mountCode);
-          put(c,T(tags.childNamed(tags.childNamed("role/animal",sheet.espece)||"",sheet.nom)),lvl("animal"));
+          put(c,T(tags.childNamed(tags.childNamed("role/animal",sheet.espece)||"",sheet.nom)));
         }
-        if(m.flies) put(c,"role/vol",2);
+        if(m.flies) put(c,"role/vol");
         // Dégâts : ses attaques qui comptent.
         const counted=m.counted;
         result(c).facts.attacks=counted.map(a=>a.genre+":"+(a.weapon||a.spell));
         if(own.degats){
-          const L=lvl("degats");
           for(const a of counted){
-            if(a.genre==="distance") put(c,"role/degats/a-distance",L);
-            if(a.zone) put(c,"role/degats/de-zone",L);
-            for(const type of a.types||[]) put(c,"role/degats/"+TYPE_TAG[type],L);
-            for(const id of a.tags||[]) if(id.startsWith("role/degats/")) put(c,id,L);
+            if(a.genre==="distance") put(c,"role/degats/a-distance");
+            if(a.zone) put(c,"role/degats/de-zone");
+            for(const type of a.types||[]) put(c,"role/degats/"+TYPE_TAG[type]);
+            for(const id of a.tags||[]) if(id.startsWith("role/degats/")) put(c,id);
           }
-          if(counted.some(a=>a.genre==="contact")&&m.charge>0&&placeAmong(B.map(x=>x.charge),m.charge)>=TOP_QUARTER) put(c,"role/degats/charge",L);
+          if(counted.some(a=>a.genre==="contact")&&m.charge>0&&placeAmong(B.map(x=>x.charge),m.charge)>=TOP_QUARTER) put(c,"role/degats/charge");
         }
         // Anti morts-vivants, anti invocations : des sorts faits pour eux.
         for(const known of knownSpells(c)) for(const id of spellTags(known.code))
-          if(/anti-morts-vivants|anti-invocations/.test(id)&&own.degats&&castP(c,known.code)>0) put(c,id,lvl("degats"));
+          if(/anti-morts-vivants|anti-invocations/.test(id)&&own.degats&&castP(c,known.code)>0) put(c,id);
       }
 
       // Occupations.
@@ -484,7 +482,7 @@
       const bandGain=B.length?band.map(c=>stat(c,"Charisme")*(1+0.2*repLevel(c))):[];
       for(const c of roster){
         const m=ms.get(c.id),best=meilleur.has(c.id),ok=eligible.has(c.id);
-        if(ok) put(c,"occupation/mission",best?3:2);
+        if(ok) put(c,"occupation/mission");
         // Camps et chasses : une réponse à un trait qui distingue ce type, au-dessus de la médiane de ceux de la bande qui
         // ont cette réponse (sinon l'avoir suffirait).
         const camps=[];
@@ -495,16 +493,16 @@
               const value=answerValue(answer,trait,m,c);
               if(!(value>0)) continue;
               const values=band.map(x=>answerValue(answer,trait,ms.get(x.id),x)).filter(v=>v>0);
-              if(placeAmong(values,value)>=MEDIAN){ put(c,type.id,2); camps.push({type,trait,answer}); }
+              if(placeAmong(values,value)>=MEDIAN){ put(c,type.id); camps.push({type,trait,answer}); }
             }
           }
         }
         result(c).facts.camps=[...new Set(camps.map(x=>x.type.faction))];
         if(!best){
-          if(repLevel(c)>=level+seuil("garde_ecart",-4)) put(c,"occupation/garde-du-corps",2);
-          if(built(state,"pleasure_palace")&&placeAmong(bandGain,stat(c,"Charisme")*(1+0.2*repLevel(c)))>=MEDIAN) put(c,"occupation/job/palais-des-plaisirs",2);
-          if(!ok&&built(state,"lumber_camp")) put(c,"occupation/job/bucheron",2);
-          if(!ok&&built(state,"miners_guild")) put(c,"occupation/job/mines",2);
+          if(repLevel(c)>=level+seuil("garde_ecart",-4)) put(c,"occupation/garde-du-corps");
+          if(built(state,"pleasure_palace")&&placeAmong(bandGain,stat(c,"Charisme")*(1+0.2*repLevel(c)))>=MEDIAN) put(c,"occupation/job/palais-des-plaisirs");
+          if(!ok&&built(state,"lumber_camp")) put(c,"occupation/job/bucheron");
+          if(!ok&&built(state,"miners_guild")) put(c,"occupation/job/mines");
         }
       }
 
@@ -529,7 +527,6 @@
     }
 
     function equipmentAndTraining(state,c,{m,own,mainKey,B,band,ms,types,put,result,foe,level}){
-      const lvl=key=>key===mainKey?3:(own[key]?.pct>=MEDIAN?2:1);
       const bonusNames=new Set((tags.node("equipment/caracteristiques")?.enfants||[]).map(n=>n.nom));
       const counted=m.counted;
       const facts=result(c).facts;
@@ -552,7 +549,7 @@
       // Caractéristiques : celles de son rôle principal (« On renforce son rôle »).
       if(mainKey){
         for(const usage of usageKeys(mainKey)) for(const name of (D.usages?.[usage]||[]).flatMap(expand))
-          if(bonusNames.has(name)) put(c,T(tags.childNamed("equipment/caracteristiques",name)),3);
+          if(bonusNames.has(name)) put(c,T(tags.childNamed("equipment/caracteristiques",name)));
       }
 
       // Le profil : deux cachés (Soutien : son rôle principal vient de sa magie ; Pur distance : il tire, il est mauvais au
@@ -568,7 +565,7 @@
       const profileName=support?"soutien":pureRange?"pur_distance":(visibleStyle?.competence||null);
       facts.profile=profileName;
       // Style de combat : le style conseillé (les profils cachés n'en ont pas).
-      if(!support&&!pureRange&&visibleStyle) put(c,visibleStyle.id,3);
+      if(!support&&!pureRange&&visibleStyle) put(c,visibleStyle.id);
       const weaponTag=name=>{ const fam=familyOf(name); return fam?T(tags.childNamed(tags.childNamed("equipment/arme",fam)||"",name)):null; };
       const shieldTag=name=>T(tags.childNamed("equipment/style-de-combat/bouclier",name));
       const melee=weaponRows.filter(w=>engine.isMeleeWeapon(w)&&!engine.isRangedWeapon(w)&&familyOf(w.nom)!=="Boucliers");
@@ -580,13 +577,13 @@
         const wanted=[...(mainKey==="commandement"?["Charisme"]:[]),...schools,"Puissance magique","Réserve de mana"];
         for(const target of wanted){
           const w=weaponRows.find(x=>x.bonus_caracteristique===target);
-          if(w){ weapons.push({name:w.nom,level:3}); break; }
+          if(w){ weapons.push(w.nom); break; }
         }
       }else if(pureRange){
         const bow=bestOf(ranged,w=>tryWeapon(c,w.nom,foe));
-        if(bow) weapons.push({name:bow.nom,level:3});
+        if(bow) weapons.push(bow.nom);
         const dagger=bestOf(melee.filter(w=>familyOf(w.nom)==="Lames courtes"),w=>tryWeapon(c,w.nom,foe));
-        if(dagger) weapons.push({name:dagger.nom,level:2});
+        if(dagger) weapons.push(dagger.nom);
       }else{
         const twoHands=profileName==="Combat à deux mains";
         const fits=w=>twoHands?(w.prise==="2 mains"||w.prise==="Au choix"):(w.prise==="1 main"||w.prise==="Au choix");
@@ -596,29 +593,29 @@
         // Son rôle principal vient d'un objet (le fouet et son aura) : il le garde.
         const kept=sourceOf(mainKey)==="objet"?weaponByName.get(auraItems(c)[0]?.name):null;
         const main=kept||bestOf(candidates,w=>evalWeapon(w,foe));
-        if(main) weapons.push({name:main.nom,level:3});
+        if(main) weapons.push(main.nom);
         // Un camp tagué peut changer le choix (la masse contre les squelettes) : sa meilleure arme contre ce camp, s'il est
         // au-dessus de la médiane de la bande dans sa famille.
         for(const type of types){
-          if(!result(c).levels[type.id]||!type.foe) continue;
+          if(!result(c).tags.includes(type.id)||!type.foe) continue;
           const alt=bestOf(candidates,w=>evalWeapon(w,type.foe));
           if(!alt||alt.nom===main?.nom) continue;
           const fam=familyOf(alt.nom),mine=num(c.skills?.martial?.[fam]);
-          if(mine>0&&placeAmong(band.map(x=>num(x.skills?.martial?.[fam])).filter(v=>v>0),mine)>=MEDIAN) weapons.push({name:alt.nom,level:2});
+          if(mine>0&&placeAmong(band.map(x=>num(x.skills?.martial?.[fam])).filter(v=>v>0),mine)>=MEDIAN) weapons.push(alt.nom);
         }
         if(profileName==="Boucliers"&&main){
           const shields=weaponRows.filter(w=>familyOf(w.nom)==="Boucliers");
           const shield=bestOf(shields,w=>trySolidity(c,foe,{weapon:main.nom,shield:w.nom}));
-          if(shield) put(c,shieldTag(shield.nom),3);
+          if(shield) put(c,shieldTag(shield.nom));
         }
         // Le deuxième jeu d'armes : une arme à distance, si son tir compte.
         if(counted.some(a=>a.genre==="distance")){
           const bow=bestOf(ranged,w=>tryWeapon(c,w.nom,foe));
-          if(bow) weapons.push({name:bow.nom,level:2});
+          if(bow) weapons.push(bow.nom);
         }
       }
-      for(const w of weapons) put(c,weaponTag(w.name),w.level);
-      facts.weapons=weapons.map(w=>w.name);
+      for(const name of weapons) put(c,weaponTag(name));
+      facts.weapons=weapons;
 
       // L'armure : celle qui lui donne la meilleure valeur dans son rôle principal (à égalité, le suivant). Sa solidité :
       // contre l'ennemi type de chaque camp (moyenne géométrique), pas un seul adversaire (un canonnier rend toute armure
@@ -652,7 +649,7 @@
       const now=bestArmor(portLevel);
       if(now.pick){
         const classId=now.pick.type_armure==="Vêtement"?"equipment/armure":tags.childNamed("equipment/armure",now.pick.type_armure);
-        put(c,T(tags.childNamed(classId||"",now.pick.nom)),3);
+        put(c,T(tags.childNamed(classId||"",now.pick.nom)));
         facts.armor=now.pick.nom;
       }
 
@@ -664,17 +661,17 @@
         const names=[...new Set(usageKeys(mainKey).flatMap(u=>(D.usages?.[u]||[]).flatMap(expand)))].filter(n=>trainable.has(n)&&trainingId(n));
         const valueOf=(x,n)=>n in (x.skills?.magic||{})?num(engine.statWithGear(unitOf(x),n)):stat(x,n)||num(x.skills?.martial?.[n]);
         const weak=names.map(n=>({n,p:placeAmong(band.map(x=>valueOf(x,n)),valueOf(c,n))})).sort((a,b)=>a.p-b.p).slice(0,seuil("faiblesses",3));
-        weak.forEach(({n},i)=>put(c,trainingId(n),i===0?3:2));
+        for(const {n} of weak) put(c,trainingId(n));
         facts.training=weak.map(w=>w.n);
       }
       // Le style conseillé, s'il s'entraîne au camp.
-      if(!support&&!pureRange&&visibleStyle&&trainable.has(visibleStyle.competence)) put(c,trainingId(visibleStyle.competence),2);
+      if(!support&&!pureRange&&visibleStyle&&trainable.has(visibleStyle.competence)) put(c,trainingId(visibleStyle.competence));
       // Un port d'armure : si une armure plus lourde que celles qu'il sait porter le rendait plus efficace, le port suivant
       // (l'Académie les fait apprendre dans l'ordre).
       if(portLevel<3&&built(state,"survival_academy")&&now.score){
         const heavier=bestArmor(3);
         if(heavier.pick&&classes.indexOf(heavier.pick.type_armure)+1>portLevel&&heavier.score[0]>now.score[0]*1.01)
-          put(c,trainingId("Port d’armure "+classes[portLevel].toLocaleLowerCase("fr")),2);
+          put(c,trainingId("Port d’armure "+classes[portLevel].toLocaleLowerCase("fr")));
       }
       // Des sorts de ses écoles qui servent son rôle principal (l'École de magie construite).
       if(mainKey&&built(state,"magic_school")){
@@ -682,12 +679,12 @@
         const want="role/"+mainKey;
         const learn=[...spellRows.values()].filter(s=>schools.includes(s.ecole)&&!knownCodes.has(s.code)&&(s.tags||[]).some(t=>t===want||t.startsWith(want+"/")))
           .slice(0,seuil("sorts_a_apprendre",3));
-        for(const s of learn) put(c,T(tags.childNamed(trainingId(s.ecole)||"",s.nom)),2);
+        for(const s of learn) put(c,T(tags.childNamed(trainingId(s.ecole)||"",s.nom)));
       }
       // Ses montures à apprivoiser (la Grange du dresseur).
       if(built(state,"trainer_barn")) for(const item of untamedMounts(c)){
         const sheet=mountRows.get(item.mountCode);
-        put(c,T(tags.childNamed(trainingId(sheet.espece)||"",sheet.nom)),2);
+        put(c,T(tags.childNamed(trainingId(sheet.espece)||"",sheet.nom)));
       }
     }
 
@@ -718,7 +715,7 @@
         if(!open) continue;
         // Les 3 meilleurs de la compagnie pour ce poste ; ceux qui sont parmi les meilleurs au combat restent en mission.
         const pool=candidates.map(c=>({c,v:value(c)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,seuil("postes_meilleurs",3));
-        pool.forEach(({c},i)=>{ if(def.meilleurs_admis||!meilleur.has(c.id)) put(c,id,i===0?3:2); });
+        for(const {c} of pool) if(def.meilleurs_admis||!meilleur.has(c.id)) put(c,id);
       }
     }
 

@@ -543,12 +543,15 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.deepEqual(six.map(p => p.name), ["T1", "T2", "T3", "T4", "2 autres rôles"]);
     assert.deepEqual([eight.length, eight[4].name, eight[4].more, eight[4].hidden], [5, "4 autres rôles", true, ["T5", "T6", "T7", "T8"]]);
     assert.match(hoverSrc, /hoverTagPlates\(d\.tags\)\.map\(tag=>`<li class="hc-tag[\s\S]*?style="grid-column:\$\{tag\.col\}\/span 2"/);
-    // Le niveau de chaque tag sur sa plaque (Idan, 2026-11-16) : contour seul (1), fond à 50 % (2), plein (3).
-    assert.match(hoverSrc, /\$\{tag\.level<3\?` is-n\$\{tag\.level\}`:""\}/);
-    assert.match(hoverSrc, /level:shown\[id\]\?\.level\|\|3/);
-    assert.match(css, /\.hc-tag\.is-n1::after,\.hc-tag\.is-n2::after\{[^}]*clip-path:polygon\(evenodd,/);
-    assert.match(css, /\.hc-tag\.is-n1::before\{opacity:0\}\n\.hc-tag\.is-n2::before\{opacity:\.5\}/);
-    assert.equal(eight[4].level, 1, "la plaque « N autres rôles » : le contour seul");
+    // Un tag allumé, sans niveau (Idan, 2026-11-20) : toujours la plaque pleine ; la plaque « N autres rôles » garde le
+    // contour seul (Idan, 2026-11-16).
+    assert.doesNotMatch(hoverSrc, /level/, "plus de niveau sur les plaques");
+    assert.doesNotMatch(css, /\.hc-tag\.is-n\d/);
+    assert.ok(d.tags.every(t => !("level" in t)));
+    assert.match(hoverSrc, /\$\{tag\.more\?" is-more":""\}" style=/);
+    assert.match(css, /\.hc-tag\.is-more::after\{[^}]*clip-path:polygon\(evenodd,/);
+    assert.match(css, /\.hc-tag\.is-more::before\{opacity:0\}/);
+    assert.equal(eight[4].more, true, "la plaque « N autres rôles » : le contour seul");
     // Deux tags au même nom : le nom du parent devant, l'adjectif accordé (Idan, 2026-11-16 : « oui »).
     const {hoverTagFullName} = require(path.join(root, "prototype-web/hover-card-ui.js"));
     assert.deepEqual([hoverTagFullName("Dégâts", "De zone"), hoverTagFullName("Soin", "De zone"), hoverTagFullName("Dégâts", "Brûlant"),

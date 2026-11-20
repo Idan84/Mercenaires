@@ -2,8 +2,9 @@
 
 // L'intendant qui tague (Idan, 2026-11-12 ; doc 20 §5 à §8) : « On doit pouvoir lui demander de le qualifier tout seul. »
 // Il compare toujours à la bande (« Il faut jamais comparer à la génération de X mercenaires ») ; rien d'écrit en dur sur
-// les camps ; les meilleurs ne vont ni en garde ni au travail ni à un poste (sauf Officier) ; ses tags se posent à trois
-// niveaux. Code : game-core/steward-tags.js ; données : data/reference/steward-tags.json et la colonne tags de spells.json.
+// les camps ; les meilleurs ne vont ni en garde ni au travail ni à un poste (sauf Officier) ; ses tags se posent sans
+// niveau (Idan, 2026-11-20 : un tag est allumé ou éteint). Code : game-core/steward-tags.js ; données :
+// data/reference/steward-tags.json et la colonne tags de spells.json.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -83,7 +84,7 @@ function company(count,{buildings=["magic_school","ludus","survival_academy","bl
   return {day:10,company:{captainId:1,roster,lieutenantIds:[],intendantId:null,medicId:null,
     camp:{buildings:Object.fromEntries(buildings.map(code=>[code,{level:2,construction:null}]))}}};
 }
-const lit=(result,prefix)=>Object.keys(result.levels).filter(id=>id===prefix||id.startsWith(prefix+"/"));
+const lit=(result,prefix)=>result.tags.filter(id=>id===prefix||id.startsWith(prefix+"/"));
 
 const state=company(24);
 const t0=Date.now();
@@ -93,12 +94,11 @@ assert.equal(out.size,25,"tout le monde est tagué");
 let gardes=0,meilleurs=0;
 for(const c of state.company.roster){
   const r=out.get(c.id),f=r.facts;
-  for(const [id,level] of Object.entries(r.levels)){
-    assert.ok(tags.has(id),"tag inconnu : "+id);
-    assert.ok([1,2,3].includes(level),"trois niveaux : "+id);
-  }
-  // Son rôle principal : plein.
-  if(f.main) assert.equal(r.levels["role/"+f.main],3,c.name+" : son rôle principal, plein");
+  assert.ok(Array.isArray(r.tags)&&new Set(r.tags).size===r.tags.length,c.name+" : une liste d'identifiants, sans doublon ni niveau");
+  for(const id of r.tags) assert.ok(tags.has(id),"tag inconnu : "+id);
+  // Ses rôles, son rôle principal compris : tagués.
+  for(const key of Object.keys(f.roles)) assert.ok(r.tags.includes("role/"+key),c.name+" : son rôle "+key+", tagué");
+  if(f.main) assert.ok(r.tags.includes("role/"+f.main),c.name+" : son rôle principal, tagué");
   // Les meilleurs restent en mission : ni garde, ni job, ni poste (sauf Officier).
   if(f.meilleur){
     meilleurs++;
@@ -106,12 +106,12 @@ for(const c of state.company.roster){
     assert.deepEqual(lit(r,"occupation/job"),[],c.name+" : pas de job pour un des meilleurs");
     assert.deepEqual(lit(r,"occupation/poste").filter(id=>id!=="occupation/poste/officier"),[],c.name+" : pas de poste pour un des meilleurs");
   }
-  if(r.levels["occupation/garde-du-corps"]) gardes++;
+  if(r.tags.includes("occupation/garde-du-corps")) gardes++;
   // Bûcheron, Mines : ceux qui n'ont pas le niveau Mission.
-  if(f.eligible) assert.ok(!r.levels["occupation/job/bucheron"]&&!r.levels["occupation/job/mines"],c.name+" : bon pour la mission, pas au bois");
-  else assert.ok(r.levels["occupation/job/mines"]||f.meilleur,c.name+" : sans mission, à la mine");
+  if(f.eligible) assert.ok(!r.tags.includes("occupation/job/bucheron")&&!r.tags.includes("occupation/job/mines"),c.name+" : bon pour la mission, pas au bois");
+  else assert.ok(r.tags.includes("occupation/job/mines")||f.meilleur,c.name+" : sans mission, à la mine");
   // Un seul style conseillé, aucun pour les profils cachés.
-  const styles=tags.node("equipment/style-de-combat").enfants.filter(n=>r.levels[n.id]);
+  const styles=tags.node("equipment/style-de-combat").enfants.filter(n=>r.tags.includes(n.id));
   assert.ok(styles.length<=1,c.name+" : un seul style");
   if(f.profile==="soutien"||f.profile==="pur_distance") assert.equal(styles.length,0,c.name+" : profil caché, pas de style");
   // L'armure conseillée : une qu'il sait porter.
@@ -130,8 +130,8 @@ const healer=state.company.roster[5];
 healer.spells=[...(healer.spells||[]),{code:heal.code,name:heal.nom,school:heal.ecole,mastery:20}];
 healer.skills.magic.Vie=Math.max(Number(healer.skills.magic.Vie)||0,40);
 const withHealer=steward.evaluate(state,{level:3}).get(healer.id);
-assert.ok(withHealer.levels["role/soin"],"il soigne : Soin");
-assert.ok(withHealer.facts.eligible&&withHealer.levels["occupation/mission"],"le seul soigneur part en mission");
+assert.ok(withHealer.tags.includes("role/soin"),"il soigne : Soin");
+assert.ok(withHealer.facts.eligible&&withHealer.tags.includes("occupation/mission"),"le seul soigneur part en mission");
 
 // La bande : ni l'intendant, ni le médecin. Ses places ne changent rien pour les autres.
 const other=state.company.roster[3],intendant=state.company.roster[8];
@@ -152,7 +152,7 @@ for(const r of steward.evaluate(bare,{level:3}).values()){
 const html=read("prototype-web/index.html"),ui=read("prototype-web/ui.js"),stewardUi=read("prototype-web/steward-ui.js");
 assert.ok(html.indexOf('src="/core/steward-tags.js"')>html.indexOf('src="/core/mercenary-tags.js"')&&html.indexOf('src="/core/steward-tags.js"')<html.indexOf('src="ui.js"'));
 assert.match(ui,/steward\.evaluate\(c, \{level: campaignRules\(\)\.companyRenownLevel\(c\)\}\)/,"au niveau de renommée de la compagnie");
-assert.match(ui,/rules\.setSteward\(m, found\.levels\)/,"il ne remplace que ses tags");
+assert.match(ui,/rules\.setSteward\(m, found\.tags\)/,"il ne remplace que ses tags");
 assert.match(stewardUi,/data-steward-retag/);
 assert.match(stewardUi,/stewardRetag\(\)/);
 console.log("L'intendant qui tague : comparé à la bande, camps lus dans les fiches, meilleurs gardés pour la mission — OK");

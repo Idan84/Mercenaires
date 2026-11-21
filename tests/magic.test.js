@@ -322,11 +322,13 @@ queue=[0.99,0.99];
 out=magic.cast(caster,enemy,"fire_bolt",{units:[caster,enemy]});
 assert.deepEqual([out.fumble,out.element,out.selfDamage],[true,"feu",magic.effectAmount(caster,"fire_bolt",1)]);
 
-// Protection contre le feu (moteur) : Résistance au feu + armure (plates −20, écailles +35) + bonus, de −50 à +75.
+// Protection contre le feu (moteur) : Résistance au feu + armure (plates −20, écailles +35) + bonus, au moins −50,
+// sans plafond (Idan, 2026-11-21) : à 100 et plus, plus aucun dégât.
 const armoredUnit=(armor,res,extra={})=>({character:{resistances:{"Résistance au feu":res,"Résistance au froid":res},stats:{},items:armor?[{id:"a",name:armor}]:[],equipment:{slots:armor?{armor:"a"}:{}}},activeSet:1,...extra});
 assert.deepEqual(combat.elementalDamage(armoredUnit("Armure de plates",4),"feu",100),{resistance:4,armor:-20,bonus:0,total:-16,applied:-16,amount:100,damage:116});
 assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",4),"feu",100).damage,61);
-assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",100).applied,75,"jamais plus de 75 %");
+assert.deepEqual([combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",100).applied,combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",100).damage],[83,17],"plus de plafond à 75 %");
+assert.deepEqual([combat.elementalDamage(armoredUnit("Armure d'écailles",90),"feu",100).applied,combat.elementalDamage(armoredUnit("Armure d'écailles",90),"feu",100).damage],[125,0],"au-delà de 100 : rien, jamais de soin");
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{froid:{bonus:36,turns:2}}}),"froid",100).damage,60,"Armure de feu contre le froid");
 
 // Embrasement (chiffres de JC3) : 1D6 de feu au début de chacune des activations de la cible, 2 tours (3 à 100 de maîtrise).

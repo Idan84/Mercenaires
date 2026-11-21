@@ -95,7 +95,7 @@
       rangedDivisor:constant("combat.ranged.chain.divisor",1.5)
     };
     // Approximation projectile V1 ; couloir de tir décidé par Idan le 2026-10-08.
-    const ELEMENTAL={min:constant("combat.elemental.protection_min",-50),max:constant("combat.elemental.protection_max",75)};
+    const ELEMENTAL={min:constant("combat.elemental.protection_min",-50)};
     const STEALTH={
       offset:constant("combat.stealth.offset",40),
       gap:constant("combat.stealth.gap_factor",2),
@@ -612,7 +612,8 @@
     // Protection contre un élément (feu, froid, foudre ; doc 12, Idan 2026-10-25) : Résistance du personnage (équipement
     // compris) + valeur de l'armure portée pour cet élément (« brûlant », « glaçant », « foudroyant » ; les plates font
     // brûler davantage) + bonus de sort en cours (unit.elementalBonus, par exemple Armure de feu contre le froid).
-    // Les dégâts élémentaires sont multipliés par (1 − protection / 100), protection bornée de −50 à +75.
+    // Les dégâts élémentaires sont multipliés par (1 − protection / 100), protection d'au moins −50, sans plafond
+    // (Idan, 2026-11-21) : à 100 et plus, on ne prend plus rien de cet élément (les dégâts ne passent jamais sous 0).
     function armorElementalResistance(unit,element){
       const item=armorItem(unit),armor=armorTemplate(item),meta=ELEMENTS[element];
       if(!armor||!meta?.armor) return 0;
@@ -625,7 +626,7 @@
       if(!meta) return {resistance:0,armor:0,bonus:0,total:0,applied:0};
       const resistance=statWithGear(unit,meta.resistance),armor=armorElementalResistance(unit,element);
       const bonus=Number(unit?.elementalBonus?.[element]?.bonus)||0,total=resistance+armor+bonus;
-      return {resistance,armor,bonus,total,applied:clamp(total,ELEMENTAL.min,ELEMENTAL.max)};
+      return {resistance,armor,bonus,total,applied:Math.max(total,ELEMENTAL.min)};
     }
     function elementalDamage(unit,element,amount){
       const protection=elementalProtection(unit,element);

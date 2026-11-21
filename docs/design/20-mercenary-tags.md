@@ -269,6 +269,38 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 | 8 | Un hôpital sur le champ de bataille | Soigneur reconnu |
 | 9 | Grand Maître du soin | Soigneur complet, Un hôpital sur le champ de bataille, Grand soigneur des masses, Grand soigneur dans la durée |
 
+### Les caracs exceptionnelles (Idan, 2026-11-21)
+
+Dans « Ce qu'il est », un tag par caractéristique exceptionnelle, et un tag au-dessous pour la plus haute :
+
+- **tag du haut** : la carac > 100 + étoiles de la compagnie (constante « base carac exceptionnelle ») ;
+- **tag du dessous** : la carac > (100 + étoiles) × 1,5 (« facteur carac superieure ») **et** la meilleure valeur de la
+  compagnie (ex æquo compris) ;
+- **à l'instant T** : la valeur que montre la fiche du jeu (équipement, armure, armes, casque, combat à deux armes).
+
+| Tag | Carac | Tag du dessous |
+|---|---|---|
+| Grosse Brute | Force | Force de la nature |
+| Insaisissable | Esquive | Roi de l'esquive |
+| Cerveau sur pattes | Intelligence | Le génie |
+| Doigts agiles | Dextérité | Aux mains d'argent |
+| 6ème sens | Perception | Oracle |
+| Veinard | Chance | Béni des dieux |
+| Roc | Constitution, Endurance ou Résistance physique | Increvable |
+| Bolide | Vitesse | Flash |
+| Sans peur | Courage | Tête brûlée |
+| Volonté de Fer | Volonté | Volonté de diamant |
+| Effrayant | Intimidation (compétence) | Terrorisant |
+| Séducteur | Charisme | Irrésistible |
+
+Résistances (Ignifugé, Paratonnerre, Frigorifugé, Mithridatisé) : la protection du combat (résistance avec l'équipement +
+armure portée + bonus) > 100 + étoiles (« base resistance exceptionnelle ») : il est immunisé. Pour que ce soit possible,
+le jeu n'a plus de plafond (Idan, 2026-11-21) : ni 75 % pour les éléments, ni 50 % pour la Résistance physique ; au-delà de
+100 %, le feu, le froid, la foudre et le poison le soignent (doc 12).
+
+L'onglet « Essayer » tire une compagnie au hasard (taille réglable, lui compris) : les calculs lisent
+`compagnie.max.<variable>`, la meilleure valeur de la compagnie.
+
 ### Les tests, dans l'ordre de l'arbre
 
 Un retrait (→) veut dire « posé seulement si le test du dessus répond oui ». « Élimine » : les tags retirés quand
@@ -279,6 +311,34 @@ la réponse est non. Un calcul vide est à écrire.
 | Vole-t-il ? | Il sait voler ou est équipé d'une monture volante. | `capacite.vol ou monture.vol` | Vol |
 | A-t-il de la Régénération ? | Il a de la Régénération (valeur au-dessus de 0). | `capacite.regeneration > 0` | Régénération |
 | Respire-t-il sous l'eau ? | Respiration aquatique : il traverse l'eau profonde, normalement infranchissable, et s'y couvre. | `capacite.respiration_aquatique` | Amphibie |
+| Grosse Brute : Force exceptionnelle ? | Force > 100 + étoiles de la compagnie (équipement compris). | `carac.force > base_carac_exceptionnelle + compagnie.etoiles` | Grosse Brute |
+| → Force de la nature : Force hors norme et la meilleure de la compagnie ? | Force > (100 + étoiles de la compagnie) × 1,5, et la meilleure Force de la compagnie (ex æquo compris). | `carac.force > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.force >= compagnie.max.carac.force` | Force de la nature |
+| Insaisissable : Esquive exceptionnelle ? | Esquive > 100 + étoiles de la compagnie (équipement compris). | `carac.esquive > base_carac_exceptionnelle + compagnie.etoiles` | Insaisissable |
+| → Roi de l'esquive : Esquive hors norme et la meilleure de la compagnie ? | Esquive > (100 + étoiles de la compagnie) × 1,5, et la meilleure Esquive de la compagnie (ex æquo compris). | `carac.esquive > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.esquive >= compagnie.max.carac.esquive` | Roi de l'esquive |
+| Cerveau sur pattes : Intelligence exceptionnelle ? | Intelligence > 100 + étoiles de la compagnie (équipement compris). | `carac.intelligence > base_carac_exceptionnelle + compagnie.etoiles` | Cerveau sur pattes |
+| → Le génie : Intelligence hors norme et la meilleure de la compagnie ? | Intelligence > (100 + étoiles de la compagnie) × 1,5, et la meilleure Intelligence de la compagnie (ex æquo compris). | `carac.intelligence > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.intelligence >= compagnie.max.carac.intelligence` | Le génie |
+| Doigts agiles : Dextérité exceptionnelle ? | Dextérité > 100 + étoiles de la compagnie (équipement compris). | `carac.dexterite > base_carac_exceptionnelle + compagnie.etoiles` | Doigts agiles |
+| → Aux mains d'argent : Dextérité hors norme et la meilleure de la compagnie ? | Dextérité > (100 + étoiles de la compagnie) × 1,5, et la meilleure Dextérité de la compagnie (ex æquo compris). | `carac.dexterite > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.dexterite >= compagnie.max.carac.dexterite` | Aux mains d'argent |
+| 6ème sens : Perception exceptionnelle ? | Perception > 100 + étoiles de la compagnie (équipement compris). | `carac.perception > base_carac_exceptionnelle + compagnie.etoiles` | 6ème sens |
+| → Oracle : Perception hors norme et la meilleure de la compagnie ? | Perception > (100 + étoiles de la compagnie) × 1,5, et la meilleure Perception de la compagnie (ex æquo compris). | `carac.perception > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.perception >= compagnie.max.carac.perception` | Oracle |
+| Veinard : Chance exceptionnelle ? | Chance > 100 + étoiles de la compagnie (équipement compris). | `carac.chance > base_carac_exceptionnelle + compagnie.etoiles` | Veinard |
+| → Béni des dieux : Chance hors norme et la meilleure de la compagnie ? | Chance > (100 + étoiles de la compagnie) × 1,5, et la meilleure Chance de la compagnie (ex æquo compris). | `carac.chance > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.chance >= compagnie.max.carac.chance` | Béni des dieux |
+| Roc : Constitution, Endurance ou Résistance physique exceptionnelle ? | L'une des trois (Constitution, Endurance ou Résistance physique) > 100 + étoiles de la compagnie (équipement compris). | `carac.constitution > base_carac_exceptionnelle + compagnie.etoiles ou carac.endurance > base_carac_exceptionnelle + compagnie.etoiles ou res.physique > base_carac_exceptionnelle + compagnie.etoiles` | Roc |
+| → Increvable : Constitution, Endurance ou Résistance physique hors norme et la meilleure de la compagnie ? | L'une des trois > (100 + étoiles de la compagnie) × 1,5, et la meilleure de la compagnie dans cette caractéristique (ex æquo compris). | `(carac.constitution > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.constitution >= compagnie.max.carac.constitution) ou (carac.endurance > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.endurance >= compagnie.max.carac.endurance) ou (res.physique > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et res.physique >= compagnie.max.res.physique)` | Increvable |
+| Bolide : Vitesse exceptionnelle ? | Vitesse > 100 + étoiles de la compagnie (équipement compris). | `carac.vitesse > base_carac_exceptionnelle + compagnie.etoiles` | Bolide |
+| → Flash : Vitesse hors norme et la meilleure de la compagnie ? | Vitesse > (100 + étoiles de la compagnie) × 1,5, et la meilleure Vitesse de la compagnie (ex æquo compris). | `carac.vitesse > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.vitesse >= compagnie.max.carac.vitesse` | Flash |
+| Sans peur : Courage exceptionnel ? | Courage > 100 + étoiles de la compagnie (équipement compris). | `carac.courage > base_carac_exceptionnelle + compagnie.etoiles` | Sans peur |
+| → Tête brulée : Courage hors norme et le meilleur de la compagnie ? | Courage > (100 + étoiles de la compagnie) × 1,5, et le meilleur Courage de la compagnie (ex æquo compris). | `carac.courage > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.courage >= compagnie.max.carac.courage` | Tête brulée |
+| Volonté de Fer : Volonté exceptionnelle ? | Volonté > 100 + étoiles de la compagnie (équipement compris). | `carac.volonte > base_carac_exceptionnelle + compagnie.etoiles` | Volonté de Fer |
+| → Volonté de diamant : Volonté hors norme et la meilleure de la compagnie ? | Volonté > (100 + étoiles de la compagnie) × 1,5, et la meilleure Volonté de la compagnie (ex æquo compris). | `carac.volonte > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.volonte >= compagnie.max.carac.volonte` | Volonté de diamant |
+| Effrayant : Intimidation exceptionnelle ? | Intimidation > 100 + étoiles de la compagnie (équipement compris). | `comp.intimidation > base_carac_exceptionnelle + compagnie.etoiles` | Effrayant |
+| → Terrorisant : Intimidation hors norme et la meilleure de la compagnie ? | Intimidation > (100 + étoiles de la compagnie) × 1,5, et la meilleure Intimidation de la compagnie (ex æquo compris). | `comp.intimidation > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et comp.intimidation >= compagnie.max.comp.intimidation` | Terrorisant |
+| Séducteur : Charisme exceptionnel ? | Charisme > 100 + étoiles de la compagnie (équipement compris). | `carac.charisme > base_carac_exceptionnelle + compagnie.etoiles` | Séducteur |
+| → Irresistible : Charisme hors norme et le meilleur de la compagnie ? | Charisme > (100 + étoiles de la compagnie) × 1,5, et le meilleur Charisme de la compagnie (ex æquo compris). | `carac.charisme > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.charisme >= compagnie.max.carac.charisme` | Irresistible |
+| Ignifugé : Résistance au feu exceptionnelle ? | Protection contre le feu (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le feu et se soigne de ce qui dépasse. | `res.feu > base_resistance_exceptionnelle + compagnie.etoiles` | Ignifugé  |
+| Paratonerre : Résistance à la foudre exceptionnelle ? | Protection contre la foudre (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe la foudre et se soigne de ce qui dépasse. | `res.foudre > base_resistance_exceptionnelle + compagnie.etoiles` | Paratonerre |
+| Frigorifugé : Résistance au froid exceptionnelle ? | Protection contre le froid (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le froid et se soigne de ce qui dépasse. | `res.froid > base_resistance_exceptionnelle + compagnie.etoiles` | Frigorifugé  |
+| Mithridatisé : Résistance au poison exceptionnelle ? | Protection contre le poison (résistance avec l'équipement + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le poison et se soigne de ce qui dépasse. | `res.poison > base_resistance_exceptionnelle + compagnie.etoiles` | Mithridatisé  |
 | Sait-il lancer un sort ? |  | `nb_sorts > 0` | Magie |
 | → Connaît-il un sort de soin ? | Il connaît un sort qui soigne un allié. | `sorts.soin > 0` | Soigneur |
 | → → Ses soins marchent-ils vraiment ? | Réussite moyenne de ses sorts de soin supérieure à 50 %, et assez de mana pour lancer un soin (coût moyen de ses soins) une fois par étoile de la compagnie. | `moy.chance.soin > seuil_soin_occasionnel et lancers.soin >= compagnie.etoiles` | Soigneur occasionnel |
@@ -293,7 +353,6 @@ la réponse est non. Un calcul vide est à écrire.
 | → Connaît-il un sort de soutien ? | Tout sort qui cible un allié et qui augmente leur caractéristiques | à écrire | Soutien |
 | → Connait il un sort d'entrave ? | Tout sort qui cible un ennemi et qui reduit les carac | à écrire | Entrave |
 | As-t-il une arme de tir ou arme à feu ? | On ne prends pas un compte le pistolet qui est particulier | `((arme1.categorie = "Armes de tir" ou arme1.categorie = "Armes à feu") et arme1 != "Pistolet") ou ((arme2.categorie = "Armes de tir" ou arme2.categorie = "Armes à feu") et arme2 != "Pistolet")` | Tireur |
-| As-t-il plus de 80 dans une résistance élémentaire ? | Feu Froid Foudre Poison | à écrire | Protection élémentaire |
 
 ### Les constantes
 
@@ -305,6 +364,9 @@ la réponse est non. Un calcul vide est à écrire.
 | seuil soin occasionnel | 50 | Réussite minimale de son meilleur soin pour être Soigneur occasionnel, en % (Idan, 2026-11-21 : « réussite supérieure à 50 % »). |
 | base puissance soin | 100 | Puissance des soins : Puissance magique + école moyenne de ses soins > cette base + (par étoile) × étoiles de la compagnie (Idan, 2026-11-21). |
 | puissance soin par etoile | 10 | Ce que chaque étoile de la compagnie ajoute au seuil de puissance des soins (Idan, 2026-11-21 : « 100 + étoiles × 10 »). |
+| base carac exceptionnelle | 100 | Carac exceptionnelle (« Ce qu'il est ») : carac > cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 100 + nombre d'étoiles de la compagnie »). |
+| facteur carac superieure | 1.5 | Tag du dessous : carac > (base + étoiles de la compagnie) × ce facteur, et la meilleure valeur de la compagnie (Idan, 2026-11-21 : « x1.5 et avoir la meilleure stat de la compagnie »). |
+| base resistance exceptionnelle | 100 | Résistances exceptionnelles : protection > cette base + étoiles de la compagnie (Idan, 2026-11-21 : même règle que les caracs ; le plafond de 75 % est retiré du jeu, à 100 on ne prend plus rien de l'élément, au-delà il soigne). |
 
 Variables du profil : `scripts/atelier-tags/profils.js` (caractéristiques, résistances, compétences, ports d'armure,
 écoles, capacités, armes, armure, monture, sorts par tag de rôle, réussite / coût / durée par tag de sort, moyennes des
@@ -326,6 +388,30 @@ Puissance magique, Bâton long, Chapeau d'intelligence, Ceinture de mana, 6 bagu
 La réussite plafonne vers 94 % ; à beaucoup d'étoiles, c'est la mana qui bloque. D'où la **Bague de mana** (Idan,
 2026-11-21 : +5 / 10 / 15 / 20 % de réserve de mana, doc 05), pas encore dans ces chiffres.
 
+### La simulation des caracs exceptionnelles (2026-11-21)
+
+1000 recrues, à 1★ ; pour chaque tag, tous les objets qui augmentent la carac visée (bagues × 6, elles se cumulent), arme et
+armure de la recrue gardées (pour les éléments, la meilleure armure contre l'élément). Recrues qui ont le tag (entre
+parenthèses : celles qui passent aussi le seuil × 1,5, sans la condition « meilleur de la compagnie ») :
+
+| Tag | Objets | Sans | T1 | T2 | T3 | T4 |
+|---|---|---|---|---|---|---|
+| Veinard | Amulette + 6 Bagues de la chance | 2 | 69 | 323 (12) | 594 (78) | 777 (221) |
+| Sans peur | Ceinture + 6 Bagues du courage | 0 | 18 | 213 (2) | 502 (23) | 687 (137) |
+| Insaisissable | Cape + Bottes d'esquive | 0 | 2 | 11 | 42 | 94 |
+| Grosse Brute | Gants de force | 16 | 23 | 35 | 53 (1) | 66 (2) |
+| Roc | Casque, Ceinture, Cape | 3 | 7 | 25 | 42 | 63 |
+| 6ème sens | Bottes de perception | 7 | 13 | 26 | 46 | 59 |
+| Cerveau sur pattes | Chapeau d'intelligence | 7 | 9 | 20 | 34 | 50 |
+| Doigts agiles | Gants de dextérité | 2 | 5 | 21 | 28 | 41 |
+| Séducteur | String du Charisme | 0 | 1 | 3 | 6 | 12 |
+| Volonté de fer | Amulette de volonté | 0 | 0 | 0 | 1 | 2 |
+| Bolide, Effrayant | Bottes de vitesse, Culotte d'Intimidation | 0 | 0 | 0 | 0 | 0 |
+| Résistances | la meilleure armure (rien contre le poison) | 0 | 0 | 0 à 1 | 0 à 1 | 0 à 1 |
+
+Le palier est haut pour presque toutes les caracs ; Chance et Courage débordent à cause des 6 bagues identiques. Idan,
+2026-11-21 : « On laisse comme ça pour l'instant ».
+
 ### Pour plus tard
 
 - Les autres rôles (Soutien, Entrave, Protection, Contrôle du terrain, Commandement, Éclaireur, Dégâts) : tests à écrire
@@ -333,4 +419,5 @@ La réussite plafonne vers 94 % ; à beaucoup d'étoiles, c'est la mana qui bloq
 - Le titre tiré des tags (un seul tag de soigneur peut donner le titre), des titres d'exploits (« Soigneur de masse des
   ennemis »), les tags de création pour affiner les avatars (phase 2).
 - Monter le niveau des recrues de la taverne avec les étoiles de la compagnie.
+- Caracs exceptionnelles : un palier par carac, ou limiter le cumul des bagues identiques (Chance, Courage, écoles).
 - Brancher la refonte dans le jeu, une fois les rôles décidés.

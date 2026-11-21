@@ -53,7 +53,13 @@ for (const row of pants) {
   for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`culottes/${pictoSlug(row.nom)}-${tier}`), `${row.nom} T${tier}`);
 }
 // Bagues (Idan, 2026-10-24) : 11 types × 4 tiers.
+// Bague de mana (Idan, 2026-11-21) : image à dessiner par Idan ; le picto s'affiche en attendant.
+const RINGS_AWAITING_ART = new Set(["Bague de mana"]);
 for (const row of rings) {
+  if (RINGS_AWAITING_ART.has(row.nom)) {
+    for (const tier of [1,2,3,4]) assert.ok(!EQUIPMENT_ART.has(`bagues/${pictoSlug(row.nom)}-${tier}`), `${row.nom} T${tier} : image arrivée, retirer l'exception`);
+    continue;
+  }
   for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`bagues/${pictoSlug(row.nom)}-${tier}`), `${row.nom} T${tier}`);
 }
 for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`frames/frame-${tier}`), `cadre T${tier}`);

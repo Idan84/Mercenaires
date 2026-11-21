@@ -421,8 +421,8 @@
           "objet": "Sarbacane"
         },
         {
-          "type": "armor",
-          "objet": "Cuir renforcé"
+          "type": "ring",
+          "objet": "Bague de mana"
         },
         {
           "type": "helmet",
@@ -1345,8 +1345,8 @@
           "objet": "Pic de guerre"
         },
         {
-          "type": "weapon",
-          "objet": "Fronde"
+          "type": "ring",
+          "objet": "Bague de mana"
         },
         {
           "type": "gloves",

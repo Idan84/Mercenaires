@@ -1,0 +1,835 @@
+<title>Atelier des tags</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap">
+<style>
+/* Atelier des tags : 1) la liste des tags possibles (un tag peut avoir plusieurs parents), 2) les tests qui en éliminent,
+   3) l'essai sur un profil de recrue tiré par le générateur du jeu. */
+:root{
+  --bg:#ebe1cc; --surface:#f6efe0; --surface-2:#e2d6bd; --ink:#2b1d12; --ink-2:#6a523a; --line:#c9b48f; --gold:#9a6f2c; --gold-soft:#e4cf9f;
+  --t-cat:#8a5a1c; --t-tag:#2d4f86; --t-test:#1f6f70; --t-palier:#76407f;
+  --s-ok:#3f6b2f; --s-talk:#a0611b; --s-off:#8b8175; --danger:#9b2c1f; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --font-display:"Cinzel",Georgia,serif; --font-body:"EB Garamond",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#16100b; --surface:#211810; --surface-2:#2d2117; --ink:#eadbbd; --ink-2:#b59f80; --line:#4c3a29; --gold:#d6ad62; --gold-soft:#4a3820;
+  --t-cat:#d6a85c; --t-tag:#86a8e2; --t-test:#62b8b4; --t-palier:#c79bd3;
+  --s-ok:#8cbd6f; --s-talk:#e2a454; --s-off:#8f8476; --danger:#e07a68; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#16100b; --surface:#211810; --surface-2:#2d2117; --ink:#eadbbd; --ink-2:#b59f80; --line:#4c3a29; --gold:#d6ad62; --gold-soft:#4a3820;
+  --t-cat:#d6a85c; --t-tag:#86a8e2; --t-test:#62b8b4; --t-palier:#c79bd3;
+  --s-ok:#8cbd6f; --s-talk:#e2a454; --s-off:#8f8476; --danger:#e07a68; color-scheme:dark }
+body{background:var(--bg);color:var(--ink);font:400 17px/1.45 var(--font-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;border-bottom:1px solid var(--line);padding-bottom:12px}
+h1{margin:0;font:700 clamp(26px,4vw,36px)/1.1 var(--font-display);letter-spacing:.04em;text-wrap:balance}
+.sub{margin:4px 0 0;color:var(--ink-2);font-style:italic;max-width:70ch}
+.etat{font-size:15px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.etat::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--s-off)}
+.etat[data-ok="1"]::before{background:var(--s-ok)} .etat[data-ok="2"]::before{background:var(--s-talk)} .etat[data-ok="0"]::before{background:var(--danger)}
+h2{margin:0;font:600 15px/1.2 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+h3{margin:0;font:600 13px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.onglets{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line)}
+.onglets button{all:unset;cursor:pointer;font:600 15px/1.2 var(--font-display);letter-spacing:.06em;padding:10px 14px;border:1px solid transparent;border-bottom:none;border-radius:6px 6px 0 0;color:var(--ink-2);margin-bottom:-1px}
+.onglets button[aria-selected="true"]{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.onglets button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.onglets .n{font:500 14px var(--font-body);color:var(--ink-2);margin-left:4px}
+.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:880px){.layout{grid-template-columns:minmax(0,1fr)}}
+.bloc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px 14px;display:grid;gap:10px;min-width:0;align-content:start}
+.tete{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.panneau{position:sticky;top:max(12px,env(safe-area-inset-top,0px))}
+@media (max-width:880px){.panneau{position:static}}
+ul.arbre{list-style:none;margin:0;padding:0}
+ul.arbre ul.arbre{margin-left:16px;padding-left:10px;border-left:1px dashed var(--line)}
+.ligne{display:flex;align-items:flex-start;gap:4px;border-radius:5px;padding:1px 4px}
+.ligne.choisi{background:var(--gold-soft);outline:1px solid var(--gold)}
+.pli{all:unset;cursor:pointer;width:22px;height:26px;display:grid;place-items:center;color:var(--ink-2);flex:none;border-radius:4px}
+.pli[aria-hidden="true"]{visibility:hidden}
+.pli svg{transition:transform .15s} .pli[aria-expanded="true"] svg{transform:rotate(90deg)}
+.nom{all:unset;cursor:pointer;display:grid;gap:1px;min-width:0;flex:1;padding:2px 2px 3px;border-radius:4px}
+.pli:focus-visible,.nom:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.nom-l{display:flex;flex-wrap:wrap;align-items:center;gap:3px 8px}
+.nom b{font-weight:600;color:var(--t-tag)}
+.groupe>.ligne .nom b{font:700 15.5px/1.3 var(--font-display);letter-spacing:.03em;color:var(--t-cat)}
+.petit{font-size:14.5px;line-height:1.35;color:var(--ink-2);font-style:italic;overflow-wrap:anywhere}
+.aussi{font-size:14px;color:var(--ink-2)}
+.puce{font:600 11px/1 var(--font-body);letter-spacing:.08em;text-transform:uppercase;padding:3px 6px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.p-cat{color:var(--t-cat)} .p-test{color:var(--t-test)} .p-ok{color:var(--s-ok)} .p-talk{color:var(--s-talk)} .p-off{color:var(--s-off)} .p-err{color:var(--danger)} .p-palier{color:var(--t-palier)}
+.champ{display:grid;gap:4px}
+.champ>label,.champ>.lab{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px;min-width:0}
+textarea{min-height:90px;resize:vertical;line-height:1.4}
+input.code{font:15px/1.4 var(--mono)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold)}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--gold)}
+.case{display:flex;gap:8px;align-items:center;font-size:16px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+button.btn{font:500 15px/1.2 var(--font-body);color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;cursor:pointer}
+button.btn:hover{border-color:var(--gold)} button.btn:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+button.btn.principal{background:var(--gold);border-color:var(--gold);color:var(--surface)}
+button.btn.danger{color:var(--danger);border-color:currentColor;background:transparent}
+button.btn[aria-pressed="true"]{background:var(--gold-soft);border-color:var(--gold);font-weight:600}
+button.btn:disabled{opacity:.45;cursor:default}
+button.mini{all:unset;cursor:pointer;color:var(--ink-2);font-size:18px;line-height:1;padding:1px 5px;border-radius:4px}
+button.mini:hover,button.mini:focus-visible{color:var(--danger);outline:1px solid var(--line)}
+.puces{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.puce-tag{display:inline-flex;align-items:center;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:1px 4px 1px 10px;font-size:15.5px}
+.puce-tag .plus{font-size:13px;color:var(--ink-2);margin-left:4px}
+.vide{color:var(--ink-2);font-style:italic;padding:6px 4px}
+.aide{font-size:14.5px;color:var(--ink-2);margin:0}
+.liste-tests{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.liste-tests>li>button{all:unset;cursor:pointer;display:grid;gap:3px;width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.liste-tests>li>button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.liste-tests>li.choisi>button{background:var(--gold-soft);border-color:var(--gold)}
+.liste-tests .q{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.liste-tests .q b{font-weight:600}
+.num{font:700 14px/1 var(--font-display);color:var(--gold);font-variant-numeric:tabular-nums}
+.elim{font-size:14.5px;color:var(--ink)} .elim em{color:var(--ink-2)}
+.branche{margin:6px 0 0 14px;padding-left:10px;border-left:2px solid var(--line);display:grid;gap:6px}
+.branche-l{font-size:14.5px;color:var(--t-palier);font-style:italic}
+.suite{display:grid;gap:4px;justify-items:start}
+button.lien{all:unset;cursor:pointer;color:var(--t-test);font-size:15.5px;text-decoration:underline;text-underline-offset:2px}
+button.lien:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.rep.saute{opacity:.6;background:transparent;border-style:dashed}
+.sortie{border:1px dashed var(--line);border-radius:5px;padding:8px 10px;display:grid;gap:6px}
+.sortie h3{color:var(--t-palier)}
+.palier-tete{display:grid;grid-template-columns:auto 110px minmax(0,1fr) auto;gap:6px;align-items:center}
+.palier-tete .de{font-size:14.5px;color:var(--ink-2);white-space:nowrap}
+.verif{font-size:14.5px;padding:6px 8px;border-radius:4px;background:var(--bg);border-left:3px solid var(--s-off)}
+.verif.ok{border-left-color:var(--s-ok)} .verif.err{border-left-color:var(--danger)}
+code,.k{font:13.5px/1.3 var(--mono);color:var(--ink-2);overflow-wrap:anywhere}
+details>summary{cursor:pointer;color:var(--ink-2);font-size:15px}
+details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.vars{display:grid;gap:2px;margin-top:6px}
+.var{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:8px;align-items:center;padding:2px 0;border-bottom:1px dotted var(--line)}
+.var .lib{display:grid;line-height:1.2}
+.var input[type="number"],.var input[type="text"]{padding:3px 6px;font-size:15px}
+.fiche{display:grid;gap:4px}
+.fiche .titre{font:700 22px/1.2 var(--font-display);letter-spacing:.02em}
+.fiche dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:4px 0 0}
+.fiche dt{color:var(--ink-2);font-size:15px} .fiche dd{margin:0;overflow-wrap:anywhere}
+.rep{display:grid;gap:4px;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.rep .q{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.rep .val{font-size:15px;color:var(--ink-2)}
+.restent{font-size:17px}
+.const{display:grid;grid-template-columns:minmax(0,1fr) 90px minmax(0,1.4fr) auto;gap:6px;align-items:center}
+.const input{padding:4px 6px;font-size:15.5px}
+.const .cle{font:13px/1.2 var(--mono);color:var(--ink-2);grid-column:1/-1;margin-top:-2px}
+.affiches{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.affiches .puce-tag{padding:3px 12px;font-size:17px;font-weight:600;color:var(--t-tag)}
+.restent ul.arbre{margin:2px 0}
+.trop{color:var(--danger);font-weight:600}
+.elimines li{font-size:15.5px}
+[hidden]{display:none !important}
+@media (prefers-reduced-motion:reduce){.pli svg{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Atelier des tags</h1>
+      <p class="sub">Tous les tags qu'un mercenaire peut avoir, les tests qui en éliminent, puis un essai sur une recrue tirée par le générateur du jeu.</p>
+    </div>
+    <div class="etat" id="etat" data-ok="2">Chargement…</div>
+  </header>
+
+  <div class="onglets" role="tablist" aria-label="Parties de l'atelier">
+    <button type="button" role="tab" id="o-tags" aria-controls="v-tags" data-onglet="tags">1. Les tags<span class="n" id="n-tags"></span></button>
+    <button type="button" role="tab" id="o-tests" aria-controls="v-tests" data-onglet="tests">2. Les tests<span class="n" id="n-tests"></span></button>
+    <button type="button" role="tab" id="o-essai" aria-controls="v-essai" data-onglet="essai">3. Essayer</button>
+  </div>
+
+  <!-- 1. Les tags -->
+  <section id="v-tags" role="tabpanel" aria-labelledby="o-tags" class="layout">
+    <div class="bloc">
+      <div class="tete">
+        <h2>Tous les tags possibles</h2>
+        <div class="actions">
+          <button type="button" class="btn" id="tags-ouvrir">Tout ouvrir</button>
+          <button type="button" class="btn" id="tags-fermer">Tout fermer</button>
+          <button type="button" class="btn principal" id="tag-ajout">Nouveau tag</button>
+        </div>
+      </div>
+      <p class="aide">Un tag peut avoir plusieurs parents : il apparaît sous chacun. S'il perd un seul de ses parents, il est éliminé aussi.</p>
+      <ul class="arbre" id="arbre-tags"></ul>
+    </div>
+    <aside class="bloc panneau" aria-labelledby="t-tag">
+      <h2 id="t-tag">Le tag choisi</h2>
+      <p class="aide" id="tag-vide">Choisissez un tag pour le renommer, lui donner un ou plusieurs parents, ou lui ajouter des enfants.</p>
+      <div id="tag-champs" hidden style="display:grid;gap:12px">
+        <div class="champ"><label for="tag-nom">Nom</label><input id="tag-nom" type="text" autocomplete="off"></div>
+        <label class="case"><input type="checkbox" id="tag-groupe"> Catégorie seulement (sert à ranger, jamais posé comme tag)</label>
+        <div class="champ" id="tag-garder-champ" hidden><label for="tag-garder">Tags affichés au plus dans cette catégorie</label>
+          <input id="tag-garder" type="number" min="1" step="1" placeholder="Vide : pas de limite">
+          <p class="aide">Rempli, seuls les X tags de plus haut rang qui restent s'affichent (à rang égal, l'ordre de la liste). Vide : le tag le plus bas de chaque branche.</p></div>
+        <div class="champ" id="tag-rang-champ" hidden><label for="tag-rang">Rang</label>
+          <input id="tag-rang" type="number" step="1" placeholder="Vide : le plus bas">
+          <p class="aide">Sert dans une catégorie limitée : le rang le plus haut s'affiche.</p></div>
+        <div class="champ"><span class="lab">Parents</span>
+          <div class="puces" id="tag-parents"></div>
+          <select id="tag-parent-ajout" aria-label="Ajouter un parent"></select>
+        </div>
+        <div class="champ"><label for="tag-note">Note</label><textarea id="tag-note" placeholder="Ce que ce tag veut dire, d'où il vient…"></textarea></div>
+        <div class="champ"><span class="lab">Éliminé par</span><div id="tag-par" class="aide"></div></div>
+        <div class="actions">
+          <button type="button" class="btn" id="tag-enfant">Ajouter un enfant</button>
+          <button type="button" class="btn" id="tag-haut">↑ Monter</button>
+          <button type="button" class="btn" id="tag-bas">↓ Descendre</button>
+          <button type="button" class="btn danger" id="tag-suppr">Supprimer</button>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- 2. Les tests -->
+  <section id="v-tests" role="tabpanel" aria-labelledby="o-tests" class="layout" hidden>
+    <div class="bloc">
+      <div class="tete">
+        <h2>Les tests, dans l'ordre</h2>
+        <button type="button" class="btn principal" id="test-ajout">Nouveau test</button>
+      </div>
+      <p class="aide">Chaque test pose une question sur le mercenaire. Sa réponse élimine des tags, et avec eux tous leurs enfants. Un test peut être rangé sous la réponse d'un autre : il n'est posé que si cette réponse sort.</p>
+      <details class="sortie" id="constantes-bloc" open><summary><b>Constantes</b> : des valeurs nommées que les calculs utilisent (un seuil se change ici, une seule fois)</summary>
+        <div id="constantes" style="display:grid;gap:8px;margin-top:8px"></div>
+        <div class="actions" style="margin-top:6px"><button type="button" class="btn" id="const-ajout">Ajouter une constante</button></div></details>
+      <ol class="liste-tests" id="liste-tests"></ol>
+    </div>
+    <aside class="bloc panneau" aria-labelledby="t-test">
+      <h2 id="t-test">Le test choisi</h2>
+      <p class="aide" id="test-vide">Choisissez un test, ou créez-en un.</p>
+      <div id="test-champs" hidden style="display:grid;gap:12px">
+        <div class="champ"><label for="test-nom">Question</label><input id="test-nom" type="text" autocomplete="off" placeholder="Ex. : Connaît-il un sort de soin ?"></div>
+        <div class="champ"><label for="test-type">Réponse</label>
+          <select id="test-type"><option value="binaire">Oui / non</option><option value="niveau">Par niveau (paliers)</option></select></div>
+        <div class="champ"><label for="test-si">Posé seulement si</label><select id="test-si"></select>
+          <p class="aide" id="test-si-aide" hidden>Quand il n'est pas posé, ce test n'élimine rien : élimine ses tags dans la réponse qui le saute.</p></div>
+        <div class="champ"><label for="test-formule">Formule en clair (Idan)</label><textarea id="test-formule" placeholder="Ce que le test regarde, avec tes mots."></textarea>
+          <label class="case"><input type="checkbox" id="test-reecrire"> Calcul à réécrire : JC le reprend (se coche quand la formule change)</label></div>
+        <div class="champ"><label for="test-calcul">Calcul (JC le traduit depuis la formule)</label><input id="test-calcul" class="code" type="text" autocomplete="off" spellcheck="false" placeholder="Ex. : sorts.soin > 0">
+          <div class="verif" id="test-verif"></div></div>
+        <div id="test-sorties" style="display:grid;gap:10px"></div>
+        <details><summary>Les variables qu'un calcul peut lire</summary><div id="aide-vars" class="aide"></div></details>
+        <div class="actions">
+          <button type="button" class="btn" id="test-haut">↑ Monter</button>
+          <button type="button" class="btn" id="test-bas">↓ Descendre</button>
+          <button type="button" class="btn danger" id="test-suppr">Supprimer</button>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- 3. Essayer -->
+  <section id="v-essai" role="tabpanel" aria-labelledby="o-essai" class="layout" hidden>
+    <div class="bloc">
+      <div class="tete">
+        <h2>La recrue</h2>
+        <div class="actions">
+          <select id="f-domaine" aria-label="Domaine"><option value="">Tous domaines</option><option value="contact">Contact</option><option value="distance">Distance</option><option value="magie">Magie</option></select>
+          <select id="f-peuple" aria-label="Peuple"><option value="">Tous peuples</option></select>
+          <label class="case"><input type="checkbox" id="f-asc"> Ascendance niveau 3</label>
+          <label class="case">Étoiles de la compagnie <input type="number" id="f-etoiles" min="0" max="20" step="1" value="1" style="width:64px"></label>
+          <button type="button" class="btn principal" id="generer">Générer un profil</button>
+        </div>
+      </div>
+      <div id="profil-vide" class="aide"></div>
+      <div id="profil" hidden style="display:grid;gap:10px">
+        <div class="fiche" id="fiche"></div>
+        <details id="vars-details"><summary>Toutes ses variables (modifiables pour essayer un cas)</summary>
+          <div class="actions" style="margin-top:6px"><button type="button" class="btn" id="profil-reset">Remettre le profil d'origine</button></div>
+          <div id="vars"></div></details>
+      </div>
+    </div>
+    <aside class="bloc" aria-labelledby="t-res">
+      <h2 id="t-res">Les tags qui se collent</h2>
+      <div id="res-vide" class="aide">Générez un profil pour voir les tests s'appliquer.</div>
+      <div id="res" hidden style="display:grid;gap:12px">
+        <div class="restent" id="restent"></div>
+        <h3>Les tests</h3>
+        <div id="reponses" style="display:grid;gap:6px"></div>
+        <details class="elimines"><summary id="elim-titre">Éliminés</summary><ul id="elimines"></ul></details>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<script type="application/json" id="profils">@@PROFILS@@</script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const el=(tag,props={},...kids)=>{ const e=document.createElement(tag); for(const [k,v] of Object.entries(props)){ if(k==="class") e.className=v; else if(k==="text") e.textContent=v; else if(k.startsWith("on")) e[k]=v; else if(v!==false&&v!=null) e.setAttribute(k,v===true?"":v); } for(const x of kids) if(x!=null) e.append(x); return e; };
+const uid=()=>Math.random().toString(36).slice(2,10);
+const norm=s=>String(s??"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();
+const chevron='<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+// ---------- Données ----------
+let doc={tags:[],tests:[],constantes:[]};
+let tagChoisi=null, testChoisi=null, peutEcrire=true, ref=null, sale=false, enCours=false, encore=false, minuteur=null;
+const memo=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
+const fermes=new Set(memo("atelier-fermes")||[]);
+const memoFermes=()=>memo("atelier-fermes",[...fermes]);
+
+function propre(d){
+  const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||uid()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
+    rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null}));
+  const ids=new Set(tags.map(t=>t.id));
+  for(const t of tags) t.parents=[...new Set(t.parents.filter(p=>ids.has(p)&&p!==t.id))];
+  const liste=a=>Array.isArray(a)?[...new Set(a.map(String).filter(x=>ids.has(x)))]:[];
+  const tests=(Array.isArray(d?.tests)?d.tests:[]).map(x=>({id:String(x.id||uid()),nom:String(x.nom||"Nouveau test"),type:x.type==="niveau"?"niveau":"binaire",
+    formule:String(x.formule||""),calcul:String(x.calcul||""),aReecrire:Boolean(x.aReecrire),oui:liste(x.oui),non:liste(x.non),
+    paliers:(Array.isArray(x.paliers)?x.paliers:[]).map((p,i)=>({id:String(p.id||uid()),de:i===0||p.de===""||p.de==null||!Number.isFinite(Number(p.de))?null:Number(p.de),nom:String(p.nom||""),elimine:liste(p.elimine)})),
+    si:x.si&&x.si.test?{test:String(x.si.test),rep:String(x.si.rep??"oui")}:null}));
+  for(const x of tests) if(x.type==="niveau"&&!x.paliers.length) x.paliers=[{id:uid(),de:null,nom:"Bas",elimine:[]},{id:uid(),de:50,nom:"Haut",elimine:[]}];
+  // Condition : un test posé seulement si un autre a donné telle réponse (jamais en boucle).
+  const parId=new Map(tests.map(x=>[x.id,x]));
+  for(const x of tests){ const m=x.si&&parId.get(x.si.test); if(!m||m===x){ x.si=null; continue; }
+    if(m.type==="binaire"&&x.si.rep!=="oui"&&x.si.rep!=="non") x.si.rep="oui";
+    if(m.type==="niveau"&&!m.paliers.some(q=>q.id===x.si.rep)) x.si.rep=m.paliers[0].id; }
+  for(const x of tests){ const vus=new Set([x.id]); let y=x; while(y.si){ if(vus.has(y.si.test)){ x.si=null; break; } vus.add(y.si.test); y=parId.get(y.si.test); } }
+  const constantes=(Array.isArray(d?.constantes)?d.constantes:[]).map(c=>({id:String(c.id||uid()),nom:String(c.nom||""),valeur:Number.isFinite(Number(c.valeur))?Number(c.valeur):0,note:String(c.note||"")}));
+  return {tags,tests,constantes};
+}
+const tagPar=id=>doc.tags.find(t=>t.id===id);
+const nomTag=id=>tagPar(id)?.nom||"?";
+const enfants=id=>doc.tags.filter(t=>t.parents.includes(id));
+function descendants(id,acc=new Set()){ for(const e of enfants(id)) if(!acc.has(e.id)){ acc.add(e.id); descendants(e.id,acc); } return acc; }
+function chemin(t,vus=new Set()){ if(!t) return ""; if(vus.has(t.id)||!t.parents.length) return t.nom; vus.add(t.id); return chemin(tagPar(t.parents[0]),vus)+" › "+t.nom; }
+const testPar=id=>doc.tests.find(t=>t.id===id);
+// L'arbre des tests : sous chaque réponse (oui, non, un palier), les tests posés ensuite.
+const branches=x=>x.type==="binaire"?["oui","non"]:x.paliers.map(p=>p.id);
+const suivants=(id,r)=>doc.tests.filter(t=>t.si&&t.si.test===id&&t.si.rep===r);
+const libRep=(x,r)=>x.type==="binaire"?r:(x.paliers.find(p=>p.id===r)?.nom||"palier "+(x.paliers.findIndex(p=>p.id===r)+1));
+function ordreTests(){
+  const out=[], vus=new Set();
+  const visite=(x,num,prof)=>{ if(vus.has(x.id)) return; vus.add(x.id); out.push({x,num,prof}); let k=0;
+    for(const b of branches(x)) for(const c of suivants(x.id,b)) visite(c,num+"."+(++k),prof+1); };
+  doc.tests.filter(t=>!t.si).forEach((t,i)=>visite(t,String(i+1),0));
+  for(const t of doc.tests) if(!vus.has(t.id)) visite(t,"?",0);
+  return out;
+}
+const numeros=()=>new Map(ordreTests().map(o=>[o.x.id,o.num]));
+function descendantsTest(id,acc=new Set()){ for(const c of doc.tests.filter(t=>t.si?.test===id)) if(!acc.has(c.id)){ acc.add(c.id); descendantsTest(c.id,acc); } return acc; }
+
+function etat(texte,ok){ const e=$("etat"); e.textContent=texte; e.dataset.ok=String(ok); }
+function change(){ sale=true; majCompteurs(); if(!ref){ etat(peutEcrire?"Modifications non enregistrées (hors de claude.ai)":"Lecture seule",2); return; }
+  etat("Modifications en attente…",2); clearTimeout(minuteur); minuteur=setTimeout(enregistre,700); }
+async function enregistre(){
+  if(!ref||!peutEcrire) return;
+  if(enCours){ encore=true; return; }
+  enCours=true; etat("Enregistrement…",2);
+  try{ await ref.set(JSON.parse(JSON.stringify(doc))); sale=false; etat("Enregistré",1); }
+  catch(e){
+    if(e?.code==="invalid_argument"||e?.code==="permission_denied"){ peutEcrire=false; etat("Lecture seule : vous ne pouvez pas modifier l'atelier",0); rendreTout(); }
+    else if(e?.code==="unavailable"){ etat("Réseau indisponible, nouvel essai…",2); setTimeout(enregistre,1500+Math.random()*1000); }
+    else etat("Enregistrement impossible ("+(e?.code||"erreur")+")",0);
+  }
+  finally{ enCours=false; if(encore){ encore=false; enregistre(); } }
+}
+
+// ---------- Calculs : un petit langage sûr (pas de code exécuté) ----------
+const POOL=JSON.parse($("profils").textContent);
+const VARS=[...POOL.vars,{k:"compagnie.etoiles",label:"Étoiles de la compagnie (réglées dans « Essayer »)",groupe:"Compagnie",type:"nombre"}]; const VAR_IDX=new Map(VARS.map((v,i)=>[v.k,i]));
+// Constantes : un nom lisible par les calculs (« seuil soin » → seuil_soin).
+const cle=n=>norm(n).replace(/[^a-z0-9_.]+/g,"_").replace(/^_+|_+$/g,"");
+const constante=n=>(doc.constantes||[]).find(c=>cle(c.nom)===n);
+const MOTS={et:"et",and:"et",ou:"ou",or:"ou",non:"non",not:"non",vrai:"vrai",true:"vrai",oui:"vrai",faux:"faux",false:"faux",contient:"contient"};
+const FONCTIONS={max:(...a)=>Math.max(...a.map(nombre)),min:(...a)=>Math.min(...a.map(nombre)),abs:a=>Math.abs(nombre(a)),arrondi:a=>Math.round(nombre(a)),
+  nombre:a=>Array.isArray(a)?a.length:typeof a==="string"?(a?1:0):nombre(a),somme:(...a)=>a.reduce((s,x)=>s+nombre(x),0)};
+class ErreurCalcul extends Error{}
+function nombre(x){ if(typeof x==="number") return x; if(typeof x==="boolean") return x?1:0; if(Array.isArray(x)) return x.length; const n=Number(String(x).replace(",",".")); if(Number.isFinite(n)&&String(x).trim()!=="") return n; throw new ErreurCalcul("« "+x+" » n'est pas un nombre"); }
+function vrai(x){ return Array.isArray(x)?x.length>0:typeof x==="string"?x!=="":Boolean(x); }
+function lexer(src){
+  const toks=[]; let i=0;
+  while(i<src.length){
+    const c=src[i];
+    if(/\s/.test(c)){ i++; continue; }
+    if(/[0-9]/.test(c)){ let j=i; while(j<src.length&&/[0-9.]/.test(src[j])) j++; toks.push({t:"nb",v:parseFloat(src.slice(i,j))}); i=j; continue; }
+    if(c==='"'||c==="'"||c==="«"||c==="“"){ const fin=c==="«"?"»":c==="“"?"”":c; const j=src.indexOf(fin,i+1); if(j<0) throw new ErreurCalcul("guillemet non fermé"); toks.push({t:"txt",v:src.slice(i+1,j).trim()}); i=j+1; continue; }
+    if(/[\p{L}_]/u.test(c)){ let j=i; while(j<src.length&&/[\p{L}\p{N}_.]/u.test(src[j])) j++; const w=src.slice(i,j); const m=MOTS[w.toLowerCase()]; toks.push(m?{t:"mot",v:m}:{t:"id",v:w}); i=j; continue; }
+    const deux=src.slice(i,i+2);
+    const OPS2={"<=":"<=",">=":">=","!=":"!=","<>":"!=","==":"=","&&":"et","||":"ou"};
+    if(OPS2[deux]){ const v=OPS2[deux]; toks.push({t:["et","ou"].includes(v)?"mot":"op",v}); i+=2; continue; }
+    if("+-*/()<>=,".includes(c)){ toks.push({t:"op",v:c}); i++; continue; }
+    if(c==="!"){ toks.push({t:"mot",v:"non"}); i++; continue; }
+    throw new ErreurCalcul("caractère inattendu « "+c+" »");
+  }
+  return toks;
+}
+function analyse(src){
+  const toks=lexer(src); let i=0;
+  const voit=(t,v)=>toks[i]&&toks[i].t===t&&(v===undefined||toks[i].v===v);
+  const prend=(t,v)=>{ if(!voit(t,v)) throw new ErreurCalcul(v?"« "+v+" » attendu":"calcul incomplet"); return toks[i++]; };
+  const ou=()=>{ let a=et(); while(voit("mot","ou")){ i++; a={k:"ou",a,b:et()}; } return a; };
+  const et=()=>{ let a=non(); while(voit("mot","et")){ i++; a={k:"et",a,b:non()}; } return a; };
+  const non=()=>{ if(voit("mot","non")){ i++; return {k:"non",a:non()}; } return cmp(); };
+  const cmp=()=>{ const a=add(); for(const op of ["<=",">=","!=","<",">","="]) if(voit("op",op)){ i++; return {k:"cmp",op,a,b:add()}; }
+    if(voit("mot","contient")){ i++; return {k:"contient",a,b:add()}; } return a; };
+  const add=()=>{ let a=mul(); while(voit("op","+")||voit("op","-")){ const op=toks[i++].v; a={k:"arith",op,a,b:mul()}; } return a; };
+  const mul=()=>{ let a=un(); while(voit("op","*")||voit("op","/")){ const op=toks[i++].v; a={k:"arith",op,a,b:un()}; } return a; };
+  const un=()=>{ if(voit("op","-")){ i++; return {k:"neg",a:un()}; } return prim(); };
+  const prim=()=>{
+    const t=toks[i]; if(!t) throw new ErreurCalcul("calcul incomplet");
+    if(t.t==="nb"){ i++; return {k:"val",v:t.v}; }
+    if(t.t==="txt"){ i++; return {k:"val",v:t.v}; }
+    if(t.t==="mot"&&(t.v==="vrai"||t.v==="faux")){ i++; return {k:"val",v:t.v==="vrai"}; }
+    if(t.t==="op"&&t.v==="("){ i++; const e=ou(); prend("op",")"); return e; }
+    if(t.t==="id"){ i++;
+      if(voit("op","(")){ i++; const f=t.v.toLowerCase(); if(!FONCTIONS[f]) throw new ErreurCalcul("fonction inconnue « "+t.v+" »"); const args=[];
+        if(!voit("op",")")){ args.push(ou()); while(voit("op",",")){ i++; args.push(ou()); } } prend("op",")"); return {k:"appel",f,args}; }
+      return {k:"var",n:t.v}; }
+    throw new ErreurCalcul("« "+t.v+" » inattendu");
+  };
+  if(!toks.length) throw new ErreurCalcul("calcul vide");
+  const ast=ou(); if(i<toks.length) throw new ErreurCalcul("« "+toks[i].v+" » en trop");
+  return ast;
+}
+function variablesDe(ast,out=new Set()){ if(!ast) return out; if(ast.k==="var") out.add(ast.n); for(const x of [ast.a,ast.b,...(ast.args||[])]) variablesDe(x,out); return out; }
+function proche(n){ const m=norm(n); let best=null,bs=0; for(const v of VARS){ const k=v.k; let s=0; const a=m.split(/[._]/),b=k.split(/[._]/); for(const x of a) if(x&&b.some(y=>y.startsWith(x)||x.startsWith(y))) s++; if(s>bs){ bs=s; best=k; } } return best; }
+function controle(src){
+  const ast=analyse(src);
+  for(const n of variablesDe(ast)) if(!VAR_IDX.has(n)&&!constante(n)){ const p=proche(n); throw new ErreurCalcul("variable inconnue « "+n+" »"+(p?" (vouliez-vous « "+p+" » ?)":"")); }
+  return ast;
+}
+function evalue(ast,p){
+  switch(ast.k){
+    case "val": return ast.v;
+    case "var": return VAR_IDX.has(ast.n)?p[ast.n]:constante(ast.n)?.valeur;
+    case "non": return !vrai(evalue(ast.a,p));
+    case "et": return vrai(evalue(ast.a,p))&&vrai(evalue(ast.b,p));
+    case "ou": return vrai(evalue(ast.a,p))||vrai(evalue(ast.b,p));
+    case "neg": return -nombre(evalue(ast.a,p));
+    case "arith": { const a=nombre(evalue(ast.a,p)),b=nombre(evalue(ast.b,p)); return ast.op==="+"?a+b:ast.op==="-"?a-b:ast.op==="*"?a*b:(b===0?0:a/b); }
+    case "contient": { const a=evalue(ast.a,p),b=norm(evalue(ast.b,p)); return Array.isArray(a)?a.some(x=>norm(x)===b):norm(a).includes(b); }
+    case "cmp": { const a=evalue(ast.a,p),b=evalue(ast.b,p);
+      const num=x=>typeof x==="number"||typeof x==="boolean";
+      if(ast.op==="="||ast.op==="!="){ const eg=num(a)&&num(b)?nombre(a)===nombre(b):norm(a)===norm(b); return ast.op==="="?eg:!eg; }
+      const x=nombre(a),y=nombre(b); return ast.op==="<"?x<y:ast.op==="<="?x<=y:ast.op===">"?x>y:x>=y; }
+    case "appel": return FONCTIONS[ast.f](...ast.args.map(x=>evalue(x,p)));
+  }
+  throw new ErreurCalcul("calcul illisible");
+}
+const affiche=v=>typeof v==="boolean"?(v?"vrai":"faux"):Array.isArray(v)?(v.length?v.join(", "):"aucun"):typeof v==="number"?String(Math.round(v*100)/100).replace(".",","):(v===""?"(vide)":String(v));
+
+// ---------- Onglets ----------
+let onglet=memo("atelier-onglet")||"tags";
+function montreOnglet(o){
+  onglet=o; memo("atelier-onglet",o);
+  for(const b of document.querySelectorAll("[data-onglet]")){ const on=b.dataset.onglet===o; b.setAttribute("aria-selected",String(on)); b.tabIndex=on?0:-1; }
+  $("v-tags").hidden=o!=="tags"; $("v-tests").hidden=o!=="tests"; $("v-essai").hidden=o!=="essai";
+  if(o==="essai") rendreEssai();
+}
+document.querySelectorAll("[data-onglet]").forEach((b,i,all)=>{ b.onclick=()=>montreOnglet(b.dataset.onglet);
+  b.onkeydown=e=>{ if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ const n=all[(i+(e.key==="ArrowRight"?1:all.length-1))%all.length]; n.focus(); montreOnglet(n.dataset.onglet); } }; });
+function majCompteurs(){ $("n-tags").textContent="("+doc.tags.filter(t=>!t.groupe).length+")"; const r=doc.tests.filter(x=>x.aReecrire).length; $("n-tests").textContent="("+doc.tests.length+(r?" · "+r+" à réécrire":"")+")"; }
+
+// ---------- 1. Les tags ----------
+function liTag(t,parentId,chemin){
+  const li=el("li",{class:t.groupe?"groupe":""});
+  const kids=enfants(t.id), boucle=chemin.has(t.id);
+  const ligne=el("div",{class:"ligne"+(t.id===tagChoisi?" choisi":"")});
+  const ouvert=!fermes.has(t.id);
+  const pli=el("button",{type:"button",class:"pli"}); pli.innerHTML=chevron;
+  if(kids.length&&!boucle){ pli.setAttribute("aria-expanded",String(ouvert)); pli.setAttribute("aria-label",(ouvert?"Replier ":"Déplier ")+t.nom); pli.onclick=()=>{ ouvert?fermes.add(t.id):fermes.delete(t.id); memoFermes(); rendreTags(); }; }
+  else pli.setAttribute("aria-hidden","true");
+  const l=el("span",{class:"nom-l"},el("b",{text:t.nom}));
+  if(t.groupe) l.append(el("span",{class:"puce p-cat",text:"Catégorie"}));
+  if(t.groupe&&t.garder) l.append(el("span",{class:"puce p-palier",text:"garde "+t.garder}));
+  if(!t.groupe&&t.rang!=null) l.append(el("span",{class:"puce p-palier",text:"rang "+String(t.rang).replace(".",",")}));
+  const autres=t.parents.filter(p=>p!==parentId);
+  if(autres.length&&parentId) l.append(el("span",{class:"aussi",text:"aussi sous "+autres.map(nomTag).join(", ")}));
+  if(kids.length&&!ouvert) l.append(el("span",{class:"aussi",text:kids.length+" enfant"+(kids.length>1?"s":"")}));
+  if(boucle) l.append(el("span",{class:"puce p-err",text:"boucle"}));
+  const nom=el("button",{type:"button",class:"nom",onclick:()=>{ tagChoisi=t.id; rendreTags(); rendrePanneauTag(); $("tag-nom").focus(); }},l);
+  if(t.note) nom.append(el("span",{class:"petit",text:t.note}));
+  ligne.append(pli,nom); li.append(ligne);
+  if(kids.length&&ouvert&&!boucle){ const ul=el("ul",{class:"arbre"}); const c2=new Set(chemin); c2.add(t.id); kids.forEach(k=>ul.append(liTag(k,t.id,c2))); li.append(ul); }
+  return li;
+}
+function rendreTags(){
+  const ul=$("arbre-tags"); ul.replaceChildren();
+  const racines=doc.tags.filter(t=>!t.parents.length);
+  if(!doc.tags.length){ ul.append(el("li",{class:"vide",text:"Aucun tag pour l'instant. Commencez par « Nouveau tag »."})); return; }
+  racines.forEach(t=>ul.append(liTag(t,null,new Set())));
+}
+function testsQuiEliminent(id){
+  const out=[];
+  for(const {x,num} of ordreTests()){
+    if(x.type==="binaire"){ if(x.oui.includes(id)) out.push(num+". "+x.nom+" → oui"); if(x.non.includes(id)) out.push(num+". "+x.nom+" → non"); }
+    else x.paliers.forEach(p=>{ if(p.elimine.includes(id)) out.push(num+". "+x.nom+" → "+(p.nom||"palier")); });
+  }
+  return out;
+}
+function rendrePanneauTag(){
+  const t=tagChoisi&&tagPar(tagChoisi);
+  $("tag-vide").hidden=Boolean(t); $("tag-champs").hidden=!t; if(!t) return;
+  if(document.activeElement!==$("tag-nom")) $("tag-nom").value=t.nom;
+  if(document.activeElement!==$("tag-note")) $("tag-note").value=t.note;
+  $("tag-groupe").checked=t.groupe;
+  $("tag-garder-champ").hidden=!t.groupe; $("tag-rang-champ").hidden=t.groupe;
+  if(document.activeElement!==$("tag-garder")) $("tag-garder").value=t.garder??"";
+  if(document.activeElement!==$("tag-rang")) $("tag-rang").value=t.rang??"";
+  const box=$("tag-parents"); box.replaceChildren();
+  if(!t.parents.length) box.append(el("span",{class:"aide",text:"Aucun : c'est un tag du haut."}));
+  for(const p of t.parents) box.append(el("span",{class:"puce-tag"},nomTag(p),el("button",{type:"button",class:"mini","aria-label":"Retirer le parent "+nomTag(p),text:"×",disabled:!peutEcrire,
+    onclick:()=>{ t.parents=t.parents.filter(x=>x!==p); change(); rendreTags(); rendrePanneauTag(); }})));
+  const interdit=descendants(t.id); interdit.add(t.id);
+  const sel=$("tag-parent-ajout"); sel.replaceChildren(el("option",{value:"",text:"Ajouter un parent…"}));
+  doc.tags.filter(x=>!interdit.has(x.id)&&!t.parents.includes(x.id)).map(x=>({x,c:chemin(x)})).sort((a,b)=>a.c.localeCompare(b.c,"fr")).forEach(({x,c})=>sel.append(el("option",{value:x.id,text:c})));
+  sel.disabled=!peutEcrire;
+  const par=testsQuiEliminent(t.id); $("tag-par").textContent=par.length?par.join(" · "):"Aucun test pour l'instant.";
+  const b=$("tag-suppr"); b.textContent="Supprimer"; b.dataset.arme="";
+  for(const x of ["tag-nom","tag-note","tag-groupe","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
+}
+$("tag-nom").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.nom=e.target.value; change(); rendreTags(); };
+$("tag-note").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.note=e.target.value; change(); rendreTags(); };
+$("tag-groupe").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.groupe=e.target.checked; change(); rendreTags(); rendrePanneauTag(); };
+$("tag-garder").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=Number(e.target.value); t.garder=e.target.value.trim()!==""&&v>=1?Math.floor(v):null; change(); rendreTags(); if(profil) rendreResultats(); };
+$("tag-rang").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=e.target.value.trim(); t.rang=v===""||!Number.isFinite(Number(v))?null:Number(v); change(); rendreTags(); if(profil) rendreResultats(); };
+$("tag-parent-ajout").onchange=e=>{ const t=tagPar(tagChoisi); const p=e.target.value; if(!t||!p) return; t.parents.push(p); fermes.delete(p); memoFermes(); change(); rendreTags(); rendrePanneauTag(); };
+function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:""};
+  const apres=parent?doc.tags.map(x=>x.parents.includes(parent)||x.id===parent).lastIndexOf(true):doc.tags.length-1;
+  doc.tags.splice(apres+1,0,t); if(parent){ fermes.delete(parent); memoFermes(); } tagChoisi=t.id; change(); rendreTags(); rendrePanneauTag(); $("tag-nom").select(); $("tag-nom").focus(); }
+$("tag-ajout").onclick=()=>nouveauTag(null);
+$("tag-enfant").onclick=()=>nouveauTag(tagChoisi);
+function deplaceTag(sens){
+  const t=tagPar(tagChoisi); if(!t||!peutEcrire) return;
+  const frere=x=>x.id!==t.id&&(t.parents.length?x.parents.includes(t.parents[0]):!x.parents.length);
+  const i=doc.tags.indexOf(t); let j=i+sens; while(j>=0&&j<doc.tags.length&&!frere(doc.tags[j])) j+=sens;
+  if(j<0||j>=doc.tags.length) return;
+  doc.tags.splice(i,1); doc.tags.splice(j,0,t); change(); rendreTags();
+}
+$("tag-haut").onclick=()=>deplaceTag(-1); $("tag-bas").onclick=()=>deplaceTag(1);
+$("tag-suppr").onclick=()=>{
+  const t=tagPar(tagChoisi); if(!t||!peutEcrire) return; const b=$("tag-suppr");
+  const orphelins=enfants(t.id).filter(e=>e.parents.length===1);
+  if(b.dataset.arme!=="1"){ b.dataset.arme="1"; b.textContent=orphelins.length?"Confirmer ("+orphelins.length+" enfant"+(orphelins.length>1?"s":"")+" remonte"+(orphelins.length>1?"nt":"")+" en haut)":"Confirmer la suppression";
+    setTimeout(()=>{ if(b.dataset.arme==="1"){ b.dataset.arme=""; b.textContent="Supprimer"; } },4000); return; }
+  doc.tags=doc.tags.filter(x=>x.id!==t.id); for(const x of doc.tags) x.parents=x.parents.filter(p=>p!==t.id);
+  for(const x of doc.tests){ x.oui=x.oui.filter(i=>i!==t.id); x.non=x.non.filter(i=>i!==t.id); for(const p of x.paliers) p.elimine=p.elimine.filter(i=>i!==t.id); }
+  tagChoisi=null; change(); rendreTout();
+};
+$("tags-ouvrir").onclick=()=>{ fermes.clear(); memoFermes(); rendreTags(); };
+$("tags-fermer").onclick=()=>{ for(const t of doc.tags) if(enfants(t.id).length) fermes.add(t.id); memoFermes(); rendreTags(); };
+
+// ---------- 2. Les tests ----------
+function etatCalcul(x){
+  if(x.aReecrire) return {c:"p-talk",t:"À réécrire"};
+  if(!x.calcul.trim()) return x.formule.trim()?{c:"p-talk",t:"À traduire"}:{c:"p-off",t:"Sans calcul"};
+  try{ controle(x.calcul); return {c:"p-ok",t:"Calcul prêt"}; }catch(e){ return {c:"p-err",t:"Calcul à corriger"}; }
+}
+const listeNoms=ids=>ids.map(nomTag).join(", ");
+function resume(x){
+  if(x.type==="binaire"){ const r=[]; if(x.oui.length) r.push("Si oui → élimine "+listeNoms(x.oui)); if(x.non.length) r.push("Si non → élimine "+listeNoms(x.non)); return r.join(" · ")||"N'élimine encore rien."; }
+  const r=x.paliers.filter(p=>p.elimine.length).map(p=>(p.nom||"palier")+" → élimine "+listeNoms(p.elimine)); return r.join(" · ")||"N'élimine encore rien.";
+}
+function rendreTests(){
+  const ol=$("liste-tests"); ol.replaceChildren();
+  if(!doc.tests.length){ ol.append(el("li",{class:"vide",text:"Aucun test pour l'instant. Commencez par « Nouveau test »."})); return; }
+  const nums=numeros(), vus=new Set();
+  const faire=x=>{
+    vus.add(x.id);
+    const ec=etatCalcul(x);
+    const q=el("span",{class:"q"},el("span",{class:"num",text:nums.get(x.id)}),el("b",{text:x.nom}),el("span",{class:"puce p-test",text:x.type==="binaire"?"Oui / non":"Par niveau"}),el("span",{class:"puce "+ec.c,text:ec.t}));
+    const b=el("button",{type:"button",onclick:()=>{ testChoisi=x.id; rendreTests(); rendrePanneauTest(); $("test-nom").focus(); }},q);
+    if(x.formule) b.append(el("span",{class:"petit",text:x.formule}));
+    b.append(el("span",{class:"elim",text:resume(x)}));
+    const li=el("li",{class:x.id===testChoisi?"choisi":""},b);
+    for(const r of branches(x)){ const cs=suivants(x.id,r).filter(c=>!vus.has(c.id)); if(!cs.length) continue;
+      const sous=el("ol",{class:"liste-tests"}); cs.forEach(c=>sous.append(faire(c)));
+      li.append(el("div",{class:"branche"},el("span",{class:"branche-l",text:"Si "+libRep(x,r)+", on pose ensuite :"}),sous)); }
+    return li;
+  };
+  doc.tests.filter(t=>!t.si).forEach(t=>ol.append(faire(t)));
+}
+function selecteurTags(dejaIds,surAjout,label){
+  const sel=el("select",{"aria-label":label,disabled:!peutEcrire});
+  sel.append(el("option",{value:"",text:"Éliminer un tag…"}));
+  doc.tags.filter(t=>!dejaIds.includes(t.id)).map(t=>({t,c:chemin(t),n:descendants(t.id).size})).sort((a,b)=>a.c.localeCompare(b.c,"fr"))
+    .forEach(({t,c,n})=>sel.append(el("option",{value:t.id,text:c+(n?"  (+"+n+" enfant"+(n>1?"s":"")+")":"")})));
+  sel.onchange=()=>{ if(sel.value) surAjout(sel.value); };
+  return sel;
+}
+function blocElimine(titre,ids,maj){
+  const box=el("div",{class:"puces"});
+  if(!ids.length) box.append(el("span",{class:"aide",text:"Rien."}));
+  for(const id of ids){ const n=descendants(id).size;
+    box.append(el("span",{class:"puce-tag"},nomTag(id),n?el("span",{class:"plus",text:"+"+n}):null,el("button",{type:"button",class:"mini","aria-label":"Ne plus éliminer "+nomTag(id),text:"×",disabled:!peutEcrire,onclick:()=>maj(ids.filter(x=>x!==id))}))); }
+  return el("div",{class:"champ"},el("span",{class:"lab",text:titre}),box,selecteurTags(ids,id=>maj([...ids,id]),titre));
+}
+function blocSuite(x,r){
+  const nums=numeros(), box=el("div",{class:"suite"});
+  for(const c of suivants(x.id,r)) box.append(el("button",{type:"button",class:"lien",text:"Ensuite : "+nums.get(c.id)+". "+c.nom,onclick:()=>{ testChoisi=c.id; rendreTests(); rendrePanneauTest(); $("test-nom").focus(); }}));
+  box.append(el("button",{type:"button",class:"btn",disabled:!peutEcrire,text:"+ Test posé seulement si « "+libRep(x,r)+" »",onclick:()=>nouveauTest({test:x.id,rep:r})}));
+  return box;
+}
+function rendreSorties(x){
+  const box=$("test-sorties"); box.replaceChildren();
+  const majT=()=>{ change(); rendreTests(); rendreSorties(x); };
+  if(x.type==="binaire"){
+    box.append(el("div",{class:"sortie"},el("h3",{text:"Si oui"}),blocElimine("Élimine",x.oui,v=>{ x.oui=v; majT(); }),blocSuite(x,"oui")));
+    box.append(el("div",{class:"sortie"},el("h3",{text:"Si non"}),blocElimine("Élimine",x.non,v=>{ x.non=v; majT(); }),blocSuite(x,"non")));
+    return;
+  }
+  x.paliers.forEach((p,i)=>{
+    const de=i===0?el("span",{class:"de",text:"En dessous de tout"}):el("input",{type:"number",step:"any",value:p.de??"","aria-label":"Palier "+(i+1)+" : à partir de",disabled:!peutEcrire,
+      oninput:e=>{ const v=e.target.value.trim(); p.de=v===""?null:Number(v); change(); rendreTests(); }});
+    const nom=el("input",{type:"text",value:p.nom,placeholder:"Nom du palier","aria-label":"Nom du palier "+(i+1),disabled:!peutEcrire,oninput:e=>{ p.nom=e.target.value; change(); rendreTests(); }});
+    const x2=el("button",{type:"button",class:"mini","aria-label":"Retirer le palier "+(i+1),text:"×",disabled:!peutEcrire||x.paliers.length<=1,onclick:()=>{
+      for(const c of suivants(x.id,p.id)) c.si=x.si?{...x.si}:null;
+      x.paliers.splice(i,1); if(x.paliers[0]) x.paliers[0].de=null; majT(); }});
+    box.append(el("div",{class:"sortie"},el("div",{class:"palier-tete"},el("span",{class:"de",text:i?"À partir de":""}),de,nom,x2),blocElimine("Élimine",p.elimine,v=>{ p.elimine=v; majT(); }),blocSuite(x,p.id)));
+  });
+  box.append(el("div",{class:"actions"},el("button",{type:"button",class:"btn",disabled:!peutEcrire,text:"Ajouter un palier",onclick:()=>{
+    const last=x.paliers[x.paliers.length-1]; x.paliers.push({id:uid(),de:(last?.de??0)+10,nom:"",elimine:[]}); majT(); }})));
+  box.append(el("p",{class:"aide",text:"Le calcul donne un nombre ; le palier retenu est le dernier dont le seuil est atteint. Rangez les seuils du plus petit au plus grand."}));
+}
+function verifCalcul(x){
+  const v=$("test-verif"); v.className="verif";
+  if(!x.calcul.trim()){ v.textContent=x.formule.trim()?"Pas encore de calcul : je le traduis depuis ta formule. En attendant, tu réponds à la main dans « Essayer ».":"Pas de calcul : on répond à la main dans « Essayer »."; return; }
+  try{ const ast=controle(x.calcul); v.classList.add("ok");
+    if(profil){ const r=evalue(ast,profil); v.textContent="Calcul lisible. Sur "+profil.nom+" : "+affiche(r)+(x.type==="binaire"?" → "+(vrai(r)?"oui":"non"):""); }
+    else v.textContent="Calcul lisible. Générez un profil dans « Essayer » pour voir sa valeur."; }
+  catch(e){ v.classList.add("err"); v.textContent="Le calcul ne se lit pas : "+(e instanceof ErreurCalcul?e.message:"erreur")+"."; }
+}
+function rendrePanneauTest(){
+  const x=testChoisi&&testPar(testChoisi);
+  $("test-vide").hidden=Boolean(x); $("test-champs").hidden=!x; if(!x) return;
+  for(const [id,k] of [["test-nom","nom"],["test-formule","formule"],["test-calcul","calcul"]]) if(document.activeElement!==$(id)) $(id).value=x[k];
+  $("test-type").value=x.type; $("test-reecrire").checked=x.aReecrire;
+  const sel=$("test-si"); sel.replaceChildren(el("option",{value:"",text:"Toujours (test du haut)"}));
+  const interdit=descendantsTest(x.id); interdit.add(x.id);
+  for(const {x:y,num} of ordreTests()) if(!interdit.has(y.id)) for(const r of branches(y)) sel.append(el("option",{value:y.id+"|"+r,text:num+". "+y.nom+" → "+libRep(y,r)}));
+  sel.value=x.si?x.si.test+"|"+x.si.rep:""; $("test-si-aide").hidden=!x.si;
+  verifCalcul(x); rendreSorties(x);
+  const b=$("test-suppr"); b.textContent="Supprimer"; b.dataset.arme="";
+  for(const id of ["test-nom","test-formule","test-reecrire","test-calcul","test-type","test-si","test-haut","test-bas","test-suppr"]) $(id).disabled=!peutEcrire;
+}
+$("test-nom").oninput=e=>{ const x=testPar(testChoisi); if(!x) return; x.nom=e.target.value; change(); rendreTests(); };
+$("test-formule").oninput=e=>{ const x=testPar(testChoisi); if(!x) return; x.formule=e.target.value; if(x.calcul.trim()){ x.aReecrire=true; $("test-reecrire").checked=true; } change(); rendreTests(); verifCalcul(x); };
+$("test-reecrire").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; x.aReecrire=e.target.checked; change(); rendreTests(); };
+$("test-calcul").oninput=e=>{ const x=testPar(testChoisi); if(!x) return; x.calcul=e.target.value; change(); rendreTests(); verifCalcul(x); };
+$("test-type").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; const avant=x.type; x.type=e.target.value;
+  if(x.type==="niveau"&&!x.paliers.length) x.paliers=[{id:uid(),de:null,nom:"Bas",elimine:[]},{id:uid(),de:50,nom:"Haut",elimine:[]}];
+  // Oui → le dernier palier, non → le premier ; et l'inverse au retour.
+  for(const c of doc.tests) if(c.si?.test===x.id&&avant!==x.type)
+    c.si.rep=x.type==="niveau"?(c.si.rep==="oui"?x.paliers[x.paliers.length-1]:x.paliers[0]).id:(x.paliers.findIndex(q=>q.id===c.si.rep)>0?"oui":"non");
+  change(); rendreTests(); rendrePanneauTest(); };
+function nouveauTest(si){ if(!peutEcrire) return; const x={id:uid(),nom:"Nouveau test",type:"binaire",formule:"",calcul:"",oui:[],non:[],paliers:[],si:si||null};
+  doc.tests.push(x); testChoisi=x.id; change(); rendreTests(); rendrePanneauTest(); $("test-nom").select(); $("test-nom").focus(); }
+$("test-ajout").onclick=()=>nouveauTest(null);
+$("test-si").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; const v=e.target.value;
+  x.si=v?{test:v.slice(0,v.indexOf("|")),rep:v.slice(v.indexOf("|")+1)}:null;
+  doc.tests.splice(doc.tests.indexOf(x),1); doc.tests.push(x); change(); rendreTests(); rendrePanneauTest(); };
+// Monter / descendre parmi les tests de la même branche.
+function deplaceTest(s){ const x=testPar(testChoisi); if(!x||!peutEcrire) return;
+  const meme=y=>y!==x&&(x.si?y.si&&y.si.test===x.si.test&&y.si.rep===x.si.rep:!y.si);
+  const i=doc.tests.indexOf(x); let j=i+s; while(j>=0&&j<doc.tests.length&&!meme(doc.tests[j])) j+=s;
+  if(j<0||j>=doc.tests.length) return; doc.tests.splice(i,1); doc.tests.splice(j,0,x); change(); rendreTests(); rendrePanneauTest(); }
+$("test-haut").onclick=()=>deplaceTest(-1); $("test-bas").onclick=()=>deplaceTest(1);
+$("test-suppr").onclick=()=>{ const x=testPar(testChoisi); if(!x||!peutEcrire) return; const b=$("test-suppr");
+  const apres=doc.tests.filter(t=>t.si?.test===x.id);
+  if(b.dataset.arme!=="1"){ b.dataset.arme="1"; b.textContent=apres.length?"Confirmer ("+apres.length+" test"+(apres.length>1?"s":"")+" suivant"+(apres.length>1?"s remontent":" remonte")+" d'un cran)":"Confirmer la suppression";
+    setTimeout(()=>{ if(b.dataset.arme==="1"){ b.dataset.arme=""; b.textContent="Supprimer"; } },4000); return; }
+  for(const c of apres) c.si=x.si?{...x.si}:null;
+  doc.tests=doc.tests.filter(t=>t.id!==x.id); testChoisi=null; change(); rendreTests(); rendrePanneauTest(); };
+function rendreConstantes(force=true){
+  const box=$("constantes"); if(!force&&box.contains(document.activeElement)) return; box.replaceChildren();
+  if(!doc.constantes.length) box.append(el("p",{class:"aide",text:"Aucune constante pour l'instant."}));
+  doc.constantes.forEach((c,i)=>{
+    const k=cle(c.nom), conflit=VAR_IDX.has(k)?"ce nom est déjà une variable":doc.constantes.some((o,j)=>j!==i&&cle(o.nom)===k)?"ce nom est pris deux fois":"";
+    const nom=el("input",{type:"text",value:c.nom,placeholder:"Nom (ex. seuil soin)","aria-label":"Nom de la constante "+(i+1),disabled:!peutEcrire,
+      oninput:e=>{ c.nom=e.target.value; change(); rendreTests(); const x=testPar(testChoisi); if(x) verifCalcul(x); majCle(); }});
+    const val=el("input",{type:"number",step:"any",value:String(c.valeur),"aria-label":"Valeur de la constante "+(i+1),disabled:!peutEcrire,
+      oninput:e=>{ c.valeur=Number(e.target.value)||0; change(); const x=testPar(testChoisi); if(x) verifCalcul(x); if(profil) rendreResultats(); }});
+    const note=el("input",{type:"text",value:c.note,placeholder:"À quoi elle sert","aria-label":"Note de la constante "+(i+1),disabled:!peutEcrire,oninput:e=>{ c.note=e.target.value; change(); }});
+    const x=el("button",{type:"button",class:"mini",text:"×","aria-label":"Retirer la constante "+(c.nom||i+1),disabled:!peutEcrire,onclick:()=>{ doc.constantes.splice(i,1); change(); rendreConstantes(); rendreTests(); }});
+    const info=el("span",{class:"cle"});
+    const majCle=()=>{ const k2=cle(c.nom); const conf=VAR_IDX.has(k2)?"ce nom est déjà une variable":doc.constantes.some((o,j)=>j!==i&&cle(o.nom)===k2)?"ce nom est pris deux fois":"";
+      info.textContent=k2?(conf?"Attention : "+conf:"Dans un calcul : "+k2):"Donne-lui un nom."; info.style.color=conf?"var(--danger)":""; };
+    majCle();
+    box.append(el("div",{class:"const"},nom,val,note,x,info));
+  });
+  $("const-ajout").disabled=!peutEcrire;
+}
+$("const-ajout").onclick=()=>{ if(!peutEcrire) return; doc.constantes.push({id:uid(),nom:"",valeur:0,note:""}); change(); rendreConstantes(); const i=$("constantes").querySelectorAll("input[type=text]"); i[i.length-2]?.focus(); };
+function rendreAideVars(){
+  const box=$("aide-vars"); const groupes=new Map();
+  for(const v of VARS){ if(!groupes.has(v.groupe)) groupes.set(v.groupe,[]); groupes.get(v.groupe).push(v); }
+  box.append(el("p",{class:"aide",text:"Opérateurs : > < >= <= = != , et, ou, non, + - * /, « contient » pour une liste (sorts contient \"Soin rapide\"). Fonctions : max, min, abs, arrondi, nombre, somme. Textes entre guillemets. Les constantes (au-dessus de la liste des tests) s'utilisent par leur nom."}));
+  for(const [g,vs] of groupes){ const d=el("details",{},el("summary",{text:g+" ("+vs.length+")"}));
+    const ul=el("ul",{style:"margin:4px 0;padding-left:18px"}); for(const v of vs) ul.append(el("li",{},el("code",{text:v.k}),"  "+v.label+" ("+v.type+")")); d.append(ul); box.append(d); }
+}
+
+// ---------- 3. Essayer ----------
+let profilIdx=null, profil=null, forces={};
+const etoilesCompagnie=()=>{ const v=Number($("f-etoiles").value); return Number.isFinite(v)?v:1; };
+const versObjet=i=>({...Object.fromEntries(POOL.vars.map((v,j)=>[v.k,Array.isArray(POOL.profils[i][j])?[...POOL.profils[i][j]]:POOL.profils[i][j]])),"compagnie.etoiles":etoilesCompagnie()});
+$("f-etoiles").oninput=()=>{ memo("atelier-etoiles",etoilesCompagnie()); if(profil){ profil["compagnie.etoiles"]=etoilesCompagnie(); rendreResultats(); } };
+function remplirFiltres(){ const ps=[...new Set(POOL.profils.map(p=>p[VAR_IDX.get("peuple")]))].sort((a,b)=>a.localeCompare(b,"fr")); for(const p of ps) $("f-peuple").append(el("option",{value:p,text:p})); }
+function generer(){
+  const d=$("f-domaine").value,pe=$("f-peuple").value,asc=$("f-asc").checked;
+  const ok=POOL.profils.map((p,i)=>i).filter(i=>{ const p=POOL.profils[i]; return (!d||p[VAR_IDX.get("domaine")]===d)&&(!pe||p[VAR_IDX.get("peuple")]===pe)&&(!asc||p[VAR_IDX.get("niveau_ascendance")]>=3); });
+  if(!ok.length){ $("profil-vide").textContent="Aucune recrue ne correspond à ces filtres."; $("profil-vide").hidden=false; return; }
+  const choix=ok.length>1?ok.filter(i=>i!==profilIdx):ok; profilIdx=choix[Math.floor(Math.random()*choix.length)];
+  profil=versObjet(profilIdx); forces={}; memo("atelier-profil",profilIdx); rendreEssai(true);
+}
+$("generer").onclick=generer;
+$("profil-reset").onclick=()=>{ if(profilIdx==null) return; profil=versObjet(profilIdx); rendreEssai(true); };
+function reponseAuto(x){
+  if(!x.calcul.trim()) return {manuel:true};
+  try{ const r=evalue(controle(x.calcul),profil);
+    if(x.type==="binaire") return {valeur:r,rep:vrai(r)};
+    const n=nombre(r); let k=0; x.paliers.forEach((p,i)=>{ if(i===0||(p.de!=null&&n>=p.de)) k=i; }); return {valeur:n,rep:k}; }
+  catch(e){ return {erreur:e instanceof ErreurCalcul?e.message:"erreur"}; }
+}
+function resultats(){
+  const direct=new Map(); const reps=[]; const vus=new Set();
+  // On suit l'arbre : un test n'est posé que si la réponse au-dessus de lui est sortie.
+  const visite=(x,num,prof,saute)=>{
+    if(vus.has(x.id)) return; vus.add(x.id);
+    if(saute){ reps.push({x,num,prof,saute});
+      let k=0; for(const b of branches(x)) for(const c of suivants(x.id,b)) visite(c,num+"."+(++k),prof+1,"la question "+num+" n'est pas posée"); return; }
+    const a=reponseAuto(x); const f=forces[x.id]; const rep=f!==undefined?f:a.rep;
+    let ids=[], libelle="sans réponse", branche=null;
+    if(rep!==undefined){ if(x.type==="binaire"){ ids=rep?x.oui:x.non; libelle=rep?"oui":"non"; branche=libelle; } else { const p=x.paliers[rep]; ids=p?.elimine||[]; libelle=p?.nom||("palier "+(rep+1)); branche=p?.id; } }
+    for(const id of ids){ if(!direct.has(id)) direct.set(id,[]); direct.get(id).push(num+". "+x.nom+" → "+libelle); }
+    reps.push({x,num,prof,a,rep,force:f!==undefined,libelle,ids});
+    let k=0; for(const b of branches(x)) for(const c of suivants(x.id,b)){ const n=num+"."+(++k);
+      visite(c,n,prof+1,branche===b?null:rep===undefined?"la question "+num+" attend sa réponse":"posé seulement si « "+x.nom+" » → "+libRep(x,b)); }
+  };
+  doc.tests.filter(t=>!t.si).forEach((t,i)=>visite(t,String(i+1),0,null));
+  // Un tag tombe si un test l'élimine, ou si l'un de ses parents tombe (jusqu'à ce que plus rien ne change).
+  const motif=new Map([...direct].map(([id,r])=>[id,r.join(" ; ")]));
+  for(let encore=true;encore;){ encore=false;
+    for(const t of doc.tags) if(!motif.has(t.id)){ const p=t.parents.find(x=>motif.has(x)); if(p){ motif.set(t.id,"son parent « "+nomTag(p)+" » est éliminé"); encore=true; } } }
+  return {reps,motif};
+}
+function rendreFiche(){
+  const p=profil, f=$("fiche"); f.replaceChildren();
+  const asc=p.ascendance?p.ascendance+" (niveau "+p.niveau_ascendance+")":"aucune";
+  f.append(el("div",{class:"titre",text:p.nom}));
+  const dl=el("dl");
+  const ligne=(k,v)=>dl.append(el("dt",{text:k}),el("dd",{text:v}));
+  ligne("Origines",[p.peuple,p.culture,p.origine].filter(Boolean).join(" · "));
+  ligne("Ascendance",asc);
+  ligne("Domaine",p.domaine+" · "+p.etoiles+" étoile"+(p.etoiles>1?"s":""));
+  const set=n=>[p["arme"+n],p["arme"+n+".main_gauche"]].filter(Boolean).join(" + ")||"rien";
+  ligne("Set 1",set(1)); ligne("Set 2",set(2));
+  ligne("Armure",[p.armure,p["armure.classe"]].filter(Boolean).join(" · ")||"aucune");
+  ligne("Sorts",p.sorts.length?p.sorts.join(", "):"aucun");
+  const caps=[p["capacite.vol"]&&"Vol",p["capacite.regeneration"]>0&&"Régénération "+affiche(p["capacite.regeneration"]),p["capacite.respiration_aquatique"]&&"Respiration aquatique",p["capacite.deplacement_aquatique"]&&"Déplacement aquatique",p["capacite.deplacement_sylvain"]&&"Déplacement sylvain",p["capacite.vision_nocturne"]&&"Vision nocturne",p.monture&&"Monture : "+p.monture].filter(Boolean);
+  ligne("Capacités",caps.join(", ")||"aucune");
+  const titres=VARS.filter(v=>v.k.startsWith("titre.")&&p[v.k]>0).map(v=>({l:v.label.replace(/^Titre « (.*) » : niveau$/,"$1"),n:p[v.k]})).sort((a,b)=>b.n-a.n).slice(0,4);
+  ligne("Mesures du jeu",titres.map(t=>t.l+" "+t.n).join(" · ")||"aucune");
+  f.append(dl);
+}
+function rendreVars(){
+  const box=$("vars"); box.replaceChildren(); const groupes=new Map();
+  for(const v of VARS){ if(v.k==="nom"||v.k==="compagnie.etoiles") continue; if(!groupes.has(v.groupe)) groupes.set(v.groupe,[]); groupes.get(v.groupe).push(v); }
+  for(const [g,vs] of groupes){
+    const d=el("details",{},el("summary",{text:g})); const liste=el("div",{class:"vars"});
+    for(const v of vs){
+      let inp;
+      if(v.type==="oui/non"){ inp=el("input",{type:"checkbox","aria-label":v.label}); inp.checked=Boolean(profil[v.k]); inp.onchange=()=>{ profil[v.k]=inp.checked; rendreResultats(); }; }
+      else if(v.type==="nombre"){ inp=el("input",{type:"number",step:"any",value:String(profil[v.k]),"aria-label":v.label}); inp.oninput=()=>{ profil[v.k]=Number(inp.value)||0; rendreResultats(); }; }
+      else if(v.type==="liste"){ inp=el("input",{type:"text",value:profil[v.k].join(", "),"aria-label":v.label+" (séparés par des virgules)"}); inp.oninput=()=>{ profil[v.k]=inp.value.split(",").map(s=>s.trim()).filter(Boolean); rendreResultats(); }; }
+      else { inp=el("input",{type:"text",value:profil[v.k],"aria-label":v.label}); inp.oninput=()=>{ profil[v.k]=inp.value; rendreResultats(); }; }
+      liste.append(el("div",{class:"var"},el("span",{class:"lib"},el("span",{text:v.label}),el("span",{class:"k",text:v.k})),inp));
+    }
+    d.append(liste); box.append(d);
+  }
+}
+function arbreRestant(motif){
+  const ul=el("ul",{class:"arbre"});
+  const faire=(t,chemin)=>{ const li=el("li",{class:t.groupe?"groupe":""});
+    li.append(el("div",{class:"ligne"},el("span",{class:"nom"},el("span",{class:"nom-l"},el("b",{text:t.nom}),t.groupe?el("span",{class:"puce p-cat",text:"Catégorie"}):null))));
+    const kids=enfants(t.id).filter(k=>!motif.has(k.id)&&!chemin.has(k.id));
+    if(kids.length){ const u=el("ul",{class:"arbre"}); const c2=new Set(chemin); c2.add(t.id); kids.forEach(k=>u.append(faire(k,c2))); li.append(u); }
+    return li; };
+  doc.tags.filter(t=>!t.parents.length&&!motif.has(t.id)).forEach(t=>ul.append(faire(t,new Set())));
+  return ul;
+}
+function rendreResultats(){
+  if(!profil) return;
+  const {reps,motif}=resultats();
+  const restent=doc.tags.filter(t=>!t.groupe&&!motif.has(t.id));
+  // Décision d'Idan : pour une branche, seul le tag le plus bas qui reste s'affiche.
+  const plusBas=t=>![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id); });
+  // Catégories limitées (Idan, 2026-11-20) : une catégorie peut ne garder que ses X tags de plus haut rang qui restent ;
+  // à rang égal, l'ordre de la liste. Ailleurs, le tag le plus bas de chaque branche.
+  const ancetres=(id,acc=new Set())=>{ for(const p of tagPar(id)?.parents||[]) if(!acc.has(p)){ acc.add(p); ancetres(p,acc); } return acc; };
+  const gardes=new Map();
+  for(const c of doc.tags.filter(c=>c.groupe&&c.garder)){
+    const cand=[...descendants(c.id)].map(tagPar).filter(d=>d&&!d.groupe&&!motif.has(d.id))
+      .sort((a,b)=>(b.rang??-Infinity)-(a.rang??-Infinity)||doc.tags.indexOf(a)-doc.tags.indexOf(b));
+    gardes.set(c.id,new Set(cand.slice(0,c.garder).map(d=>d.id)));
+  }
+  const limitees=t=>[...ancetres(t.id)].filter(id=>gardes.has(id));
+  const affiches=restent.filter(t=>{ const l=limitees(t); return l.length?l.every(id=>gardes.get(id).has(t.id)):plusBas(t); });
+  const r=$("restent"); r.replaceChildren();
+  const tete=el("p",{style:"margin:0"},el("b",{text:affiches.length+" tag"+(affiches.length>1?"s":"")+" affiché"+(affiches.length>1?"s":"")}));
+  if(affiches.length>4) tete.append(" ",el("span",{class:"trop",text:"(l'objectif est 3 ou 4 : il manque des tests)"}));
+  r.append(tete);
+  const puces=el("div",{class:"affiches"}); for(const t of affiches) puces.append(el("span",{class:"puce-tag",title:chemin(t),text:t.nom}));
+  if(!affiches.length) puces.append(el("span",{class:"aide",text:"Aucun tag ne reste."}));
+  r.append(puces);
+  if(doc.tags.some(t=>!motif.has(t.id))) r.append(el("details",{},el("summary",{text:"Tous les tags qui restent ("+restent.length+"), avec leurs parents"}),arbreRestant(motif)));
+  const box=$("reponses"); box.replaceChildren();
+  if(!reps.length) box.append(el("p",{class:"aide",text:"Aucun test pour l'instant."}));
+  for(const {x,num,prof,saute,a,rep,force,ids} of reps){
+    const marge="margin-left:"+Math.min(prof,6)*18+"px";
+    if(saute){ box.append(el("div",{class:"rep saute",style:marge},el("div",{class:"q"},el("span",{class:"num",text:num}),el("b",{text:x.nom})),el("span",{class:"val",text:"Pas posé : "+saute+"."}))); continue; }
+    const q=el("div",{class:"q"},el("span",{class:"num",text:num}),el("b",{text:x.nom}));
+    if(a.erreur) q.append(el("span",{class:"puce p-err",text:"Calcul à corriger"}));
+    else if(a.manuel) q.append(el("span",{class:"puce p-talk",text:"À la main"}));
+    if(force) q.append(el("span",{class:"puce p-palier",text:"Forcé"}));
+    const btns=el("div",{class:"actions"});
+    const choix=x.type==="binaire"?[[true,"Oui"],[false,"Non"]]:x.paliers.map((p,i)=>[i,p.nom||("Palier "+(i+1))]);
+    for(const [v,l] of choix) btns.append(el("button",{type:"button",class:"btn","aria-pressed":String(rep===v),text:l,onclick:()=>{ if(!a.manuel&&!a.erreur&&a.rep===v) delete forces[x.id]; else forces[x.id]=v; rendreResultats(); }}));
+    if(force) btns.append(el("button",{type:"button",class:"btn",text:"↺ Revenir au calcul",onclick:()=>{ delete forces[x.id]; rendreResultats(); }}));
+    const val=a.erreur?"Le calcul ne se lit pas : "+a.erreur:a.manuel?"Pas de calcul : choisis la réponse.":"Calcul : "+affiche(a.valeur);
+    box.append(el("div",{class:"rep",style:marge},q,el("span",{class:"val",text:val}),btns,el("span",{class:"elim",text:rep===undefined?"Sans réponse, il n'élimine rien.":ids.length?"Élimine "+listeNoms(ids):"N'élimine rien."})));
+  }
+  const ul=$("elimines"); ul.replaceChildren();
+  const elim=doc.tags.filter(t=>motif.has(t.id));
+  $("elim-titre").textContent="Éliminés ("+elim.filter(t=>!t.groupe).length+")";
+  for(const t of elim) ul.append(el("li",{},el("b",{text:t.nom})," — ",el("em",{text:motif.get(t.id)})));
+  if(testChoisi){ const x=testPar(testChoisi); if(x) verifCalcul(x); }
+}
+function rendreEssai(complet){
+  const a=profil!=null;
+  $("profil").hidden=!a; $("profil-vide").hidden=a; $("res").hidden=!a; $("res-vide").hidden=a;
+  if(!a){ $("profil-vide").textContent=POOL.profils.length+" recrues tirées par le générateur du jeu, dont 3 par ascendance au niveau 3. Cliquez sur « Générer un profil »."; return; }
+  if(complet){ rendreFiche(); rendreVars(); }
+  rendreResultats();
+}
+
+// ---------- Ensemble ----------
+function rendreTout(){ majCompteurs(); rendreConstantes(false); rendreTags(); rendrePanneauTag(); rendreTests(); rendrePanneauTest(); if(onglet==="essai") rendreEssai(false);
+  for(const id of ["tag-ajout","test-ajout"]) $(id).disabled=!peutEcrire; }
+{ const e=memo("atelier-etoiles"); if(Number.isFinite(e)) $("f-etoiles").value=String(e); }
+remplirFiltres(); rendreAideVars();
+const dernier=memo("atelier-profil"); if(Number.isInteger(dernier)&&POOL.profils[dernier]){ profilIdx=dernier; profil=versObjet(dernier); }
+montreOnglet(["tags","tests","essai"].includes(onglet)?onglet:"tags"); rendreTout(); if(profil) rendreEssai(true);
+
+(async()=>{
+  const use=window.claude&&window.claude.use;
+  if(!use){ etat("Hors de claude.ai : rien n'est enregistré",0); return; }
+  const db=await window.claude.use("db");
+  if(!db){ etat("Enregistrement indisponible ici : lecture seule",0); peutEcrire=false; rendreTout(); return; }
+  const user=await window.claude.use("user");
+  if(user){ try{ const c=await user.can("data.write"); if(c===false) peutEcrire=false; }catch(e){} }
+  ref=db.doc("atelier/principal");
+  const delai=setTimeout(()=>etat("L'atelier n'est pas encore joignable…",2),10000);
+  ref.onSnapshot(snap=>{
+    if(!snap.metadata.fromCache) clearTimeout(delai);
+    if(snap.metadata.hasPendingWrites||sale) return;
+    doc=snap.exists?propre(snap.data()):{tags:[],tests:[],constantes:[]};
+    if(tagChoisi&&!tagPar(tagChoisi)) tagChoisi=null;
+    if(testChoisi&&!testPar(testChoisi)) testChoisi=null;
+    rendreTout(); if(profil&&onglet==="essai") rendreResultats();
+    if(!snap.metadata.fromCache) etat(peutEcrire?(snap.exists?"À jour":"Atelier vide : commencez par un tag"):"Lecture seule",peutEcrire?1:2);
+  },e=>{ clearTimeout(delai); etat("Atelier injoignable ("+(e?.code||"erreur")+")",0); });
+})();
+</script>

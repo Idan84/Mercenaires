@@ -4,6 +4,8 @@
 > colonne `tags` de `spells.json`.
 >
 > Idan, 2026-11-20 : niveaux des tags retirés (un tag est allumé ou éteint).
+>
+> Refonte en cours (atelier des tags, 2026-11-20 et 21) : voir le §11.
 
 ## 1 — Pourquoi
 
@@ -233,3 +235,102 @@ seul style conseillé et les caractéristiques du seul rôle principal (5 à 6 t
 
 Les questions fermées à l'intendant, ses biais, l'endroit où les tags ressortent ailleurs (liste des mercenaires, choix de
 l'équipe d'une mission…) et des titres plus drôles (historique, classement dans la compagnie) : à discuter.
+
+## 11 — La refonte (atelier des tags, 2026-11-20 et 21)
+
+> Travail en cours d'Idan dans l'artefact « Atelier des tags ». Copie de ses données du 2026-11-21 :
+> `scripts/atelier-tags/donnees/atelier-2026-11-21.json` ; l'outil se reconstruit avec `scripts/atelier-tags/` (voir
+> son README). Le jeu applique encore les §2 à §10 ; cette refonte n'y est pas branchée.
+
+### Les principes (Idan)
+
+- Un tag dit seulement **à quoi sert le mercenaire en combat**. Il est calculé, toujours visible, et jugé à l'instant T
+  (équipement et armure compris). 3 ou 4 tags affichés au plus ; le titre viendra ensuite des tags.
+- Les tags forment un arbre combiné : un tag peut avoir plusieurs parents, et il tombe si l'un d'eux tombe.
+- Des **tests** éliminent des tags. Ils sont rangés en arbre (« posé seulement si ») : un test qui n'est pas posé
+  n'élimine rien.
+- Seul le tag le plus bas de chaque branche s'affiche. Une catégorie peut ne garder que ses X tags de plus haut rang
+  (Soigneur : garde 1) ; à égalité, l'ordre de la liste.
+- Les seuils suivent les **étoiles de la compagnie** (on juge un vétéran, pas une recrue) et sont des constantes
+  réglables.
+- Les niveaux 1 / 2 / 3 des tags sont retirés du jeu (2026-11-20).
+
+### Le Soigneur (garde 1)
+
+| Rang | Tag | Parents |
+|---|---|---|
+| 1 | Soigneur occasionnel | Soigneur |
+| 2 | Soigneur dans la durée | Soigneur occasionnel |
+| 3 | Soigneur des masses | Soigneur occasionnel |
+| 4 | Soigneur reconnu | Soigneur occasionnel |
+| 5 | Grand soigneur dans la durée | Soigneur dans la durée |
+| 6 | Grand soigneur des masses | Soigneur des masses |
+| 7 | Soigneur complet | Soigneur dans la durée, Soigneur des masses |
+| 8 | Un hôpital sur le champ de bataille | Soigneur reconnu |
+| 9 | Grand Maître du soin | Soigneur complet, Un hôpital sur le champ de bataille, Grand soigneur des masses, Grand soigneur dans la durée |
+
+### Les tests, dans l'ordre de l'arbre
+
+Un retrait (→) veut dire « posé seulement si le test du dessus répond oui ». « Élimine » : les tags retirés quand
+la réponse est non. Un calcul vide est à écrire.
+
+| Test | Formule (Idan) | Calcul | Élimine si non |
+|---|---|---|---|
+| Vole-t-il ? | Il sait voler ou est équipé d'une monture volante. | `capacite.vol ou monture.vol` | Vol |
+| A-t-il de la Régénération ? | Il a de la Régénération (valeur au-dessus de 0). | `capacite.regeneration > 0` | Régénération |
+| Respire-t-il sous l'eau ? | Respiration aquatique : il traverse l'eau profonde, normalement infranchissable, et s'y couvre. | `capacite.respiration_aquatique` | Amphibie |
+| Sait-il lancer un sort ? |  | `nb_sorts > 0` | Magie |
+| → Connaît-il un sort de soin ? | Il connaît un sort qui soigne un allié. | `sorts.soin > 0` | Soigneur |
+| → → Ses soins marchent-ils vraiment ? | Réussite moyenne de ses sorts de soin supérieure à 50 %, et assez de mana pour lancer un soin (coût moyen de ses soins) une fois par étoile de la compagnie. | `moy.chance.soin > seuil_soin_occasionnel et lancers.soin >= compagnie.etoiles` | Soigneur occasionnel |
+| → → Ses soins sont-ils puissants ? | Puissance magique + niveau de l'école de ses soins > 100 + étoiles de la compagnie × 10. École : la moyenne des écoles de ses sorts de soin, équipement compris. | `carac.puissance_magique + moy.ecole.soin > base_puissance_soin + puissance_soin_par_etoile * compagnie.etoiles` | Soigneur reconnu, Grand soigneur des masses, Grand soigneur dans la durée, Un hôpital sur le champ de bataille |
+| → → Connait il un sort de soin de zone |  | `sorts.soin.de_zone > 0` | Soigneur des masses |
+| → → → est-il assez efficaces pour etre grand soigneur des masses | Plusieurs tests imbriqués dans la formule à faire : Reserve de mana totale > cout du sort de soin de zone x nombre d'étoile de la compagnie et taux de réussite du sort > (79 + nombre d'étoiles de la compagnie) % et nombre de sort de soin >1 | `carac.reserve_de_mana > cout.soin.de_zone * compagnie.etoiles et chance.soin.de_zone > base_grand_soin + compagnie.etoiles et sorts.soin > 1` | Grand soigneur des masses |
+| → → Connait il un sort de soin multi tour ? |  | `sorts.soin.dans_la_duree > 0` | Soigneur dans la durée |
+| → → → Est-il assez efficace pour être grand soigneur dans la durée ? | Comme le grand soigneur des masses : réserve de mana totale > coût du soin sur la durée × étoiles de la compagnie, et réussite de ce soin > 79 + étoiles. En plus : son soin tient au moins 3 tours. | `carac.reserve_de_mana > cout.soin.dans_la_duree * compagnie.etoiles et chance.soin.dans_la_duree > base_grand_soin + compagnie.etoiles et duree.soin.dans_la_duree >= duree_min_soin` | Grand soigneur dans la durée |
+| → → As-t-il plus de 70% de chance de réussir ses sorts de soin ? | taux de réussite du sort > (80 nombre d'étoile de la compagnie)% | `moy.chance.soin > seuil_soin + compagnie.etoiles` | Soigneur reconnu |
+| → → → Est-il un hôpital sur le champ de bataille ? | Il peut lancer au moins 2 × étoiles de la compagnie soins avec sa réserve de mana (coût moyen de ses soins), sa réussite moyenne en soin dépasse 79 + étoiles, et il connaît un soin en action rapide. (Proposition de JC, à valider.) | `lancers.soin >= 2 * compagnie.etoiles et moy.chance.soin > base_grand_soin + compagnie.etoiles et sorts.soin_rapide > 0` | Un hôpital sur le champ de bataille |
+| → → A-t-il une purge ou un soin rapide ? | Le soigneur complet peut être un peu moins fiable sur le soin pur, mais il a une purge, ou au moins un soin rapide (Idan). Fiabilité demandée : celle de Soigneur reconnu, 70 + étoiles (proposition de JC, à valider). | `(sorts.soutien.purges > 0 ou sorts.soin_rapide > 0) et moy.chance.soin > seuil_soin + compagnie.etoiles` | Soigneur complet |
+| → Connaît-il un sort de soutien ? | Tout sort qui cible un allié et qui augmente leur caractéristiques | à écrire | Soutien |
+| → Connait il un sort d'entrave ? | Tout sort qui cible un ennemi et qui reduit les carac | à écrire | Entrave |
+| As-t-il une arme de tir ou arme à feu ? | On ne prends pas un compte le pistolet qui est particulier | `((arme1.categorie = "Armes de tir" ou arme1.categorie = "Armes à feu") et arme1 != "Pistolet") ou ((arme2.categorie = "Armes de tir" ou arme2.categorie = "Armes à feu") et arme2 != "Pistolet")` | Tireur |
+| As-t-il plus de 80 dans une résistance élémentaire ? | Feu Froid Foudre Poison | à écrire | Protection élémentaire |
+
+### Les constantes
+
+| Constante | Valeur | Note |
+|---|---|---|
+| seuil soin | 70 | Réussite du meilleur soin pour Soigneur reconnu, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 70 + étoiles »). |
+| base grand soin | 79 | Réussite pour les « Grand » soigneurs et l'hôpital, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 79 + étoiles »). |
+| duree min soin | 3 | Nombre de tours minimum du soin sur la durée pour Grand soigneur dans la durée. |
+| seuil soin occasionnel | 50 | Réussite minimale de son meilleur soin pour être Soigneur occasionnel, en % (Idan, 2026-11-21 : « réussite supérieure à 50 % »). |
+| base puissance soin | 100 | Puissance des soins : Puissance magique + école moyenne de ses soins > cette base + (par étoile) × étoiles de la compagnie (Idan, 2026-11-21). |
+| puissance soin par etoile | 10 | Ce que chaque étoile de la compagnie ajoute au seuil de puissance des soins (Idan, 2026-11-21 : « 100 + étoiles × 10 »). |
+
+Variables du profil : `scripts/atelier-tags/profils.js` (caractéristiques, résistances, compétences, ports d'armure,
+écoles, capacités, armes, armure, monture, sorts par tag de rôle, réussite / coût / durée par tag de sort, moyennes des
+soins, `lancers.soin` = réserve ÷ coût moyen, `compagnie.etoiles`).
+
+### La simulation des soigneurs (2026-11-21)
+
+1000 recrues générées, dont 51 connaissent un sort de soin. Sans équipement, un tag de soigneur s'affiche chez 44 / 41 /
+29 / 14 / 0 d'entre eux à 1 / 2 / 3 / 5 / 10 étoiles. Avec le meilleur équipement de soigneur sur les 1000 (amulette de
+Puissance magique, Bâton long, Chapeau d'intelligence, Ceinture de mana, 6 bagues d'école, Vêtements) :
+
+| Tier | 1★ | 2★ | 3★ | 5★ | 10★ |
+|---|---|---|---|---|---|
+| T1 | 51 | 49 | 42 | 18 | 0 |
+| T2 | 51 | 51 | 44 | 25 | 0 |
+| T3 | 51 | 51 | 45 | 26 | 1 |
+| T4 | 51 | 51 | 48 | 34 | 5 |
+
+La réussite plafonne vers 94 % ; à beaucoup d'étoiles, c'est la mana qui bloque. D'où la **Bague de mana** (Idan,
+2026-11-21 : +5 / 10 / 15 / 20 % de réserve de mana, doc 05), pas encore dans ces chiffres.
+
+### Pour plus tard
+
+- Les autres rôles (Soutien, Entrave, Protection, Contrôle du terrain, Commandement, Éclaireur, Dégâts) : tests à écrire
+  avec Idan.
+- Le titre tiré des tags (un seul tag de soigneur peut donner le titre), des titres d'exploits (« Soigneur de masse des
+  ennemis »), les tags de création pour affiner les avatars (phase 2).
+- Monter le niveau des recrues de la taverne avec les étoiles de la compagnie.
+- Brancher la refonte dans le jeu, une fois les rôles décidés.

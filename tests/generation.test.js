@@ -641,7 +641,7 @@ for (let i = 0; i < 400; i++) {
   }
 }
 assert.ok(Math.min(...ringCounts) >= 1 && Math.max(...ringCounts) <= 6, "1D6 bagues");
-assert.equal(ringTypes.size, 11);
+assert.equal(ringTypes.size, 12);
 
 console.log(JSON.stringify({
   ok:true,

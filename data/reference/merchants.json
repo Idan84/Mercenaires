@@ -421,8 +421,8 @@
           "objet": "Sarbacane"
         },
         {
-          "type": "armor",
-          "objet": "Cuir renforcé"
+          "type": "ring",
+          "objet": "Bague de mana"
         },
         {
           "type": "helmet",
@@ -453,7 +453,7 @@
       "sexe": "Femme",
       "portrait": "",
       "peuple": "Humain",
-      "culture": "Montagnes du Nord",
+      "culture": "Empire de la nuit blanche",
       "alignement": "Neutre",
       "poids": 1,
       "vend": [
@@ -1345,8 +1345,8 @@
           "objet": "Pic de guerre"
         },
         {
-          "type": "weapon",
-          "objet": "Fronde"
+          "type": "ring",
+          "objet": "Bague de mana"
         },
         {
           "type": "gloves",

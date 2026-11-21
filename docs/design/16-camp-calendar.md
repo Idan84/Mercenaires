@@ -14,8 +14,9 @@ permet d'agrandir un peu la carte ») ; Échap ouvre le menu de pause.
 - Les mercenaires ouvrent « Mes mercenaires ».
 - **Réglée culture par culture** par Idan dans l'**Atelier des barres** (taille de la barre, largeur de l'embout, taille
   du contenu, hauteur des fonds…). Une culture peut avoir une v2 de sa barre (les Terres des Deux Fleuves).
-- **Les cultures refaites avec leur kit graphique** (les trois cultures elfes) : leurs deux barres sont faites des pièces
-  du kit (bande de cuir entre deux sangles, emblème au bout, ornement suspendu dessous). Les Elfes des grandes cités,
+- **Les cultures refaites avec leur kit graphique** (les trois cultures elfes ; les trois cultures naines, réglages de
+  départ repris des Elfes sylvains, à régler) : leurs deux barres sont faites des pièces du kit (bande de cuir entre deux
+  sangles, emblème au bout, ornement suspendu dessous). Les Elfes des grandes cités,
   au cuir ivoire, ont leurs textes et pictos **dorés** (« pastilles or pâle, chiffres à l'encre »). Réglages :
   `data/reference/culture-kits.json`.
 - Tout garde les proportions de la maquette, quelle que soit la largeur de l'écran. Le logo Blood & Wages reste sur

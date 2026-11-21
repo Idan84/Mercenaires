@@ -1,0 +1,1010 @@
+{
+ "constantes": [
+  {
+   "id": "c-seuil-soin",
+   "nom": "seuil soin",
+   "note": "Réussite du meilleur soin pour Soigneur reconnu, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 70 + étoiles »).",
+   "valeur": 70
+  },
+  {
+   "id": "c-base-grand-soin",
+   "nom": "base grand soin",
+   "note": "Réussite pour les « Grand » soigneurs et l'hôpital, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 79 + étoiles »).",
+   "valeur": 79
+  },
+  {
+   "id": "c-duree-min-soin",
+   "nom": "duree min soin",
+   "note": "Nombre de tours minimum du soin sur la durée pour Grand soigneur dans la durée.",
+   "valeur": 3
+  },
+  {
+   "id": "c-seuil-soin-occasionnel",
+   "nom": "seuil soin occasionnel",
+   "note": "Réussite minimale de son meilleur soin pour être Soigneur occasionnel, en % (Idan, 2026-11-21 : « réussite supérieure à 50 % »).",
+   "valeur": 50
+  },
+  {
+   "id": "c-base-puissance-soin",
+   "nom": "base puissance soin",
+   "note": "Puissance des soins : Puissance magique + école moyenne de ses soins > cette base + (par étoile) × étoiles de la compagnie (Idan, 2026-11-21).",
+   "valeur": 100
+  },
+  {
+   "id": "c-puissance-soin-etoile",
+   "nom": "puissance soin par etoile",
+   "note": "Ce que chaque étoile de la compagnie ajoute au seuil de puissance des soins (Idan, 2026-11-21 : « 100 + étoiles × 10 »).",
+   "valeur": 10
+  }
+ ],
+ "tags": [
+  {
+   "garder": null,
+   "groupe": true,
+   "id": "ce-qu-il-est",
+   "nom": "Ce qu'il est",
+   "note": "Passe 1 de ton arbre : ce que le mercenaire est, oui ou non.",
+   "parents": [],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": true,
+   "id": "ka5k6bo1",
+   "nom": "Comment il le fait",
+   "note": "",
+   "parents": [],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": true,
+   "id": "magie",
+   "nom": "Magie",
+   "note": "Rôle à part, ou manière de tenir les autres rôles : à décider. Ses écoles en dessous.",
+   "parents": [
+    "ka5k6bo1"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": true,
+   "id": "z2qn61fz",
+   "nom": "Tireur",
+   "note": "",
+   "parents": [
+    "ka5k6bo1"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": true,
+   "id": "pou5c9pp",
+   "nom": "CAC",
+   "note": "",
+   "parents": [
+    "ka5k6bo1"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "vol",
+   "nom": "Vol",
+   "note": "",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "regeneration",
+   "nom": "Régénération",
+   "note": "",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "amphibie",
+   "nom": "Amphibie",
+   "note": "Respiration aquatique.",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": true,
+   "id": "roles",
+   "nom": "Rôles",
+   "note": "Passe 2 de ton arbre : on élimine les rôles qu'il ne peut pas remplir en l'état. S'il ne reste aucun rôle : Dégâts ou Polyvalent.",
+   "parents": [],
+   "rang": null
+  },
+  {
+   "garder": 1,
+   "groupe": true,
+   "id": "soin",
+   "nom": "Soigneur",
+   "note": "",
+   "parents": [
+    "roles",
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soin-de-zone",
+   "nom": "Soigneur des masses",
+   "note": "",
+   "parents": [
+    "p98pjt14"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soin-duree",
+   "nom": "Soigneur dans la durée",
+   "note": "",
+   "parents": [
+    "p98pjt14"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "5av4i928",
+   "nom": "Soigneur complet",
+   "note": "",
+   "parents": [
+    "soin-duree",
+    "soin-de-zone"
+   ],
+   "rang": 7
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "6n4899ab",
+   "nom": "Grand Maître du soin",
+   "note": "",
+   "parents": [
+    "5av4i928",
+    "tnvt6pos",
+    "8za94vzc",
+    "ehfdxqs9"
+   ],
+   "rang": 9
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ehfdxqs9",
+   "nom": "Grand soigneur dans la durée",
+   "note": "",
+   "parents": [
+    "soin-duree"
+   ],
+   "rang": 5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "p98pjt14",
+   "nom": "Soigneur occasionnel",
+   "note": "",
+   "parents": [
+    "soin"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "lyfdowvc",
+   "nom": "Soigneur reconnu",
+   "note": "",
+   "parents": [
+    "p98pjt14"
+   ],
+   "rang": 4
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "tnvt6pos",
+   "nom": "Un hôpital sur le champ de bataille",
+   "note": "",
+   "parents": [
+    "lyfdowvc"
+   ],
+   "rang": 8
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soutien",
+   "nom": "Soutien",
+   "note": "",
+   "parents": [
+    "roles",
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soutien-enchantements",
+   "nom": "Enchantements",
+   "note": "",
+   "parents": [
+    "soutien"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soutien-degats-elementaires",
+   "nom": "Dégâts élémentaires",
+   "note": "",
+   "parents": [
+    "soutien"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soutien-discretion",
+   "nom": "Discrétion",
+   "note": "",
+   "parents": [
+    "soutien"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soutien-recuperation-de-mana",
+   "nom": "Récupération de mana",
+   "note": "",
+   "parents": [
+    "soutien"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "soutien-purges",
+   "nom": "Purges",
+   "note": "",
+   "parents": [
+    "soutien"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "protection",
+   "nom": "Protection",
+   "note": "",
+   "parents": [
+    "roles"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "protection-elementaire",
+   "nom": "Protection élémentaire",
+   "note": "",
+   "parents": [
+    "protection"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "protection-a-distance",
+   "nom": "Protection à distance",
+   "note": "",
+   "parents": [
+    "protection"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "entrave",
+   "nom": "Entrave",
+   "note": "",
+   "parents": [
+    "roles",
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "entrave-immobilisation",
+   "nom": "Immobilisation",
+   "note": "",
+   "parents": [
+    "entrave"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "entrave-affaiblissement",
+   "nom": "Affaiblissement",
+   "note": "",
+   "parents": [
+    "entrave"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "entrave-demoralisateur",
+   "nom": "Démoralisateur",
+   "note": "",
+   "parents": [
+    "entrave"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "entrave-anti-magie",
+   "nom": "Anti-magie",
+   "note": "",
+   "parents": [
+    "entrave"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "entrave-anti-soins",
+   "nom": "Anti-soins",
+   "note": "",
+   "parents": [
+    "entrave"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "controle-du-terrain",
+   "nom": "Contrôle du terrain",
+   "note": "",
+   "parents": [
+    "roles"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ypsqnotc",
+   "nom": "Contrôle du terrain magique",
+   "note": "",
+   "parents": [
+    "controle-du-terrain",
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "yt48k9y9",
+   "nom": "Poseur de pièges",
+   "note": "",
+   "parents": [
+    "controle-du-terrain"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "commandement",
+   "nom": "Commandement",
+   "note": "",
+   "parents": [
+    "roles"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "eclaireur",
+   "nom": "Éclaireur",
+   "note": "",
+   "parents": [
+    "roles"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats",
+   "nom": "Dégâts",
+   "note": "",
+   "parents": [
+    "roles"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-eau",
+   "nom": "Eau",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-feu",
+   "nom": "Feu",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-foudre",
+   "nom": "Foudre",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-illusion",
+   "nom": "Illusion",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-invocation",
+   "nom": "Invocation",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-necromancie",
+   "nom": "Nécromancie",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-telekinesie",
+   "nom": "Télékinésie",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-transmutation",
+   "nom": "Transmutation",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ecole-vie",
+   "nom": "Vie",
+   "note": "",
+   "parents": [
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-a-distance",
+   "nom": "À distance",
+   "note": "",
+   "parents": [
+    "degats",
+    "z2qn61fz"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-de-zone",
+   "nom": "De zone",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-charge",
+   "nom": "Charge",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-tranchant",
+   "nom": "Tranchant",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-perforant",
+   "nom": "Perforant",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-contondant",
+   "nom": "Contondant",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-glacant",
+   "nom": "Glaçant",
+   "note": "",
+   "parents": [
+    "degats",
+    "ecole-eau"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-foudroyant",
+   "nom": "Foudroyant",
+   "note": "",
+   "parents": [
+    "degats",
+    "ecole-foudre"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-corrosif",
+   "nom": "Corrosif",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-poison",
+   "nom": "Poison",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-necrotique",
+   "nom": "Nécrotique",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-anti-morts-vivants",
+   "nom": "Anti morts-vivants",
+   "note": "",
+   "parents": [
+    "degats"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "degats-anti-invocations",
+   "nom": "Anti invocations",
+   "note": "",
+   "parents": [
+    "degats",
+    "magie"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "8za94vzc",
+   "nom": "Grand soigneur des masses",
+   "note": "",
+   "parents": [
+    "soin-de-zone"
+   ],
+   "rang": 6
+  }
+ ],
+ "tests": [
+  {
+   "calcul": "capacite.vol ou monture.vol",
+   "formule": "Il sait voler ou est équipé d'une monture volante.",
+   "id": "t-vol",
+   "nom": "Vole-t-il ?",
+   "non": [
+    "vol"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "calcul": "capacite.regeneration > 0",
+   "formule": "Il a de la Régénération (valeur au-dessus de 0).",
+   "id": "t-regeneration",
+   "nom": "A-t-il de la Régénération ?",
+   "non": [
+    "regeneration"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "calcul": "capacite.respiration_aquatique",
+   "formule": "Respiration aquatique : il traverse l'eau profonde, normalement infranchissable, et s'y couvre.",
+   "id": "t-amphibie",
+   "nom": "Respire-t-il sous l'eau ?",
+   "non": [
+    "amphibie"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "calcul": "nb_sorts > 0",
+   "formule": "",
+   "id": "ad0vqpzs",
+   "nom": "Sait-il lancer un sort ?",
+   "non": [
+    "magie"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "calcul": "((arme1.categorie = \"Armes de tir\" ou arme1.categorie = \"Armes à feu\") et arme1 != \"Pistolet\") ou ((arme2.categorie = \"Armes de tir\" ou arme2.categorie = \"Armes à feu\") et arme2 != \"Pistolet\")",
+   "formule": "On ne prends pas un compte le pistolet qui est particulier",
+   "id": "r21vxkkc",
+   "nom": "As-t-il une arme de tir ou arme à feu ?",
+   "non": [
+    "z2qn61fz"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "calcul": "sorts.soin > 0",
+   "formule": "Il connaît un sort qui soigne un allié.",
+   "id": "t-soin",
+   "nom": "Connaît-il un sort de soin ?",
+   "non": [
+    "soin"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "",
+   "formule": "Tout sort qui cible un allié et qui augmente leur caractéristiques",
+   "id": "ti1hjns0",
+   "nom": "Connaît-il un sort de soutien ?",
+   "non": [
+    "soutien"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "",
+   "formule": "Tout sort qui cible un ennemi et qui reduit les carac",
+   "id": "opckbax6",
+   "nom": "Connait il un sort d'entrave ?",
+   "non": [
+    "entrave"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "",
+   "formule": "Feu\nFroid\nFoudre\nPoison",
+   "id": "7t1geash",
+   "nom": "As-t-il plus de 80 dans une résistance élémentaire ?",
+   "non": [
+    "protection-elementaire"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "moy.chance.soin > seuil_soin_occasionnel et lancers.soin >= compagnie.etoiles",
+   "formule": "Réussite moyenne de ses sorts de soin supérieure à 50 %, et assez de mana pour lancer un soin (coût moyen de ses soins) une fois par étoile de la compagnie.",
+   "id": "cksne967",
+   "nom": "Ses soins marchent-ils vraiment ?",
+   "non": [
+    "p98pjt14"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soin"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "carac.puissance_magique + moy.ecole.soin > base_puissance_soin + puissance_soin_par_etoile * compagnie.etoiles",
+   "formule": "Puissance magique + niveau de l'école de ses soins > 100 + étoiles de la compagnie × 10. École : la moyenne des écoles de ses sorts de soin, équipement compris.",
+   "id": "6sz8g2qk",
+   "nom": "Ses soins sont-ils puissants ?",
+   "non": [
+    "lyfdowvc",
+    "8za94vzc",
+    "ehfdxqs9",
+    "tnvt6pos"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soin"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "sorts.soin.de_zone > 0",
+   "formule": "",
+   "id": "wc3phdwm",
+   "nom": "Connait il un sort de soin de zone ",
+   "non": [
+    "soin-de-zone"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soin"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "sorts.soin.dans_la_duree > 0",
+   "formule": "",
+   "id": "n3ijaard",
+   "nom": "Connait il un sort de soin multi tour ?",
+   "non": [
+    "soin-duree"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soin"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "moy.chance.soin > seuil_soin + compagnie.etoiles",
+   "formule": "taux de réussite du sort > (80 nombre d'étoile de la compagnie)%",
+   "id": "otpid6k6",
+   "nom": "As-t-il plus de 70% de chance de réussir ses sorts de soin ?",
+   "non": [
+    "lyfdowvc"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soin"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "carac.reserve_de_mana > cout.soin.de_zone * compagnie.etoiles et chance.soin.de_zone > base_grand_soin + compagnie.etoiles et sorts.soin > 1",
+   "formule": "Plusieurs tests imbriqués dans la formule à faire : \n\nReserve de mana totale > cout du sort de soin de zone x nombre d'étoile de la compagnie\net\ntaux de réussite du sort > (79 + nombre d'étoiles de la compagnie) %\net \nnombre de sort de soin >1",
+   "id": "umaeqa3r",
+   "nom": "est-il assez efficaces pour etre grand soigneur des masses",
+   "non": [
+    "8za94vzc"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "wc3phdwm"
+   },
+   "type": "binaire"
+  },
+  {
+   "calcul": "carac.reserve_de_mana > cout.soin.dans_la_duree * compagnie.etoiles et chance.soin.dans_la_duree > base_grand_soin + compagnie.etoiles et duree.soin.dans_la_duree >= duree_min_soin",
+   "formule": "Comme le grand soigneur des masses : réserve de mana totale > coût du soin sur la durée × étoiles de la compagnie, et réussite de ce soin > 79 + étoiles. En plus : son soin tient au moins 3 tours.",
+   "id": "kuf9sasc",
+   "nom": "Est-il assez efficace pour être grand soigneur dans la durée ?",
+   "non": [
+    "ehfdxqs9"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "n3ijaard"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "(sorts.soutien.purges > 0 ou sorts.soin_rapide > 0) et moy.chance.soin > seuil_soin + compagnie.etoiles",
+   "formule": "Le soigneur complet peut être un peu moins fiable sur le soin pur, mais il a une purge, ou au moins un soin rapide (Idan). Fiabilité demandée : celle de Soigneur reconnu, 70 + étoiles (proposition de JC, à valider).",
+   "id": "zqgn49uk",
+   "nom": "A-t-il une purge ou un soin rapide ?",
+   "non": [
+    "5av4i928"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soin"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "lancers.soin >= 2 * compagnie.etoiles et moy.chance.soin > base_grand_soin + compagnie.etoiles et sorts.soin_rapide > 0",
+   "formule": "Il peut lancer au moins 2 × étoiles de la compagnie soins avec sa réserve de mana (coût moyen de ses soins), sa réussite moyenne en soin dépasse 79 + étoiles, et il connaît un soin en action rapide. (Proposition de JC, à valider.)",
+   "id": "u8pfmlbi",
+   "nom": "Est-il un hôpital sur le champ de bataille ?",
+   "non": [
+    "tnvt6pos"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "otpid6k6"
+   },
+   "type": "binaire"
+  }
+ ]
+}

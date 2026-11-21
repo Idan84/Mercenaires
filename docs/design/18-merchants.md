@@ -118,7 +118,7 @@ marchands. ⚠ : moins de deux marchands.
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 102 objets ; **102** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 103 objets ; **103** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -132,8 +132,8 @@ marchands. ⚠ : moins de deux marchands.
 | Hroska Crocs-de-Neige | Tribus nordiques | Hache double, Écu, Trident, Cape de résistance physique, Ceinture d’endurance, Bague de l’Eau, Manuels d’Eau, Mammouth de guerre | 8 |
 | Drusk Sabot-de-Poussière | Clans des grandes steppes | Arc, Lance, Sabre, Bottes de vitesse, Bague du courage, Ceinture de courage, Manuels de Feu | 7 |
 | Gorma Porte-Tonneau | Ogres des cités humaines | Hallebarde, Masse d’armes, Brigandine, Gants de force, Culotte d’Intimidation, Potion de soins | 6 |
-| Rasz Tzel'Varr | Reptiliens des villes | Estoc, Sarbacane, Cuir renforcé, Chapeau d’intelligence, Bague de la télékinésie, Amulette de puissance magique, Manuels de Télékinésie | 7 |
-| Gudrun Isfjell | Montagnes du Nord | Hache double, Épée à deux mains, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Rasz Tzel'Varr | Reptiliens des villes | Estoc, Sarbacane, Bague de mana, Chapeau d’intelligence, Bague de la télékinésie, Amulette de puissance magique, Manuels de Télékinésie | 7 |
+| Gudrun Isfjell | Empire de la nuit blanche | Hache double, Épée à deux mains, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Isska Ssul'Varek | Reptiliens des marécages | Trident, Sarbacane, Armure d'écailles, Fiole de poison, Bague de l’Eau, Potion de soins, Manuels d’Eau | 7 |
 | Calaena Ombrevenin | Elfes noirs | Dague, Arbalète, Fouet, Cape de discrétion, Fiole de poison, Bague de la Foudre, Manuels de Foudre | 7 |
 | Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie, Papillon vénéneux | 8 |
@@ -152,7 +152,7 @@ marchands. ⚠ : moins de deux marchands.
 | Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion, Loup | 8 |
 | Draz Crinsauvage | Orcs des steppes | Lance, Bague de la transmutation, Hachette, Bottes de vitesse, Cuir renforcé, Ceinture d’endurance, Manuels de Transmutation, Sanglier de combat | 8 |
 | Bruga Roc-Fendu | Ogres des montagnes | Massue, Marteau de guerre, Pavois, Armure d'écailles, Casque de constitution, Ceinture d’endurance, Cerbère | 7 |
-| Bimble Lampeterne | Gnomes des cavernes | Pic de guerre, Fronde, Gants de pièges, Chapeau d’intelligence, Potion de mana, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Bimble Lampeterne | Gnomes des cavernes | Pic de guerre, Bague de mana, Gants de pièges, Chapeau d’intelligence, Potion de mana, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Azhiss Kaal'Thesh | Reptiliens des cités-temples | Trident, Bâton long, Gambison, Amulette de puissance magique, Ceinture de mana, Bague de l’invocation, Manuels d’Invocation, Tricératops | 8 |
 | Kippa Ressortdor | Gnomes des villes | Pistolet, Arquebuse, Épée double, Chapeau d’intelligence, Potion de mana, Bague de l’illusionniste, Manuels d’Illusion, Molosse | 8 |
 | Krosh Grand-Galop | Ogres des steppes | Masse d’armes, Fléau d’armes, Arme d’hast double, Hallebarde, Bardiche, Bague de Feu, Manuels de Feu | 7 |
@@ -176,7 +176,7 @@ marchands. ⚠ : moins de deux marchands.
 | Armes | Estoc | Rasz, Ilyra | 2 |
 | Armes | Fléau d’armes | Flek, Krosh | 2 |
 | Armes | Fouet | Orvald, Calaena | 2 |
-| Armes | Fronde | Jasper, Lirri, Crik, Bimble | 4 |
+| Armes | Fronde | Jasper, Lirri, Crik | 3 |
 | Armes | Hache de guerre | Durgan, Gudrun | 2 |
 | Armes | Hache double | Hroska, Gudrun, Karg | 3 |
 | Armes | Hachette | Orvald, Draz | 2 |
@@ -202,7 +202,7 @@ marchands. ⚠ : moins de deux marchands.
 | Armures | Armure de plates | Durgan, Karg | 2 |
 | Armures | Brigandine | Gorma, Aymeric | 2 |
 | Armures | Cotte de mailles | Gudrun, Aymeric | 2 |
-| Armures | Cuir renforcé | Rasz, Amar, Draz | 3 |
+| Armures | Cuir renforcé | Amar, Draz | 2 |
 | Armures | Gambison | Amar, Azhiss | 2 |
 | Armures | Vêtements | Ilyra, Dottie | 2 |
 | Casques | Casque de constitution | Durgan, Bruga | 2 |
@@ -234,6 +234,7 @@ marchands. ⚠ : moins de deux marchands.
 | Bagues | Bague de la Foudre | Thorval, Calaena | 2 |
 | Bagues | Bague de la télékinésie | Rasz, Jasper | 2 |
 | Bagues | Bague de la transmutation | Malaika, Draz | 2 |
+| Bagues | Bague de mana | Rasz, Bimble | 2 |
 | Bagues | Bague du courage | Durgan, Drusk | 2 |
 | Bagues | Bague du nécromancien | Gudrun, Cairn, Bimble | 3 |
 | Bagues | Bague du soigneur | Aymeric, Dottie | 2 |

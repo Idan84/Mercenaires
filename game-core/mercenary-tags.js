@@ -5,10 +5,9 @@
 // des sous-tags et des sous-sous-tags ; « Tous les tags sont cochables (on peut taguer juste animal) » ; aucun tag n'en
 // exclut un autre. L'arbre vient de data/reference/mercenary-tags.json ; ses listes « source » sont tirées des données du
 // jeu. Identifiant d'un tag : son chemin (« role/degats/tranchant »).
-// Trois niveaux (« que le mec puisse mettre arc et épée, mets arc plus important ») : 1 pâle, 2 moyen, 3 plein ; un tag
-// est au moins aussi fort que son sous-tag le plus fort (« Les sous tags allument les tags ») ; le clic fait le tour
-// grisé → pâle → moyen → plein → grisé, et éteindre un tag éteint ses sous-tags.
-// Deux sources sur un mercenaire : member.tags ({id: niveau}, ce que le joueur a mis) et member.stewardTags (ce que
+// Un tag est allumé ou éteint, sans niveau (Idan, 2026-11-20). Un sous-tag allumé allume ses parents (« Les sous tags
+// allument les tags ») ; le clic bascule allumé ↔ éteint, et éteindre un tag éteint ses sous-tags.
+// Deux sources sur un mercenaire : member.tags (liste d'identifiants, ce que le joueur a mis) et member.stewardTags (ce que
 // l'intendant a mis, marqué d'un point) ; member.stewardRefused : les tags de l'intendant que le joueur a éteints, qu'il ne
 // remet plus. Retaguer ne remplace que stewardTags. Aucune règle de jeu ne lit les tags.
 (function(root,factory){
@@ -16,7 +15,6 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesTags=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
-  const MAX_LEVEL=3;
   const slug=name=>String(name||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()
     .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   const rowsOf=table=>Array.isArray(table?.rows)?table.rows:[];
@@ -121,61 +119,52 @@
     const descendants=id=>order.filter(t=>t.startsWith(id+"/"));
     // Un tag par nom, sous un parent (« role/degats » + « Tranchant »).
     const childNamed=(parentId,name)=>node(parentId)?.enfants.find(c=>c.nom===name)?.id||null;
-    const clampLevel=v=>Math.max(0,Math.min(MAX_LEVEL,Math.round(Number(v)||0)));
-    // Des niveaux propres : {id: 1 à 3} ; une ancienne liste (phase 1) compte au niveau plein.
-    function levelsOf(raw){
-      const out={};
-      if(Array.isArray(raw)){ for(const id of raw) if(has(id)) out[id]=MAX_LEVEL; return out; }
-      for(const [id,value] of Object.entries(raw||{})){ const level=clampLevel(value); if(level&&has(id)) out[id]=level; }
-      return out;
-    }
-    // Ce que montre la fiche : pour chaque tag allumé, son niveau (au moins celui de son sous-tag le plus fort) et s'il vient
-    // de l'intendant (le point) — le joueur l'emporte sur l'intendant ; un tag allumé par ses seuls sous-tags porte le point
-    // si tous ceux-là le portent.
+    // Une liste propre : les identifiants connus, sans doublon (un tag disparu des données est oublié ; rien si la donnée
+    // manque).
+    const idsOf=raw=>Array.isArray(raw)?unique(raw.filter(has)):[];
+    // Ce que montre la fiche : pour chaque tag allumé, s'il vient de l'intendant (le point) — le joueur l'emporte sur
+    // l'intendant ; un tag allumé par ses seuls sous-tags porte le point si tous ceux-là le portent.
     function view(member){
-      const own=levelsOf(member?.tags),refused=new Set(member?.stewardRefused||[]);
-      const steward=levelsOf(member?.stewardTags);
+      const own=new Set(idsOf(member?.tags)),refused=new Set(member?.stewardRefused||[]);
+      const steward=new Set(idsOf(member?.stewardTags));
       const out={};
       for(const id of [...order].reverse()){
-        const mine=own[id]||0,his=refused.has(id)?0:(steward[id]||0);
+        const mine=own.has(id),his=!refused.has(id)&&steward.has(id);
         const kids=node(id).enfants.map(c=>out[c.id]).filter(Boolean);
-        const level=Math.max(mine||his,...kids.map(k=>k.level),0);
-        if(!level) continue;
-        const fromSteward=mine?false:his?true:kids.every(k=>k.steward);
-        out[id]={level,steward:fromSteward};
+        if(!mine&&!his&&!kids.length) continue;
+        out[id]={steward:mine?false:his?true:kids.every(k=>k.steward)};
       }
       return out;
     }
-    const levelOf=(member,id)=>view(member)[id]?.level||0;
-    // Le clic : un cran de plus ; au-delà du plein, éteint (lui et ses sous-tags). Éteindre un tag de l'intendant, c'est
-    // le refuser : il ne le remettra pas.
-    function cycle(member,id){
+    // Le clic : allume un tag éteint ; éteint un tag allumé (lui et ses sous-tags). Éteindre un tag de l'intendant, c'est le
+    // refuser : il ne le remettra pas.
+    function toggle(member,id){
       if(!member||!has(id)) return {ok:false,reason:"Tag inconnu."};
-      const shown=view(member),current=shown[id]?.level||0,next=current>=MAX_LEVEL?0:current+1;
-      const own=levelsOf(member.tags),refused=new Set(member.stewardRefused||[]),steward=levelsOf(member.stewardTags);
-      if(next){
-        own[id]=next;
+      const on=!view(member)[id];
+      const own=new Set(idsOf(member.tags)),refused=new Set(member.stewardRefused||[]),steward=new Set(idsOf(member.stewardTags));
+      if(on){
+        own.add(id);
         refused.delete(id);
       }else{
         for(const t of [id,...descendants(id)]){
-          delete own[t];
-          if(steward[t]) refused.add(t);
+          own.delete(t);
+          if(steward.has(t)) refused.add(t);
         }
       }
-      member.tags=own;
+      member.tags=order.filter(t=>own.has(t));
       member.stewardRefused=[...refused].filter(has);
-      return {ok:true,level:next};
+      return {ok:true,on};
     }
-    // Ce que l'intendant pose : remplace ses tags d'avant, garde ceux du joueur et ses refus.
-    function setSteward(member,levels){
+    // Ce que l'intendant pose (une liste d'identifiants) : remplace ses tags d'avant, garde ceux du joueur et ses refus.
+    function setSteward(member,ids){
       if(!member) return;
-      member.stewardTags=levelsOf(levels);
+      member.stewardTags=idsOf(ids);
     }
     // Tous les tags allumés d'un mercenaire, dans l'ordre de l'arbre.
     const litIds=member=>{ const shown=view(member); return order.filter(id=>shown[id]); };
-    return {MAX_LEVEL,intro:String(ref.mercenaryTags?.intro||""),columns,has,node,childNamed,depth:id=>byId.get(id)?.depth||0,ancestors,
-      descendants,levelsOf,view,levelOf,cycle,setSteward,litIds,order};
+    return {intro:String(ref.mercenaryTags?.intro||""),columns,has,node,childNamed,depth:id=>byId.get(id)?.depth||0,ancestors,
+      descendants,idsOf,view,toggle,setSteward,litIds,order};
   }
 
-  return {createTagRules,slug,MAX_LEVEL};
+  return {createTagRules,slug};
 });

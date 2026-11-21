@@ -44,7 +44,7 @@ for(const r of table.rows.filter(r=>r.peuple==="Humain")){
 }
 const consonances=culture=>table.rows.filter(r=>r.culture===culture).map(r=>r.consonance).sort();
 assert.deepEqual(consonances("Royaumes du Soleil Levant"),["Japonaise"]);
-assert.deepEqual(consonances("Montagnes du Nord"),["Russe","Scandinave"]);
+assert.deepEqual(consonances("Empire de la nuit blanche"),["Russe","Scandinave"]);
 assert.deepEqual(consonances("Terres des Deux Fleuves"),["Indienne"]);
 assert.deepEqual(consonances("Tribus de la jungle"),["Bantoue","Ouest-africaine"]);
 assert.deepEqual(consonances("Cités libres"),["Anglaise","Française","Germanique","Italienne"]);
@@ -72,9 +72,9 @@ for(let i=0;i<50;i++){
   assert.equal(n.naming.sex,"femme");
 }
 // Russe : le nom de famille s'accorde.
-const russian=rowById("humain-montagnes-du-nord-russe");
+const russian=rowById("humain-empire-de-la-nuit-blanche-russe");
 const russianRules=createNameRules({reference:{characterNames:{rows:[russian]}},random:seeded(3)});
-const olga=russianRules.generate({people:"Humain",culture:"Montagnes du Nord",sex:"femme"});
+const olga=russianRules.generate({people:"Humain",culture:"Empire de la nuit blanche",sex:"femme"});
 assert.ok(russian.noms_femme.includes(olga.familyName),olga.name);
 // Autres peuples : prénom du peuple, nom de la culture.
 const orc=names.generate({people:"Orc",culture:"Orcs noirs",sex:"homme"});
@@ -93,7 +93,7 @@ const drawn=Array.from({length:4},()=>tinyRules.generate({people:"Gnome",sex:"fe
 assert.equal(new Set(drawn).size,6);
 
 // Réaccord après l'avatar : le prénom change de sexe, la consonance et la famille restent.
-const ivan={people:"Humain",culture:"Montagnes du Nord",...russianRules.generate({people:"Humain",culture:"Montagnes du Nord",sex:"homme"})};
+const ivan={people:"Humain",culture:"Empire de la nuit blanche",...russianRules.generate({people:"Humain",culture:"Empire de la nuit blanche",sex:"homme"})};
 const family=ivan.familyName,index=russian.noms.indexOf(family);
 assert.ok(index>=0);
 ivan.sex="Femme";

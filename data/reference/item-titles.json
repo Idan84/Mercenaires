@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 78,
+  "row_count": 79,
   "rows": [
     {
       "nom": "Arbalète",
@@ -557,6 +557,14 @@
       "t2": "Bague du brave",
       "t3": "Bague du cœur de lion",
       "t4": "L’Anneau de l’Indomptable"
+    },
+    {
+      "nom": "Bague de mana",
+      "famille": "bague",
+      "t1": "Anneau de la gourde",
+      "t2": "Bague de la cruche",
+      "t3": "Bague du tonneau d’arcanes",
+      "t4": "L’Anneau de la Source Intarissable"
     },
     {
       "nom": "Bague de Feu",

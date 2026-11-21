@@ -85,7 +85,7 @@ Les chances se cumulent en points de pourcentage.
 | Noble | +20 | +10 | +10 |
 | Orcs noirs | +25 | +30 | +30 |
 | Nains des montagnes | +25 | +35 | +40 |
-| Montagnes du Nord | +15 | +20 | +25 |
+| Empire de la nuit blanche | +15 | +20 | +25 |
 | Tribus nordiques | +15 | +20 | +20 |
 | Ogres des cités humaines | +10 | +15 | +15 |
 

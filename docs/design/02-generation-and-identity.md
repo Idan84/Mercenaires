@@ -87,7 +87,7 @@ Répartition mesurée (1 000 recrues par culture, 2026-11-01), en % corps à cor
 | Gobelin | Caravanes de ferrailleurs 17/62/21 ; Cavernes 32/50/18 ; Villes 26/45/30 |
 | Halfling | Explorateurs 6/50/44 ; Cités humaines 5/45/50 ; Villages isolés **4**/34/62 |
 | Homme-bête | Clans des grandes steppes 78/8/15 ; Forêts anciennes 64/5/31 ; Tribus nordiques 80/5/16 |
-| Humain | Cités libres 49/11/41 ; Montagnes du Nord 71/9/21 ; Soleil Levant 62/10/28 ; Deux Fleuves 48/21/31 ; Jungle 47/15/38 |
+| Humain | Cités libres 49/11/41 ; Empire de la nuit blanche 71/9/21 ; Soleil Levant 62/10/28 ; Deux Fleuves 48/21/31 ; Jungle 47/15/38 |
 | Nain | Montagnes 74/13/14 ; Nains du chaos 33/49/19 ; Nains esclaves 72/21/8 |
 | Ogre | Cités humaines 75/16/10 ; Montagnes 78/17/6 ; Steppes 80/14/6 |
 | Orc | Steppes 67/13/20 ; Villes 51/15/33 ; Orcs noirs 74/8/18 |
@@ -112,7 +112,7 @@ Idan, 2026-10-21 (`data/reference/character-names.json`).
 | Royaumes du Soleil Levant | japonaise |
 | Tribus de la jungle | africaine : ouest-africaine ou bantoue |
 | Cités libres | Europe de l'Ouest : française, anglaise, germanique ou italienne |
-| Montagnes du Nord | scandinave ou russe |
+| Empire de la nuit blanche | scandinave ou russe |
 | Terres des Deux Fleuves | indienne |
 
 - **Terres des Deux Fleuves** (Idan, 2026-11-18 : « Je veux faire un peuple hindou ») : ex-Steppes désertiques,
@@ -123,7 +123,7 @@ Idan, 2026-10-21 (`data/reference/character-names.json`).
 
   | Culture | Signature +2 | Animal +1 | Métier +1 | Malus −1 |
   |---|---|---|---|---|
-  | Montagnes du Nord | Combat à deux mains | Canidés | Travail du bois (au lieu du Travail du cuir) | Intelligence |
+  | Empire de la nuit blanche | Combat à deux mains | Canidés | Travail du bois (au lieu du Travail du cuir) | Intelligence |
   | Tribus de la jungle | Lance (+1 → +2) | Félins | Alchimie | Résistance au froid |
   | Cités libres | Estoc (+1 → +2) | — | Intendance (au lieu du Travail du cuir) | Perception |
   | Royaumes du Soleil Levant | Katana | Rapaces | Médecine | Boucliers |

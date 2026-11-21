@@ -109,6 +109,12 @@
           "type": "image/webp"
         },
         {
+          "name": "empire-de-la-nuit-blanche.webp",
+          "source": "prototype-web/assets/pictos/culture-empire-de-la-nuit-blanche.webp",
+          "size": 19440,
+          "type": "image/webp"
+        },
+        {
           "name": "explorateurs.webp",
           "source": "prototype-web/assets/pictos/culture-explorateurs.webp",
           "size": 23794,
@@ -157,27 +163,21 @@
           "type": "image/webp"
         },
         {
-          "name": "montagnes-du-nord.webp",
-          "source": "prototype-web/assets/pictos/culture-montagnes-du-nord.webp",
-          "size": 19440,
-          "type": "image/webp"
-        },
-        {
           "name": "nains-des-montagnes.webp",
           "source": "prototype-web/assets/pictos/culture-nains-des-montagnes.webp",
-          "size": 16178,
+          "size": 14314,
           "type": "image/webp"
         },
         {
           "name": "nains-du-chaos.webp",
           "source": "prototype-web/assets/pictos/culture-nains-du-chaos.webp",
-          "size": 15920,
+          "size": 17446,
           "type": "image/webp"
         },
         {
           "name": "nains-esclaves.webp",
           "source": "prototype-web/assets/pictos/culture-nains-esclaves.webp",
-          "size": 12370,
+          "size": 12402,
           "type": "image/webp"
         },
         {
@@ -579,7 +579,7 @@
           "size": 1053,
           "type": "image/svg+xml",
           "cultures": [
-            "montagnes-du-nord"
+            "empire-de-la-nuit-blanche"
           ]
         },
         {
@@ -784,6 +784,13 @@
           "type": "image/webp",
           "author": "ambientCG (texture « Paper003 »)",
           "licence": "CC0"
+        },
+        {
+          "name": "papier-vieilli.webp",
+          "source": "prototype-web/assets/taverne/papier-vieilli.webp",
+          "size": 58634,
+          "type": "image/webp",
+          "author": "Idan"
         }
       ]
     },
@@ -906,8 +913,8 @@
           "type": "image/webp"
         },
         {
-          "name": "montagnes-du-nord.webp",
-          "source": "prototype-web/assets/hud/barres/montagnes-du-nord/center.webp",
+          "name": "empire-de-la-nuit-blanche.webp",
+          "source": "prototype-web/assets/hud/barres/empire-de-la-nuit-blanche/center.webp",
           "size": 25282,
           "type": "image/webp"
         },

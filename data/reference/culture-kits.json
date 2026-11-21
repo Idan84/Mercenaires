@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "culture-kits",
-  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol et les barres du camp, faits de pièces posées par prototype-web/hover-card-ui.js et prototype-web/hud-kit-ui.js ; pièces du jeu par scripts/build-culture-kit.sh. Les trois cultures elfes (Idan, 2026-11-18, Elfes.zip). « geometrie » : les pièces et leurs mesures dans les masters (assets-src/Kits/<cle>/README.md) ; le cadre vient d'un cadre en une pièce découpé (coin posé par son angle extérieur, cellules de la bande du haut, de la bande de gauche et de la barre du milieu, barre du milieu couchée, jonction en T) ; « fiche » et « barres » : les réglages d'Idan dans ses planches « Fiches des Elfes » et « Barres des Elfes » (2026-11-18).",
+  "description": "Kits graphiques par culture (Chatty, Idan) : le cadre de la fiche au survol et les barres du camp, faits de pièces posées par prototype-web/hover-card-ui.js et prototype-web/hud-kit-ui.js ; pièces du jeu par scripts/build-culture-kit.sh. Les trois cultures elfes (Idan, 2026-11-18, Elfes.zip), puis les trois cultures naines (Idan, 2026-11-19, nains.zip : géométrie mesurée sur leurs masters ; réglages de départ repris des Elfes sylvains, à régler par Idan dans le Design Lab, onglet Cultures ; adaptés : les modèles d'ornements posés, le bouton Jour suivant qui remplit le trou du rond, les textes de la barre du haut à la hauteur de ceux des Elfes). « geometrie » : les pièces et leurs mesures dans les masters (assets-src/Kits/<cle>/README.md) ; le cadre vient d'un cadre en une pièce découpé (coin posé par son angle extérieur, cellules de la bande du haut, de la bande de gauche et de la barre du milieu, barre du milieu couchée, jonction en T) ; « fiche » et « barres » : les réglages d'Idan dans ses planches « Fiches des Elfes » et « Barres des Elfes » (2026-11-18).",
   "columns": [
     {"key": "cle", "source": "Culture : dossier de sa barre (hud-bars.js) et de son kit"},
     {"key": "culture", "source": "Nom de la culture (cultures.json)"},
@@ -329,7 +329,323 @@
         "nom": "or",
         "cuir": {"grain": 100, "sombre": 0}
       }
+    },
+    {
+      "cle": "nains-des-montagnes",
+      "culture": "Nains des montagnes",
+      "dossier": "assets/fiche/kits/nains-des-montagnes",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 280, "coupeX": 244, "coupeY": 225, "clouX": 124, "clouY": 105, "coeur": 83, "coeurV": 81, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 83, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 81, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 79, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 79, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 169, "h": 89, "y0": 34, "barre": 83, "tige": 79, "cx": 84.5}
+        },
+        "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-courbe.webp"},
+        "poses": {
+          "belier": {"f": "pose-belier.webp", "w": 700, "h": 232, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 232, "attache": 0.15},
+        "allonge": {"f": "allonge.webp", "w": 217, "h": 700},
+        "texture": "texture.webp",
+        "voile": "4,12,20",
+        "ornementTitre": {"f": "titre.webp", "w": 500, "h": 171},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 672, "cx": 0.4988, "cy": 0.52139, "trou": 0.2982},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 398}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
+          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
+          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
+          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+        },
+        "pose": {"modele": "belier", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
+        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "titre": {"hauteur": 20, "ecart": -1.7},
+        "cuir": {"grain": 100, "sombre": 20},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -31.5}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "bouton": {"taille": 113, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "belier", "place": "sur-bas-droite", "taille": 271, "dx": 433, "dy": 7, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {"ep": 20, "dy": 0, "jonctions": true, "tGauche": {"dx": 0, "dy": 0}, "tDroite": {"dx": 0, "dy": 0}},
+        "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "pose": {"modele": "belier", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
+    },
+    {
+      "cle": "nains-du-chaos",
+      "culture": "Nains du chaos",
+      "dossier": "assets/fiche/kits/nains-du-chaos",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 110, "coupeX": 103, "coupeY": 102, "clouX": 503, "clouY": 407, "coeur": 87, "coeurV": 93, "pasX": 800, "pasV": 610},
+          "h": {"f": "cell-h.webp", "coeur": 87, "pas": 800},
+          "v": {"f": "cell-v.webp", "coeur": 93, "pas": 610},
+          "m": {"f": "cell-m.webp", "coeur": 120, "pas": 180},
+          "mh": {"f": "cell-m-h.webp", "coeur": 120, "pas": 180},
+          "jonction": {"f": "jonction.webp", "w": 210, "h": 81, "y0": 46, "barre": 87, "tige": 120, "cx": 105}
+        },
+        "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-courbe.webp"},
+        "poses": {
+          "accelerateur": {"f": "pose-accelerateur.webp", "w": 700, "h": 167, "base": 0.2}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 228, "attache": 0.12},
+        "allonge": {"f": "allonge.webp", "w": 99, "h": 700},
+        "texture": "texture.webp",
+        "voile": "20,3,3",
+        "ornementTitre": {"f": "titre.webp", "w": 500, "h": 201},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 667, "cx": 0.4988, "cy": 0.48652, "trou": 0.32734},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 398}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
+          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
+          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
+          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+        },
+        "pose": {"modele": "accelerateur", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
+        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "titre": {"hauteur": 20, "ecart": -1.7},
+        "cuir": {"grain": 100, "sombre": 20},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -47}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "bouton": {"taille": 124, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "accelerateur", "place": "sur-bas-droite", "taille": 271, "dx": 433, "dy": 7, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {"ep": 20, "dy": 0, "jonctions": true, "tGauche": {"dx": 0, "dy": 0}, "tDroite": {"dx": 0, "dy": 0}},
+        "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "pose": {"modele": "accelerateur", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
+    },
+    {
+      "cle": "nains-esclaves",
+      "culture": "Nains esclaves",
+      "dossier": "assets/fiche/kits/nains-esclaves",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 280, "coupeX": 267, "coupeY": 229, "clouX": 201, "clouY": 163, "coeur": 101, "coeurV": 109, "pasX": 132, "pasV": 132},
+          "h": {"f": "cell-h.webp", "coeur": 101, "pas": 132},
+          "v": {"f": "cell-v.webp", "coeur": 109, "pas": 132},
+          "m": {"f": "cell-m.webp", "coeur": 106, "pas": 132},
+          "mh": {"f": "cell-m-h.webp", "coeur": 106, "pas": 132},
+          "jonction": {"f": "jonction.webp", "w": 166, "h": 25, "y0": 88, "barre": 101, "tige": 106, "cx": 83}
+        },
+        "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-courbe.webp"},
+        "poses": {
+          "chopes": {"f": "pose-chopes.webp", "w": 700, "h": 199, "base": 0.18},
+          "outils": {"f": "pose-outils.webp", "w": 700, "h": 232, "base": 0.22}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 228, "attache": 0.1},
+        "allonge": {"f": "allonge.webp", "w": 227, "h": 700},
+        "texture": "texture.webp",
+        "voile": "22,16,12",
+        "ornementTitre": {"f": "titre.webp", "w": 500, "h": 194},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 663, "cx": 0.49402, "cy": 0.4789, "trou": 0.38038},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 401}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
+          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
+          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
+          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+        },
+        "pose": {"modele": "chopes", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
+        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "titre": {"hauteur": 20, "ecart": -1.7},
+        "cuir": {"grain": 100, "sombre": 20},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -32.5}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "bouton": {"taille": 144, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "outils", "place": "sur-bas-droite", "taille": 271, "dx": 433, "dy": 7, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {"ep": 20, "dy": 0, "jonctions": true, "tGauche": {"dx": 0, "dy": 0}, "tDroite": {"dx": 0, "dy": 0}},
+        "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "pose": {"modele": "chopes", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
     }
   ],
-  "row_count": 3
+  "row_count": 6
 }

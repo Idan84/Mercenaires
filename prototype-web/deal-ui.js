@@ -171,8 +171,10 @@ function openDealMenu(anchor,html){
   if(left+card.width>innerWidth-margin) left=box.left-gap-card.width;
   left=Math.max(margin,Math.min(left,innerWidth-margin-card.width));
   const top=Math.max(margin,Math.min(box.top,innerHeight-margin-card.height));
-  menu.style.left=left+"px";
-  menu.style.top=top+"px";
+  // Tout proportionnel : la position se calcule en pixels d'écran, l'élément est mis à l'échelle (zoom) : on divise.
+  const z=menu.currentCSSZoom||1;
+  menu.style.left=left/z+"px";
+  menu.style.top=top/z+"px";
   menu.querySelector("button")?.focus();
 }
 function closeDealMenu(){ document.getElementById("deal-menu")?.classList.remove("is-open"); }

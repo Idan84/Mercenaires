@@ -58,21 +58,109 @@ const leave=createTavernRules({random:()=>0,reference});
 const morning=leave.tavernMorning(state.tavern,state.day+1,()=>generator.createMercenary({id:999,captain}),4);
 assert.deepEqual([morning.departures.length,morning.arrivals.length,state.tavern.candidates.length],[present.length,4,4]);
 
-// Le carrousel : la rangée, une flèche sur chaque bord ; l'accroche sur chaque carte ; rangée centrée quand tout tient, sans
-// rien couper quand elle déborde (marges automatiques) ; recalculé quand la rangée change de taille.
+// Le carrousel : la rangée, une flèche de chaque côté ; l'accroche sur chaque carte ; trois candidats par écran, trois de plus
+// à chaque flèche (Idan, 2026-11-19) ; moins de trois : centrés (marges automatiques) ; recalculé quand la place change.
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<div class="recruit-carousel">\s*<button type="button" class="recruit-nav" data-recruit-scroll="-1" aria-label="Candidats précédents">‹<\/button>\s*<div id="tavern-candidates" class="recruit-track"><\/div>\s*<button type="button" class="recruit-nav" data-recruit-scroll="1" aria-label="Candidats suivants">›<\/button>/);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
-assert.match(css,/\.recruit-track\{[^}]*overflow-x:auto;[^}]*scroll-snap-type:x mandatory/);
-assert.match(css,/\.recruit-track \.recruit-card\{[^}]*scroll-snap-align:start\}/);
+assert.doesNotMatch(css,/\.recruit-track\{[^}]*overflow/,"la rangée ne défile pas : rien ne coupe les ombres des cartes");
+assert.match(css,/\.recruit-carousel\{[^}]*overflow-x:clip;/,"les cartes hors de la page ne débordent pas de l'écran");
+assert.match(css,/\.recruit-track \.recruit-card\{flex:0 0 auto;translate:var\(--recruit-shift,0px\) 0;transition:translate \.5s ease,opacity \.4s ease\}/,"les cartes glissent");
+assert.match(css,/\.recruit-track \.recruit-card\.is-off\{opacity:0;visibility:hidden;pointer-events:none;/,"hors de la page, elles s'effacent");
 assert.match(css,/\.recruit-track>:first-child\{margin-left:auto\}\n\.recruit-track>:last-child\{margin-right:auto\}/);
-assert.match(css,/\.recruit-track\{[^}]*scroll-padding-inline:2px/);
-assert.match(css,/\.recruit-nav\{position:absolute;/,"les flèches ne prennent pas de place");
-assert.match(css,/\.recruit-carousel\.is-static \.recruit-nav\{display:none\}/);
+assert.match(css,/\.recruit-nav:disabled\{cursor:default;translate:0 0;opacity:0;pointer-events:none\}/,"la flèche inactive s'efface");
+assert.match(css,/\.mission-board-arrow:disabled\{cursor:default;translate:0 0;opacity:0;pointer-events:none\}/,"sur le panneau des missions aussi");
+// « Flèche en permanence : les mêmes que pour les missions » : jamais cachées, l'équerre de fer du panneau à sa taille.
+assert.doesNotMatch(css,/\.recruit-nav[^{]*\{[^}]*display:none/,"les flèches restent affichées");
+// Tout proportionnel (Idan, 2026-11-19 : « A, on part sur tout proportionnel ») : l'écran est réglé pour 1920 × 1080 (le
+// panneau des missions y fait 1080 × 2000 / 1116 = 1935,5 px de large ; barres à 81,6 px de bande), puis les cartes et les
+// flèches suivent l'écran d'un bloc (zoom par --ui-scale).
+assert.match(css,/#tavern-recruits-view\{--board-w:1935\.5px;/);
+assert.match(css,/--recruit-portrait-w:clamp\(100px,calc\(\(1080px - 364px - 81\.6px \* var\(--bb-h\) - 81\.6px \* var\(--ht-barre\) \* \(var\(--ht-top\) \+ 1\.3\)\) \* 9 \/ 16\),280px\);/,"le portrait : la hauteur libre entre les barres, en 1080");
+// … avec tout le contenu (.app-shell, puis les fenêtres), plus de zoom propre au carrousel ; ses marges en part d'écran
+// se prennent sur l'écran « de référence » (--vw).
+assert.match(css,/\.app-shell,dialog,\.game-pause-panel\{zoom:var\(--ui-scale,1\)\}/,"tout suit l'écran d'un bloc");
+assert.doesNotMatch(css,/\.recruit-carousel\{[^}]*zoom:/,"pas de double mise à l'échelle");
+assert.match(css,/\.recruit-carousel\{[^}]*margin-inline:calc\(-1 \* max\(0px,\(calc\(100 \* var\(--vw\)\) - 1200px\) \/ 2\) - 20px \+ 16px\)/,"les marges sur l'écran de référence");
+assert.doesNotMatch(css.slice(css.indexOf("#tavern-recruits-view{"),css.indexOf("#tavern-recruits-view::before{")),/100vw|100vh|100dvh/,"plus rien ne dépend de la taille de l'écran dans les réglages");
+// Le panneau des missions couvre l'écran « de référence » (tout proportionnel : --vw, --vh) ; 1935,5 px en 1920 × 1080.
+assert.match(css,/\.mission-board\{--board-w:max\(calc\(100 \* var\(--vw\)\),calc\(100 \* var\(--vh\)\) \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
+assert.match(css,/#tavern-recruits-view\{[^}]*--recruit-fleche-w:calc\(var\(--board-w\) \* \.088\)/,"la flèche du panneau : 8,8 % de sa largeur");
+assert.match(css,/\.recruit-nav\{[^}]*width:var\(--recruit-fleche-w\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
+assert.doesNotMatch(css,/\.recruit-nav::(before|after)/,"plus de plaque sous les flèches (« c'est horrible ! »)");
+assert.match(css,/\.mission-board-arrow\{[^}]*width:calc\(var\(--board-w\) \* \.088\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
 assert.doesNotMatch(css,/\.recruit-grid\{/);
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
 assert.match(ui,/updateRecruitCarousel\(\);\n\}/,"après chaque rendu de la Taverne");
 assert.match(ui,/if\(view==="recruits"\) updateRecruitCarousel\(\);/,"à l'ouverture de « Recruter »");
-assert.match(ui,/new ResizeObserver\(\(\)=>updateRecruitCarousel\(\)\)\.observe\(track\)/);
+assert.match(ui,/new ResizeObserver\(\(\)=>updateRecruitCarousel\(\)\)\.observe\(carousel\)/);
+assert.match(ui,/const RECRUITS_PER_PAGE=3;/);
+assert.match(ui,/track\.addEventListener\("wheel",pageWheel\(scrollRecruits\),\{passive:false\}\)/,"la molette tourne les pages, comme sur le panneau");
+// Le carrousel, joué : huit candidats, trois par page, la dernière page montre les trois derniers.
+{
+  const cards=Array.from({length:8},()=>{const set=new Set();return {offsetWidth:320,set,classList:{toggle:(c,on)=>on?set.add(c):set.delete(c)}};});
+  const prev={disabled:null},next={disabled:null},carousel={querySelectorAll:()=>[prev,next]};
+  const track={style:{width:"",props:{},setProperty(k,v){this.props[k]=v;}},querySelector:()=>cards[0],querySelectorAll:()=>cards,closest:()=>carousel};
+  const box={$:()=>track,getComputedStyle:()=>({columnGap:"32px",paddingLeft:"2px",paddingRight:"2px"})};
+  require("node:vm").runInNewContext(ui.slice(ui.indexOf("const RECRUITS_PER_PAGE"),ui.indexOf("function initializeRecruitCarousel"))+";this.update=updateRecruitCarousel;this.turn=scrollRecruits;",box);
+  const shown=()=>cards.map((c,i)=>c.set.has("is-off")?null:i).filter(i=>i!==null);
+  box.update();
+  assert.equal(track.style.width,"1028px","la largeur de trois cartes");
+  assert.deepEqual([shown(),track.style.props["--recruit-shift"],prev.disabled,next.disabled],[[0,1,2],"0px",true,false]);
+  box.turn(1);
+  assert.deepEqual([shown(),track.style.props["--recruit-shift"],prev.disabled,next.disabled],[[3,4,5],"-1056px",false,false],"trois autres");
+  box.turn(1);
+  assert.deepEqual([shown(),track.style.props["--recruit-shift"],prev.disabled,next.disabled],[[5,6,7],"-1760px",false,true],"la dernière page : les trois derniers");
+  box.turn(-1);
+  assert.deepEqual(shown(),[2,3,4]);
+}
+
+
+// La carte refaite (Idan, 2026-11-19 : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire
+// capitaine) pour aller lui parler ») : pas de bouton retour, le parchemin d'Idan, le bouton de la charte à sa taille.
+const recruitsView=index.slice(index.indexOf('<section id="tavern-recruits-view"'),index.indexOf("</section>",index.indexOf('<section id="tavern-recruits-view"')));
+assert.doesNotMatch(recruitsView,/data-tavern-view="home"|Retour à la taverne/,"plus de bouton retour");
+assert.doesNotMatch(css,/\.tavern-back\{/);
+// Les feuilles des annonces de missions (« Le parchemin des mercenaires varie et reprend ceux des missions »), en neuf
+// parts, au teint de leur papier, avec l'ombre portée des annonces.
+assert.match(css,/\.recruit-card::before\{[^}]*border-width:var\(--bord,34px\);border-image:var\(--feuille\) var\(--tranche,80\) fill \/ var\(--bord,34px\) stretch;[^}]*filter:brightness\(var\(--tone,1\)\) hue-rotate\(var\(--hue,0deg\)\) saturate\(var\(--sat,1\)\) drop-shadow\(calc\(var\(--board-w\) \* -\.005\) calc\(var\(--board-w\) \* \.011\) calc\(var\(--board-w\) \* \.014\) rgba\(0,0,0,\.6\)\)/,"une ombre plus grande et plus floue");
+for(const n of [2,3,4,6,7,8]) assert.ok(css.includes(`.recruit-card[data-paper="${n}"]{--feuille:url("assets/taverne/feuille-${n}.webp")`),"feuille "+n);
+// Du papier autour du contenu (Idan, 2026-11-19 : « On fait en sorte d'avoir de la marge en déplaçant / déformant des
+// parchemins, sinon, on prend les autres ») : les bords déchirés affinés, la feuille 5 retirée (marges mesurées de
+// 1280 × 720 à 2560 × 1440 : au moins 12 px autour du portrait, 8 autour du texte et du bouton).
+assert.ok(css.includes('.recruit-card[data-paper="1"]{--tranche:110 110 80 80;--bord:23px 33px 34px 34px}'),"feuille 1 : coin haut droit affiné");
+assert.ok(css.includes('--feuille:url("assets/taverne/feuille-6.webp");--tranche:80 280 80 200;--bord:34px 59px 24px 42px}'),"feuille 6 : encoche haut gauche affinée");
+assert.ok(!css.includes('.recruit-card[data-paper="5"]'),"plus de feuille 5");
+assert.match(ui,/const RECRUIT_PAPERS=\[1,2,3,4,6,7,8\];/);
+const tavernVm=require("node:vm"),paperBox={};
+tavernVm.runInNewContext(ui.slice(ui.indexOf("const RECRUIT_PAPERS="),ui.indexOf("function renderTavernCard(")).concat(";box.f=recruitPaper;"),{box:paperBox});
+const papers=Array.from({length:400},(_,i)=>paperBox.f(i));
+assert.deepEqual([...new Set(papers.map(p=>p.paper))].sort(),[1,2,3,4,6,7,8],"sept feuilles, sans la 5");
+assert.deepEqual(paperBox.f(42),paperBox.f(42),"toujours le même papier pour le même candidat");
+assert.ok(papers.every(p=>/^--tone:(0\.9\d*|1\.0[0-2]\d*);--hue:-?\d+\.\d deg;--sat:(1|\.72)$/.test(p.style.replace("deg"," deg"))),"teint des annonces");
+assert.match(ui,/<button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="\$\{m\.id\}">Aller lui parler<\/button>/);
+// Réglages du même jour (« un background noir 60% + floutage », « Garde de l'espace quand le texte doit faire deux lignes »,
+// « Réduis un peu le bouton … par rapport aux icônes d'interface », tailles réglées sur les barres des Elfes).
+assert.match(css,/#tavern-recruits-view::before\{content:"";position:fixed;inset:0;z-index:0;[^}]*border-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch/,"un grand parchemin sur tout l'écran, à la place du voile");
+// Plus foncé que les feuilles, texture plus marquée (Idan, 2026-11-19 : « On doit être plus foncé que les parchemins des
+// mercenaires ») : le parchemin assombri, le papier froissé découpé à sa forme par-dessus, puis en plus la texture d'Idan
+// en lumière douce (« à poser en sus en mode soft light … en sus du parchemin du papier froissé »), les cartes au-dessus.
+assert.match(css,/#tavern-recruits-view::before\{[^}]*filter:brightness\(\.66\)/,"le grand parchemin est assombri");
+assert.match(index,/<section id="tavern-recruits-view" class="hidden">\s*<div class="recruit-froisse" aria-hidden="true"><\/div>\s*<div class="recruit-carousel">/,"le calque du papier froissé, avant les cartes");
+assert.match(css,/\.recruit-froisse,#tavern-recruits-view::after\{position:fixed;inset:0;z-index:0;pointer-events:none;\s*-webkit-mask-box-image:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch;mask-border:url\("assets\/creation\/parchemin\.webp"\) 180 fill \/ 80px stretch\}/,"les deux textures, découpées à la forme du parchemin");
+assert.match(css,/\.recruit-froisse\{mix-blend-mode:multiply;opacity:\.7;\s*background:[^}]*url\("assets\/taverne\/papier-froisse\.webp"\)/,"le papier froissé en mode produit");
+assert.match(css,/#tavern-recruits-view::after\{content:"";mix-blend-mode:soft-light;background:url\("assets\/taverne\/papier-vieilli\.webp"\) center\/cover no-repeat\}/,"la texture d'Idan en lumière douce, par-dessus");
+assert.match(css,/\.recruit-carousel\{position:relative;z-index:1;/,"les cartes et les flèches passent au-dessus de la texture");
+assert.match(css,/\.recruit-name\{[^}]*min-height:calc\(2em \* 1\.08\)/,"deux lignes pour le nom");
+assert.match(css,/\.recruit-origin\{[^}]*min-height:calc\(2em \* 1\.15\)/,"deux lignes pour l'origine");
+assert.match(css,/--recruit-pad:50px;--recruit-card-w:calc\(max\(260px,var\(--recruit-portrait-w\)\) \+ 2 \* var\(--recruit-pad\)\)/,"260 px de texte : l'origine la plus longue tient en deux lignes ; 50 px de marge");
+assert.match(css,/\.recruit-card\{[^}]*width:var\(--recruit-card-w\);padding:22px var\(--recruit-pad\) 16px/);
+assert.match(css,/\.recruit-track\{[^}]*gap:42px;/,"les cartes écartées de 42 px");
+assert.match(css,/\.recruit-days\{font:italic 600 17px\/1\.2 var\(--police-texte\);[^}]*white-space:nowrap\}/,"la petite phrase plus grosse et plus grasse");
+assert.match(index,/family=EB\+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap/,"l'italique gras chargé");
+assert.match(css,/\.recruit-card \.recruit-talk-btn\{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:12\.5px\}/,"180 × 61, aux proportions de l'image");
+assert.ok(Math.abs(180/61-760/257)<.01,"le bouton garde les proportions de bouton.webp");
+assert.match(ui,/originPhrase\(\{people:m\.people\|\|"",culture:m\.culture\|\|"",ascendance:m\.ascendance\|\|""\}\)/,"l'origine comme sur la fiche au survol, ascendance comprise");
+assert.match(ui,/\$\{m\.ascendance\?renderPicto\("ascendance",m\.ascendance,\{size:null\}\):""\}/,"la goutte de l'ascendance, s'il en a une");
 
 console.log("Taverne : 3 + niveau de renommée (4 à 18 places), personne chassé si elle baisse, candidats en carrousel — OK");

@@ -165,6 +165,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
       <div id="tag-champs" hidden style="display:grid;gap:12px">
         <div class="champ"><label for="tag-nom">Nom</label><input id="tag-nom" type="text" autocomplete="off"></div>
         <label class="case"><input type="checkbox" id="tag-groupe"> Catégorie seulement (sert à ranger, jamais posé comme tag)</label>
+        <label class="case"><input type="checkbox" id="tag-inactif"> Inactif : pas encore dans le jeu, éliminé d'office, sans test (ses enfants aussi)</label>
         <div class="champ" id="tag-garder-champ" hidden><label for="tag-garder">Tags affichés au plus dans cette catégorie</label>
           <input id="tag-garder" type="number" min="1" step="1" placeholder="Vide : pas de limite">
           <p class="aide">Rempli, seuls les X tags de plus haut rang qui restent s'affichent (à rang égal, l'ordre de la liste). Vide : le tag le plus bas de chaque branche.</p></div>
@@ -281,7 +282,7 @@ const memoTestsFermes=()=>memo("atelier-tests-fermes",[...testsFermes]);
 
 function propre(d){
   const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||uid()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
-    rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null}));
+    rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null,inactif:Boolean(t.inactif)}));
   const ids=new Set(tags.map(t=>t.id));
   for(const t of tags) t.parents=[...new Set(t.parents.filter(p=>ids.has(p)&&p!==t.id))];
   const liste=a=>Array.isArray(a)?[...new Set(a.map(String).filter(x=>ids.has(x)))]:[];
@@ -448,6 +449,7 @@ function liTag(t,parentId,chemin){
   else pli.setAttribute("aria-hidden","true");
   const l=el("span",{class:"nom-l"},el("b",{text:t.nom}));
   if(t.groupe) l.append(el("span",{class:"puce p-cat",text:"Catégorie"}));
+  if(t.inactif) l.append(el("span",{class:"puce p-off",text:"Inactif"}));
   if(t.groupe&&t.garder) l.append(el("span",{class:"puce p-palier",text:"garde "+t.garder}));
   if(!t.groupe&&t.rang!=null) l.append(el("span",{class:"puce p-palier",text:"rang "+String(t.rang).replace(".",",")}));
   const autres=t.parents.filter(p=>p!==parentId);
@@ -479,7 +481,7 @@ function rendrePanneauTag(){
   $("tag-vide").hidden=Boolean(t); $("tag-champs").hidden=!t; if(!t) return;
   if(document.activeElement!==$("tag-nom")) $("tag-nom").value=t.nom;
   if(document.activeElement!==$("tag-note")) $("tag-note").value=t.note;
-  $("tag-groupe").checked=t.groupe;
+  $("tag-groupe").checked=t.groupe; $("tag-inactif").checked=t.inactif;
   $("tag-garder-champ").hidden=!t.groupe; $("tag-rang-champ").hidden=t.groupe;
   if(document.activeElement!==$("tag-garder")) $("tag-garder").value=t.garder??"";
   if(document.activeElement!==$("tag-rang")) $("tag-rang").value=t.rang??"";
@@ -491,17 +493,19 @@ function rendrePanneauTag(){
   const sel=$("tag-parent-ajout"); sel.replaceChildren(el("option",{value:"",text:"Ajouter un parent…"}));
   doc.tags.filter(x=>!interdit.has(x.id)&&!t.parents.includes(x.id)).map(x=>({x,c:chemin(x)})).sort((a,b)=>a.c.localeCompare(b.c,"fr")).forEach(({x,c})=>sel.append(el("option",{value:x.id,text:c})));
   sel.disabled=!peutEcrire;
-  const par=testsQuiEliminent(t.id); $("tag-par").textContent=par.length?par.join(" · "):"Aucun test pour l'instant.";
+  const par=testsQuiEliminent(t.id); $("tag-par").textContent=(t.inactif?"Inactif : éliminé d'office. ":"")+(par.length?par.join(" · "):"Aucun test pour l'instant.");
   const b=$("tag-suppr"); b.textContent="Supprimer"; b.dataset.arme="";
-  for(const x of ["tag-nom","tag-note","tag-groupe","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
+  for(const x of ["tag-nom","tag-note","tag-groupe","tag-inactif","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
 }
 $("tag-nom").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.nom=e.target.value; change(); rendreTags(); };
 $("tag-note").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.note=e.target.value; change(); rendreTags(); };
 $("tag-groupe").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.groupe=e.target.checked; change(); rendreTags(); rendrePanneauTag(); };
+// Un tag inactif (Idan, 2026-11-21 : « désactiver automatiquement un tag sans test… pour l'implémenter plus tard (comme pour les pièges) »).
+$("tag-inactif").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.inactif=e.target.checked; change(); rendreTags(); rendrePanneauTag(); if(profil) rendreResultats(); };
 $("tag-garder").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=Number(e.target.value); t.garder=e.target.value.trim()!==""&&v>=1?Math.floor(v):null; change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-rang").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=e.target.value.trim(); t.rang=v===""||!Number.isFinite(Number(v))?null:Number(v); change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-parent-ajout").onchange=e=>{ const t=tagPar(tagChoisi); const p=e.target.value; if(!t||!p) return; t.parents.push(p); fermes.delete(p); memoFermes(); change(); rendreTags(); rendrePanneauTag(); };
-function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:""};
+function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:"",inactif:false};
   const apres=parent?doc.tags.map(x=>x.parents.includes(parent)||x.id===parent).lastIndexOf(true):doc.tags.length-1;
   doc.tags.splice(apres+1,0,t); if(parent){ fermes.delete(parent); memoFermes(); } tagChoisi=t.id; change(); rendreTags(); rendrePanneauTag(); $("tag-nom").select(); $("tag-nom").focus(); }
 $("tag-ajout").onclick=()=>nouveauTag(null);
@@ -740,6 +744,7 @@ function resultats(){
   doc.tests.filter(t=>!t.si).forEach((t,i)=>visite(t,String(i+1),0,null));
   // Un tag tombe si un test l'élimine, ou si l'un de ses parents tombe (jusqu'à ce que plus rien ne change).
   const motif=new Map([...direct].map(([id,r])=>[id,r.join(" ; ")]));
+  for(const t of doc.tags) if(t.inactif&&!motif.has(t.id)) motif.set(t.id,"tag inactif (pas encore dans le jeu)");
   for(let encore=true;encore;){ encore=false;
     for(const t of doc.tags) if(!motif.has(t.id)){ const p=t.parents.find(x=>motif.has(x)); if(p){ motif.set(t.id,"son parent « "+nomTag(p)+" » est éliminé"); encore=true; } } }
   return {reps,motif};

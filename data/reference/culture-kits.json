@@ -380,14 +380,14 @@
           "tBord": {"dx": 0, "dy": 0}
         },
         "ornementsCoin": {
-          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
-          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
-          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
-          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+          "hg": {"modele": "riche", "taille": 149, "sens": "miroir", "dx": -13.5, "dy": -8},
+          "hd": {"modele": "courbe", "taille": 120, "sens": "rotation", "dx": 6.5, "dy": -0.5},
+          "bd": {"modele": "leger", "taille": 90, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "leger", "taille": 90, "sens": "miroir", "dx": 0, "dy": 0}
         },
-        "pose": {"modele": "belier", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
-        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
-        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "pose": {"modele": "belier", "place": "bas-centre", "taille": 163, "dx": -59, "dy": 0, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 110, "dx": 103, "dy": -3},
+        "allonge": {"place": "separation", "taille": 34.5, "longueur": 49, "espacement": 59.5, "dx": -1, "dy": 133},
         "titre": {"hauteur": 20, "ecart": -1.7},
         "cuir": {"grain": 100, "sombre": 20},
         "nom": "clair"
@@ -398,7 +398,7 @@
           "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
           "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
           "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
-          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "emblemeDroit": {"visible": true, "taille": 138, "dx": 35.5, "dy": -38},
           "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
           "textes": {"ecart": -40, "dy": -31.5}
         },
@@ -406,14 +406,14 @@
           "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
           "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
           "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
-          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "rond": {"taille": 360, "dx": 0, "dy": -10.5},
           "bouton": {"taille": 113, "dx": 0, "dy": 0},
           "pictos": {"ecart": 50, "dy": 0}
         },
         "ornements": {
-          "pose": {"modele": "belier", "place": "sur-bas-droite", "taille": 271, "dx": 433, "dy": 7, "retourne": false},
-          "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
-          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
+          "pose": {"modele": "belier", "place": "sur-bas-droite", "taille": 202, "dx": 433, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 176, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": -600, "dy": 0}
         },
         "contenu": "clair"
       },
@@ -427,7 +427,7 @@
         "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
         "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
         "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
-        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 149, "sens": "miroir", "dx": -13.5, "dy": -8}, "hd": {"modele": "courbe", "taille": 120, "sens": "rotation", "dx": 6.5, "dy": -0.5}, "bd": {"modele": "leger", "taille": 90, "sens": "miroir", "dx": 0, "dy": 0}, "bg": {"modele": "leger", "taille": 90, "sens": "miroir", "dx": 0, "dy": 0}},
         "pose": {"modele": "belier", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
         "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
         "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
@@ -485,14 +485,14 @@
           "tBord": {"dx": 0, "dy": 0}
         },
         "ornementsCoin": {
-          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
-          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
-          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
-          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+          "hg": {"modele": "riche", "taille": 121, "sens": "miroir", "dx": -9.5, "dy": -21.5},
+          "hd": {"modele": "courbe", "taille": 85, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "aucun", "taille": 170, "sens": "miroir", "dx": 24, "dy": 30},
+          "bg": {"modele": "leger", "taille": 158, "sens": "miroir", "dx": -17.5, "dy": 0}
         },
-        "pose": {"modele": "accelerateur", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
+        "pose": {"modele": "accelerateur", "place": "aucune", "taille": 127, "dx": 77.5, "dy": 4.5, "retourne": true},
         "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
-        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "allonge": {"place": "separation", "taille": 49.5, "longueur": 49, "espacement": 0, "dx": 6, "dy": 102},
         "titre": {"hauteur": 20, "ecart": -1.7},
         "cuir": {"grain": 100, "sombre": 20},
         "nom": "clair"
@@ -501,22 +501,22 @@
         "ecran": {"w": 1920, "h": 1080, "B": 81.6},
         "haut": {
           "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
-          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
-          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
-          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "sangleHaut": {"style": "barre", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "barre", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 113, "dx": 35.5, "dy": -27},
           "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
           "textes": {"ecart": -40, "dy": -47}
         },
         "bas": {
-          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
-          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 0, "grain": 150},
+          "sangleHaut": {"style": "bande", "ep": 32, "dy": 0},
           "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
-          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "rond": {"taille": 360, "dx": 0, "dy": -12.5},
           "bouton": {"taille": 124, "dx": 0, "dy": 0},
           "pictos": {"ecart": 50, "dy": 0}
         },
         "ornements": {
-          "pose": {"modele": "accelerateur", "place": "sur-bas-droite", "taille": 271, "dx": 433, "dy": 7, "retourne": false},
+          "pose": {"modele": "accelerateur", "place": "sur-bas-droite", "taille": 271, "dx": 408, "dy": -3.5, "retourne": false},
           "suspendu": {"place": "sous-haut-gauche", "taille": 230, "dx": -300, "dy": 0},
           "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": 0, "dy": 0}
         },
@@ -532,7 +532,7 @@
         "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
         "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
         "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
-        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "ornementsCoin": {"hg": {"modele": "riche", "taille": 121, "sens": "miroir", "dx": -9.5, "dy": -21.5}, "hd": {"modele": "courbe", "taille": 85, "sens": "miroir", "dx": 0, "dy": 0}, "bd": {"modele": "aucun", "taille": 170, "sens": "miroir", "dx": 24, "dy": 30}, "bg": {"modele": "leger", "taille": 158, "sens": "miroir", "dx": -17.5, "dy": 0}},
         "pose": {"modele": "accelerateur", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
         "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
         "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
@@ -568,7 +568,7 @@
         "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 401}
       },
       "fiche": {
-        "cadre": {"ep": 16},
+        "cadre": {"ep": 12},
         "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
         "coins": {
           "hg": {"sens": "miroir", "dx": 0, "dy": 0},
@@ -577,28 +577,28 @@
           "bg": {"sens": "miroir", "dx": 0, "dy": 0}
         },
         "separation": {
-          "ep": 16,
+          "ep": 12,
           "dx": 0,
           "jonctions": true,
           "tHaut": {"dx": 0, "dy": 0},
           "tBas": {"dx": 0, "dy": 0}
         },
         "sousNom": {
-          "ep": 16,
+          "ep": 12,
           "dy": 0,
           "jonctions": true,
           "tPortrait": {"dx": 0, "dy": 0},
           "tBord": {"dx": 0, "dy": 0}
         },
         "ornementsCoin": {
-          "hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30},
-          "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2},
-          "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1},
-          "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}
+          "hg": {"modele": "leger", "taille": 170, "sens": "miroir", "dx": -14.5, "dy": -8.5},
+          "hd": {"modele": "courbe", "taille": 120, "sens": "miroir", "dx": 10.5, "dy": -12.5},
+          "bd": {"modele": "aucun", "taille": 120, "sens": "rotation", "dx": 10.5, "dy": 12.5},
+          "bg": {"modele": "aucun", "taille": 170, "sens": "miroir", "dx": -24, "dy": 30}
         },
-        "pose": {"modele": "chopes", "place": "bas-centre", "taille": 230, "dx": 327.5, "dy": 2, "retourne": false},
-        "suspendu": {"place": "haut-portrait", "taille": 200, "dx": 150, "dy": -3},
-        "allonge": {"place": "separation", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
+        "pose": {"modele": "chopes", "place": "bas-centre", "taille": 230, "dx": -20.5, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 150, "dy": -3},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": -1, "dy": -110},
         "titre": {"hauteur": 20, "ecart": -1.7},
         "cuir": {"grain": 100, "sombre": 20},
         "nom": "clair"
@@ -609,7 +609,7 @@
           "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
           "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
           "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
-          "emblemeDroit": {"visible": true, "taille": 158, "dx": 35.5, "dy": -34},
+          "emblemeDroit": {"visible": true, "taille": 134, "dx": 35.5, "dy": -40.5},
           "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
           "textes": {"ecart": -40, "dy": -32.5}
         },
@@ -617,7 +617,7 @@
           "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
           "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
           "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
-          "rond": {"taille": 360, "dx": 0, "dy": 7},
+          "rond": {"taille": 313, "dx": 0, "dy": -3.5},
           "bouton": {"taille": 144, "dx": 0, "dy": 0},
           "pictos": {"ecart": 50, "dy": 0}
         },
@@ -638,7 +638,7 @@
         "separation": {"ep": 20, "dx": 0, "jonctions": true, "tHaut": {"dx": 0, "dy": 0}, "tBas": {"dx": 0, "dy": 0}},
         "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
         "coins": {"hg": {"sens": "miroir", "dx": 0, "dy": 0}, "hd": {"sens": "miroir", "dx": 0, "dy": 0}, "bd": {"sens": "miroir", "dx": 0, "dy": 0}, "bg": {"sens": "miroir", "dx": 0, "dy": 0}},
-        "ornementsCoin": {"hg": {"modele": "riche", "taille": 170, "sens": "miroir", "dx": -24, "dy": -30}, "hd": {"modele": "leger", "taille": 180, "sens": "rotation", "dx": 10, "dy": -2}, "bd": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 6, "dy": -1}, "bg": {"modele": "leger", "taille": 180, "sens": "miroir", "dx": 1, "dy": 5}},
+        "ornementsCoin": {"hg": {"modele": "leger", "taille": 170, "sens": "miroir", "dx": -14.5, "dy": -8.5}, "hd": {"modele": "courbe", "taille": 120, "sens": "miroir", "dx": 10.5, "dy": -12.5}, "bd": {"modele": "aucun", "taille": 120, "sens": "rotation", "dx": 10.5, "dy": 12.5}, "bg": {"modele": "aucun", "taille": 170, "sens": "miroir", "dx": -24, "dy": 30}},
         "pose": {"modele": "chopes", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
         "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
         "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},

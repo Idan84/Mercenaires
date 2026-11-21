@@ -92,7 +92,7 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 
 ### Réglages des cultures : `media/reglages/`
 
-L'onglet **Cultures** du Design Lab (https://bloodandwages.idanwizen.com/design/#cultures ; Idan, 2026-11-18) règle, culture par culture, les trois panneaux du kit graphique : barres du camp, fiche au survol, fiche complète en plein écran. L'aperçu est le jeu lui-même (`index.html?apercu`, `prototype-web/apercu-ui.js` : une partie de démonstration jamais sauvegardée, sans musique), à la résolution choisie. « Enregistrer » range les réglages dans `media/reglages/<id>/reglage.json` (`design/api/reglages.php`, mêmes gardes que les dépôts d'images ; `media/reglages/index.json` les liste) ; JC les reporte ensuite dans `data/reference/culture-kits.json` quand Idan dit « regarde les réglages ».
+L'onglet **Cultures** du Design Lab (https://bloodandwages.idanwizen.com/design/#cultures ; Idan, 2026-11-18) règle, culture par culture, les trois panneaux du kit graphique : barres du camp, fiche au survol, fiche complète en plein écran. L'aperçu est le jeu lui-même (`index.html?apercu`, `prototype-web/apercu-ui.js` : une partie de démonstration jamais sauvegardée, sans musique), à la résolution choisie. « Enregistrer » range les réglages dans `media/reglages/<id>/reglage.json` (`design/api/reglages.php`, mêmes gardes que les dépôts d'images ; `media/reglages/index.json` les liste) . Le jeu les lit en direct (Idan, 2026-11-21 ; `prototype-web/reference-data.js`, `loadCultureSettings`) : au chargement, pour chaque culture et chaque panneau, le dernier enregistrement par-dessus le kit de `data/reference/culture-kits.json`, seulement les réglages que le kit connaît, du même type. Il suffit de recharger le jeu. Sans index (serveur local, tests), le kit du dépôt. JC reporte de temps en temps les derniers réglages dans `culture-kits.json`, pour que le dépôt reste à jour.
 
 ### Pictos : `media/pictos/`
 
@@ -138,4 +138,4 @@ Un thème par culture et par sexe du capitaine (64 à terme ; Idan, 2026-11-16),
 
 ## Netlify (abandonné)
 
-Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` a été retiré le 2026-10-20 à la demande d'Idan. Tant que le projet Netlify `mercenaires-s708` n'est pas supprimé ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)), une reprise de ses builds publierait la racine du dépôt (public de toute façon) sur l'ancienne adresse Netlify ; Hostinger n'est pas concerné.
+Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` a été retiré le 2026-10-20 à la demande d'Idan, et le projet Netlify `mercenaires-s708` a été supprimé par Idan le 2026-11-21 ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)) : plus de build ni d'aperçu Netlify sur les PR.

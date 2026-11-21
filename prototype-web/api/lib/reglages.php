@@ -2,8 +2,8 @@
 // Blood & Wages — réglages d'un kit de culture depuis la Design Lab (onglet Cultures ; Idan, 2026-11-18 : « personnaliser
 // pour chaque culture les différents panneaux »). Un enregistrement porte les réglages d'un panneau (barres du camp, fiche
 // au survol, fiche complète) pour une culture qui a son kit (data/reference/culture-kits.json, publié dans data/). Il est
-// rangé tel quel sur Hostinger, dans media/reglages/<id>/reglage.json ; media/reglages/index.json les liste tous. JC les
-// intègre ensuite dans culture-kits.json : rien ne change dans le jeu ici.
+// rangé tel quel sur Hostinger, dans media/reglages/<id>/reglage.json ; media/reglages/index.json les liste tous. Le jeu
+// les lit en direct (Idan, 2026-11-21 ; prototype-web/reference-data.js) : le dernier de chaque culture et panneau.
 // Les réglages ont la forme de ceux du jeu : les mêmes clés, les mêmes types (nombres, oui/non, mots courts).
 
 declare(strict_types=1);

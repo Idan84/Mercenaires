@@ -1,7 +1,7 @@
 <?php
 // Blood & Wages — enregistrer les réglages d'un kit de culture depuis la Design Lab (onglet Cultures).
-// Range l'enregistrement sur Hostinger dans media/reglages/ (prototype-web/api/lib/reglages.php) ; JC l'intègre ensuite
-// dans data/reference/culture-kits.json.
+// Range l'enregistrement sur Hostinger dans media/reglages/ (prototype-web/api/lib/reglages.php) ; le jeu le lit en direct
+// (prototype-web/reference-data.js, loadCultureSettings).
 // POST JSON : {"culture": "<clé du kit>", "panneau": "barres" | "fiche" | "plein", "reglages": {…}, "note": "…"}.
 // Réponse JSON : {"ok":true,"reglage":{…}} ou {"ok":false,"erreur":"…"}.
 //

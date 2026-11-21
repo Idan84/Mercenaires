@@ -672,10 +672,11 @@
       const resistanceRoll=die(3);
       return {...head,wound:true,...withTypeFactor(target,type,spellPhysicalDamage(target,amount,resistanceRoll))};
     }
-    // Les dégâts d'un sort physique qui blesse : la Résistance physique (50 % au plus) × (jet d3 + 8) ÷ 10 ; jet 3 : le moins
+    // Les dégâts d'un sort physique qui blesse : la Résistance physique (sans plafond depuis le 2026-11-21, Idan) × (jet d3 + 8)
+    // ÷ 10, jamais sous 0 dégât ; jet 3 : le moins
     // de dégâts, jet 1 : le plus (l'aperçu des sorts).
     function spellPhysicalDamage(target,amount,resistanceRoll){
-      const physicalResistance=clamp(statWithGear(target,"Résistance physique"),0,50);
+      const physicalResistance=Math.max(0,statWithGear(target,"Résistance physique"));
       const damage=iced(target,Math.max(0,Math.ceil(amount*(1-(physicalResistance/100)*((resistanceRoll+8)/10))-1e-9)));
       return {physicalResistance,resistanceRoll,damage};
     }
@@ -883,7 +884,7 @@
       if(mode==="melee"&&weapon?.prise==="Au choix"&&usesTwoHands(attacker,weapon)) effective*=1.5;
       if(chargePower>0) effective*=1+chargePower/100;
 
-      const physicalResistance=clamp(statWithGear(defender,"Résistance physique"),0,50);
+      const physicalResistance=Math.max(0,statWithGear(defender,"Résistance physique"));
       const resistanceRoll=fixed.resistanceRoll||die(3);
       const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
       const strengthFactor=mode==="melee"

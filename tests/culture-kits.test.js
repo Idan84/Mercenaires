@@ -323,4 +323,32 @@ assert.match(css, /\.game-top-bar\.is-dore \.hud-stat dd\{color:#2c1d0c;text-sha
 assert.match(css, /\.game-top-bar\.is-dore #hud-company,\.game-top-bar\.is-dore #hud-date,\.game-top-bar\.is-dore #hud-day\{color:#94681a;/);
 assert.match(css, /\.game-bottom-bar\.is-dore \.hud-nav-img\{filter:sepia\(1\) saturate\(2\.4\)/);
 
+// Les réglages du Design Lab en direct (Idan, 2026-11-21) : le jeu reprend le dernier enregistrement de chaque culture et
+// de chaque panneau (media/reglages/index.json) par-dessus son kit, seulement les réglages que le kit connaît, du même type.
+{
+  const {applyCultureSettings} = new Function(read("prototype-web/reference-data.js") + "\nreturn {applyCultureSettings};")();
+  const plain = o => JSON.parse(JSON.stringify(o));
+  const base = {rows: [{cle: "a", culture: "A", fiche: {haut: 150, cadre: {ep: 20}, nom: "clair", coins: [1, 2]},
+    barres: {contenu: "cuir", taille: 100}, plein: {marge: 4}}, {cle: "b", culture: "B", fiche: {haut: 90}}], row_count: 2};
+  const index = {version: 1, reglages: [
+    {date: "2026-11-21T10:00:00+00:00", culture: "a", panneau: "fiche", reglages: {haut: 999}},
+    {date: "2026-11-21T12:00:00+00:00", culture: "a", panneau: "fiche",
+      reglages: {haut: 200, cadre: {ep: "x"}, nom: "or", coins: [3], inconnu: 5, separations: {ep: 9}}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "a", panneau: "barres", reglages: {contenu: "dore", taille: 120, inactifs: 40}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "a", panneau: "autre", reglages: {haut: 1}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "c", panneau: "fiche", reglages: {haut: 1}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "b", panneau: "plein", reglages: {marge: 1}}]};
+  const out = applyCultureSettings(base, index);
+  assert.deepEqual(plain(out.rows[0].fiche), {haut: 200, cadre: {ep: 20}, nom: "or", coins: [3]}, "le plus récent, la forme du kit");
+  assert.deepEqual(plain(out.rows[0].barres), {contenu: "dore", taille: 120, inactifs: 40}, "les pictos inactifs des barres dorées");
+  assert.deepEqual(plain(out.rows[0].plein), {marge: 4}, "sans enregistrement : le kit");
+  assert.deepEqual(plain(out.rows[1]), base.rows[1], "un panneau que le kit n'a pas : rien");
+  assert.equal(out.row_count, 2);
+  assert.equal(base.rows[0].fiche.haut, 150, "le kit du dépôt n'est pas modifié");
+  assert.deepEqual(plain(applyCultureSettings(base, null)), plain(base), "sans index : le kit du dépôt");
+  // L'index en ligne n'est lu qu'à côté du site (sans index, le jeu garde son kit), sans cache.
+  assert.match(read("prototype-web/reference-data.js"), /fetch\("\/media\/reglages\/index\.json\?t=" \+ Date\.now\(\), \{ cache: "no-store" \}\)/);
+  assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)\]\)/);
+}
+
 console.log(`Kits des cultures : ${kits.rows.map(k => k.culture).join(", ")} — cadre en une pièce, jonctions, ornements, logo, barres du camp — OK`);

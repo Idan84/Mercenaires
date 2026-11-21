@@ -80,15 +80,19 @@ button.mini:hover,button.mini:focus-visible{color:var(--danger);outline:1px soli
 .vide{color:var(--ink-2);font-style:italic;padding:6px 4px}
 .aide{font-size:14.5px;color:var(--ink-2);margin:0}
 .liste-tests{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.liste-tests>li>button{all:unset;cursor:pointer;display:grid;gap:3px;width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
-.liste-tests>li>button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
-.liste-tests>li.choisi>button{background:var(--gold-soft);border-color:var(--gold)}
+.test-ligne{display:flex;gap:2px;align-items:flex-start}
+.test-ligne .pli{margin-top:6px}
+.liste-tests .test-ligne>.carte{all:unset;cursor:pointer;display:grid;gap:3px;width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.liste-tests .test-ligne>.carte:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.liste-tests>li.choisi>.test-ligne>.carte{background:var(--gold-soft);border-color:var(--gold)}
 .liste-tests .q{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .liste-tests .q b{font-weight:600}
 .num{font:700 14px/1 var(--font-display);color:var(--gold);font-variant-numeric:tabular-nums}
 .elim{font-size:14.5px;color:var(--ink)} .elim em{color:var(--ink-2)}
 .branche{margin:6px 0 0 14px;padding-left:10px;border-left:2px solid var(--line);display:grid;gap:6px}
 .branche-l{font-size:14.5px;color:var(--t-palier);font-style:italic}
+.replie{all:unset;cursor:pointer;margin:4px 0 0 34px;font-size:14.5px;color:var(--ink-2);font-style:italic}
+.replie:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .suite{display:grid;gap:4px;justify-items:start}
 button.lien{all:unset;cursor:pointer;color:var(--t-test);font-size:15.5px;text-decoration:underline;text-underline-offset:2px}
 button.lien:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
@@ -271,6 +275,9 @@ let tagChoisi=null, testChoisi=null, peutEcrire=true, ref=null, sale=false, enCo
 const memo=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
 const fermes=new Set(memo("atelier-fermes")||[]);
 const memoFermes=()=>memo("atelier-fermes",[...fermes]);
+// Les sous-questions repliées dans l'onglet Tests (Idan, 2026-11-21 : « replier les sous questions de test »).
+const testsFermes=new Set(memo("atelier-tests-fermes")||[]);
+const memoTestsFermes=()=>memo("atelier-tests-fermes",[...testsFermes]);
 
 function propre(d){
   const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||uid()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
@@ -538,10 +545,18 @@ function rendreTests(){
     vus.add(x.id);
     const ec=etatCalcul(x);
     const q=el("span",{class:"q"},el("span",{class:"num",text:nums.get(x.id)}),el("b",{text:x.nom}),el("span",{class:"puce p-test",text:x.type==="binaire"?"Oui / non":"Par niveau"}),el("span",{class:"puce "+ec.c,text:ec.t}));
-    const b=el("button",{type:"button",onclick:()=>{ testChoisi=x.id; rendreTests(); rendrePanneauTest(); $("test-nom").focus(); }},q);
+    const b=el("button",{type:"button",class:"carte",onclick:()=>{ testChoisi=x.id; rendreTests(); rendrePanneauTest(); $("test-nom").focus(); }},q);
     if(x.formule) b.append(el("span",{class:"petit",text:x.formule}));
     b.append(el("span",{class:"elim",text:resume(x)}));
-    const li=el("li",{class:x.id===testChoisi?"choisi":""},b);
+    const aSous=branches(x).some(r=>suivants(x.id,r).some(c=>!vus.has(c.id))), ouvert=!testsFermes.has(x.id);
+    const bascule=()=>{ ouvert?testsFermes.add(x.id):testsFermes.delete(x.id); memoTestsFermes(); rendreTests(); };
+    const pli=el("button",{type:"button",class:"pli"}); pli.innerHTML=chevron;
+    if(aSous){ pli.setAttribute("aria-expanded",String(ouvert)); pli.setAttribute("aria-label",(ouvert?"Replier ":"Déplier ")+"les sous-questions de « "+x.nom+" »"); pli.onclick=bascule; }
+    else pli.setAttribute("aria-hidden","true");
+    const li=el("li",{class:x.id===testChoisi?"choisi":""},el("div",{class:"test-ligne"},pli,b));
+    if(aSous&&!ouvert){ const n=descendantsTest(x.id).size;
+      li.append(el("button",{type:"button",class:"replie",onclick:bascule,text:n+" sous-question"+(n>1?"s":"")+" repliée"+(n>1?"s":"")+" · déplier"}));
+      return li; }
     for(const r of branches(x)){ const cs=suivants(x.id,r).filter(c=>!vus.has(c.id)); if(!cs.length) continue;
       const sous=el("ol",{class:"liste-tests"}); cs.forEach(c=>sous.append(faire(c)));
       li.append(el("div",{class:"branche"},el("span",{class:"branche-l",text:"Si "+libRep(x,r)+", on pose ensuite :"}),sous)); }
@@ -622,11 +637,12 @@ $("test-type").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; const a
   for(const c of doc.tests) if(c.si?.test===x.id&&avant!==x.type)
     c.si.rep=x.type==="niveau"?(c.si.rep==="oui"?x.paliers[x.paliers.length-1]:x.paliers[0]).id:(x.paliers.findIndex(q=>q.id===c.si.rep)>0?"oui":"non");
   change(); rendreTests(); rendrePanneauTest(); };
-function nouveauTest(si){ if(!peutEcrire) return; const x={id:uid(),nom:"Nouveau test",type:"binaire",formule:"",calcul:"",oui:[],non:[],paliers:[],si:si||null};
+function nouveauTest(si){ if(!peutEcrire) return; if(si){ testsFermes.delete(si.test); memoTestsFermes(); } const x={id:uid(),nom:"Nouveau test",type:"binaire",formule:"",calcul:"",oui:[],non:[],paliers:[],si:si||null};
   doc.tests.push(x); testChoisi=x.id; change(); rendreTests(); rendrePanneauTest(); $("test-nom").select(); $("test-nom").focus(); }
 $("test-ajout").onclick=()=>nouveauTest(null);
 $("test-si").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; const v=e.target.value;
   x.si=v?{test:v.slice(0,v.indexOf("|")),rep:v.slice(v.indexOf("|")+1)}:null;
+  if(x.si){ testsFermes.delete(x.si.test); memoTestsFermes(); }
   doc.tests.splice(doc.tests.indexOf(x),1); doc.tests.push(x); change(); rendreTests(); rendrePanneauTest(); };
 // Monter / descendre parmi les tests de la même branche.
 function deplaceTest(s){ const x=testPar(testChoisi); if(!x||!peutEcrire) return;

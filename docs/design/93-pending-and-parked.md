@@ -100,7 +100,6 @@ Des chiffres mesurés, rien n'est décidé ([doc 92](/design/#doc=92-balance-que
 
 ## 4 — Ménage technique
 
-- **Netlify** : supprimer le projet `mercenaires-s708` ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)).
 - **Hostinger** : migration faite, fermer l'[issue #60](https://github.com/Idan84/Mercenaires/issues/60).
 
 ## Voir aussi

@@ -229,7 +229,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
           <select id="f-domaine" aria-label="Domaine"><option value="">Tous domaines</option><option value="contact">Contact</option><option value="distance">Distance</option><option value="magie">Magie</option></select>
           <select id="f-peuple" aria-label="Peuple"><option value="">Tous peuples</option></select>
           <label class="case"><input type="checkbox" id="f-asc"> Ascendance niveau 3</label>
-          <label class="case">Étoiles de la compagnie <input type="number" id="f-etoiles" min="0" max="20" step="1" value="1" style="width:64px"></label>
+          <label class="case">Étoiles de la compagnie <input type="number" id="f-etoiles" min="1" max="15" step="1" value="1" style="width:64px"></label>
           <label class="case">Taille de la compagnie <input type="number" id="f-taille" min="1" max="60" step="1" value="10" style="width:64px"></label>
           <button type="button" class="btn" id="autre-compagnie">Autre compagnie</button>
           <button type="button" class="btn principal" id="generer">Générer un profil</button>
@@ -670,7 +670,7 @@ function rendreAideVars(){
 
 // ---------- 3. Essayer ----------
 let profilIdx=null, profil=null, forces={};
-const etoilesCompagnie=()=>{ const v=Number($("f-etoiles").value); return Number.isFinite(v)?v:1; };
+const etoilesCompagnie=()=>{ const v=Number($("f-etoiles").value); return Number.isFinite(v)?Math.min(15,Math.max(1,v)):1; };
 const versObjet=i=>({...Object.fromEntries(POOL.vars.map((v,j)=>[v.k,Array.isArray(POOL.profils[i][j])?[...POOL.profils[i][j]]:POOL.profils[i][j]])),"compagnie.etoiles":etoilesCompagnie()});
 $("f-etoiles").oninput=()=>{ memo("atelier-etoiles",etoilesCompagnie()); if(profil){ profil["compagnie.etoiles"]=etoilesCompagnie(); rendreResultats(); } };
 let autres=[]; // les autres membres de la compagnie (indices dans POOL.profils)

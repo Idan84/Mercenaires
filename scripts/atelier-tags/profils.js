@@ -137,6 +137,14 @@ for(let i=0;i<demandes.length;i++){
     v("cout."+cle(t),"Coût en mana de son sort « "+t.slice(5).replace(/\//g," › ").replace(/-/g," ")+" » le moins cher","Sorts : coût en mana","nombre");
     if(r.duree_base!=null) v("duree."+cle(t),"Durée (tours) de son sort « "+t.slice(5).replace(/\//g," › ").replace(/-/g," ")+" » le plus long","Sorts : durée en tours","nombre"); }
   for(const [t,c] of Object.entries(cout)) out["cout."+cle(t)]=c;
+  // Coût moyen de ses sorts de chaque tag (Idan, 2026-11-21 : Maître du champ de bataille, « la moyenne »).
+  const somme={},nb={};
+  for(const sp of known){ const mc=Number(magic.manaCost(unit,sp.code))||0;
+    for(const t of (spellRows.get(sp.code).tags||[])) if(String(t).startsWith("role/")){ somme[t]=(somme[t]||0)+mc; nb[t]=(nb[t]||0)+1; } }
+  // (Les soins ont déjà leurs moyennes plus bas.)
+  for(const r of reference.spells.rows) for(const t of (r.tags||[])) if(String(t).startsWith("role/")&&t!=="role/soin")
+    v("moy.cout."+cle(t),"Coût moyen en mana de ses sorts « "+t.slice(5).replace(/\//g," › ").replace(/-/g," ")+" »","Sorts : coût en mana","nombre");
+  for(const [t,n] of Object.entries(nb)) if(t!=="role/soin") out["moy.cout."+cle(t)]=r1(somme[t]/n);
   for(const [t,dd] of Object.entries(duree)) out["duree."+cle(t)]=dd;
   const reserve=Number(engine.statWithGear(unit,"Réserve de mana"))||0;
   // Moyennes sur tous ses sorts de soin (Idan, 2026-11-21 : « on peut prendre la moyenne de tous les sorts de soin »).

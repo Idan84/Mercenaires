@@ -6,7 +6,7 @@
 // complète) »). Pour une culture et un panneau, les réglages de son kit (data/reference/culture-kits.json : « barres »,
 // « fiche », « plein ») et l'aperçu du jeu lui-même (prototype-web/apercu-ui.js : le jeu ouvert avec ?apercu, une partie
 // de démonstration avec un capitaine de cette culture), à la résolution choisie. « Enregistrer » range les réglages sur
-// Hostinger (design/api/reglages.php → media/reglages/) ; JC les intègre ensuite au jeu. On repart du dernier
+// Hostinger (design/api/reglages.php → media/reglages/) ; le jeu les lit en direct (reference-data.js, Idan, 2026-11-21). On repart du dernier
 // enregistrement de la culture, sinon des valeurs du jeu.
 const CulturesLab=(()=>{
   const html=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -304,7 +304,7 @@ const CulturesLab=(()=>{
       state.data.reglages.unshift(rep.reglage);
       state.bases[c.cle][state.panneau]={valeurs:clone(reglages),date:rep.reglage.date};
       afficher();
-      statut(`Enregistré. ${PANNEAUX.find(p=>p.cle===state.panneau).titre} des ${c.nom} : dis-moi « regarde les réglages » et je l'intègre au jeu.`);
+      statut(`Enregistré. ${PANNEAUX.find(p=>p.cle===state.panneau).titre} des ${c.nom} : en ligne dans le jeu (recharge le jeu pour le voir).`);
     }catch(e){
       statut("Pas enregistré : "+(e.message||e)+" Tu peux « Copier » et me coller les réglages.");
     }

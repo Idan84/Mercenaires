@@ -52,8 +52,8 @@ const byKey = Object.fromEntries(kits.rows.map(k => [k.cle, k]));
 const elfes = byKey["elfes-noirs"], sylvains = byKey["elfes-sylvains"], cites = byKey["elfes-des-grandes-cites"];
 
 // 2. Les réglages d'Idan pour la fiche (ses lignes du 2026-11-18) ; le cadre remonté de 7 px pour les trois (« ça manque
-// un peu de padding dans ce cartouche »).
-for (const kit of kits.rows) {
+// un peu de padding dans ce cartouche »). Les nains ont ensuite leurs propres réglages (Design Lab, 2026-11-21).
+for (const kit of kits.rows.filter(k => k.cle.startsWith("elfes"))) {
   const F = kit.fiche;
   assert.deepEqual(F.cadre, {ep: 16}, kit.cle);
   assert.deepEqual(F.cotes, {haut: -7, bas: 0, gauche: 0, droite: 0}, kit.cle);
@@ -120,8 +120,9 @@ for (const kit of kits.rows) {
   const B = {y1: 565 + kit.fiche.cotes.bas, x1: 860 + kit.fiche.cotes.droite};
   assert.match(html, new RegExp(`<i style="left:-?[\\d.]+px;top:${B.y1}px;translate:[^"]*${K.h.f.replace(".", "\\.")}'\\) [^"]*repeat-x;transform-origin:0 0;transform:scaleY\\(-1\\)"`), kit.cle + " : bordure du bas");
   assert.match(html, new RegExp(`<i style="left:${B.x1}px;top:-?[\\d.]+px;translate:[^"]*${K.v.f.replace(".", "\\.")}'\\) [^"]*repeat-y;transform-origin:0 0;transform:scaleX\\(-1\\)"`), kit.cle + " : bordure de droite");
-  // Les épaisseurs sont des pixels entiers (le navigateur arrondit la taille d'un motif répété) ; la bande du haut fait 16.
-  assert.match(html, new RegExp(`width:[\\d.]+px;height:16px;background:url\\('[^']*${K.h.f.replace(".", "\\.")}'\\)`), kit.cle + " : bordure du haut, 16 px");
+  // Les épaisseurs sont des pixels entiers (le navigateur arrondit la taille d'un motif répété) ; la bande du haut a
+  // l'épaisseur du cadre (16, 12 pour les Nains esclaves : réglages d'Idan).
+  assert.match(html, new RegExp(`width:[\\d.]+px;height:${kit.fiche.cadre.ep}px;background:url\\('[^']*${K.h.f.replace(".", "\\.")}'\\)`), kit.cle + " : bordure du haut, épaisseur du cadre");
   // Les jonctions : en haut et en bas de la barre du milieu, aux deux bouts de la bande sous le nom.
   for (const m of ["matrix(1,0,0,1,0,0)", "matrix(1,0,0,-1,0,0)", "matrix(0,1,1,0,0,0)", "matrix(0,1,-1,0,0,0)"]) assert.ok(html.includes(m), `${kit.cle} : jonction ${m}`);
   assert.match(html, /clip-path:inset\(0 [\d.]+px [\d.]+px 0\);transform-origin:0 0;transform:/, kit.cle + " : coins coupés au bout des bras");
@@ -237,17 +238,17 @@ assert.equal(forKit("cites-libres"), null);
 const montagnes = byKey["nains-des-montagnes"], chaos = byKey["nains-du-chaos"], esclaves = byKey["nains-esclaves"];
 assert.deepEqual([montagnes, chaos, esclaves].map(k => k.culture), ["Nains des montagnes", "Nains du chaos", "Nains esclaves"]);
 assert.deepEqual([montagnes, chaos, esclaves].map(k => Object.keys(k.geometrie.poses)), [["belier"], ["accelerateur"], ["chopes", "outils"]]);
+// Partis des réglages des Elfes sylvains, puis réglés par Idan dans le Design Lab (2026-11-21, media/reglages/) : les poses
+// gardent leurs modèles ; la fiche complète reprend les ornements de coin de la fiche au survol.
 const posesNaines = {"nains-des-montagnes": ["belier", "belier"], "nains-du-chaos": ["accelerateur", "accelerateur"], "nains-esclaves": ["chopes", "outils"]};
-const ratioBouton = sylvains.barres.bas.bouton.taille / (sylvains.barres.bas.rond.taille * sylvains.geometrie.rond.trou);
 for (const kit of [montagnes, chaos, esclaves]) {
-  const [fiche, barres] = posesNaines[kit.cle], copie = JSON.parse(JSON.stringify(sylvains));
-  copie.fiche.pose.modele = fiche; copie.plein.pose.modele = fiche; copie.barres.ornements.pose.modele = barres;
-  copie.barres.bas.bouton.taille = kit.barres.bas.bouton.taille; copie.barres.haut.textes.dy = kit.barres.haut.textes.dy;
-  assert.deepEqual([kit.fiche, kit.barres, kit.plein], [copie.fiche, copie.barres, copie.plein], kit.cle + " : réglages de départ des Elfes sylvains");
-  const trou = kit.barres.bas.rond.taille * kit.geometrie.rond.trou * ratioBouton;
-  assert.ok(Math.abs(kit.barres.bas.bouton.taille - trou) < 1, `${kit.cle} : le bouton remplit le trou du rond (${kit.barres.bas.bouton.taille} pour ${trou.toFixed(1)})`);
+  const [fiche, barres] = posesNaines[kit.cle];
+  assert.deepEqual([kit.fiche.pose.modele, kit.plein.pose.modele, kit.barres.ornements.pose.modele], [fiche, fiche, barres], kit.cle + " : poses");
+  assert.deepEqual(Object.keys(kit.fiche).sort(), Object.keys(sylvains.fiche).sort(), kit.cle + " : mêmes réglages de fiche que les autres kits");
+  assert.deepEqual(Object.keys(kit.barres).sort(), Object.keys(sylvains.barres).sort(), kit.cle + " : mêmes réglages de barres que les autres kits");
   assert.equal(kit.geometrie.ornementTitre.f, "titre.webp", kit.cle + " : ornement du titre en silhouette");
 }
+assert.deepEqual([esclaves.fiche.cadre.ep, esclaves.fiche.separation.ep, esclaves.fiche.sousNom.ep], [12, 12, 12], "Nains esclaves : cadre de 12 (Idan)");
 const hautTextes = kit => { const bar = HUD_BARS[kit.cle]; return kitUi.hudKitBars(kit, bar).haut.top * B * bar.haut.barre; };
 for (const kit of kits.rows) assert.ok(Math.abs(hautTextes(kit) - hautTextes(sylvains)) < .3, `${kit.cle} : textes de la barre du haut à ${hautTextes(kit).toFixed(2)} px`);
 // Le cadre des Nains du chaos (plus petit) : le coin, l'équerre seule ; la barre du milieu, large (les bords des deux
@@ -321,5 +322,33 @@ assert.match(css, /\.game-top-bar\.is-dore \.hud-stat\{background:linear-gradien
 assert.match(css, /\.game-top-bar\.is-dore \.hud-stat dd\{color:#2c1d0c;text-shadow:none\}/);
 assert.match(css, /\.game-top-bar\.is-dore #hud-company,\.game-top-bar\.is-dore #hud-date,\.game-top-bar\.is-dore #hud-day\{color:#94681a;/);
 assert.match(css, /\.game-bottom-bar\.is-dore \.hud-nav-img\{filter:sepia\(1\) saturate\(2\.4\)/);
+
+// Les réglages du Design Lab en direct (Idan, 2026-11-21) : le jeu reprend le dernier enregistrement de chaque culture et
+// de chaque panneau (media/reglages/index.json) par-dessus son kit, seulement les réglages que le kit connaît, du même type.
+{
+  const {applyCultureSettings} = new Function(read("prototype-web/reference-data.js") + "\nreturn {applyCultureSettings};")();
+  const plain = o => JSON.parse(JSON.stringify(o));
+  const base = {rows: [{cle: "a", culture: "A", fiche: {haut: 150, cadre: {ep: 20}, nom: "clair", coins: [1, 2]},
+    barres: {contenu: "cuir", taille: 100}, plein: {marge: 4}}, {cle: "b", culture: "B", fiche: {haut: 90}}], row_count: 2};
+  const index = {version: 1, reglages: [
+    {date: "2026-11-21T10:00:00+00:00", culture: "a", panneau: "fiche", reglages: {haut: 999}},
+    {date: "2026-11-21T12:00:00+00:00", culture: "a", panneau: "fiche",
+      reglages: {haut: 200, cadre: {ep: "x"}, nom: "or", coins: [3], inconnu: 5, separations: {ep: 9}}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "a", panneau: "barres", reglages: {contenu: "dore", taille: 120, inactifs: 40}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "a", panneau: "autre", reglages: {haut: 1}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "c", panneau: "fiche", reglages: {haut: 1}},
+    {date: "2026-11-21T11:00:00+00:00", culture: "b", panneau: "plein", reglages: {marge: 1}}]};
+  const out = applyCultureSettings(base, index);
+  assert.deepEqual(plain(out.rows[0].fiche), {haut: 200, cadre: {ep: 20}, nom: "or", coins: [3]}, "le plus récent, la forme du kit");
+  assert.deepEqual(plain(out.rows[0].barres), {contenu: "dore", taille: 120, inactifs: 40}, "les pictos inactifs des barres dorées");
+  assert.deepEqual(plain(out.rows[0].plein), {marge: 4}, "sans enregistrement : le kit");
+  assert.deepEqual(plain(out.rows[1]), base.rows[1], "un panneau que le kit n'a pas : rien");
+  assert.equal(out.row_count, 2);
+  assert.equal(base.rows[0].fiche.haut, 150, "le kit du dépôt n'est pas modifié");
+  assert.deepEqual(plain(applyCultureSettings(base, null)), plain(base), "sans index : le kit du dépôt");
+  // L'index en ligne n'est lu qu'à côté du site (sans index, le jeu garde son kit), sans cache.
+  assert.match(read("prototype-web/reference-data.js"), /fetch\("\/media\/reglages\/index\.json\?t=" \+ Date\.now\(\), \{ cache: "no-store" \}\)/);
+  assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)\]\)/);
+}
 
 console.log(`Kits des cultures : ${kits.rows.map(k => k.culture).join(", ")} — cadre en une pièce, jonctions, ornements, logo, barres du camp — OK`);

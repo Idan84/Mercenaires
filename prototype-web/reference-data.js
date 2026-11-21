@@ -99,8 +99,56 @@ async function loadReferenceData(base = "/data/") {
     return [key, await response.json()];
   }));
   const data = Object.fromEntries(entries);
-  [data.avatars, data.equipmentSilhouettes] = await Promise.all([loadAvatarCatalog(data, base), loadSilhouetteCatalog(data)]);
+  [data.avatars, data.equipmentSilhouettes, data.cultureKits] = await Promise.all([loadAvatarCatalog(data, base), loadSilhouetteCatalog(data),
+    loadCultureSettings(data.cultureKits)]);
   return data;
+}
+
+// Réglages des cultures en direct (Idan, 2026-11-21 : « que le jeu lise directement les réglages que je mets dans le design
+// lab pour les cultures ») : chaque « Enregistrer » de l'onglet Cultures range ses réglages sur Hostinger
+// (design/api/reglages.php → media/reglages/index.json, le plus récent en premier). Le jeu reprend, pour chaque culture et
+// chaque panneau (barres, fiche, plein), le dernier enregistrement par-dessus son kit (data/reference/culture-kits.json),
+// comme le Design Lab (cultures-lab.js, fondre) : seulement les réglages que le kit connaît, du même type. Sans index
+// (serveur local, tests, réseau), le kit du dépôt.
+const CULTURE_PANELS = ["barres", "fiche", "plein"];
+const CULTURE_EXTRA_SETTINGS = ["inactifs"];
+function mergeCultureSetting(base, saved) {
+  if (base && typeof base === "object" && !Array.isArray(base)) {
+    const merged = Object.fromEntries(Object.entries(base).map(([key, value]) => [key, mergeCultureSetting(value, saved?.[key])]));
+    for (const key of CULTURE_EXTRA_SETTINGS) {
+      if (!(key in base) && typeof saved?.[key] === "number" && Number.isFinite(saved[key])) merged[key] = saved[key];
+    }
+    return merged;
+  }
+  if (Array.isArray(base)) return Array.isArray(saved) ? saved : base;
+  return saved !== null && typeof saved === typeof base && (typeof saved !== "number" || Number.isFinite(saved)) ? saved : base;
+}
+function applyCultureSettings(cultureKits, index) {
+  const saved = Array.isArray(index?.reglages) ? index.reglages : [];
+  const latest = {};
+  for (const entry of saved) {
+    if (!entry || !CULTURE_PANELS.includes(entry.panneau) || !entry.reglages || typeof entry.reglages !== "object") continue;
+    const key = entry.culture + "|" + entry.panneau, date = String(entry.date || "");
+    if (!latest[key] || date > String(latest[key].date || "")) latest[key] = entry;
+  }
+  const rows = (cultureKits?.rows || []).map(kit => {
+    const row = { ...kit };
+    for (const panel of CULTURE_PANELS) {
+      const entry = latest[kit.cle + "|" + panel];
+      if (entry && kit[panel] && typeof kit[panel] === "object") row[panel] = mergeCultureSetting(kit[panel], entry.reglages);
+    }
+    return row;
+  });
+  return { ...cultureKits, rows };
+}
+async function loadCultureSettings(cultureKits) {
+  try {
+    const response = await fetch("/media/reglages/index.json?t=" + Date.now(), { cache: "no-store" });
+    if (!response.ok || !/json/i.test(response.headers.get("content-type") || "")) return cultureKits;
+    return applyCultureSettings(cultureKits, await response.json());
+  } catch {
+    return cultureKits;
+  }
 }
 
 // Silhouettes d'équipement (Idan, 2026-10-21) : déposées sur Hostinger dans media/Avatars_Equipements,

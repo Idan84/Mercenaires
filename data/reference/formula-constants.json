@@ -2197,7 +2197,7 @@
     {
       "nom": "Dégâts élémentaires — protection minimale",
       "code": "combat.elemental.protection_min",
-      "description": "Dégâts de feu, de froid ou de foudre × (1 − protection / 100) ; protection = Résistance du personnage (équipement compris) + valeur de l’armure portée pour l’élément (brûlant, glaçant, foudroyant) + bonus de sort ; jamais sous ce minimum (Idan, 2026-10-25) ; sans plafond (Idan, 2026-11-21 : le maximum de +75 est retiré ; à 100 et plus, aucun dégât de cet élément).",
+      "description": "Dégâts de feu, de froid ou de foudre × (1 − protection / 100) ; protection = Résistance du personnage (équipement compris) + valeur de l’armure portée pour l’élément (brûlant, glaçant, foudroyant) + bonus de sort ; jamais sous ce minimum (Idan, 2026-10-25) ; sans plafond (Idan, 2026-11-21 : le maximum de +75 est retiré ; à 100, aucun dégât ; au-delà, l’élément soigne de ce qui dépasse).",
       "formule": "Dégâts élémentaires",
       "valeur": -50,
       "version": "V1"

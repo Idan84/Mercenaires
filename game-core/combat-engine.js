@@ -613,7 +613,7 @@
     // compris) + valeur de l'armure portée pour cet élément (« brûlant », « glaçant », « foudroyant » ; les plates font
     // brûler davantage) + bonus de sort en cours (unit.elementalBonus, par exemple Armure de feu contre le froid).
     // Les dégâts élémentaires sont multipliés par (1 − protection / 100), protection d'au moins −50, sans plafond
-    // (Idan, 2026-11-21) : à 100 et plus, on ne prend plus rien de cet élément (les dégâts ne passent jamais sous 0).
+    // (Idan, 2026-11-21) : à 100, plus rien ; au-delà, l'élément soigne de ce qui dépasse (elementalDamage, heal).
     function armorElementalResistance(unit,element){
       const item=armorItem(unit),armor=armorTemplate(item),meta=ELEMENTS[element];
       if(!armor||!meta?.armor) return 0;
@@ -630,8 +630,12 @@
     }
     function elementalDamage(unit,element,amount){
       const protection=elementalProtection(unit,element);
-      if(element==="poison"&&poisonImmune(unit)) return {...protection,amount,damage:0,immune:true};
-      return {...protection,amount,damage:iced(unit,Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9)))};
+      if(element==="poison"&&poisonImmune(unit)) return {...protection,amount,damage:0,heal:0,immune:true};
+      const raw=amount*(1-protection.applied/100);
+      // Absorption (Idan, 2026-11-21 : « En feu, foudre, glace et poison, on peut absorber et se soigner ») : au-delà de
+      // 100 % de protection, l'élément soigne de ce qui dépasse (heal) au lieu de blesser.
+      if(raw<0) return {...protection,amount,damage:0,heal:Math.ceil(-raw-1e-9)};
+      return {...protection,amount,damage:iced(unit,Math.max(0,Math.ceil(raw-1e-9))),heal:0};
     }
     // Prison de glace (Eau ; Idan, 2026-10-31) : figé dans la glace, on ne subit que unit.frozen.factor des dégâts (0,5) :
     // coups d'armes, toucher spectral, dégâts physiques et élémentaires des sorts. Les dégâts « sans aucune résistance »

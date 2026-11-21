@@ -76,18 +76,34 @@ function presenceText(candidate){
   return (female?"Présente":"Présent")+" à l’auberge depuis "+days+" jour"+(days>1?"s":"");
 }
 
+// La carte sur parchemin (Idan, 2026-11-19 : « Fond parchemin … Notre bouton (celui du formulaire capitaine) pour aller lui
+// parler. On optimise un peu la présentation de la fiche ») : l'origine comme sur la fiche au survol (les pictos du peuple, de
+// la culture et de l'ascendance s'il en a une, puis « Ogre des steppes au sang de dragon » ; l'ascendance ajoutée le même jour :
+// « on ajoute »), et le bouton de la charte.
+// Le papier de la carte (Idan, 2026-11-19 : « Le parchemin des mercenaires varie et reprend ceux des missions ») : une
+// des feuilles des annonces (feuille-1…8.webp), au teint de leur papier (noticeLook, contract-ui.js : jamais vers le
+// rouge, les plus vieux moins saturés), tirés de l'identifiant du candidat : toujours le même papier pour le même candidat.
+// Les feuilles tirées : toutes celles des annonces sauf la 5, dont l'encoche entre trop dans la carte (styles.css).
+const RECRUIT_PAPERS=[1,2,3,4,6,7,8];
+function recruitPaper(id){
+  let h=2166136261;
+  for(const ch of "recrue-"+id){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); }
+  const r=()=>{ h^=h>>>13; h=Math.imul(h,0x5bd1e995); h^=h>>>15; return (h>>>0)/4294967296; };
+  const paper=RECRUIT_PAPERS[Math.floor(r()*RECRUIT_PAPERS.length)],tone=.9+r()*.12,hue=(r()*2-1)*7,old=hue<-3;
+  return {paper,style:`--tone:${tone.toFixed(3)};--hue:${(old?1:hue<0?hue*.3:hue).toFixed(1)}deg;--sat:${old?".72":"1"}`};
+}
 function renderTavernCard(candidate){
-  const m=candidate.mercenary;
-  return `<article class="recruit-card">
+  const m=candidate.mercenary,look=recruitPaper(m.id);
+  const origin=typeof originPhrase==="function"?originPhrase({people:m.people||"",culture:m.culture||"",ascendance:m.ascendance||""}):[m.people,m.culture,m.ascendance].filter(Boolean).join(" · ");
+  return `<article class="recruit-card" data-paper="${look.paper}" style="${look.style}">
     ${renderAvatar(m,{variant:"recruit",kind:"full"})}
     <div class="recruit-card-body">
       <strong class="recruit-name">${esc(m.name)}</strong>
-      <span class="recruit-origin">${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)}</span>
-      <span class="recruit-origin">${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}</span>
+      <div class="recruit-origins"><span class="recruit-emblems">${renderPicto("people",m.people,{size:null})}${renderPicto("culture",m.culture,{size:null})}${m.ascendance?renderPicto("ascendance",m.ascendance,{size:null}):""}</span><span class="recruit-origin">${esc(origin)}</span></div>
       ${renderReputationStars(m)}
       <small class="recruit-days">${presenceText(candidate)}</small>
-      <button type="button" class="recruit-talk-btn" data-tavern-open="${m.id}">Aller lui parler</button>
     </div>
+    <button type="button" class="mission-btn recruit-talk-btn" data-tavern-open="${m.id}">Aller lui parler</button>
   </article>`;
 }
 
@@ -102,21 +118,39 @@ function renderTavern(){
   updateRecruitCarousel();
 }
 
-// Les candidats en carrousel (Idan, 2026-11-04 : « fais un système qui défile comme un carousel ») : une rangée qui défile,
-// une flèche sur chaque bord (effacée au bout), la molette ou le doigt ; tout tient à l'écran : rangée centrée, sans flèches.
+// Les candidats en carrousel (Idan, 2026-11-04 : « fais un système qui défile comme un carousel »), trois par écran (Idan,
+// 2026-11-19 : « Flèche en permanence : les mêmes que pour les missions. Toujours 3 candidats par écran. On slide pour en
+// avoir 3 autres ») : la rangée a la largeur de trois cartes, chaque flèche fait glisser de trois cartes (la dernière page
+// montre les trois derniers) ; une flèche s'efface quand on ne peut plus aller de ce côté. La rangée ne défile pas : les
+// cartes glissent (--recruit-shift) et celles hors de la page s'effacent, pour que rien ne coupe leurs ombres portées.
+// La molette tourne les pages, comme sur le panneau des missions (pageWheel, mission.js).
+const RECRUITS_PER_PAGE=3;
+let recruitFirst=0;
+function recruitPage(track){
+  const card=track.querySelector(".recruit-card");
+  if(!card?.offsetWidth) return null;
+  const cs=getComputedStyle(track),gap=parseFloat(cs.columnGap)||0;
+  return {step:card.offsetWidth+gap,gap,pad:(parseFloat(cs.paddingLeft)||0)+(parseFloat(cs.paddingRight)||0)};
+}
 function updateRecruitCarousel(){
   const track=$("tavern-candidates"),carousel=track?.closest(".recruit-carousel");
   if(!carousel) return;
-  const overflow=track.scrollWidth-track.clientWidth>1;
-  carousel.classList.toggle("is-static",!overflow);
+  const page=recruitPage(track),cards=[...track.querySelectorAll(".recruit-card")];
+  const last=Math.max(0,cards.length-RECRUITS_PER_PAGE);
+  recruitFirst=Math.min(Math.max(0,recruitFirst),last);
+  if(page){
+    track.style.width=`${RECRUITS_PER_PAGE*page.step-page.gap+page.pad}px`;
+    track.style.setProperty("--recruit-shift",`${-recruitFirst*page.step}px`);
+  }
+  cards.forEach((card,i)=>card.classList.toggle("is-off",i<recruitFirst||i>=recruitFirst+RECRUITS_PER_PAGE));
   const [prev,next]=carousel.querySelectorAll("[data-recruit-scroll]");
-  if(prev) prev.disabled=!overflow||track.scrollLeft<=1;
-  if(next) next.disabled=!overflow||track.scrollLeft+track.clientWidth>=track.scrollWidth-1;
+  if(prev) prev.disabled=recruitFirst<=0;
+  if(next) next.disabled=recruitFirst>=last;
 }
-// Une page de cartes à la fois ; l'accroche des cartes (scroll-snap) cale la rangée sur un portrait.
+// Trois cartes de plus (ou de moins).
 function scrollRecruits(direction){
-  const track=$("tavern-candidates");
-  track.scrollBy({left:direction*Math.max(1,track.clientWidth-12),behavior:"smooth"});
+  recruitFirst+=direction*RECRUITS_PER_PAGE;
+  updateRecruitCarousel();
 }
 function initializeRecruitCarousel(){
   const track=$("tavern-candidates"),carousel=track?.closest(".recruit-carousel");
@@ -125,17 +159,9 @@ function initializeRecruitCarousel(){
     const nav=event.target.closest("[data-recruit-scroll]");
     if(nav) scrollRecruits(Number(nav.dataset.recruitScroll));
   });
-  track.addEventListener("scroll",updateRecruitCarousel,{passive:true});
-  // La molette verticale fait défiler la rangée, sauf au bout : la page reprend la main.
-  track.addEventListener("wheel",event=>{
-    if(Math.abs(event.deltaY)<=Math.abs(event.deltaX)) return;
-    const atStart=track.scrollLeft<=1,atEnd=track.scrollLeft+track.clientWidth>=track.scrollWidth-1;
-    if((event.deltaY<0&&atStart)||(event.deltaY>0&&atEnd)) return;
-    event.preventDefault();
-    track.scrollBy({left:event.deltaY});
-  },{passive:false});
-  // Recalculé dès que la rangée change de taille (vue ouverte, fenêtre, écran de téléphone tourné).
-  if(typeof ResizeObserver==="function") new ResizeObserver(()=>updateRecruitCarousel()).observe(track);
+  if(typeof pageWheel==="function") track.addEventListener("wheel",pageWheel(scrollRecruits),{passive:false});
+  // Recalculé dès que la place change (vue ouverte, fenêtre) : celle du carrousel, la rangée prenant la largeur qu'on lui donne.
+  if(typeof ResizeObserver==="function") new ResizeObserver(()=>updateRecruitCarousel()).observe(carousel);
   else window.addEventListener("resize",updateRecruitCarousel);
 }
 

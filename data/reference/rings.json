@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "rings",
-  "description": "Bagues (Idan, 2026-10-24) : portées dans les six emplacements Bague ; plusieurs bagues identiques se cumulent. Bague de la chance et Bague du courage : +5 % (T1), +10 % (T2), +15 % (T3), +20 % (T4) de la valeur de base, comme les bottes. Bagues de magie, une par école : +10 / 15 / 20 / 25 % de la maîtrise de base de leur école, et −15 / 10 / 5 / 0 % de la maîtrise de base des deux écoles opposées (skills.json, ecoles_opposees). Images : assets-src/Equipements/Bagues.",
+  "description": "Bagues (Idan, 2026-10-24) : portées dans les six emplacements Bague ; plusieurs bagues identiques se cumulent. Bague de la chance, Bague du courage et Bague de mana (Réserve de mana ; Idan, 2026-11-21) : +5 % (T1), +10 % (T2), +15 % (T3), +20 % (T4) de la valeur de base, comme les bottes. Bagues de magie, une par école : +10 / 15 / 20 / 25 % de la maîtrise de base de leur école, et −15 / 10 / 5 / 0 % de la maîtrise de base des deux écoles opposées (skills.json, ecoles_opposees). Images : assets-src/Equipements/Bagues.",
   "columns": [
     {
       "source": "Nom",
@@ -56,7 +56,7 @@
       "key": "prix_base"
     }
   ],
-  "row_count": 11,
+  "row_count": 12,
   "rows": [
     {
       "nom": "Bague de la chance",
@@ -77,6 +77,21 @@
       "nom": "Bague du courage",
       "code": "courage_ring",
       "caracteristique": "Courage",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20,
+      "malus_opposees_t1": 0,
+      "malus_opposees_t2": 0,
+      "malus_opposees_t3": 0,
+      "malus_opposees_t4": 0,
+      "prix_base": 150
+    },
+    {
+      "nom": "Bague de mana",
+      "code": "mana_ring",
+      "caracteristique": "Réserve de mana",
       "type_bonus": "pourcentage",
       "bonus_t1": 5,
       "bonus_t2": 10,

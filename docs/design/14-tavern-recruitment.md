@@ -93,44 +93,63 @@ et de meilleures recrues demandent un meilleur salaire. L'écran Taverne affiche
 
 ## 6 — Informations visibles avant entretien
 
-L'écran Recruter montre seulement le **portrait en pied**, le **nom**, le **peuple**, la **culture**, la **réputation**
-et le **nombre de jours** à l'auberge (Idan, 2026-10-21). Le reste se découvre en lui parlant (§6 bis) : salaire et prime
-par ses prétentions, l'affinité par le ton de sa salutation, le profil (CAC / Distance / Magie) et les prédilections par
-ses réponses.
+L'écran Recruter montre seulement le **portrait en pied**, le **nom**, le **peuple**, la **culture**, l'**ascendance**
+s'il en a une (ajoutée par Idan le 2026-11-19), la **réputation** et le **nombre de jours** à l'auberge (Idan, 2026-10-21).
+Le reste se découvre dans le dialogue (§6 bis) : la fiche du candidat se remplit avec les réponses du candidat et de
+l'aubergiste.
 
 - L'alignement du candidat reste caché ; le détail peuple / culture / alignement de l'affinité (doc 02, de −100 à +100)
   ne s'affiche que sur la fiche, après l'embauche.
 - Les autres caractéristiques et compétences ne sont pas montrées.
 
-## 6 bis — Dialogue de recrutement (Idan, 2026-10-21)
+## 6 bis — Dialogue de recrutement : la fiche et la discussion (conception, Idan, 2026-11-19 ; à coder)
 
-« Aller lui parler » ouvre un dialogue avec le portrait carré du candidat. On peut partir à tout moment.
+« Aller lui parler » ouvre le dialogue : la **fiche du candidat**, sur le modèle de la fiche au survol, à côté d'une
+**discussion** (un chat, qui remplace la fenêtre actuelle). On peut partir à tout moment.
 
-1. **Salutation** selon l'affinité avec le capitaine : 20 phrases, de franchement hostile (−100) à admirative (+100), une
-   par tranche de 10 points.
-2. **Questions**, auxquelles il répond **sincèrement**, d'une petite phrase : arme de prédilection (la meilleure des
-   préférences « une main » et « deux mains », doc 03), style de combat préféré, arme de tir de prédilection, magie de
-   prédilection (aucune si toutes ses écoles sont au plancher, 1), métier avant d'être mercenaire (origine sociale).
-3. **Prétentions** : « Pour devenir votre combattant, je demande X par jour et Y par mission. » Ensuite seulement
-   apparaissent **Négocier** et **Signer**.
-4. **Négocier** : le joueur saisit un salaire et une prime ; les règles du §9 s'appliquent, la réponse est dialoguée :
-   contre-proposition (« Disons X et Y, non ? »), refus d'une offre plus basse qu'une offre déjà refusée, ou départ (il
-   renverse la table, la fenêtre se ferme).
-5. **Signer** accepte les conditions sur la table (demande initiale ou dernière contre-proposition) : acceptation
-   garantie (§9), il rejoint la compagnie (« Parfait. Ravi de faire partie de la compagnie… »). Dortoir plein : il
-   accepte, mais la signature attend une place (§10).
+- **La salutation** reste : 20 phrases selon l'affinité avec le capitaine, de franchement hostile (−100) à admirative
+  (+100), une par tranche de 10 points. Ce n'est qu'un indice.
+- **On ne pose que des questions dont la réponse remplit une case de la fiche.** La fiche garde ce qu'on a appris.
+- **Deux sources** : le **candidat** et l'**aubergiste**. L'Intendant est laissé de côté (§7).
+- Le candidat répond à toutes les questions, sans limite ; une question posée disparaît. L'aubergiste : **1 PO** la
+  question (rien n'est gratuit dans ce bas monde), sans limite.
+- Une réponse reste figée : reposer la question redonne la même réponse (chez l'aubergiste, elle se paie encore).
 
-Textes : `data/reference/tavern-dialogue.json`.
+| Case de la fiche | Au départ | Question | Source | Réponse | Biais (§7) |
+|---|---|---|---|---|---|
+| Titre | ligne vide | « Comment on t'appelle, dans le métier ? » | Candidat | son titre | vantardise : le titre recalculé sur ses valeurs telles qu'il les annonce |
+| Titre | ligne vide | « Qu'est-ce qu'on dit de lui ? » | Aubergiste | son titre | précision de l'aubergiste : le titre recalculé sur ses estimations |
+| Origines | visibles | — | — | — | — |
+| Réputation | visible | — | — | — | — |
+| Affinité | vide | « Il m'apprécierait, à ton avis ? » | Aubergiste seul | un mot à la place des cœurs : Hostile, Neutre ou Amical | précision de l'aubergiste, comme pour le titre |
+| Salaire et prime | vides | « Combien demandes-tu ? » | Candidat | sa demande, puis ses contre-propositions | aucun |
+| Set 1 | vide | « Quelle arme de corps à corps manies-tu ? » | Candidat | l'arme qu'il porte (pas sa meilleure) | aucun |
+| Set 2 | vide | « Quelle arme de tir as-tu ? » | Candidat | l'arme de tir qu'il porte | aucun |
+| Armure | vide | « Quelle armure portes-tu ? » | Candidat | son armure | aucun |
+| Magie | vide | « Connais-tu des sorts de [école] ? », une question par école | Candidat | oui / non : le picto de l'école s'affiche | aucun : réponse exacte |
+| Tags | vides | à définir avec la refonte des tags (doc 20) | — | — | biais de niveau et de précision |
 
-## 7 — Entretien : les conseils du tavernier
+Le titre (doc 19) se calcule sur les notes de ses rôles : avec un biais, on recalcule ces notes sur les valeurs annoncées
+ou estimées, d'où des titres justes et des titres faux (« Mage Légendaire Omnipotent »). La fiche montre le **salaire**
+à côté de la prime.
 
-**Demander des conseils** au tavernier (Idan, 2026-10-21) : quel candidat → physique, mental, résistances ou magie →
-quelle caractéristique. **1 PO** la question (rien n'est gratuit dans ce bas monde), **sans limite**.
+**Le salaire et la prime** : « Pour devenir votre combattant, je demande X par jour et Y par mission. » Ensuite seulement
+apparaissent **Négocier** et **Signer** ; les cases suivent la dernière contre-proposition.
 
-- Il rapporte ce que le candidat dit de lui-même : la vantardise ci-dessous (× 1,10 à × 3,00), en phrase et située dans
-  la compagnie (« bien plus fort que [Prénom] », « plus fort que la moitié de ta compagnie », « dans la moyenne », « plus
-  fort que n'importe qui chez toi »…).
-- Une rumeur reste figée : reposer la question redonne la même réponse, mais se paie.
+- **Négocier** : le joueur saisit un salaire et une prime ; les règles du §9 s'appliquent, la réponse est dialoguée :
+  contre-proposition (« Disons X et Y, non ? »), refus d'une offre plus basse qu'une offre déjà refusée, ou départ (il
+  renverse la table, la fenêtre se ferme).
+- **Signer** accepte les conditions sur la table (demande initiale ou dernière contre-proposition) : acceptation
+  garantie (§9), il rejoint la compagnie (« Parfait. Ravi de faire partie de la compagnie… »). Dortoir plein : il
+  accepte, mais la signature attend une place (§10).
+
+Retirées (Idan, 2026-11-19 : « y'en a beaucoup trop ») : arme de prédilection, style de combat préféré, arme de tir de
+prédilection, magie de prédilection, métier avant d'être mercenaire, et les conseils du tavernier sur les
+caractéristiques (physique, mental, résistances, magie). Textes : `data/reference/tavern-dialogue.json`.
+
+## 7 — La précision des réponses (Idan, 2026-11-19)
+
+Le « facteur de précision » : le candidat se vante, l'aubergiste estime.
 
 **Vantardise du candidat** (PLAYTEST), volontairement peu fiable :
 
@@ -144,12 +163,27 @@ Arrondi(
 Il se survend toujours ; ce mensonge reste simple : Charisme, Intelligence ou autre n'affinent pas encore
 l'auto-évaluation.
 
+**Précision de l'aubergiste** : l'échelle de l'Intendant ci-dessous, figée à **50 d'Intendance**, soit **±10 %** :
+
+```
+EstimationAubergiste =
+Arrondi(
+  ValeurReelle × Rand(0.90 ; 1.10)
+)
+```
+
+**L'affinité** (Idan, 2026-11-19) : l'aubergiste la calcule comme le jeu (doc 02 : de −100 à +100, que la fiche au survol
+montre en 0 à 10 cœurs), puis y ajoute son biais, comme pour le titre. Sur la fiche du candidat, les cœurs deviennent un
+mot, chacun pour un tiers de l'échelle : **Hostile** (le premier tiers, sous −33,3), **Neutre** (le tiers du milieu),
+**Amical** (le dernier tiers, au-dessus de +33,3).
+
 ### En suspens : 3 questions et estimation de l'Intendant
 
-L'ancienne règle n'est plus utilisée à la Taverne, en attendant qu'Idan décide de la rebrancher ou de la retirer :
-**3 questions** par candidat pour tout son séjour (budget commun avec ou sans Intendant ; réponse figée), chacune sur une
-valeur chiffrée cachée (caractéristique, résistance, compétence de prédilection). L'Intendant est un rôle que le joueur
-assigne (sans assignation, pas d'Intendant ; Idan, 2026-10-03). Il estime avec sa compétence **Intendance** (PLAYTEST) :
+L'Intendant est laissé de côté (Idan, 2026-11-19). L'ancienne règle, en attendant qu'Idan décide de la rebrancher ou de
+la retirer : **3 questions** par candidat pour tout son séjour (budget commun avec ou sans Intendant ; réponse figée),
+chacune sur une valeur chiffrée cachée (caractéristique, résistance, compétence de prédilection). L'Intendant est un rôle
+que le joueur assigne (sans assignation, pas d'Intendant ; Idan, 2026-10-03). Il estime avec sa compétence
+**Intendance** (PLAYTEST) :
 
 ```
 ErreurMax = 0.20 × (1 - Clamp(Intendance, 0, 100) / 100)
@@ -161,7 +195,6 @@ Arrondi(
 ```
 
 Intendance 0 → ±20 % ; 50 → ±10 % ; 75 → ±5 % ; 100 → exact. Le joueur reçoit une estimation, pas la valeur stockée.
-Sans Intendant, il demande au candidat (vantardise ci-dessus). L'idée : rendre l'Intendant vite désirable.
 
 ## 8 — Salaire journalier et prime de mission
 
@@ -391,7 +424,7 @@ les candidats ne restent pas plusieurs jours), la renommée, la capacité du Dor
 2. coefficients de la prime de mission ;
 3. coefficients de négociation ;
 4. qualité du mensonge du candidat (`Rand 1.10–3.00`) ;
-5. liste exacte des valeurs qu'une question peut cibler ;
+5. les questions sur les tags, avec leurs biais de niveau et de précision (§6 bis, refonte des tags du doc 20) ;
 6. renégociation après recrutement ;
 7. licenciement / indemnités ;
 8. **prime de risque** éventuelle, séparée de la prime de mission fixe.

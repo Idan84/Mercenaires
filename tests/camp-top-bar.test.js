@@ -37,7 +37,13 @@ assert.match(js,/\$\("game-hud"\)\.addEventListener\("keydown",event=>\{\n    co
 // Une seule mesure règle les barres : la hauteur de la bande sombre (85 px pour un écran de 2000 px, comme la maquette) ;
 // la barre du haut a la sienne, --ht-B, à --ht-barre de B (Idan, 2026-11-14 : « une barre plus fine ») ; les réglages
 // d'Idan pour la culture sont posés sur la page (--ht-*), en bandes de cette barre.
-assert.match(css,/--hb-B:clamp\(52px,4\.25vw,85px\);/);
+// Tout proportionnel, calé sur 1080 (Idan, 2026-11-19 : « retire le plafond des barres. En phase A, on calibre tout sur
+// 1080 ») : 81,6 px en 1920 × 1080, puis l'échelle de l'interface (--ui-scale, posée par screen-ui.js), sans plancher ni plafond.
+assert.match(css,/--hb-B:calc\(81\.6px \* var\(--ui-scale,1\)\);/);
+assert.doesNotMatch(css,/--hb-B:clamp\(/,"plus de plafond");
+const screenUi=fs.readFileSync(path.join(__dirname,"..","prototype-web","screen-ui.js"),"utf8");
+assert.match(screenUi,/function updateUiScale\(\)\{\s*document\.documentElement\.style\.setProperty\("--ui-scale",String\(Math\.min\(innerWidth\/1920,innerHeight\/1080\)\)\);\s*\}\s*updateUiScale\(\);/,"--ui-scale : le plus petit des rapports largeur / 1920 et hauteur / 1080");
+assert.match(screenUi,/addEventListener\("resize",\(\)=>\{ updateUiScale\(\);/,"à jour au redimensionnement");
 assert.match(css,/--ht-B:calc\(var\(--hb-B\) \* var\(--ht-barre\)\);/,"la taille de la barre du haut");
 assert.match(css,/--hb-top:calc\(var\(--ht-B\) \* var\(--ht-top\)\);/,"la bande sombre à --ht-top bandes du haut de l'écran");
 assert.match(css,/--hud-top-h:calc\(var\(--hb-top\) \+ var\(--ht-B\) \* 1\.3\);/,"les lieux commencent sous la barre");
@@ -53,8 +59,10 @@ assert.match(css,/\.game-top-bar:not\(\.has-art\) \.hud-bar-art\{/,"un cadre pro
 assert.match(css,/#hud-company\.is-two-lines\{[^}]*-webkit-line-clamp:2;/,"un nom trop long passe sur deux lignes");
 assert.match(css,/\.game-top-bar #hud-day::before\{content:"\\00a0·\\00a0";/,"la date sur une ligne : « 1 Brumecendre · Jour 1 »");
 assert.match(css,/body\[data-screen="camp"\] \.topbar\{display:none\}/,"plus de logo au camp, même sur l'accueil");
-assert.match(css,/body\[data-screen="camp"\]:not\(\[data-camp-scene="home"\]\) \.app-shell\{padding-top:calc\(var\(--hud-top-h\) \+ 24px\)\}/,"chaque lieu commence sous la barre");
-assert.match(css,/body\[data-screen="camp"\]\[data-camp-scene="home"\] \.app-shell\{padding-top:calc\(var\(--hud-top-h\) \+ 18px\)\}/);
+// Le contenu (.app-shell) est mis à l'échelle (zoom) : la hauteur de la barre s'y prend en valeur de 1080 (--hud-top-z).
+assert.match(css,/body\[data-screen="camp"\]:not\(\[data-camp-scene="home"\]\) \.app-shell\{padding-top:calc\(var\(--hud-top-z\) \+ 24px\)\}/,"chaque lieu commence sous la barre");
+assert.match(css,/--hud-top-z:calc\(var\(--hud-top-h\) \/ var\(--ui-scale,1\)\);/,"la barre en valeur de 1080");
+assert.match(css,/body\[data-screen="camp"\]\[data-camp-scene="home"\] \.app-shell\{padding-top:calc\(var\(--hud-top-z\) \+ 18px\)\}/);
 assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/,"en combat, aucune des deux barres");
 assert.ok(html.indexOf('<script src="hud-bars.js"></script>')>0&&html.indexOf('<script src="hud-bars.js"></script>')<html.indexOf('<script src="screen-ui.js"></script>'));
 
@@ -100,7 +108,7 @@ fs.rmSync(tmp,{recursive:true,force:true});
 // Le script reconnaît la culture d'un pack par son dossier (peuple, puis mots).
 const {cultureOfPack}=require("../scripts/build-hud-bars.js");
 const packCulture=pack=>cultureOfPack(pack,cultures)?.nom;
-assert.equal(packCulture("Humains/nordique"),"Montagnes du Nord","un humain nordique : pas les Tribus nordiques (hommes-bêtes)");
+assert.equal(packCulture("Humains/nordique"),"Empire de la nuit blanche","un humain nordique : pas les Tribus nordiques (hommes-bêtes)");
 assert.equal(packCulture("Orcs/orques-noirs"),"Orcs noirs");
 assert.equal(packCulture("Gnomes/gnomes-forets"),"Gnomes des forêts");
 assert.equal(packCulture("Gobelins/gobelins-cavernes-ferrailleurs"),"Caravanes de ferrailleurs");

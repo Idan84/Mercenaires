@@ -442,22 +442,22 @@
     {
       "cle": "panneau-missions",
       "famille": "Panneau des missions",
-      "nombre": 39,
+      "nombre": 40,
       "ou": "« Trouver une mission » : le panneau de bois, les feuilles d'annonce, leurs attaches (clous, punaises, cire, dagues), lambeaux, flèche.",
       "pourquoi": "Un vrai panneau d'affichage de taverne, avec ses annonces usées.",
       "fichiers": "assets/taverne/panneau-missions.webp, feuille-N(-large).webp, estompe-N.webp, clou-N, punaise-N, cire-*, dague-*, lambeau-N, fleche-fer.webp",
       "affichage": "Panneau plein écran ; une feuille environ 350 × 560 px sur 1920 × 1080 ; attaches de 12 à 100 unités du panneau.",
       "depot": "Planches sur fond vert uni (JC3 détoure) ; panneau JPEG large (2000 px).",
-      "format_jeu": "WebP ; transparents sauf le panneau et le papier froissé.",
+      "format_jeu": "WebP ; transparents sauf le panneau et les papiers froissé et vieilli.",
       "alternates": "Oui : feuille et usure, attache (clou 50 %, punaise 30 %, cire 20 %), tête et couleur de cire tirées au hasard pour chaque annonce.",
-      "source": "Hostinger media/background/Taverne/Missions/ → scripts/key-green-sheet.js, make-landscape-sheets.js, make-fade-masks.js ; papier froissé : ambientCG Paper003 (CC0).",
+      "source": "Hostinger media/background/Taverne/Missions/ → scripts/key-green-sheet.js, make-landscape-sheets.js, make-fade-masks.js ; papier froissé : ambientCG Paper003 (CC0) ; papier vieilli (fond de l'écran Recruter) : Idan.",
       "exemples": [
         "assets/taverne/feuille-1.webp",
         "assets/taverne/clou-1.webp",
         "assets/taverne/cire-rouge.webp"
       ],
       "motifs": [
-        "assets/taverne/{panneau-missions,papier-froisse,fleche-fer}.webp",
+        "assets/taverne/{panneau-missions,papier-froisse,papier-vieilli,fleche-fer}.webp",
         "assets/taverne/{feuille,estompe,clou,punaise,cire,dague,lambeau}-*.webp"
       ],
       "variantes": true
@@ -528,13 +528,13 @@
     {
       "cle": "kits-culture",
       "famille": "Kits graphiques des cultures (cadre de la fiche, barres du camp)",
-      "nombre": 52,
-      "ou": "Fiche au survol des cultures refaites avec leur kit (Elfes noirs, Elfes sylvains, Elfes des grandes cités) : cadre en une pièce (coin, bordures, séparation et raccords en T), ornements de coin, pose (couronne, dryade, arc), suspendu, allongé, titre, cuir ou texture derrière le nom. Barres du camp de leur capitaine : fond, sangles, emblème au bout de la barre du haut, rond central et bouton Jour suivant.",
+      "nombre": 104,
+      "ou": "Fiche au survol des cultures refaites avec leur kit (Elfes noirs, Elfes sylvains, Elfes des grandes cités, Nains des montagnes, Nains du chaos, Nains esclaves) : cadre en une pièce (coin, bordures, séparation et raccords en T), ornements de coin, pose (couronne, dryade, arc, bélier, accélérateur, chopes), suspendu, allongé, titre, cuir ou texture derrière le nom. Barres du camp de leur capitaine : fond, sangles, emblème au bout de la barre du haut, rond central et bouton Jour suivant.",
       "pourquoi": "Le kit graphique de chaque culture (Chatty, Idan) : un cadre de base cohérent (même épaisseur, même pas de clous), puis des ornements posés dessus.",
       "fichiers": "assets/fiche/kits/<culture>/<pièce>.webp",
       "affichage": "Cadre de la fiche (860 × 565) à l'épaisseur de son kit ; ornements de coin 170 à 280 px ; poses 220 à 230 px ; texture en tuile ; rond central 345 à 360 px dans la barre du bas.",
       "depot": "Le kit complet en PNG transparents (voir « Blood & Wages — Kit graphique par culture ») ; la bordure et les coins sobres à la même échelle.",
-      "format_jeu": "WebP : coin du cadre 240 à 280 px, cellules de bordure d'un pas (74 à 300 px), raccord en T, ornements recadrés (400 à 700 px), titre 500 px, texture 512 à 640 px, rond central 1200 px, bouton 320 px, emblème 480 px.",
+      "format_jeu": "WebP : coin du cadre 110 à 280 px, cellules de bordure d'un pas (74 à 800 px), raccord en T, ornements recadrés (400 à 700 px), titre 500 px, texture 512 à 640 px, rond central 1200 px, bouton 320 px, emblème 480 px.",
       "alternates": "Non. Une pièce par rôle ; la place et la taille de chacune se règlent dans data/reference/culture-kits.json.",
       "source": "assets-src/Kits/<culture>/ (masters et mesures), scripts/build-culture-kit.sh.",
       "exemples": [

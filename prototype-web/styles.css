@@ -6,6 +6,20 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Tout proportionnel (Idan, 2026-11-19 : « A, on part sur tout proportionnel », puis « Profites-en pour tout passer en
+   proportionnel sur le reste des écrans ») : chaque écran est réglé pour 1920 × 1080, puis suit la taille de l'écran d'un
+   bloc. --ui-scale (screen-ui.js) est le plus petit des rapports largeur / 1920 et hauteur / 1080 ; le contenu
+   (.app-shell), les fenêtres et le menu pause sont mis à cette échelle (zoom). Les barres du camp ont la leur (--hb-B).
+   Dedans, une taille en part d'écran se divise par l'échelle : --vw, --vh, --dvh valent 1 % de l'écran « de référence »
+   (100 * var(--vw) fait toute la largeur une fois l'échelle appliquée) ; la hauteur des barres aussi (--hud-*-z, --hb-B-z : leur valeur en 1080, pour ce qui est mis à l'échelle). */
+:root{--vw:calc(1vw / var(--ui-scale,1));--vh:calc(1vh / var(--ui-scale,1));--dvh:calc(1dvh / var(--ui-scale,1));
+  --hud-top-z:calc(var(--hud-top-h) / var(--ui-scale,1));--hb-B-z:calc(var(--hb-B) / var(--ui-scale,1));--hud-bottom-z:calc(var(--hud-bottom-h) / var(--ui-scale,1))}
+.app-shell,dialog,.game-pause-panel{zoom:var(--ui-scale,1)}
+/* Les bulles et cartes flottantes vont dans la fenêtre ouverte (déjà à l'échelle), sinon dans la page : là, elles prennent
+   l'échelle elles-mêmes (leur position, en pixels d'écran, est divisée par leur zoom : item-card-ui.js, picto-ui.js,
+   deal-ui.js). */
+body>#picto-tip,body>#item-card-float,body>.deal-menu{zoom:var(--ui-scale,1)}
 body { margin: 0; min-height: 100vh; }
 
 /* Fond du camp (Issue #40) : le château est le quartier général. Menu principal et home du camp,
@@ -31,7 +45,7 @@ button { cursor: pointer; }
 .brand-kicker { margin-left: 6px; margin-bottom: -12px; position: relative; z-index: 1; }
 .brand-logo {
   display: block;
-  width: clamp(320px, 48vw, 600px);
+  width: clamp(320px, calc(48 * var(--vw)), 600px);
   height: auto;
   margin: 0;
   object-fit: contain;
@@ -39,7 +53,7 @@ button { cursor: pointer; }
 }
 body:has(#mission-panel:not(.hidden)) .brand-block { display: none; }
 body:has(#mission-panel:not(.hidden)) .topbar { justify-content: flex-end; min-height: 0; }
-h1 { font-size: clamp(2rem, 5vw, 4rem); margin: 0; letter-spacing: -0.05em; }
+h1 { font-size: clamp(2rem, calc(5 * var(--vw)), 4rem); margin: 0; letter-spacing: -0.05em; }
 h2 { margin: 0; letter-spacing: -0.025em; }
 .subtitle, .muted { color: #6d655c; }
 .eyebrow { margin: 0 0 6px; text-transform: uppercase; letter-spacing: .12em; font-size: .74rem; font-weight: 800; color: #792d23; }
@@ -77,7 +91,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .hero-card button { color: #f6e0da; }
 .hero-card .character-cell small { color: #aaa097; }
 
-#character-dialog { width: min(1220px, calc(100vw - 28px)); max-height: 90vh; overflow: auto; border: 0; border-radius: 18px; padding: 0; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
+#character-dialog { width: min(1220px, calc(calc(100 * var(--vw)) - 28px)); max-height: calc(90 * var(--vh)); overflow: auto; border: 0; border-radius: 18px; padding: 0; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
 #character-dialog::backdrop { background: rgba(20,18,16,.55); }
 .dialog-head { position: sticky; top: 0; z-index: 2; background: #fff; display: flex; flex-wrap: wrap; justify-content: space-between; padding: 20px 22px 0; border-bottom: 1px solid #f6e0da; }
 .sheet-tabs { flex-basis: 100%; display: flex; gap: 4px; margin-top: 14px; overflow-x: auto; }
@@ -235,7 +249,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .compare-legend .legend-current small { color:#792d23; font-weight:800; }
 
 /* Onglet Équipement (Idan, 2026-10-21) : silhouette sur un parchemin, objets posés sur le corps. */
-.gear{display:grid;grid-template-columns:minmax(0,1fr) min(520px,46vw) minmax(0,1fr);gap:18px;align-items:start}
+.gear{display:grid;grid-template-columns:minmax(0,1fr) min(520px,calc(46 * var(--vw))) minmax(0,1fr);gap:18px;align-items:start}
 .gear-side{display:grid;gap:12px;min-width:0}
 .gear-card{display:grid;gap:10px;padding:12px;border:1px solid #7a5c3c;border-radius:10px;background:#2e231c}
 .gear-card h4{margin:0;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
@@ -389,7 +403,7 @@ body[data-screen="mission"] .topbar{display:none}
    carte ») : la carte prend sa place ; Échap ouvre toujours le menu de pause. */
 body[data-screen="mission"] .game-hud{display:none}
 body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px}
-.mission-panel{display:flex;flex-direction:column;gap:8px;height:calc(100dvh - 16px);min-height:540px;margin:0;padding:8px 10px 10px;border:1px solid #7a5c3c;border-radius:14px;
+.mission-panel{display:flex;flex-direction:column;gap:8px;height:calc(calc(100 * var(--dvh)) - 16px);min-height:540px;margin:0;padding:8px 10px 10px;border:1px solid #7a5c3c;border-radius:14px;
   background:linear-gradient(180deg,rgba(255,214,150,.05),transparent 30%),linear-gradient(180deg,#2e231c,#15100c);box-shadow:0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149);color:#eadcbc}
 .mission-topline{flex:none;margin:0;gap:16px}
 .mission-turn-block{flex:0 1 auto;min-width:210px}
@@ -683,7 +697,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px}
   .mission-panel{height:auto}
   .mission-topline{flex-wrap:wrap}.mission-initiative{order:3;flex-basis:100%;justify-content:flex-start}
   .mission-layout{display:flex;flex-direction:column}
-  .mission-center{flex:none;height:62vh}
+  .mission-center{flex:none;height:calc(62 * var(--vh))}
   .mission-drawer{flex-direction:column}.mission-side .mission-drawer-toggle{order:0}
   .mission-drawer-toggle{width:auto;padding:8px;writing-mode:horizontal-tb;border:0}
   .mission-drawer-body,.mission-console-wrap .mission-drawer-body{width:auto;max-height:260px}
@@ -749,7 +763,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px}
 .avatar-fallback span{
   position:relative;
   font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(2rem,5vw,4.2rem);
+  font-size:clamp(2rem,calc(5 * var(--vw)),4.2rem);
   line-height:.9;
   color:#d3ac76;
   letter-spacing:-.06em;
@@ -792,7 +806,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px}
 
 @media(max-width:720px){
   .character-overview{grid-template-columns:1fr;}
-  .avatar-frame--detail{width:min(240px,72vw);margin-inline:auto;}
+  .avatar-frame--detail{width:min(240px,calc(72 * var(--vw)));margin-inline:auto;}
 }
 
 /* Fiche : biographie et grimoire (styles de Chatty, PR #29) */
@@ -847,8 +861,8 @@ body[data-screen="home"] .topbar {
   position: relative;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: calc(100dvh - 36px);
-  padding: clamp(18px, 2.4dvh, 30px) 0 10px;
+  min-height: calc(calc(100 * var(--dvh)) - 36px);
+  padding: clamp(18px, calc(2.4 * var(--dvh)), 30px) 0 10px;
   gap: 6px;
   margin-bottom: 0;
   background: none;
@@ -861,8 +875,8 @@ body[data-screen="home"] .brand-block {
   width: 100%;
 }
 body[data-screen="home"] .brand-logo {
-  width: min(680px, 54vw, 66dvh);
-  max-width: 92vw;
+  width: min(680px, calc(54 * var(--vw)), calc(66 * var(--dvh)));
+  max-width: calc(92 * var(--vw));
   filter:
     drop-shadow(0 8px 8px rgba(0,0,0,.45))
     drop-shadow(0 18px 30px rgba(0,0,0,.28));
@@ -882,7 +896,7 @@ body[data-screen="home"] .brand-kicker {
 body:not([data-screen="home"]) .main-menu { display: none; }
 body[data-screen="home"] .menu-back,
 body[data-screen="mission"] .menu-back { display: none; }
-body:not([data-screen="home"]) .brand-logo { width: clamp(180px, 18vw, 250px); }
+body:not([data-screen="home"]) .brand-logo { width: clamp(180px, calc(18 * var(--vw)), 250px); }
 /* L'audit du moteur est un outil de développement : il n'apparaît qu'à la création du capitaine (ou en cas d'erreur). */
 body:not([data-screen="setup"]) #engine-audit:not(.audit-error) { display: none; }
 
@@ -903,7 +917,7 @@ body:not([data-screen="setup"]) #engine-audit:not(.audit-error) { display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: min(380px, 86vw);
+  width: min(380px, calc(86 * var(--vw)));
   min-height: 52px;
   padding: 9px 46px 13px;
   overflow: visible;
@@ -1012,27 +1026,16 @@ body:not([data-screen="setup"]) #engine-audit:not(.audit-error) { display: none;
 }
 .menu-btn:disabled .menu-btn-line { opacity: .14; }
 
-@media (max-height: 820px) {
-  body[data-screen="home"] .topbar { padding-top: 16px; gap: 2px; }
-  body[data-screen="home"] .brand-logo { width: min(620px, 52vw, 62dvh); }
-  .main-menu { gap: 8px; }
-  .menu-btn {
-    min-height: 47px;
-    padding-top: 8px;
-    padding-bottom: 11px;
-    font-size: .94rem;
-  }
-}
 @media (max-width: 560px) {
   body[data-screen="home"] .brand-kicker {
     left: 50%;
     transform: translateX(-50%);
     width: max-content;
-    max-width: 90vw;
+    max-width: calc(90 * var(--vw));
     text-align: center;
   }
-  body[data-screen="home"] .brand-logo { width: min(94vw, 560px); }
-  .menu-btn { width: min(88vw, 380px); }
+  body[data-screen="home"] .brand-logo { width: min(calc(94 * var(--vw)), 560px); }
+  .menu-btn { width: min(calc(88 * var(--vw)), 380px); }
 }
 
 /* Introduction (intro-ui.js) : le capitaine mourant à droite, le texte à gauche sur un dégradé sombre. */
@@ -1064,15 +1067,15 @@ body[data-screen="creation"] .topbar { display: none; }
   justify-content: center;
   gap: 26px;
   height: 100%;
-  max-width: min(50vw, 660px);
-  padding: 6vh 0 6vh clamp(24px, 6vw, 100px);
+  max-width: min(calc(50 * var(--vw)), 660px);
+  padding: calc(6 * var(--vh)) 0 calc(6 * var(--vh)) clamp(24px, calc(6 * var(--vw)), 100px);
 }
 .intro-text { cursor: pointer; }
 .intro-text p {
   margin: 0 0 .85em;
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
-  font-size: clamp(1rem, 1.22vw, 1.3rem);
+  font-size: clamp(1rem, calc(1.22 * var(--vw)), 1.3rem);
   line-height: 1.55;
   color: #eadcbc;
   text-shadow: 0 2px 5px #000;
@@ -1081,12 +1084,12 @@ body[data-screen="creation"] .topbar { display: none; }
   transition: opacity 1s ease, transform 1s ease;
 }
 .intro-text p.is-shown { opacity: 1; transform: none; }
-.intro-text p:first-child { font-size: clamp(1.15rem, 1.5vw, 1.6rem); color: #f4e5c7; }
+.intro-text p:first-child { font-size: clamp(1.15rem, calc(1.5 * var(--vw)), 1.6rem); color: #f4e5c7; }
 .intro-text .intro-question { color: #f0c77f; font-weight: 600; }
 .intro-actions { display: flex; align-items: center; gap: 22px; }
 .intro-cta {
   width: auto;
-  min-width: min(320px, 78vw);
+  min-width: min(320px, calc(78 * var(--vw)));
   min-height: 46px;
   padding: 8px 38px 12px;
   border-color: rgba(202,166,98,.42);
@@ -1163,8 +1166,8 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
    Les scènes utilisent encore le fond du château ; data-camp-scene prépare les futurs backgrounds dédiés. */
 body[data-screen="camp"][data-camp-scene="home"] .app-shell {
   max-width: none;
-  min-height: 100dvh;
-  padding: 18px clamp(18px,3vw,48px) 28px;
+  min-height: calc(100 * var(--dvh));
+  padding: 18px clamp(18px,calc(3 * var(--vw)),48px) 28px;
 }
 body[data-screen="camp"][data-camp-scene="home"] .topbar {
   padding: 0;
@@ -1174,7 +1177,7 @@ body[data-screen="camp"][data-camp-scene="home"] .topbar {
 }
 body[data-screen="camp"][data-camp-scene="home"] .brand-kicker { display: none; }
 body[data-screen="camp"][data-camp-scene="home"] .brand-logo {
-  width: clamp(170px,16vw,235px);
+  width: clamp(170px,calc(16 * var(--vw)),235px);
   filter: drop-shadow(0 8px 16px rgba(0,0,0,.35));
 }
 body[data-screen="camp"][data-camp-scene="home"] .menu-back {
@@ -1186,12 +1189,12 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
 }
 
 .camp-hub {
-  min-height: calc(100dvh - 116px);
+  min-height: calc(calc(100 * var(--dvh)) - 116px);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
-  padding: 2dvh clamp(4px,2vw,26px) 8dvh;
+  padding: calc(2 * var(--dvh)) clamp(4px,calc(2 * var(--vw)),26px) calc(8 * var(--dvh));
 }
 
 .camp-scene {
@@ -1259,8 +1262,8 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
   .camp-hub {
     align-items: center;
     justify-content: flex-end;
-    min-height: calc(100dvh - 98px);
-    padding-bottom: 6dvh;
+    min-height: calc(calc(100 * var(--dvh)) - 98px);
+    padding-bottom: calc(6 * var(--dvh));
   }
 }
 
@@ -1348,15 +1351,15 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
    logo et les marges. La Taverne prend toute la largeur avec la marge du camp : ses boutons sont en miroir de
    ceux du camp, sans 100vw (qui compte la barre de défilement et faisait apparaître la barre horizontale). */
 body[data-screen="camp"][data-camp-scene="home"] .app-shell,
-body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .app-shell{display:flex;flex-direction:column;min-height:100dvh}
-body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .app-shell{max-width:none;padding-left:clamp(18px,3vw,48px);padding-right:clamp(18px,3vw,48px)}
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .app-shell{display:flex;flex-direction:column;min-height:calc(100 * var(--dvh))}
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .app-shell{max-width:none;padding-left:clamp(18px,calc(3 * var(--vw)),48px);padding-right:clamp(18px,calc(3 * var(--vw)),48px)}
 body[data-screen="camp"][data-camp-scene="home"] #game-panel,
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] #game-panel,
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] [data-camp-scene-panel="tavern"]{flex:1;display:flex;flex-direction:column;width:100%;max-width:none;margin:0}
 body[data-screen="camp"][data-camp-scene="home"] .camp-hub,
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-hub{flex:1;min-height:0}
 /* Dialogue façon jeu de rôle : portrait du tavernier (pris dans le décor), sa phrase, réponses numérotées. */
-.talk-dialog{width:min(560px,92vw);padding:0;border:1px solid #b58a45;border-radius:14px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#eadcbc;box-shadow:0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149);font-family:Georgia,serif}
+.talk-dialog{width:min(560px,calc(92 * var(--vw)));padding:0;border:1px solid #b58a45;border-radius:14px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#eadcbc;box-shadow:0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149);font-family:Georgia,serif}
 .talk-dialog::backdrop{background:rgba(7,5,4,.35)}
 .talk-head{display:flex;align-items:center;gap:14px;padding:16px 20px 12px;border-bottom:1px solid #7a5c3c}
 .talk-portrait{flex:none;width:72px;height:72px;border:2px solid #c9a461;border-radius:50%;background:#2e231c url("/media/video/Img_Tavern.jpg") no-repeat -600px -118px / 768px auto;box-shadow:0 4px 14px #000a}
@@ -1370,10 +1373,10 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-options button:hover,.talk-options button:focus-visible{background:#4a3424;color:#ffe1ac;outline:none}
 .talk-options button:disabled{background:transparent;color:#786f65;cursor:not-allowed}
 .talk-options button:disabled::before{color:#7a5c3c}
-.talk-dialog--recruit{width:min(640px,94vw)}
+.talk-dialog--recruit{width:min(640px,calc(94 * var(--vw)))}
 /* Portrait en grand, 400 px sur la gauche (Idan, 2026-10-25) : recrutement, échanges d'équipement, intendant. Le
    bandeau du haut se fond dans la grille (display:contents) : le portrait occupe toute la colonne de gauche. */
-.talk-dialog--recruit{width:min(1000px,96vw);overflow:hidden}
+.talk-dialog--recruit{width:min(1000px,calc(96 * var(--vw)));overflow:hidden}
 .talk-dialog--recruit[open]{display:grid;grid-template-columns:400px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;align-items:start;height:440px}
 .talk-dialog--recruit .talk-head{display:contents}
 .talk-dialog--recruit .talk-face{grid-column:1;grid-row:1/span 3;align-self:stretch;min-height:400px;border-right:1px solid #7a5c3c;background:#15100c}
@@ -1392,11 +1395,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--recruit .avatar-frame--talk .avatar-fallback span{font-size:5rem}
 @media(max-width:760px){
   .talk-dialog--recruit[open]{grid-template-columns:minmax(0,1fr);grid-template-rows:none;height:auto}
-  .talk-dialog--recruit>.talk-log{max-height:min(46vh,380px)}
+  .talk-dialog--recruit>.talk-log{max-height:min(calc(46 * var(--vh)),380px)}
   .talk-dialog--recruit .talk-face{grid-row:auto;min-height:0;border-right:0;border-bottom:1px solid #7a5c3c}
   .talk-dialog--recruit .talk-head>div:not(.talk-face){grid-column:1;grid-row:auto}
   .talk-dialog--recruit>:not(.talk-head){grid-column:1}
-  .talk-dialog--recruit .avatar-frame--talk{width:100%;height:auto;max-height:42vh;aspect-ratio:1}
+  .talk-dialog--recruit .avatar-frame--talk{width:100%;height:auto;max-height:calc(42 * var(--vh));aspect-ratio:1}
 }
 .talk-face{flex:none}
 .avatar-frame--talk{width:96px;aspect-ratio:1;margin:0;border:2px solid #c9a461;border-radius:10px;box-shadow:0 4px 14px #000a}
@@ -1404,7 +1407,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .avatar-frame--talk .avatar-fallback span{font-size:1.8rem}
 .avatar-frame--talk .avatar-fallback small{display:none}
 .talk-head .eyebrow .picto{vertical-align:-3px;margin-right:4px}
-.talk-log{display:grid;gap:10px;max-height:min(46vh,380px);overflow-y:auto;padding:16px 22px 8px;scrollbar-color:#7a5c3c transparent}
+.talk-log{display:grid;gap:10px;max-height:min(calc(46 * var(--vh)),380px);overflow-y:auto;padding:16px 22px 8px;scrollbar-color:#7a5c3c transparent}
 .talk-say{display:grid;gap:2px;margin:0}
 .talk-say b{color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
 .talk-say span{font:italic 17px/1.45 Georgia,serif}
@@ -1420,36 +1423,107 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-btn{background:linear-gradient(180deg,#64492e,#3b2a1b);color:#ffe1ac}
 .talk-offer-back{border-color:#7a5c3c;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1ac;outline:none}
-#tavern-recruits-view{margin-top:24px}
-/* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. */
-.tavern-back{margin-bottom:16px;padding:8px 14px;border:1px solid #b58a45;border-radius:10px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#f0d395;font:600 14px Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer}
-.tavern-back:hover,.tavern-back:focus-visible{border-color:#ffe1ac;color:#ffe1ac;outline:none}
-/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), une flèche posée sur
-   chaque bord, effacée au bout ; quand tout tient, la rangée est centrée (marges automatiques : rien n'est coupé si elle
-   déborde) et les flèches disparaissent. Cartes de 150 à 220 px de large ; de la marge dessous pour leur ombre. */
-.recruit-carousel{position:relative}
-.recruit-track{display:flex;gap:12px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
-.recruit-track::-webkit-scrollbar{display:none}
+/* Tout proportionnel (Idan, 2026-11-19 : « A, on part sur tout proportionnel ») : l'écran est réglé pour 1920 × 1080
+   (--board-w du panneau des missions à cette taille, barres à 81,6 px de bande), puis les cartes et les flèches suivent la
+   taille de l'écran d'un bloc (.recruit-carousel : zoom par --ui-scale, screen-ui.js). */
+#tavern-recruits-view{--board-w:1935.5px;
+  --recruit-portrait-w:clamp(100px,calc((1080px - 364px - 81.6px * var(--bb-h) - 81.6px * var(--ht-barre) * (var(--ht-top) + 1.3)) * 9 / 16),280px);
+  --recruit-pad:50px;--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .088);
+  margin-top:-8px;margin-bottom:-48px}
+/* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
+   à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
+   puis « Le grand parchemin passe sous les barres mais 100% en largeur et hauteur ») : tout l'écran, sous les barres. */
+#tavern-recruits-view::before{content:"";position:fixed;inset:0;z-index:0;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:brightness(.66) sepia(.3) saturate(1.15) contrast(1.05);pointer-events:none}
+/* Plus foncé que les feuilles des candidats, avec une texture plus marquée (Idan, 2026-11-19 : « Tu peux la foncer et ajouter
+   une texture plus marquée. On doit être plus foncé que les parchemins des mercenaires ») : le parchemin assombri (filtre
+   ci-dessus), puis par-dessus, découpés à sa forme, le papier froissé des annonces (papier-froisse.webp) et un bord plus
+   sombre, en mode produit (.recruit-froisse, premier enfant de la vue) ; enfin, en plus, la texture de papier vieilli
+   d'Idan (papier-vieilli.webp : fibres, taches, bords brûlés) en lumière douce (Idan, 2026-11-19 : « Le papier froissé
+   fait un peu fake », puis « ma texture c'est à poser en sus en mode soft light … en sus du parchemin du papier
+   froissé »). Les cartes et les flèches passent au-dessus (.recruit-carousel, z-index 1). */
+.recruit-froisse,#tavern-recruits-view::after{position:fixed;inset:0;z-index:0;pointer-events:none;
+  -webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;mask-border:url("assets/creation/parchemin.webp") 180 fill / 80px stretch}
+.recruit-froisse{mix-blend-mode:multiply;opacity:.7;
+  background:radial-gradient(ellipse 75% 70% at 50% 48%,transparent 45%,rgba(60,34,12,.45) 100%),url("assets/taverne/papier-froisse.webp") center/512px repeat}
+#tavern-recruits-view::after{content:"";mix-blend-mode:soft-light;background:url("assets/taverne/papier-vieilli.webp") center/cover no-repeat}
+/* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. Refait le
+   2026-11-19 (Idan : « Fond parchemin. On vire le bouton retour. Notre bouton (celui du formulaire capitaine) pour aller lui
+   parler. On optimise un peu la présentation de la fiche ») : chaque candidat sur une feuille des annonces de missions, posée
+   sur un grand parchemin (plus bas), l'encre et les polices de la charte, et le bouton de la charte (jamais déformé) ; pas
+   de bouton retour, la barre du bas mène partout. */
+/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée de cartes qui glissent d'une page, trois cartes par écran
+   (Idan, 2026-11-19 : « Toujours 3 candidats par écran. On slide pour en avoir 3 autres » ; tavern-ui.js lui donne la
+   largeur de trois cartes) et une flèche de chaque côté, hors des cartes, toujours affichée. Moins de trois candidats : ils
+   sont centrés (marges automatiques). Cartes de la largeur du portrait ; de la marge dessous pour leur ombre. */
+/* La rangée sort de la colonne du camp (1 200 px) : elle prend la largeur de l'écran, moins 16 px de chaque côté ; les cartes
+   écartées de 42 px (Idan, 2026-11-19 : « On écarte de 10px de plus les fiches », puis « On ajoute 10 de marge entre chaque
+   parchemin »). */
+.recruit-carousel{position:relative;z-index:1;overflow-x:clip;display:flex;align-items:center;justify-content:center;gap:24px;margin-inline:calc(-1 * max(0px,(calc(100 * var(--vw)) - 1200px) / 2) - 20px + 16px)}
+.recruit-track{flex:0 1 auto;min-width:0;display:flex;gap:42px;padding:4px 2px 44px;margin-bottom:-32px}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}
-.recruit-track .recruit-card{flex:0 0 auto;width:clamp(150px,calc((100dvh - 316px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16),220px);max-width:none;scroll-snap-align:start}
+/* Les cartes glissent d'une page (--recruit-shift, tavern-ui.js) ; hors de la page, elles s'effacent. */
+.recruit-track .recruit-card{flex:0 0 auto;translate:var(--recruit-shift,0px) 0;transition:translate .5s ease,opacity .4s ease}
+.recruit-track .recruit-card.is-off{opacity:0;visibility:hidden;pointer-events:none;transition:translate .5s ease,opacity .4s ease,visibility 0s .4s}
 .recruit-track .recruit-empty{flex:1}
-.recruit-nav{position:absolute;top:calc(50% - 42px);z-index:2;width:40px;height:72px;padding:0;border:1px solid #b58a45;border-radius:10px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#f0d395;font:700 30px/1 Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer;transition:opacity .2s}
-.recruit-nav[data-recruit-scroll="-1"]{left:-4px}
-.recruit-nav[data-recruit-scroll="1"]{right:-4px}
-.recruit-nav:hover,.recruit-nav:focus-visible{border-color:#ffe1ac;color:#ffe1ac;outline:none}
-.recruit-nav:disabled{opacity:0;pointer-events:none}
-.recruit-carousel.is-static .recruit-nav{display:none}
-.recruit-card{display:flex;flex-direction:column;width:100%;max-width:min(220px,calc((100dvh - 316px - var(--hud-bottom-h) - var(--hud-top-h)) * 9 / 16));overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:0 12px 30px #000b;color:#eadcbc}
-.avatar-frame--recruit{width:100%;aspect-ratio:9 / 16;margin:0;border:0;border-bottom:1px solid #7a5c3c;border-radius:0;box-shadow:none}
+/* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), l'équerre de fer
+   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol comme
+   sur le panneau ; au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en
+   grisée », sur le panneau des missions aussi) : elle garde sa place, la rangée ne bouge pas. */
+.recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:640/284;font-size:0;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+.recruit-nav[data-recruit-scroll="-1"]{transform:scaleX(-1)}
+.recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
+.recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
+.recruit-nav:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
+/* La carte (#tavern-recruits-view : --recruit-card-w), réglée pour 1920 × 1080 puis mise à l'échelle avec tout l'écran :
+   le portrait en pied, ou le texte s'il est plus large, et 50 px de papier de chaque côté (--recruit-pad ; Idan,
+   2026-11-19 : « on augmente le padding gauche - droite à l'intérieur des parchemins », puis « On rajoute 20 de padding
+   left et 20 de padding right »). Le texte a au moins 260 px, pour tenir toujours en deux lignes, même l'origine la plus
+   longue (« Homme-bête des clans des grandes steppes au sang de démon »). Le portrait prend toute la hauteur libre entre
+   les barres en 1080, réglée sur les barres des Elfes (Idan, 2026-11-19 : « La taille y est validée ») : la carte commence
+   20 px sous la barre du haut et finit au-dessus de l'anneau de la barre du bas, qui dépasse de la barre (364 px : le
+   reste de la carte, 311 px, et ces marges). Le nom et l'origine ont toujours la place de deux lignes, pour que les cartes
+   restent alignées. La vue rend les 48 px gardés sous le contenu du camp (la carte va jusqu'à la barre, sans défiler). */
+.recruit-card{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
+  --feuille:url("assets/taverne/feuille-1.webp");
+  position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:var(--recruit-card-w);padding:22px var(--recruit-pad) 16px;color:var(--encre);font:500 16px/1.25 var(--police-texte)}
+/* Le papier : une des huit feuilles des annonces de missions (data-paper, recruitPaper dans tavern-ui.js), en neuf parts
+   (coins jamais déformés : la feuille, presque carrée, s'allonge par ses bords), au teint de son papier (--tone, --hue,
+   --sat) ; une ombre portée sur le grand parchemin, pour qu'elles s'en détachent, plus grande et plus floue que celle des
+   annonces (Idan, 2026-11-19 : « elles ne suivent pas vraiment les contours du parchemin déchiré … plus grande et plus
+   floue, ça passera mieux »). */
+.recruit-card::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:var(--bord,34px);border-image:var(--feuille) var(--tranche,80) fill / var(--bord,34px) stretch;
+  filter:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1)) drop-shadow(calc(var(--board-w) * -.005) calc(var(--board-w) * .011) calc(var(--board-w) * .014) rgba(0,0,0,.6))}
+/* Du papier autour du contenu (Idan, 2026-11-19 : « On fait en sorte d'avoir de la marge en déplaçant / déformant des
+   parchemins, sinon, on prend les autres ») : là où une déchirure ou une encoche entre trop dans la feuille, son bord est
+   affiné (une tranche plus large de l'image, --tranche, dans un bord plus fin, --bord), pour garder au moins 12 px de
+   papier autour du portrait et 8 autour du texte et du bouton, de 1280 × 720 à 2560 × 1440. La feuille 5 (encoche en
+   bas à droite, trop profonde) n'est plus tirée (recruitPaper). */
+.recruit-card[data-paper="1"]{--tranche:110 110 80 80;--bord:23px 33px 34px 34px}
+.recruit-card[data-paper="2"]{--feuille:url("assets/taverne/feuille-2.webp");--bord:24px 24px 34px 29px}
+.recruit-card[data-paper="3"]{--feuille:url("assets/taverne/feuille-3.webp")}
+.recruit-card[data-paper="4"]{--feuille:url("assets/taverne/feuille-4.webp");--bord:24px 34px 34px 34px}
+.recruit-card[data-paper="6"]{--feuille:url("assets/taverne/feuille-6.webp");--tranche:80 280 80 200;--bord:34px 59px 24px 42px}
+.recruit-card[data-paper="7"]{--feuille:url("assets/taverne/feuille-7.webp");--tranche:80 80 80 110;--bord:17px 34px 34px 47px}
+.recruit-card[data-paper="8"]{--feuille:url("assets/taverne/feuille-8.webp");--bord:34px 34px 17px 34px}
+.avatar-frame--recruit{flex:none;width:var(--recruit-portrait-w);aspect-ratio:9 / 16;margin:0;border:1px solid rgba(44,27,16,.55);border-radius:3px;box-shadow:0 3px 8px rgba(60,40,20,.4)}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
-.recruit-card-body{display:flex;flex:1;flex-direction:column;gap:5px;padding:10px 12px 12px}
-.recruit-name{color:#ffe1ac;font:700 17px/1.2 Georgia,serif}
-.recruit-origin{display:flex;align-items:center;gap:6px;color:#cdb38c;font-size:13px;line-height:1.3}
-.recruit-card .rep-stars{font-size:17px}
-.recruit-days{color:#bb9a6e;font-size:12px}
-.recruit-talk-btn{margin-top:auto;padding:9px 10px;border:1px solid #c9a461;border-radius:9px;background:linear-gradient(180deg,#64492e,#3b2a1b);color:#ffe1ac;font:700 14px Georgia,serif;letter-spacing:.03em;cursor:pointer}
-.recruit-talk-btn:hover,.recruit-talk-btn:focus-visible{border-color:#ffe1ac;background:linear-gradient(180deg,#7a5c3c,#4a3424);outline:none}
+.recruit-card-body{display:flex;flex:1;flex-direction:column;align-items:center;gap:7px;width:100%;padding:12px 0 6px;text-align:center}
+.recruit-name{display:flex;align-items:center;justify-content:center;max-width:100%;min-height:calc(2em * 1.08);font:700 22px/1.08 var(--police-texte);color:var(--encre);text-wrap:balance}
+/* L'origine comme sur la fiche au survol (.hc-origins) : les pictos, puis « Elfe noir ». Un filet au-dessus. */
+.recruit-origins{display:grid;justify-items:center;gap:4px;width:100%;padding-top:7px;background:linear-gradient(90deg,transparent,rgba(100,73,46,.55),transparent) top center/70% 1px no-repeat}
+.recruit-emblems{display:flex;justify-content:center;gap:10px;line-height:0}
+.recruit-emblems .picto{display:block;width:34px;height:34px;margin:0;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(36,24,12,.5))}
+.recruit-origin{display:flex;align-items:center;justify-content:center;min-height:calc(2em * 1.15);font:600 17px/1.15 var(--police-texte);color:var(--encre);text-wrap:balance}
+.recruit-card .rep-stars{font-size:20px}
+/* « La petite phrase en italique un peu plus grosse et plus grasse » (Idan, 2026-11-19 : le papier, très travaillé, nuit à la
+   lisibilité). */
+.recruit-days{font:italic 600 17px/1.2 var(--police-texte);color:var(--encre-2);white-space:nowrap}
+/* Le bouton de la charte (.mission-btn), réduit à la hauteur des icônes de la barre du bas (Idan, 2026-11-19 : « Réduis un
+   peu le bouton … par rapport aux icônes d'interface » ; 61 px avec les barres des Elfes en 1920 × 1080) : 180 × 61, aux
+   proportions de l'image (760 × 257, jamais déformée), le texte un peu plus petit encore (12,5 px ; Idan, même jour). */
+.recruit-card .recruit-talk-btn{flex:none;width:180px;min-width:0;height:61px;padding:0 0 2px;font-size:12.5px}
 .recruit-empty{color:#f4e5c7;text-align:center;text-shadow:0 2px 8px #000}
 
 
@@ -1457,13 +1531,13 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    l'accueil (Idan, 2026-11-13) : la barre du haut prend sa place ; chaque lieu commence sous elle. Tant que les lieux sont
    retirés de la barre du bas (Idan, 2026-11-14), chaque lieu garde son bouton « ← Retour au camp ». */
 body[data-screen="camp"] .topbar{display:none}
-body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:calc(var(--hud-top-h) + 24px)}
+body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:calc(var(--hud-top-z) + 24px)}
 
 
 /* Barre du bas (Idan, 2026-10-21 ; 2026-11-13 : les infos et la date passent dans la barre du haut) : la Taverne et le
    Château à gauche, gros bouton « Jour suivant » au centre, journal intégré à droite. Univers heroic fantasy : bois
    sombre, liserés dorés, médaillon central. Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
-body[data-screen="camp"] .app-shell{padding-bottom:calc(var(--hud-bottom-h) + 36px)}
+body[data-screen="camp"] .app-shell{padding-bottom:calc(var(--hud-bottom-z) + 36px)}
 /* La barre du haut (Idan, 2026-11-13, d'après sa maquette ; réglée par culture dans l'Atelier des barres, 2026-11-14) : la
    barre illustrée de la culture du capitaine (packs d'Idan, scripts/build-hud-bars.js), sans embout à gauche (Idan :
    « laisse la ligne centre aller tout au bout et sortir de l'image ») ni blason ; dans sa bande sombre, le nom de la
@@ -1475,15 +1549,17 @@ body[data-screen="camp"] .app-shell{padding-bottom:calc(var(--hud-bottom-h) + 36
    taille de la barre (« une barre plus fine » : sa bande sombre fait --ht-B) ; --ht-embout, la largeur de l'embout droit ;
    en bandes --ht-B : --ht-haut, l'écart avec le haut de l'écran ; --ht-top, celui de la bande sombre ; --ht-s, la taille du
    contenu ; --ht-fonds, la hauteur des fonds sombres ; --ht-marge, l'air à droite du menu. Sans pack, un cadre provisoire. */
+/* Tout proportionnel, calé sur 1080 (Idan, 2026-11-19 : « Oui, retire le plafond des barres. En phase A, on calibre tout
+   sur 1080 ») : 81,6 px en 1920 × 1080, puis l'échelle de l'interface (--ui-scale, screen-ui.js), sans plancher ni plafond. */
 :root{
-  --hb-B:clamp(52px,4.25vw,85px);
+  --hb-B:calc(81.6px * var(--ui-scale,1));
   --ht-barre:1;--ht-embout:1;--ht-haut:.3;--ht-top:.5;--ht-s:1;--ht-fonds:.54;--ht-marge:.6;
   --ht-B:calc(var(--hb-B) * var(--ht-barre));
   --ht-u:calc(var(--ht-B) * var(--ht-s));
   --hb-top:calc(var(--ht-B) * var(--ht-top));
   --hud-top-h:calc(var(--hb-top) + var(--ht-B) * 1.3);
 }
-body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-h) + 18px)}
+body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-z) + 18px)}
 .game-top-bar{--hb-k:calc(var(--ht-B) / var(--hb-band,90));position:fixed;top:0;left:0;right:0;height:var(--hud-top-h);pointer-events:none}
 .hud-bar-art{position:absolute;left:0;right:calc(var(--ht-B) * .12);top:calc(var(--ht-B) * var(--ht-haut));height:calc(var(--hb-k) * var(--hb-h,90));filter:drop-shadow(0 8px 16px #000a)}
 .hud-bar-piece{position:absolute;top:0;bottom:0;background-repeat:no-repeat;background-size:100% 100%}
@@ -1579,7 +1655,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-context-btn:hover,.hud-context-btn:focus-visible,.hud-context.is-open .hud-context-btn{transform:scale(1.08);filter:brightness(1.2);outline:none}
 .hud-context-btn:active{transform:scale(.94);transition-duration:.06s}
 .hud-context-btn:focus-visible{box-shadow:0 0 0 2px #f0c050aa}
-.hud-menu-list{position:absolute;left:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#2e231c,#15100c);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826}
+.hud-menu-list{position:absolute;left:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#2e231c,#15100c);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826;zoom:var(--ui-scale,1)}
 .hud-menu-list[hidden]{display:none}
 .hud-context .hud-menu-list{left:auto;right:0}
 .hud-menu-list button{display:block;width:100%;padding:9px 12px;border:0;border-radius:8px;background:transparent;color:#eadcbc;font:14px Georgia,serif;text-align:left;cursor:pointer}
@@ -1605,7 +1681,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 @keyframes hud-page{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 #hud-day{font-size:11px;color:#c2b29e;letter-spacing:.04em;white-space:nowrap}
 /* Le journal (2026-11-14) : il s'ouvre au clic sur son picto, au-dessus des actions de droite, et défile. */
-.hud-journal{position:absolute;left:calc(50% + var(--hb-B) * var(--bb-pictos-gauche));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) + var(--bb-picto) / 2 + .3));z-index:5;width:min(34vw,440px);max-height:min(46vh,360px);overflow-y:auto;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#2e231c,#15100c);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826;color:#eadcbc;pointer-events:auto}
+.hud-journal{position:absolute;left:calc(50% + var(--hb-B-z) * var(--bb-pictos-gauche));bottom:calc(var(--hb-B-z) * (var(--bb-pictos-y) + var(--bb-picto) / 2 + .3));z-index:5;width:min(calc(34 * var(--vw)),440px);max-height:min(calc(46 * var(--vh)),360px);overflow-y:auto;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#2e231c,#15100c);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826;color:#eadcbc;pointer-events:auto;zoom:var(--ui-scale,1)}
 .hud-journal[hidden]{display:none}
 .hud-journal-lines{margin:0;padding:10px 14px 10px 30px;font:12px/1.55 Georgia,serif}
 .hud-journal-lines:empty::before{content:"Rien pour l'instant.";display:block;margin-left:-16px;color:#c2b29e;font-style:italic}
@@ -1641,7 +1717,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 @media (prefers-reduced-motion:reduce){.hud-delta,.game-top-bar .hud-delta,#hud-date.is-new{animation:none}}
 .game-pause{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:rgba(15,11,8,.851);backdrop-filter:blur(7px)}
 .game-pause.hidden{display:none!important}
-.game-pause-panel{width:min(440px,90vw);padding:32px;border:1px solid #b58a45;border-radius:15px;background:linear-gradient(145deg,#3b2a1b,#15100c);box-shadow:0 24px 70px #000d;text-align:center}
+.game-pause-panel{width:min(440px,calc(90 * var(--vw)));padding:32px;border:1px solid #b58a45;border-radius:15px;background:linear-gradient(145deg,#3b2a1b,#15100c);box-shadow:0 24px 70px #000d;text-align:center}
 .game-pause-panel h2{font:normal 31px Georgia,serif;color:#ffe1ac;margin:10px 0 24px}
 .game-pause-panel button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;margin:7px 0;border:1px solid #9a7a4f;border-radius:8px;background:#201916;color:#eadcbc;font:16px Georgia,serif;text-align:left}
 .game-pause-panel button:hover:not(:disabled){background:#64492e;border-color:#e3bd76}
@@ -1706,18 +1782,18 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
    Pas de bouton retour : la barre du bas mène partout. */
 .dormitory-scene{max-width:none;margin:0}
 .dormitory-scene .camp-scene-nav{display:none}
-body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-start;min-height:calc(100dvh - 66px - var(--hud-bottom-h) - var(--hud-top-h))}
+body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-start;min-height:calc(calc(100 * var(--dvh)) - 66px - var(--hud-bottom-z) - var(--hud-top-z))}
 /* Le parchemin à gauche de l'écran, comme sur la maquette, hors de la colonne centrale du camp (1 200 px). */
-.dormitory-panel{width:clamp(420px,34vw,600px);max-width:100%;margin-left:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,2.5vw))}
+.dormitory-panel{width:clamp(420px,calc(34 * var(--vw)),600px);max-width:100%;margin-left:calc(-1 * max(0px,(calc(100 * var(--vw)) - 1200px) / 2) - 20px + max(16px,calc(2.5 * var(--vw))))}
 .dorm-sheet{--encre:#2c1b10;--encre-2:#64492e;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
   --fil-centre:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 50,0 100,1 50,2' fill='url(%23g)'/%3E%3C/svg%3E");
-  position:relative;isolation:isolate;display:grid;gap:clamp(5px,.9vh,9px);box-sizing:border-box;padding:clamp(26px,4vh,40px) clamp(28px,2.4vw,40px);color:var(--encre);font:500 17px/1.3 var(--police-texte)}
+  position:relative;isolation:isolate;display:grid;gap:clamp(5px,.9vh,9px);box-sizing:border-box;padding:clamp(26px,calc(4 * var(--vh)),40px) clamp(28px,calc(2.4 * var(--vw)),40px);color:var(--encre);font:500 17px/1.3 var(--police-texte)}
 .dorm-sheet::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:drop-shadow(0 20px 28px rgba(0,0,0,.65))}
 .dorm-eyebrow{margin:0;text-align:center;font:700 15px/1 var(--police-titre);letter-spacing:.2em;text-transform:uppercase;color:var(--encre-2)}
 /* Le filet de la charte, un losange au milieu. */
 .dorm-rule{display:block;height:9px;margin:0 8%;background:linear-gradient(45deg,transparent 42%,var(--encre-2) 42% 58%,transparent 58%) center/7px 7px no-repeat,linear-gradient(-45deg,transparent 42%,var(--encre-2) 42% 58%,transparent 58%) center/7px 7px no-repeat;opacity:.85}
 .dorm-rule::before{content:"";display:block;height:2px;margin-top:3.5px;background:var(--encre-2);-webkit-mask:var(--fil-centre) center/100% 100%;mask:var(--fil-centre) center/100% 100%}
-.dorm-sheet h2{margin:4px 0 0;font:700 clamp(28px,3.6vh,36px)/1.05 var(--police-texte);color:var(--encre);text-wrap:balance}
+.dorm-sheet h2{margin:4px 0 0;font:700 clamp(28px,calc(3.6 * var(--vh)),36px)/1.05 var(--police-texte);color:var(--encre);text-wrap:balance}
 .dorm-level{margin:-4px 0 4px;font:italic 500 19px/1.2 var(--police-texte);color:var(--encre-2)}
 .dorm-places{display:flex;align-items:center;gap:10px}
 .dorm-places strong{font:700 21px/1 var(--police-texte);font-variant-numeric:lining-nums tabular-nums}
@@ -1732,18 +1808,18 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .dorm-work{display:flex;align-items:center;gap:8px;margin:0;font-style:italic;color:var(--bordeaux)}
 .dorm-hourglass{flex:none;width:18px;height:18px}
 /* Les lignes : une plaque de parchemin plus clair, l'icône, le titre et sa précision, l'or et les jours. */
-.dorm-rows{display:grid;gap:clamp(6px,1vh,10px);margin-top:2px}
-.dorm-row{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:84px minmax(0,1fr) auto auto;align-items:center;gap:0 10px;min-height:clamp(56px,7.6vh,84px);padding:4px 12px 4px 6px;
+.dorm-rows{display:grid;gap:clamp(6px,calc(1 * var(--vh)),10px);margin-top:2px}
+.dorm-row{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:84px minmax(0,1fr) auto auto;align-items:center;gap:0 10px;min-height:clamp(56px,calc(7.6 * var(--vh)),84px);padding:4px 12px 4px 6px;
   border:1px solid rgba(100,73,46,.6);border-radius:10px;background:linear-gradient(rgba(255,255,255,.6),rgba(232,214,180,.35));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 6px rgba(120,86,42,.18),0 2px 5px rgba(60,40,20,.28);color:var(--encre);transition:transform .12s,box-shadow .12s,filter .12s}
 .dorm-row:hover:not(:disabled){transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 6px rgba(120,86,42,.18),0 4px 10px rgba(60,40,20,.35),0 0 0 2px rgba(201,164,97,.7)}
 .dorm-row:focus-visible{outline:2px solid #a9814f;outline-offset:2px}
 .dorm-row:disabled{cursor:default}
 .dorm-row:disabled .dorm-row-icon,.dorm-row:disabled .dorm-row-text,.dorm-row:disabled .dorm-days{opacity:.55;filter:grayscale(.7)}
-.dorm-row-icon{display:grid;place-items:center;height:clamp(48px,6.6vh,72px);padding-right:10px;border-right:1px solid rgba(93,68,41,.4)}
-.dorm-row-icon .dorm-icon{max-width:76px;max-height:clamp(44px,6.2vh,70px);filter:drop-shadow(0 2px 2px rgba(60,40,20,.35))}
+.dorm-row-icon{display:grid;place-items:center;height:clamp(48px,calc(6.6 * var(--vh)),72px);padding-right:10px;border-right:1px solid rgba(93,68,41,.4)}
+.dorm-row-icon .dorm-icon{max-width:76px;max-height:clamp(44px,calc(6.2 * var(--vh)),70px);filter:drop-shadow(0 2px 2px rgba(60,40,20,.35))}
 .dorm-row-text{display:grid;gap:2px;min-width:0}
-.dorm-row-text b{display:flex;align-items:center;gap:8px;font:700 clamp(18px,2.2vh,21px)/1.1 var(--police-texte);white-space:nowrap}
+.dorm-row-text b{display:flex;align-items:center;gap:8px;font:700 clamp(18px,calc(2.2 * var(--vh)),21px)/1.1 var(--police-texte);white-space:nowrap}
 .dorm-row-text small{font-size:16px;color:var(--encre-2)}
 .dorm-info{display:inline-grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--encre-2);border-radius:50%;font:italic 700 12px/1 Georgia,serif;color:var(--encre-2);cursor:help}
 .dorm-cost,.dorm-days{display:inline-flex;align-items:center;gap:5px;font:600 17px/1 var(--police-texte);font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
@@ -1826,7 +1902,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 @media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-pictos .picto{width:27px;height:27px}.roster-affinity-hearts{font-size:14px}.roster-toolbar select{flex:1}}
 #character-dialog{background:#201916;color:#eadcbc;border:1px solid #9a7a4f;border-radius:15px;box-shadow:0 24px 70px #000d}
 /* Même taille pour tous les onglets (Idan, 2026-10-21) : la fenêtre ne se redimensionne plus. */
-#character-dialog{height:min(800px,92vh)}
+#character-dialog{height:min(800px,calc(92 * var(--vh)))}
 #character-dialog .dialog-head{background:#2e231c;border-bottom:1px solid #9a7a4f;padding-bottom:10px}
 #character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f0d395}
 /* Flèches mercenaire précédent / suivant à côté du nom (Idan, 2026-10-24). */
@@ -1878,8 +1954,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-stat-group{display:flex;flex-direction:column;gap:7px;min-width:0}
 /* Caractéristiques par fonction (Idan, 2026-10-31) : plusieurs groupes par colonne. */
 .sheet-stat-column{display:flex;flex-direction:column;gap:16px;min-width:0}
-@media(max-height:900px) and (min-width:861px){.sheet-stat-column{gap:10px}.sheet-stats .sheet-stat-group{gap:5px}.sheet-stats .sheet-stat-group h4{margin-bottom:3px}.sheet-stats .sheet-stat{padding:6px 12px}}
-@media(max-height:760px) and (min-width:861px){.sheet-stat-column{gap:8px}.sheet-stats .sheet-stat-group{gap:4px}.sheet-stats .sheet-stat-group h4{margin-bottom:2px;font-size:15px}.sheet-stats .sheet-stat{padding:4px 12px}}
 .sheet-stat-group h4{margin:0 0 8px;color:#d8bc8d;font:700 17px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
 .sheet-stat{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #7a5c3c;border-radius:8px;background:#2e231c}
 .sheet-stat-icon{flex:none;width:20px;height:20px;color:#d8bc8d}
@@ -2023,7 +2097,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .magic-wheel-card,.magic-grimoire{padding:10px 14px;border:1px solid #7a5c3c;border-radius:10px;background:#2e231c}
 .magic-wheel-card h4,.magic-grimoire h4{margin:0 0 4px;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
 .magic-wheel-card p,.magic-grimoire p{margin:0;color:#cdb38c;font-size:12px}
-.magic-wheel{display:block;width:100%;max-width:400px;height:auto;max-height:max(260px,calc(100vh - 440px));margin:0 auto}
+.magic-wheel{display:block;width:100%;max-width:400px;height:auto;max-height:max(260px,calc(calc(100 * var(--vh)) - 440px));margin:0 auto}
 .magic-ring{fill:none;stroke:#7a5c3c;stroke-width:1}
 .magic-ring--outer{stroke:#9a7a4f}
 .magic-axis{stroke:#64492e;stroke-width:1}
@@ -2087,7 +2161,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 #dialog-content .gear-tile[data-slot]{cursor:pointer}
 #dialog-content .gear-tile[data-slot]:hover,#dialog-content .gear-tile[data-slot]:focus-visible{border-color:#f0c77f;box-shadow:0 0 0 2px #f0c77f66,0 4px 12px rgba(0,0,0,.35)}
 .gear-hint{margin:0;color:#9a8870;font:italic 12px Georgia,serif}
-.deal-menu{position:fixed;z-index:1000;display:none;width:320px;max-height:min(70vh,560px);overflow-y:auto;padding:12px;border:1px solid #b58a45;border-radius:12px;
+.deal-menu{position:fixed;z-index:1000;display:none;width:320px;max-height:min(calc(70 * var(--vh)),560px);overflow-y:auto;padding:12px;border:1px solid #b58a45;border-radius:12px;
   background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:0 18px 44px #000c;color:#eadcbc;font:14px Georgia,serif;scrollbar-color:#7a5c3c transparent}
 .deal-menu.is-open{display:grid;gap:8px}
 .deal-menu-title{margin:0;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase}
@@ -2160,15 +2234,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .quartermaster-head .steward-offer{padding:0;border:0;background:none}
 .quartermaster-head .steward-offer summary{list-style:none}
 .quartermaster-head .steward-offer summary::-webkit-details-marker{display:none}
-.quartermaster-head .steward-picks{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:min(560px,80vw);max-height:60vh;overflow:auto;margin:0;padding:10px;border:1px solid #9a7a4f;border-radius:12px;background:#15100c;box-shadow:0 12px 30px #000b}
+.quartermaster-head .steward-picks{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:min(560px,calc(80 * var(--vw)));max-height:calc(60 * var(--vh));overflow:auto;margin:0;padding:10px;border:1px solid #9a7a4f;border-radius:12px;background:#15100c;box-shadow:0 12px 30px #000b}
 .steward-pick b{min-width:0;font-weight:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Politique sociale (Idan, 2026-11-04) : un curseur par ligne, dans le menu déroulant de l'Intendance. */
-.quartermaster-head .social-policy-rows{left:0;right:auto;grid-template-columns:1fr;width:min(440px,80vw);gap:12px;padding:14px 16px}
+.quartermaster-head .social-policy-rows{left:0;right:auto;grid-template-columns:1fr;width:min(440px,calc(80 * var(--vw)));gap:12px;padding:14px 16px}
 .social-policy-row{display:grid;grid-template-columns:150px minmax(0,1fr) 60px;align-items:center;gap:12px;color:#eadcbc;font:15px Georgia,serif}
 .social-policy-row input{width:100%;accent-color:#c9a461;cursor:pointer}
 .social-policy-row output{color:#ffe1ac;text-align:right;font-variant-numeric:tabular-nums}
 /* Les dettes (Idan, 2026-11-10 ; debts-ui.js) : une ligne par mercenaire, sa dette et « Rembourser ». */
-.quartermaster-head .debt-rows{left:0;right:auto;grid-template-columns:1fr;width:min(440px,80vw);gap:8px;padding:12px 16px}
+.quartermaster-head .debt-rows{left:0;right:auto;grid-template-columns:1fr;width:min(440px,calc(80 * var(--vw)));gap:8px;padding:12px 16px}
 .debt-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;color:#eadcbc;font:15px Georgia,serif}
 .debt-row small{color:#bb9a6e}
 .debt-amount{color:#ff9d86;font-variant-numeric:tabular-nums}
@@ -2188,7 +2262,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
 .contract-card--bodyguard{margin-top:16px}
 .contract-pitch{margin:0 0 10px;color:#eadcbc;font:italic 16px/1.45 Georgia,serif}
-.bodyguard-return{width:min(560px,calc(100vw - 32px));padding:22px 24px;border:1px solid #b58a45;border-radius:14px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#eadcbc}
+.bodyguard-return{width:min(560px,calc(calc(100 * var(--vw)) - 32px));padding:22px 24px;border:1px solid #b58a45;border-radius:14px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#eadcbc}
 .bodyguard-return::backdrop{background:#0009}
 .bodyguard-return h2{margin:0 0 4px;color:#ffd77a;font:normal 24px Georgia,serif}
 .bodyguard-return-list{display:grid;gap:10px;margin:14px 0}
@@ -2222,7 +2296,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Trouver une mission (Idan, 2026-11-14) : le panneau de bois (panneau-missions.webp, 2000 × 1116) couvre l'écran comme le
    fond de la taverne ; un clic sur le mur, autour du cadre, ramène à la taverne (contract-ui.js). Les annonces sur les
    planches, trois par page, sur notre parchemin ; une flèche de fer de chaque côté ; la page suivante pousse l'autre. */
-.mission-board{--board-w:max(100vw,100vh * 2000 / 1116);position:fixed;left:50%;top:50%;z-index:1;width:var(--board-w);aspect-ratio:2000/1116;transform:translate(-50%,-50%);background:#15100c url("assets/taverne/panneau-missions.webp") center/100% 100% no-repeat}
+.mission-board{--board-w:max(calc(100 * var(--vw)),calc(100 * var(--vh)) * 2000 / 1116);position:fixed;left:50%;top:50%;z-index:1;width:var(--board-w);aspect-ratio:2000/1116;transform:translate(-50%,-50%);background:#15100c url("assets/taverne/panneau-missions.webp") center/100% 100% no-repeat}
 .mission-board-planks{position:absolute;left:18.6%;top:21.6%;width:63.2%;height:58.2%;overflow:hidden;overflow:clip;overflow-y:visible}
 /* Coupé à gauche et à droite seulement (le glissement des pages) : en haut, la poignée d'une dague dépasse. */
 .board-page{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:3.2%;padding:0 3.4%}
@@ -2365,14 +2439,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-board-light::after{left:86%;top:22%;width:calc(var(--board-w) * .0013);animation-duration:34s;animation-delay:-12s}
 @keyframes bougie{0%,100%{opacity:1}18%{opacity:.86}24%{opacity:.97}47%{opacity:.9}61%{opacity:1}74%{opacity:.84}83%{opacity:.95}}
 @keyframes poussiere{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--board-w) * -.025),calc(var(--board-w) * -.03))}88%{opacity:1}100%{transform:translate(calc(var(--board-w) * -.05),calc(var(--board-w) * -.06));opacity:0}}
-/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre. */
+/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre.
+   Au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en grisée »). */
 .mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .088);aspect-ratio:640/284;padding:0;border:0;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
 .mission-board-arrow--prev{left:14.2%;transform:translate(-50%,-50%) scaleX(-1)}
 .mission-board-arrow--next{left:85.8%}
 .mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
 .mission-board-arrow--next:hover,.mission-board-arrow--next:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .mission-board-arrow--prev:hover,.mission-board-arrow--prev:focus-visible{translate:calc(var(--board-w) * -.003) 0}
-.mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
 .mission-board-arrow[hidden]{display:none}
 /* Au clic, l'annonce s'avance ; la fiche s'ouvre ensuite en grand, d'un petit zoom. */
 .mission-detail[open]{animation:mission-detail-in .22s ease-out}
@@ -2393,7 +2468,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    boutons de la création de capitaine », « pense icônes et pictos ») : deux feuilles posées sur le panneau assombri,
    l'annonce en grand et la lettre du commanditaire ; dessous, le retour et le bouton de la création. --board-w fixe
    l'échelle (--u, le bord du papier), comme sur le panneau. */
-.mission-detail{--board-w:min(250vh,140vw);width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;overflow:hidden;color:var(--encre)}
+.mission-detail{--board-w:min(calc(250 * var(--vh)),calc(140 * var(--vw)));width:calc(100 * var(--vw));height:calc(100 * var(--vh));max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;overflow:hidden;color:var(--encre)}
 .mission-detail::backdrop{background:radial-gradient(ellipse at 50% 45%,rgba(14,9,5,.42),rgba(7,5,4,.82));backdrop-filter:blur(3px)}
 #mission-detail-body{--u:calc(var(--board-w) * .001);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * 8);width:100%;height:100%;box-sizing:border-box;padding:calc(var(--u) * 46) 16px calc(var(--u) * 8)}
 .mission-sheets{display:flex;align-items:flex-start;justify-content:center}
@@ -2561,14 +2636,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-tag--vert{--t1:#2f6b3b;--t2:#1b3a21}
 .hc-tag--bleu{--t1:#38598c;--t2:#1b2f52}
 .hc-tag.is-mission{--t1:#64492e;--t2:#3b2a1b;background:linear-gradient(#fff3cf,#e0a95a 40%,#8a6120 62%,#f0c77f);color:#ffe1ac}
-/* Le niveau du tag (Idan, 2026-11-16 : « les tags ont 3 niveaux. Le premier niveau : contour de couleur et fond transparent.
-   Au second niveau, fond à 50 %. Niveau 3, c'est plein ») : la plaque pleine ci-dessus est le niveau 3 ; aux niveaux 1 et 2,
-   un contour de 2 px dans la couleur du tag (la mission aussi : « laisse tomber » l'or ici) autour du parchemin, rempli à 50 % au niveau 2, le
-   texte dans la couleur foncée du tag. La plaque « N autres rôles » a le contour seul. */
-.hc-tag.is-n1,.hc-tag.is-n2{background:none;color:var(--t2);text-shadow:0 1px 0 rgba(255,250,236,.55)}
-.hc-tag.is-n1::after,.hc-tag.is-n2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
-.hc-tag.is-n1::before{opacity:0}
-.hc-tag.is-n2::before{opacity:.5}
+/* Un tag allumé : la plaque pleine ci-dessus (les tags n'ont plus de niveau, Idan, 2026-11-20). La plaque « N autres
+   rôles » a le contour seul (Idan, 2026-11-16) : un contour de 2 px dans la couleur du tag autour du parchemin, le texte
+   dans la couleur foncée du tag. */
+.hc-tag.is-more{background:none;color:var(--t2);text-shadow:0 1px 0 rgba(255,250,236,.55)}
+.hc-tag.is-more::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--t1),var(--t2));clip-path:polygon(evenodd,12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%,12px 0,13px 2px,calc(100% - 13px) 2px,calc(100% - 2px) 50%,calc(100% - 13px) calc(100% - 2px),13px calc(100% - 2px),2px 50%,13px 2px)}
+.hc-tag.is-more::before{opacity:0}
 /* L'équipement en trois colonnes égales (Idan, 2026-11-16) : les armes du set 1, celles du set 2, l'armure ; les noms seuls
    (sans « Set 1 », « Set 2 » ni « Armure »), sur la même ligne. Entre les colonnes, et entre les écoles de magie, la fente
    du parchemin (Idan : « Oui »). */
@@ -2782,7 +2855,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Nouvelles du jour (Idan, 2026-10-30). */
 /* Notification du jour (Idan, 2026-10-31) : la date en grand, une ligne par chose qui compte (icône, phrase courte,
    visages, « Voir »), l'argent en pied. */
-.day-news{width:min(620px,calc(100vw - 32px));padding:0;border:1px solid #b58a45;border-radius:16px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#eadcbc;box-shadow:0 24px 70px #000d}
+.day-news{width:min(620px,calc(calc(100 * var(--vw)) - 32px));padding:0;border:1px solid #b58a45;border-radius:16px;background:linear-gradient(180deg,#3b2a1b,#15100c);color:#eadcbc;box-shadow:0 24px 70px #000d}
 .day-news::backdrop{background:rgba(5,8,10,.549)}
 .day-news-head{display:grid;justify-items:center;gap:2px;padding:20px 24px 14px;border-bottom:1px solid #64492e;background:radial-gradient(circle at 50% 0,rgba(214,166,96,.15),transparent 70%)}
 .day-news-head h2{margin:0;color:#ffe1ac;font:600 28px Georgia,serif;letter-spacing:.01em}
@@ -2846,13 +2919,9 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .magic-label.is-unknown,.magic-dot.is-unknown{opacity:.32;filter:grayscale(1)}
 .magic-favorite.is-unknown{opacity:.45;filter:grayscale(1)}
 /* Écrans bas (720 px) : la fiche tient sans barre de défilement (Idan, 2026-10-30). */
-@media(max-height:760px) and (min-width:861px){.sheet-portrait .avatar-frame{max-width:200px}}
 /* 1280 × 720 : la colonne de droite du capitaine (carte de son aura) tient aussi sans défiler. */
-@media(max-height:760px) and (min-width:861px){.sheet-profile-main{gap:8px}.sheet-origins{margin-bottom:0}}
 /* La silhouette est carrée : sa largeur suit la hauteur disponible (width:auto l'écrasait à 0, rien ne la remplit). */
-@media(max-height:800px) and (min-width:1101px){.equipment-mannequin.gear-doll{width:min(100%,calc(92vh - 190px));justify-self:center}}
 /* Écrans jusqu'à 900 px de haut (1280 × 720, 1366 × 768) : la colonne Dégâts, Set de rechange et Monture tient sans défiler. */
-@media(max-height:900px) and (min-width:861px){.gear-side{gap:7px}.gear-card{gap:5px;padding:8px 12px}.gear-damage-table td,.gear-damage-table tbody th{padding-top:2px;padding-bottom:2px}}
 /* Titres du mercenaire (Idan, 2026-10-31) : 1 à 3 titres et leurs étoiles, ou « Chair à canon », au-dessus du portrait. */
 .sheet-evaluation{display:grid;gap:6px;margin:0;padding:9px 10px;border:1px solid #7a5c3c;border-radius:10px;background:#2e231c}
 .sheet-eval-title{margin:0;color:#ffe1ac;font:700 16px/1.2 Georgia,serif}
@@ -2864,7 +2933,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Avec l'évaluation au-dessus, la colonne a la hauteur de la fiche (celle de la boîte moins son en-tête et ses marges) :
    le portrait prend ce qui reste, en gardant ses proportions ; la fiche tient sans défiler. */
 @media(min-width:861px){
-  .sheet-portrait:has(.sheet-evaluation){grid-template-rows:auto minmax(0,1fr) auto;height:calc(min(800px,90vh) - 176px)}
+  .sheet-portrait:has(.sheet-evaluation){grid-template-rows:auto minmax(0,1fr) auto;height:calc(min(800px,calc(90 * var(--vh))) - 176px)}
   .sheet-portrait:has(.sheet-evaluation) .avatar-frame{width:auto;height:100%;max-width:none;max-height:445px;justify-self:start}
 }
 
@@ -2920,13 +2989,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .tag-pill{border:1px solid #4d3c2f;border-radius:999px;background:#2e231c;color:#81796f;padding:4px 11px;font-family:inherit;font-weight:600;font-size:13px;line-height:1.25;text-align:left;overflow-wrap:anywhere;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .tag-depth-1>.tag-row>.tag-pill{padding:5px 13px;font-size:14px}
 .tag-pill:hover{color:#d8c6a4;border-color:var(--tag-3)}
-/* Trois niveaux (Idan : « mets arc plus important ») : pâle, moyen, plein ; un point sur ceux de l'intendant. */
-.tag-pill.is-on{--tag-bg:var(--tag-1);color:#f4f1ec;border-color:transparent;background:color-mix(in srgb,var(--tag-bg) var(--tag-mix,100%),#2e231c)}
+/* Allumé ou éteint, sans niveau (Idan, 2026-11-20) : allumé, la couleur pleine de sa colonne ; un point sur ceux de
+   l'intendant. */
+.tag-pill.is-on{--tag-bg:var(--tag-1);color:#f4f1ec;border-color:transparent;background:var(--tag-bg)}
 .tag-depth-2>.tag-row>.tag-pill.is-on{--tag-bg:var(--tag-2)}
 .tag-depth-3>.tag-row>.tag-pill.is-on{--tag-bg:var(--tag-3)}
 .tag-depth-4>.tag-row>.tag-pill.is-on{--tag-bg:var(--tag-4)}
-.tag-pill.lvl-1{--tag-mix:38%;color:#d8c6a4}
-.tag-pill.lvl-2{--tag-mix:68%}
 .tag-pill.is-steward::after{content:"";display:inline-block;width:6px;height:6px;margin-left:7px;border-radius:50%;background:currentColor;vertical-align:2px;opacity:.85}
 .tag-pill:focus-visible,.tag-open:focus-visible{outline:2px solid var(--tag-head);outline-offset:2px}
 .tag-open{display:grid;place-items:center;width:24px;height:24px;flex:none;padding:0;border:0;border-radius:50%;background:none;color:#a69578;font-size:12px;line-height:1;cursor:pointer;transition:transform .15s,color .15s,background .15s}

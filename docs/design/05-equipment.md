@@ -186,11 +186,12 @@ bouclier ; le combat à deux armes la divise ensuite), **de force** (dégâts et
 
 ### Bagues (Idan, 2026-10-24)
 
-Onze bagues (`rings.json`), **six emplacements** ; **des bagues identiques se cumulent**. À la création, la bague va dans
+Douze bagues (`rings.json`), **six emplacements** ; **des bagues identiques se cumulent**. À la création, la bague va dans
 le premier emplacement.
 
-- **De la chance** (critiques et échecs critiques) et **du courage** (tests de Courage, reprises de contrôle) : en
-  pourcentage.
+- **De la chance** (critiques et échecs critiques), **du courage** (tests de Courage, reprises de contrôle) et **de mana**
+  (Réserve de mana ; Idan, 2026-11-21 : « une bague de Mana qui fait +5 / 10 / 15 / 20 % ») : en pourcentage,
+  +5 / 10 / 15 / 20 %. Image de la Bague de mana : à dessiner (Idan).
 - **Une par école de magie** : Bague de Feu, de l’Eau, de la Foudre, de l’invocation, de la transmutation, du
   nécromancien (Nécromancie), du soigneur (Vie), de l’illusionniste (Illusion), de la télékinésie :
   **+10 / 15 / 20 / 25 %** de la maîtrise de base de l’école, **−15 / 10 / 5 / 0 %** de celle des **deux écoles opposées**

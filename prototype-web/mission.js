@@ -1187,10 +1187,11 @@ function showMissionChoiceHover(anchor){
   box.hidden=false;
   const card=box.querySelector(".hover-card");
   if(typeof fitHoverCard==="function") fitHoverCard(card);
-  const r=anchor.getBoundingClientRect();
-  const at=hoverCardPlacement({anchor:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},view:{w:window.innerWidth,h:window.innerHeight},card:{w:card.offsetWidth,h:card.offsetHeight}});
-  box.style.left=at.x+"px";
-  box.style.top=at.y+"px";
+  // Tout proportionnel : la position se calcule en pixels d'écran, l'élément est mis à l'échelle (zoom) : on divise.
+  const r=anchor.getBoundingClientRect(),z=box.currentCSSZoom||1;
+  const at=hoverCardPlacement({anchor:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},view:{w:window.innerWidth,h:window.innerHeight},card:{w:card.offsetWidth*z,h:card.offsetHeight*z}});
+  box.style.left=at.x/z+"px";
+  box.style.top=at.y/z+"px";
   box.style.setProperty("--hc-scale",String(at.scale));
 }
 function hideMissionChoiceHover(){
@@ -5560,7 +5561,9 @@ const MISSION_DRAWERS_KEY="bw-mission-drawers";
 function missionDrawerState(){
   let saved=null;
   try{ saved=JSON.parse(localStorage.getItem(MISSION_DRAWERS_KEY)||"null"); }catch{}
-  const wide=typeof window==="undefined"||window.innerWidth>=1500;
+  // Tout proportionnel : la largeur de l'écran « de référence » (pixels d'écran divisés par l'échelle, --ui-scale).
+  const scale=parseFloat(globalThis.document?.documentElement?.style?.getPropertyValue?.("--ui-scale"))||1;
+  const wide=typeof window==="undefined"||window.innerWidth/scale>=1500;
   return {roster:saved?.roster??true,console:saved?.console??wide};
 }
 function setMissionDrawer(name,open){
@@ -6205,8 +6208,9 @@ function initializeMissionMapView(){
     if(!game.mission) return;
     event.preventDefault();
     hideMissionHover();
-    const box=stage.getBoundingClientRect();
-    zoomMissionView(event.deltaY<0?1.12:1/1.12,event.clientX-box.left,event.clientY-box.top);
+    // Tout proportionnel : l'écart à la souris, en pixels d'écran, ramené aux pixels de la carte (mise à l'échelle).
+    const box=stage.getBoundingClientRect(),z=stage.currentCSSZoom||1;
+    zoomMissionView(event.deltaY<0?1.12:1/1.12,(event.clientX-box.left)/z,(event.clientY-box.top)/z);
   },{passive:false});
   $("mission-map").addEventListener("mouseover",event=>{
     if(!game.mission||missionView.drag) return;
@@ -6233,8 +6237,10 @@ function initializeMissionMapView(){
     if(!missionView.dragged) hideMissionHover();
     missionView.dragged=true;
     stage.classList.add("dragging");
-    missionView.x=drag.vx+dx;
-    missionView.y=drag.vy+dy;
+    // Tout proportionnel : le déplacement de la souris (pixels d'écran) ramené aux pixels de la carte.
+    const z=stage.currentCSSZoom||1;
+    missionView.x=drag.vx+dx/z;
+    missionView.y=drag.vy+dy/z;
     missionView.fitted=false;
     clampMissionView();
     applyMissionView();

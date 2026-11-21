@@ -4,8 +4,8 @@
 // Barres du haut par culture (Idan, 2026-11-13) : Idan dépose un pack par culture du capitaine sur Hostinger, dans
 // media/hud-pack/<Peuple>/<culture>/ (left, center, right, full ; 32 packs, qui arrivent petit à petit ; liste :
 // api/hud-pack.php). Ce script :
-// - reconnaît la culture de chaque pack (le dossier du peuple, puis les mots du dossier : « Humains/nordique » =
-//   Montagnes du Nord ; quelques cas fixés dans PACK_CULTURE) ;
+// - reconnaît la culture de chaque pack (le dossier du peuple, puis les mots du dossier : « Elfes/elfes-noirs » =
+//   Elfes noirs ; quelques cas fixés dans PACK_CULTURE) ;
 // - mesure le pack : hauteur commune, largeur des trois morceaux ; dans le milieu, le cadre (haut, bas) et la bande sombre
 //   où le jeu écrit (haut, bas) ; dans les embouts, où la bande commence (à gauche) et où elle s'arrête (à droite) ;
 // - convertit left, center et right en WebP dans prototype-web/assets/hud/barres/<culture>/ (le full ne sert qu'à Idan) ;
@@ -63,7 +63,9 @@ const PACK_CULTURE={
   "Reptiliens/reptiliens-marais":"Reptiliens des marécages",
   "Hommes Betes/hommes-betes-runiques":"Tribus nordiques",
   // Le dossier d'Idan garde son nom ; la culture est devenue les Terres des Deux Fleuves (Idan, 2026-11-18).
-  "Humains/grandes-steppes":"Terres des Deux Fleuves"
+  "Humains/grandes-steppes":"Terres des Deux Fleuves",
+  // Le dossier d'Idan garde son nom ; les Montagnes du Nord sont devenues l'Empire de la nuit blanche (Idan, 2026-11-19).
+  "Humains/nordique":"Empire de la nuit blanche"
 };
 const TOKEN_ALIASES={orque:"orc"};
 

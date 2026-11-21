@@ -73,13 +73,13 @@ assert.match(css,/\.hud-places\{position:absolute;right:calc\(50% \+ var\(--hb-B
 assert.match(css,/\.hud-actions\{position:absolute;left:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-gauche\)\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-pictos-y\) - var\(--bb-picto\) \/ 2\)\);/,"les actions contre l'anneau, à droite");
 assert.match(css,/\.hud-context:not\(\.is-active\)\{visibility:hidden\}/,"sans menu, le bouton du lieu est caché, sa place reste");
 assert.match(css,/\.hud-menu-list\{position:absolute;left:0;bottom:calc\(100% \+ 12px\);/,"son menu s'ouvre vers le haut");
-assert.match(css,/\.hud-journal\{position:absolute;left:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-gauche\)\);[^}]*overflow-y:auto/,"le journal au-dessus des actions, qui défile");
+assert.match(css,/\.hud-journal\{position:absolute;left:calc\(50% \+ var\(--hb-B-z\) \* var\(--bb-pictos-gauche\)\);[^}]*overflow-y:auto[^}]*zoom:var\(--ui-scale,1\)\}/,"le journal au-dessus des actions, qui défile");
 assert.match(css,/\.hud-nav-label\{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect\(0 0 0 0\);/,"pictos seuls : le nom reste pour les lecteurs d'écran");
 assert.match(css,/\.hud-nav:hover,\.hud-nav:focus-visible\{transform:scale\(1\.08\);/,"un très léger grossissement au survol");
 assert.match(css,/\.hud-nav:active\{transform:scale\(\.94\);/,"enfoncé au clic, puis un petit rebond au relâchement");
 assert.match(css,/\.hud-nav\{[^}]*transition:transform \.22s cubic-bezier\(\.34,1\.56,\.64,1\)/);
 assert.match(css,/\.hud-nav\.is-current,\.hud-nav:disabled\{transform:none;filter:none;opacity:var\(--hud-inactifs,\.5\)/,"grisé : le lieu où l'on est (« quand on est sur le château, on le grise ») ; grisé = plus transparent, à 50 % (Idan, 2026-11-18)");
-assert.match(css,/body\[data-screen="camp"\] \.app-shell\{padding-bottom:calc\(var\(--hud-bottom-h\) \+ 36px\)\}/,"les lieux s'arrêtent au-dessus de la barre");
+assert.match(css,/body\[data-screen="camp"\] \.app-shell\{padding-bottom:calc\(var\(--hud-bottom-z\) \+ 36px\)\}/,"les lieux s'arrêtent au-dessus de la barre");
 
 // --- La barre du bas de chaque culture (hud-bars.js, bas) ----------------------------------------------------------------
 const settings=JSON.parse(fs.readFileSync(path.join(__dirname,"..","scripts","hud-bars-reglages.json"),"utf8")).cultures;
@@ -136,15 +136,15 @@ const ornament={attrs:{},hidden:true,setAttribute(k,v){this.attrs[k]=v;}};
 const doc={documentElement:{style:{setProperty:(k,v)=>{rootProps[k]=v;},removeProperty:k=>{delete rootProps[k];}}},
   querySelector:sel=>({".game-top-bar":topBar,".game-bottom-bar":bottomBar,".hud-ornament":ornament})[sel]||null};
 const ui=hud(doc,HUD_BARS);
-ui.applyHudBar("montagnes-du-nord");
-const nord=HUD_BARS["montagnes-du-nord"];
+ui.applyHudBar("empire-de-la-nuit-blanche");
+const nord=HUD_BARS["empire-de-la-nuit-blanche"];
 assert.deepEqual(bottomBar.props,topBar.props,"la même barre en haut et en bas");
-assert.equal(bottomBar.pieces.center.style.backgroundImage,'url("assets/hud/barres/montagnes-du-nord/center.webp")');
+assert.equal(bottomBar.pieces.center.style.backgroundImage,'url("assets/hud/barres/empire-de-la-nuit-blanche/center.webp")');
 assert.ok(bottomBar.classes.has("has-art")&&bottomBar.classes.has("has-ornament"));
 const names={artBas:"art-bas",artHaut:"art-haut",centre:"centre",bouton:"bouton",anneau:"anneau",picto:"picto",ecart:"ecart",pictosDroite:"pictos-droite",pictosGauche:"pictos-gauche",pictosY:"pictos-y",hauteur:"h"};
 assert.deepEqual(Object.fromEntries(Object.entries(rootProps).filter(([k])=>k.startsWith("--bb-"))),
   Object.fromEntries(Object.entries(names).map(([k,n])=>["--bb-"+n,String(nord.bas[k])])),"les réglages d'Idan pour la barre du bas");
-assert.deepEqual([ornament.attrs.src,ornament.hidden],["assets/hud/barres/montagnes-du-nord/ornement.webp",false]);
+assert.deepEqual([ornament.attrs.src,ornament.hidden],["assets/hud/barres/empire-de-la-nuit-blanche/ornement.webp",false]);
 ui.applyHudBar("culture-a-venir");
 assert.ok(!bottomBar.classes.has("has-art")&&!topBar.classes.has("has-art")&&!bottomBar.classes.has("has-ornament"),"sans pack : le cadre provisoire et le bouton seul");
 assert.deepEqual([bottomBar.props,rootProps,ornament.hidden],[{},{},true],"et les valeurs de départ de styles.css");

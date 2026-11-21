@@ -94,8 +94,10 @@ function showPictoTip(picto){
   const box=picto.getBoundingClientRect(),card=tip.getBoundingClientRect(),margin=8;
   const left=Math.max(margin,Math.min(box.left+box.width/2-card.width/2,innerWidth-margin-card.width));
   const top=box.top-card.height-10>=margin?box.top-card.height-10:box.bottom+10;
-  tip.style.left=left+"px";
-  tip.style.top=top+"px";
+  // Tout proportionnel : la position se calcule en pixels d'écran, l'élément est mis à l'échelle (zoom) : on divise.
+  const z=tip.currentCSSZoom||1;
+  tip.style.left=left/z+"px";
+  tip.style.top=top/z+"px";
 }
 function hidePictoTip(){ document.getElementById("picto-tip")?.classList.remove("is-visible"); }
 function initializePictoTips(){

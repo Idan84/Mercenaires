@@ -211,6 +211,7 @@ function buildAssets() {
     group("Interface", "m", [
       ...["bouton.webp", "parchemin.webp", "cachet.webp"].map(f => ({name: f, source: `prototype-web/assets/creation/${f}`, author: IDAN})),
       {name: "papier-froisse.webp", source: "prototype-web/assets/taverne/papier-froisse.webp", author: "ambientCG (texture « Paper003 »)", licence: "CC0"},
+      {name: "papier-vieilli.webp", source: "prototype-web/assets/taverne/papier-vieilli.webp", author: IDAN},
     ]),
     group("Pictos du camp", "s", [
       ...["picto-or.webp", "picto-mercenaires.webp", "picto-salaires.webp", "next.webp"].map(f => ({name: f, source: `prototype-web/assets/hud/${f}`})),

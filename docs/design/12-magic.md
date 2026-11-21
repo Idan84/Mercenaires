@@ -629,7 +629,7 @@ culture** (tableau), un de l'école où il est **le meilleur**, un de sa **deuxi
 | Feu | Clans des grandes steppes, Terres des Deux Fleuves, Ogres des steppes |
 | Foudre | Elfes noirs, Nains du chaos |
 | Vie | Elfes sylvains, Cités libres, Royaumes du Soleil Levant |
-| Nécromancie | Tribus des forêts anciennes, Gnomes des cavernes, Montagnes du Nord |
+| Nécromancie | Tribus des forêts anciennes, Gnomes des cavernes, Empire de la nuit blanche |
 | Illusion | Halflings des villages isolés, Gobelins des villes, Gnomes des forêts, Gnomes des villes |
 | Invocation | Explorateurs, Gobelins des cavernes, Reptiliens des cités-temples |
 | Transmutation | Tribus de la jungle, Orcs noirs, Orcs des villes, Orcs des steppes |

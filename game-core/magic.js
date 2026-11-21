@@ -16,7 +16,7 @@
 // - CC : sort réussi, puis D100 ≤ Chance / 10 (1 à 25 %, comme les armes) : les dés font leur maximum (pas pour Purge).
 // - EC : naturel 96 à 100, puis D100 > Chance : le lanceur subit l'effet minimum de son sort (dés à 1).
 // - École du Feu (Idan, 2026-10-25) : dégâts de feu = effet × (1 − protection / 100), protection = Résistance au feu +
-//   armure portée (« brûlant ») + bonus, bornée de −50 à +75 (combat-engine.js, elementalDamage). Trait de feu suit les
+//   armure portée (« brûlant ») + bonus, au moins −50, sans plafond (combat-engine.js, elementalDamage). Trait de feu suit les
 //   règles de l'arc (toucher contre l'Esquive, distance, tir raté qui peut toucher quelqu'un d'autre) ; Boule de feu ne
 //   s'évite pas mais peut dévier de 1 à 3 cases, dégâts dégressifs vers le bord, tir ami ; Anneau de feu frappe tout le
 //   monde à 1 ou 2 cases du lanceur ; Arme enflammée ajoute du feu à chaque coup qui touche ; Armure de feu protège du

@@ -9,6 +9,7 @@ const fs=require("node:fs"),path=require("node:path");
 const ROOT=path.resolve(__dirname,"..","..");
 const {createGenerator}=require(ROOT+"/game-core/mercenary-generator.js");
 const {createCombatEngine}=require(ROOT+"/game-core/combat-engine.js");
+const {createEquipmentEffects}=require(ROOT+"/game-core/equipment-effects.js");
 const {createMagicRules}=require(ROOT+"/game-core/magic.js");
 const {createStarRules}=require(ROOT+"/game-core/stars.js");
 const {createProfileRules}=require(ROOT+"/game-core/mercenary-profile.js");
@@ -20,6 +21,7 @@ const N=Number(process.argv[2])||240;
 let seed=20261120;const random=()=>((seed=(seed*16807)%2147483647)/2147483647);Math.random=random;
 const gen=createGenerator(reference,{random,nameGenerator:(p,id)=>p+" "+id});
 const engine=createCombatEngine(reference,{});
+const gear=createEquipmentEffects({engine});
 const magic=createMagicRules({reference,combat:engine});
 const stars=createStarRules({reference});
 const prof=createProfileRules({reference,engine,magic});
@@ -57,9 +59,18 @@ for(let i=0;i<demandes.length;i++){
   put("etoiles","Étoiles (réputation)","Identité","nombre",stars.personal(c.reputation).level);
   put("pv_max","PV max","Identité","nombre",Number(c.pvMax)||0);
   put("mana","Mana","Identité","nombre",Number(c.mana)||0);
-  // Caractéristiques (avec l'équipement)
-  for(const s of Object.keys(c.stats)) put("carac."+key(s),s,"Caractéristiques (équipement compris)","nombre",r1(Number(engine.statWithGear(unit,s))||0));
-  for(const s of Object.keys(c.resistances||{})) put("res."+key(s.replace(/^Résistance (au |à la |aux |à l’|physique)?/,"")||"physique"),s,"Résistances","nombre",Number(c.resistances[s])||0);
+  // Caractéristiques à l'instant T (Idan, 2026-11-21 : « On doit prendre en compte l'équipement ») : la valeur que montre
+  // la fiche du jeu (equipment-effects.js), armure, armes, casque et combat à deux armes compris ; sinon, avec l'équipement.
+  const fx=gear.effects(c);
+  const avec=s=>Number.isFinite(Number(fx[s]?.value))?Number(fx[s].value):Number(engine.statWithGear(unit,s))||0;
+  for(const s of Object.keys(c.stats)) put("carac."+key(s),s,"Caractéristiques (équipement et armure compris)","nombre",r1(avec(s)));
+  // Résistances à l'instant T (Idan, 2026-11-21) : équipement compris ; pour le feu, le froid, la foudre et le poison, la
+  // protection du combat (résistance + armure portée + bonus, sans plafond), comme elementalDamage la compte.
+  const ELEMENT={"Résistance au feu":"feu","Résistance au froid":"froid","Résistance à la foudre":"foudre","Résistance au poison":"poison"};
+  for(const s of Object.keys(c.resistances||{})){
+    const el=ELEMENT[s], v=el&&engine.elementalProtection?Number(engine.elementalProtection(unit,el).total):Number(engine.statWithGear(unit,s));
+    put("res."+key(s.replace(/^Résistance (au |à la |aux |à l’|physique)?/,"")||"physique"),s,"Résistances (équipement et armure compris)","nombre",r1(Number.isFinite(v)?v:Number(c.resistances[s])||0));
+  }
   // Compétences
   const mart=c.skills?.martial||{};
   const CATS=["Lames longues","Lames courtes","Armes d’hast","Armes articulées","Haches","Bâtons","Boucliers","Armes à feu","Armes contondantes","Armes de tir","Armes flexibles","Combat à deux armes","Combat à une main","Combat à deux mains","Discrétion","Pièges","Magie en armure"];

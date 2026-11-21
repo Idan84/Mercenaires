@@ -230,6 +230,8 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
           <select id="f-peuple" aria-label="Peuple"><option value="">Tous peuples</option></select>
           <label class="case"><input type="checkbox" id="f-asc"> Ascendance niveau 3</label>
           <label class="case">Étoiles de la compagnie <input type="number" id="f-etoiles" min="0" max="20" step="1" value="1" style="width:64px"></label>
+          <label class="case">Taille de la compagnie <input type="number" id="f-taille" min="1" max="60" step="1" value="10" style="width:64px"></label>
+          <button type="button" class="btn" id="autre-compagnie">Autre compagnie</button>
           <button type="button" class="btn principal" id="generer">Générer un profil</button>
         </div>
       </div>
@@ -329,7 +331,12 @@ async function enregistre(){
 
 // ---------- Calculs : un petit langage sûr (pas de code exécuté) ----------
 const POOL=JSON.parse($("profils").textContent);
-const VARS=[...POOL.vars,{k:"compagnie.etoiles",label:"Étoiles de la compagnie (réglées dans « Essayer »)",groupe:"Compagnie",type:"nombre"}]; const VAR_IDX=new Map(VARS.map((v,i)=>[v.k,i]));
+// La compagnie (Idan, 2026-11-21 : « avoir la meilleure stat de la compagnie ») : des recrues tirées au hasard, lui compris ;
+// pour chaque caractéristique, compétence et résistance, compagnie.max.<variable> est la meilleure valeur parmi elles.
+const COMPARABLES=POOL.vars.filter(v=>v.type==="nombre"&&/^(carac|res|comp)\./.test(v.k));
+const VARS=[...POOL.vars,{k:"compagnie.etoiles",label:"Étoiles de la compagnie (réglées dans « Essayer »)",groupe:"Compagnie",type:"nombre"},
+  {k:"compagnie.taille",label:"Taille de la compagnie, lui compris (réglée dans « Essayer »)",groupe:"Compagnie",type:"nombre"},
+  ...COMPARABLES.map(v=>({k:"compagnie.max."+v.k,label:"Meilleure valeur de la compagnie : "+v.label,groupe:"Compagnie",type:"nombre"}))]; const VAR_IDX=new Map(VARS.map((v,i)=>[v.k,i]));
 // Constantes : un nom lisible par les calculs (« seuil soin » → seuil_soin).
 const cle=n=>norm(n).replace(/[^a-z0-9_.]+/g,"_").replace(/^_+|_+$/g,"");
 const constante=n=>(doc.constantes||[]).find(c=>cle(c.nom)===n);
@@ -666,13 +673,28 @@ let profilIdx=null, profil=null, forces={};
 const etoilesCompagnie=()=>{ const v=Number($("f-etoiles").value); return Number.isFinite(v)?v:1; };
 const versObjet=i=>({...Object.fromEntries(POOL.vars.map((v,j)=>[v.k,Array.isArray(POOL.profils[i][j])?[...POOL.profils[i][j]]:POOL.profils[i][j]])),"compagnie.etoiles":etoilesCompagnie()});
 $("f-etoiles").oninput=()=>{ memo("atelier-etoiles",etoilesCompagnie()); if(profil){ profil["compagnie.etoiles"]=etoilesCompagnie(); rendreResultats(); } };
+let autres=[]; // les autres membres de la compagnie (indices dans POOL.profils)
+const tailleCompagnie=()=>{ const v=Math.round(Number($("f-taille").value)); return Number.isFinite(v)&&v>=1?Math.min(v,POOL.profils.length):10; };
+function tirerCompagnie(){
+  const pris=POOL.profils.map((p,i)=>i).filter(i=>i!==profilIdx);
+  for(let i=pris.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pris[i],pris[j]]=[pris[j],pris[i]]; }
+  autres=pris.slice(0,tailleCompagnie()-1); memo("atelier-compagnie",autres);
+}
+function majCompagnie(){
+  if(!profil) return; profil["compagnie.taille"]=autres.length+1;
+  for(const v of COMPARABLES){ const j=VAR_IDX.get(v.k); let m=Number(profil[v.k])||0;
+    for(const i of autres){ const x=Number(POOL.profils[i][j])||0; if(x>m) m=x; }
+    profil["compagnie.max."+v.k]=m; }
+}
+$("f-taille").oninput=()=>{ memo("atelier-taille",tailleCompagnie()); if(profil){ tirerCompagnie(); rendreResultats(); } };
+$("autre-compagnie").onclick=()=>{ if(profil){ tirerCompagnie(); rendreResultats(); } };
 function remplirFiltres(){ const ps=[...new Set(POOL.profils.map(p=>p[VAR_IDX.get("peuple")]))].sort((a,b)=>a.localeCompare(b,"fr")); for(const p of ps) $("f-peuple").append(el("option",{value:p,text:p})); }
 function generer(){
   const d=$("f-domaine").value,pe=$("f-peuple").value,asc=$("f-asc").checked;
   const ok=POOL.profils.map((p,i)=>i).filter(i=>{ const p=POOL.profils[i]; return (!d||p[VAR_IDX.get("domaine")]===d)&&(!pe||p[VAR_IDX.get("peuple")]===pe)&&(!asc||p[VAR_IDX.get("niveau_ascendance")]>=3); });
   if(!ok.length){ $("profil-vide").textContent="Aucune recrue ne correspond à ces filtres."; $("profil-vide").hidden=false; return; }
   const choix=ok.length>1?ok.filter(i=>i!==profilIdx):ok; profilIdx=choix[Math.floor(Math.random()*choix.length)];
-  profil=versObjet(profilIdx); forces={}; memo("atelier-profil",profilIdx); rendreEssai(true);
+  profil=versObjet(profilIdx); forces={}; memo("atelier-profil",profilIdx); tirerCompagnie(); rendreEssai(true);
 }
 $("generer").onclick=generer;
 $("profil-reset").onclick=()=>{ if(profilIdx==null) return; profil=versObjet(profilIdx); rendreEssai(true); };
@@ -684,6 +706,7 @@ function reponseAuto(x){
   catch(e){ return {erreur:e instanceof ErreurCalcul?e.message:"erreur"}; }
 }
 function resultats(){
+  majCompagnie();
   const direct=new Map(); const reps=[]; const vus=new Set();
   // On suit l'arbre : un test n'est posé que si la réponse au-dessus de lui est sortie.
   const visite=(x,num,prof,saute)=>{
@@ -722,11 +745,14 @@ function rendreFiche(){
   ligne("Capacités",caps.join(", ")||"aucune");
   const titres=VARS.filter(v=>v.k.startsWith("titre.")&&p[v.k]>0).map(v=>({l:v.label.replace(/^Titre « (.*) » : niveau$/,"$1"),n:p[v.k]})).sort((a,b)=>b.n-a.n).slice(0,4);
   ligne("Mesures du jeu",titres.map(t=>t.l+" "+t.n).join(" · ")||"aucune");
+  majCompagnie();
+  const meilleur=COMPARABLES.filter(v=>(Number(p[v.k])||0)>0&&(Number(p[v.k])||0)>=p["compagnie.max."+v.k]).map(v=>v.label);
+  ligne("Compagnie",(autres.length+1)+" recrues tirées au hasard, lui compris · le meilleur (ex æquo compris) en : "+(meilleur.join(", ")||"rien"));
   f.append(dl);
 }
 function rendreVars(){
   const box=$("vars"); box.replaceChildren(); const groupes=new Map();
-  for(const v of VARS){ if(v.k==="nom"||v.k==="compagnie.etoiles") continue; if(!groupes.has(v.groupe)) groupes.set(v.groupe,[]); groupes.get(v.groupe).push(v); }
+  for(const v of VARS){ if(v.k==="nom"||v.k.startsWith("compagnie.")) continue; if(!groupes.has(v.groupe)) groupes.set(v.groupe,[]); groupes.get(v.groupe).push(v); }
   for(const [g,vs] of groupes){
     const d=el("details",{},el("summary",{text:g})); const liste=el("div",{class:"vars"});
     for(const v of vs){
@@ -752,6 +778,7 @@ function arbreRestant(motif){
 }
 function rendreResultats(){
   if(!profil) return;
+  rendreFiche(); // la ligne « Compagnie » suit les changements du profil et de la compagnie
   const {reps,motif}=resultats();
   const restent=doc.tags.filter(t=>!t.groupe&&!motif.has(t.id));
   // Décision d'Idan : pour une branche, seul le tag le plus bas qui reste s'affiche.
@@ -809,8 +836,10 @@ function rendreEssai(complet){
 function rendreTout(){ majCompteurs(); rendreConstantes(false); rendreTags(); rendrePanneauTag(); rendreTests(); rendrePanneauTest(); if(onglet==="essai") rendreEssai(false);
   for(const id of ["tag-ajout","test-ajout"]) $(id).disabled=!peutEcrire; }
 { const e=memo("atelier-etoiles"); if(Number.isFinite(e)) $("f-etoiles").value=String(e); }
+{ const t=memo("atelier-taille"); if(Number.isFinite(t)) $("f-taille").value=String(t); }
 remplirFiltres(); rendreAideVars();
-const dernier=memo("atelier-profil"); if(Number.isInteger(dernier)&&POOL.profils[dernier]){ profilIdx=dernier; profil=versObjet(dernier); }
+const dernier=memo("atelier-profil"); if(Number.isInteger(dernier)&&POOL.profils[dernier]){ profilIdx=dernier; profil=versObjet(dernier);
+  const c=memo("atelier-compagnie"); if(Array.isArray(c)&&c.every(i=>Number.isInteger(i)&&POOL.profils[i]&&i!==dernier)) autres=c; else tirerCompagnie(); }
 montreOnglet(["tags","tests","essai"].includes(onglet)?onglet:"tags"); rendreTout(); if(profil) rendreEssai(true);
 
 (async()=>{

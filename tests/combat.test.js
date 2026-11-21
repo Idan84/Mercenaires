@@ -345,7 +345,7 @@ function expectedDamage(attacker,target,roll,variation){
   const q=Number(combat.quality(item).multiplicateur_qualite)||1;
   // Prise d'arme (Idan, 2026-11-02) : une arme Au choix tenue seule n'est à deux mains (×1,5) que si on l'empoigne.
   const grip=combat.usesTwoHands(attacker,weapon)&&weapon.prise==="Au choix"?1.5:1;
-  const rp=Math.max(0,Math.min(50,Number(target.character.resistances?.["Résistance physique"])||0));
+  const rp=Math.max(0,Number(target.character.resistances?.["Résistance physique"])||0); // sans plafond (Idan, 2026-11-21)
   return Math.ceil(10*roll*q*grip*2*(Number(attacker.character.stats.Force)||0)/100*(1-(rp/100)*variation));
 }
 const diceOf=u=>{ const m=String(combat.weaponTemplate(combat.activeWeaponItem(u)).degats_pv_base).match(/^(\d+)D(\d+)$/i); return {count:Number(m[1]),sides:Number(m[2])}; };
@@ -700,5 +700,10 @@ assert.equal(combat.isDualWielding(unit(withDual(a,"Écu","Dague"),0,0)),false,"
 // Le cas normal ne change pas : arme « Au choix » ou « 1 main » avec bouclier ou seconde arme.
 assert.ok(combat.blockChance(unit(withShield(withMainWeapon(a,"Épée longue"),"Écu"),1,0))>0);
 assert.equal(combat.isDualWielding(unit(withDual(a,"Épée longue","Dague"),0,0)),true);
+
+// Résistance physique sans plafond (Idan, 2026-11-21 : le maximum de 50 % est retiré) ; jamais sous 0 dégât.
+const tough=r=>({character:{resistances:{"Résistance physique":r},stats:{},items:[],equipment:null}});
+assert.equal(combat.spellPhysicalDamage(tough(80),100,2).damage,20,"80 % comptent en entier");
+assert.equal(combat.spellPhysicalDamage(tough(120),100,1).damage,0,"au-delà de 111 %, plus rien ne passe");
 
 console.log(JSON.stringify({ok:true},null,2));

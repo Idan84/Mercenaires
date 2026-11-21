@@ -122,7 +122,9 @@ soin moyen ≈ 135, ≈ 29 % des PV d'un allié du même stade.
 ### École du Feu (10 sorts)
 
 **Dégâts élémentaires** : effet × (1 − protection / 100). **Protection** = Résistance à l'élément (équipement compris)
-**+ ou − la valeur de l'armure portée**, de **−50 à +75 %**. Feu (« brûlant ») : plates −20, mailles −10, brigandine −5,
+**+ ou − la valeur de l'armure portée**, au moins **−50 %**, **sans plafond** (Idan, 2026-11-21) : à 100 %, il ne prend plus rien ;
+**au-delà, il absorbe l'élément et se soigne** de ce qui dépasse (protection 125 % contre 40 de feu : +10 PV, sans dépasser
+ses PV max). Vaut pour le feu, le froid, la foudre et le poison ; le malus de Gel tombe simplement à 0. Feu (« brûlant ») : plates −20, mailles −10, brigandine −5,
 vêtements +5, cuir +15, cuir renforcé +18, écailles +35. Même règle pour le froid (« glaçant ») et la foudre
 (« foudroyant ») ; la fiche montre ces résistances avec l'armure.
 

@@ -296,6 +296,13 @@ assert.ok(logged(/Arme enflammée : .* PV de feu/));
 const hpAfter=target.hp;
 api.missionWeaponEnchantStrike(u,target,{ok:true,hit:true,blocked:true});
 assert.equal(target.hp,hpAfter,"un coup bloqué ne brûle pas");
+// Absorption (Idan, 2026-11-21) : au-delà de 100 % de protection contre le feu, le coup le soigne, sans dépasser ses PV max.
+target.elementalBonus={feu:{bonus:400,turns:2}};target.hp=target.pvMax-20;
+queue.push(0.5);
+api.missionWeaponEnchantStrike(u,target,{ok:true,hit:true,blocked:false});
+assert.ok(target.hp>target.pvMax-20&&target.hp<=target.pvMax,"le feu le soigne");
+assert.ok(logged(/Arme enflammée : .* subit 0 PV de feu, absorbés : \+\d+ PV \(protection \d+ %\)/));
+target.elementalBonus=null;target.hp=target.pvMax;
 api.resetMissionActivation(u);api.resetMissionActivation(u);api.resetMissionActivation(u);
 assert.equal(u.weaponEnchant,null,"les flammes s'éteignent");
 // Armure de feu : bonus contre le froid, compté par le moteur.

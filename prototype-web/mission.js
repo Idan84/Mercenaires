@@ -3435,9 +3435,9 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
     missionFx(caster,"Sort raté","miss");
     if(out.fumble){
       if(out.selfDamage&&out.element){
-        const hit=m.engine.elementalDamage(caster,out.element,out.selfDamage);
-        missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : le sort se retourne, "+name+" subit "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+".","bad");
-        damageMissionUnitBySpell(caster,hit.damage,null,out.element);
+        const hit=missionElementalHit(caster,out.element,out.selfDamage);
+        missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : le sort se retourne, "+name+" subit "
+          +(hit.heal?"0 PV de "+out.element+", absorbés : +"+(hit.healed||0)+" PV":hit.damage+" PV de "+out.element)+missionProtectionNote(hit)+".","bad");
       }else{
         missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : "+(out.selfDamage
           ?"le sort se retourne, "+name+" perd "+out.selfDamage+" PV."
@@ -3733,7 +3733,7 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
     const lines=out.chain.map(({unit,factor},k)=>{
       const hit=missionElementalHit(unit,out.element,Math.ceil(out.amount*factor-1e-9),caster);
       if(hit.damage>0&&unit!==caster) effect=true;
-      return unit.character.name+" −"+hit.damage+(k?" ("+Math.round(factor*100)+" %)":"");
+      return unit.character.name+" "+missionHitDelta(hit)+(k?" ("+Math.round(factor*100)+" %)":"");
     });
     missionLog(name+" lance "+spell.nom+on+detail+" : "+out.amount+" PV de "+out.element+(lines.length>1?", puis de moins en moins à chaque rebond":", sans rebond")
       +" — "+lines.join(", ")+"."+critical,"damage");
@@ -3749,7 +3749,7 @@ function resolveMissionSpellNow(caster,target,code,extra={}){
       const amount=zone.cells?out.amount:Math.ceil(out.amount*magic.zoneFactor(zone,m.engine.axialDistance(zone.center,u))-1e-9);
       const hit=missionElementalHit(u,out.element,amount,caster);
       if(hit.damage>0&&u!==caster) effect=true;
-      return u.character.name+" −"+hit.damage;
+      return u.character.name+" "+missionHitDelta(hit);
     });
     const shape=zone.shape==="cone"?" (cône de "+zone.length+" cases)":zone.cells?" (ligne de "+zone.length+" cases)":" (rayon "+zone.radius+")";
     missionLog(name+" lance "+spell.nom+shape+detail+drift+" : "+out.amount+" PV de "+out.element
@@ -4055,10 +4055,9 @@ function missionStormWave(storm){
   const source=missionUnits().find(u=>u.id===storm.casterId)||null;
   let total=0;
   const lines=struck.map(u=>{
-    const strike=magic.stormStrike(storm),hit=m.engine.elementalDamage(u,storm.element,strike.amount);
+    const strike=magic.stormStrike(storm),hit=missionElementalHit(u,storm.element,strike.amount,source);
     total+=hit.damage;
-    damageMissionUnitBySpell(u,hit.damage,source,storm.element);
-    return u.character.name+" −"+hit.damage+" PV"+missionProtectionNote(hit);
+    return u.character.name+" "+missionHitDelta(hit)+" PV"+missionProtectionNote(hit);
   });
   storm.critical=false;
   storm.turnsLeft-=1;
@@ -4073,7 +4072,7 @@ function missionBlizzardWave(blizzard){
   const units=magic.unitsInZone(blizzard.center,blizzard.radius,missionUnits());
   const amount=magic.tick(blizzard.effect).amount,source=missionUnits().find(u=>u.id===blizzard.casterId)||null;
   let total=0;
-  const lines=units.map(u=>{ const hit=missionElementalHit(u,blizzard.effect.element||"froid",amount,source); total+=hit.damage; return u.character.name+" −"+hit.damage; });
+  const lines=units.map(u=>{ const hit=missionElementalHit(u,blizzard.effect.element||"froid",amount,source); total+=hit.damage; return u.character.name+" "+missionHitDelta(hit); });
   missionLog(lines.length?"Le blizzard gèle : "+lines.join(", ")+".":"Le blizzard souffle : personne dans la zone.","damage");
   return total;
 }
@@ -4097,7 +4096,7 @@ function tickMissionBurning(unit){
   const hit=missionElementalHit(unit,effect.element||"feu",tick.amount,source);
   effect.turns=tick.turnsLeft;
   if(effect.turns<=0) unit.burning=null;
-  missionLog("Embrasement : "+unit.character.name+" brûle, −"+hit.damage+" PV"+missionProtectionNote(hit)
+  missionLog("Embrasement : "+unit.character.name+" brûle, "+missionHitDelta(hit)+" PV"+missionProtectionNote(hit)
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; les flammes s’éteignent."),"damage");
   checkMissionEnd();
 }
@@ -4121,7 +4120,7 @@ function missionFlameBurn(unit,wall,how){
   if(!magic||!unit.alive) return;
   const source=missionUnits().find(u=>u.id===wall.casterId)||null;
   const hit=missionElementalHit(unit,wall.effect.element||"feu",magic.tick(wall.effect).amount,source);
-  missionLog(unit.character.name+" "+how+" : −"+hit.damage+" PV"+missionProtectionNote(hit)+".","damage");
+  missionLog(unit.character.name+" "+how+" : "+missionHitDelta(hit)+" PV"+missionProtectionNote(hit)+".","damage");
   checkMissionEnd();
 }
 function tickMissionFlameStart(unit){
@@ -4134,7 +4133,7 @@ function tickMissionTorch(unit){
   if(!effect||!magic||!unit.alive) return;
   const tick=magic.tick(effect);
   const foes=missionUnits().filter(u=>u.alive&&!u.offMap&&u.team!==unit.team&&m.engine.axialDistance(u,unit)===1);
-  const lines=foes.map(u=>{ const hit=missionElementalHit(u,effect.element||"feu",tick.amount,unit); return u.character.name+" −"+hit.damage; });
+  const lines=foes.map(u=>{ const hit=missionElementalHit(u,effect.element||"feu",tick.amount,unit); return u.character.name+" "+missionHitDelta(hit); });
   effect.turns=tick.turnsLeft;
   if(effect.turns<=0) unit.torch=null;
   missionLog("Torche vivante : "+unit.character.name+(lines.length?" brûle ses voisins — "+lines.join(", "):" flambe, personne à son contact")
@@ -4253,8 +4252,14 @@ function tickMissionPoison(unit){
   const m=game.mission,r=m.engine.resolvePoison(unit),name=unit.character.name;
   const detail=" (résistance "+missionPercent(r.p)+", jet "+r.roll+")";
   if(r.resisted){ unit.poisoned=false; missionLog(name+" résiste au poison"+detail+" : l’effet est annulé.","magic"); return; }
-  missionLog(name+" souffre du poison"+detail+" : −"+r.damage+" PV"+missionProtectionNote(r)+".","damage");
-  damageMissionUnitBySpell(unit,r.damage,missionUnits().find(u=>u.id===fx.sourceId)||null,"poison","poison");
+  if(r.heal){
+    // Absorption (Idan, 2026-11-21) : au-delà de 100 % de protection, le poison le soigne.
+    r.healed=healMissionUnit(unit,r.heal);
+    missionLog(name+" absorbe le poison"+detail+" : "+missionHitDelta(r)+" PV"+missionProtectionNote(r)+".","magic");
+  }else{
+    missionLog(name+" souffre du poison"+detail+" : −"+r.damage+" PV"+missionProtectionNote(r)+".","damage");
+    damageMissionUnitBySpell(unit,r.damage,missionUnits().find(u=>u.id===fx.sourceId)||null,"poison","poison");
+  }
   fx.turns-=1;
   if(unit.alive&&fx.turns<=0){ unit.poisoned=false; missionLog("Le poison quitte "+name+".","magic"); }
   checkMissionEnd();
@@ -4281,7 +4286,7 @@ function missionSpellHit(unit,out,amount,caster){
     return {...hit,label:hit.wound?hit.damage+" PV contondants":"l’armure encaisse",note:" (Blesser "+Math.round(hit.pWound)+" %, jet "+hit.woundRoll+")"};
   }
   const hit=missionElementalHit(unit,out.element,amount,caster);
-  return {...hit,label:hit.damage+" PV de "+out.element,note:missionProtectionNote(hit)};
+  return {...hit,label:hit.heal?"0 PV de "+out.element+", absorbés : +"+(hit.healed||0)+" PV":hit.damage+" PV de "+out.element,note:missionProtectionNote(hit)};
 }
 // Attraction, Projection (doc 12) : la cible suit les cases jusqu'au premier obstacle (un personnage, une flaque de
 // magma, le bord du terrain), sans attaque d'opportunité ; l'obstacle l'arrête et lui inflige un choc, qui passe par
@@ -4355,7 +4360,7 @@ function spitMissionVenom(unit,target){
   const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.terrainDodge?", Esquive du terrain "+(out.terrainDodge>0?"+":"")+out.terrainDodge:"")+")";
   if(!out.hit){ missionLog(name+" crache du venin sur "+foe+" : raté"+aim+".","miss"); return out; }
   const hit=missionElementalHit(target,"poison",out.amount,unit);
-  missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+hit.damage+" PV de poison"+missionProtectionNote(hit)+".","damage");
+  missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+(hit.heal?"0 PV de poison, absorbés : +"+(hit.healed||0)+" PV":hit.damage+" PV de poison")+missionProtectionNote(hit)+".","damage");
   if(hit.damage>0&&target.alive){
     target.poisoned={code:out.code,turns:out.poison.turns,amount:out.poison.amount,sourceId:unit.id};
     missionLog(foe+" est empoisonné"+(missionFeminine(target)?"e":"")+" pour "+out.poison.turns+" tours.","bad");
@@ -4376,8 +4381,12 @@ function tickMissionChill(unit){
 function missionElementalHit(unit,element,amount,source=null){
   const hit=game.mission.engine.elementalDamage(unit,element,amount);
   damageMissionUnitBySpell(unit,hit.damage,source,element);
+  // Absorption (Idan, 2026-11-21) : au-delà de 100 % de protection, l'élément le soigne.
+  if(hit.heal) hit.healed=healMissionUnit(unit,hit.heal);
   return hit;
 }
+// « −30 » ou « +12 (absorbé) » pour le journal.
+function missionHitDelta(hit){ return hit.heal?"+"+(hit.healed||0)+" (absorbé)":"−"+hit.damage; }
 // « le feu », « la foudre »… et « du feu », « de la foudre »… pour le journal.
 function missionElementThe(element){ return element==="foudre"?"la foudre":"le "+element; }
 function missionElementSome(element){ return element==="foudre"?"de la foudre":"du "+element; }
@@ -4392,7 +4401,7 @@ function missionWeaponEnchantStrike(attacker,target,result){
   const fx=attacker.weaponEnchant,magic=missionMagic();
   if(!fx||!magic||!result?.ok||!result.hit||result.blocked||result.parried||!target.alive) return;
   const strike=magic.weaponStrike(fx),hit=missionElementalHit(target,fx.element,strike.amount,attacker);
-  missionLog((magic.spell(fx.code)?.nom||"Arme enflammée")+" : "+target.character.name+" subit "+hit.damage+" PV de "+fx.element+missionProtectionNote(hit)+".","magic");
+  missionLog((magic.spell(fx.code)?.nom||"Arme enflammée")+" : "+target.character.name+" subit "+(hit.heal?"0 PV de "+fx.element+", absorbés : +"+(hit.healed||0)+" PV":hit.damage+" PV de "+fx.element)+missionProtectionNote(hit)+".","magic");
   checkMissionEnd();
 }
 
@@ -6008,7 +6017,7 @@ function missionSpellPreviewRows(u,code,q,r){
   const range=magic.effectRange(u,code);
   if(range.max>0){
     const heal=MISSION_SPELL_HEALS.has(s.effet),mana=MISSION_SPELL_MANA.has(s.effet);
-    let {min,max}=range,extra="";
+    let {min,max}=range,extra="",absorbed=false;
     if(!heal&&!mana&&foe){
       const physical=["contondant","tranchant","perforant"].includes(s.degats_type);
       if(physical){
@@ -6023,10 +6032,12 @@ function missionSpellPreviewRows(u,code,q,r){
         const k=magic.willFactor(u,foe);
         min=Math.ceil(min*k-1e-9);max=Math.ceil(max*k-1e-9);
       }else if(s.element&&s.effet!=="arme_elementaire"){
-        min=e.elementalDamage(foe,s.element,min).damage;max=e.elementalDamage(foe,s.element,max).damage;
+        // Absorption (Idan, 2026-11-21) : au-delà de 100 % de protection, le sort le soigne.
+        const lo=e.elementalDamage(foe,s.element,min),hi=e.elementalDamage(foe,s.element,max);
+        if(lo.heal||hi.heal){ absorbed=true; min=lo.heal; max=hi.heal; }else{ min=lo.damage; max=hi.damage; }
       }
     }
-    const label=s.effet==="arme_elementaire"?"Par coup":heal?"Soins":mana?"Mana":"Dégâts";
+    const label=absorbed?"Absorbé, le soigne de":s.effet==="arme_elementaire"?"Par coup":heal?"Soins":mana?"Mana":"Dégâts";
     rows.push(extra+`<dt>${label}${MISSION_SPELL_PER_TURN.has(s.effet)?" / tour":""}</dt><dd>${min===max?min:min+"–"+max}${mana?"":" PV"}</dd>`);
   }
   if(s.bonus_base!=null){

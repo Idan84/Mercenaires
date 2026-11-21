@@ -97,7 +97,7 @@
       add("Points de vie",engine.maxHp(bare),engine.maxHp(unit),[["Constitution",3],["Endurance",0.6],["Volonté",0.3]]
         .filter(([stat])=>hpGap(stat)).map(([stat,factor])=>({label:stat+" avec l’équipement",delta:factor*hpGap(stat),reason:"hp"})));
       // Résistances élémentaires (Idan, 2026-10-25) : + ou − la valeur de l'armure portée pour l'élément (plates −20 au feu,
-      // écailles +35…), comme les dégâts de feu les comptent ; la protection appliquée reste bornée de −50 à +75.
+      // écailles +35…), comme les dégâts de feu les comptent ; la protection appliquée vaut au moins −50, sans plafond.
       for(const [stat,element] of [["Résistance au feu","feu"],["Résistance au froid","froid"],["Résistance à la foudre","foudre"]]){
         const protection=engine.elementalProtection?.(unit,element);
         if(!protection) continue;

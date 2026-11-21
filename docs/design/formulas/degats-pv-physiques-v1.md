@@ -43,7 +43,9 @@ $$
 facteurResistance=1-\frac{ResistancePhysique}{100}\times\frac{D3+8}{10}
 $$
 
-Le D3 fait donc varier l’efficacité de la résistance à **90 % / 100 % / 110 %** de sa valeur nominale. La Résistance physique est exprimée en pourcentage et sa valeur réelle est prévue entre **0 % et 50 % maximum**.
+Le D3 fait donc varier l’efficacité de la résistance à **90 % / 100 % / 110 %** de sa valeur nominale. La Résistance physique est exprimée en pourcentage, **au moins 0 %, sans plafond** (Idan, 2026-11-21 : le maximum de
+50 % est retiré). La perte de PV ne descend jamais sous 0 : dès 91 % (100 ÷ 1,1), le jet de 3 ne laisse plus rien passer ; au-delà
+d'environ 111 % (100 ÷ 0,9), plus aucun coup ne passe.
 
 ## Perte de PV
 

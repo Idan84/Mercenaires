@@ -90,6 +90,14 @@ Pour savoir quoi retaguer : en haut du même onglet, la liste **« Affiner les t
 
 Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodandwages.idanwizen.com/design/#avatars) donne, **culture par culture**, le besoin en avatars (`game-core/avatar-demand.js`, doc 02 ; Idan, 2026-10-30) : pour 50 mercenaires d'une culture, les avatars nécessaires par culture × ascendance × arme tenue en main ou école, en vert, orange ou rouge, et la liste **à produire**. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu. Le besoin en avatars par culture (`game-core/avatar-demand.js`, doc 02) repose sur des mesures figées du générateur, `data/reference/avatar-demand.json` : quand la génération change (matrice, armes, compétences, ascendances), les refaire avec `node scripts/build-avatar-demand.js` (un quart d'heure environ, un processus par cœur).
 
+### Le Design Lab, base d'administration du jeu (Idan, 2026-11-22)
+
+« Je veux que le jeu lise les datas de l'atelier, que l'atelier soit une sorte de base admin de gestion du jeu. » Le
+principe, domaine par domaine : Idan règle les données dans un onglet du Design Lab ; ses enregistrements sont rangés sur
+Hostinger (`media/…`, par une API de `design/api/`) ; le jeu les lit au chargement et, sans eux (serveur local, tests),
+garde la copie du dépôt (`data/reference/`). Déjà fait : les réglages des cultures (ci-dessous). Prochain : l'atelier des
+tags (doc 20 §12). Ensuite : le bestiaire et les constantes de formules.
+
 ### Réglages des cultures : `media/reglages/`
 
 L'onglet **Cultures** du Design Lab (https://bloodandwages.idanwizen.com/design/#cultures ; Idan, 2026-11-18) règle, culture par culture, les trois panneaux du kit graphique : barres du camp, fiche au survol, fiche complète en plein écran. L'aperçu est le jeu lui-même (`index.html?apercu`, `prototype-web/apercu-ui.js` : une partie de démonstration jamais sauvegardée, sans musique), à la résolution choisie. « Enregistrer » range les réglages dans `media/reglages/<id>/reglage.json` (`design/api/reglages.php`, mêmes gardes que les dépôts d'images ; `media/reglages/index.json` les liste) . Le jeu les lit en direct (Idan, 2026-11-21 ; `prototype-web/reference-data.js`, `loadCultureSettings`) : au chargement, pour chaque culture et chaque panneau, le dernier enregistrement par-dessus le kit de `data/reference/culture-kits.json`, seulement les réglages que le kit connaît, du même type. Il suffit de recharger le jeu. Sans index (serveur local, tests), le kit du dépôt. JC reporte de temps en temps les derniers réglages dans `culture-kits.json`, pour que le dépôt reste à jour.

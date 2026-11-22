@@ -660,7 +660,7 @@ proposition par mercenaire et par jour**. L'intendant ne part plus en mission ; 
 « Un vieux qui […] veut juste partir à la retraite, et qui demande en permanence à être remplacé. » Données :
 `data/reference/old-steward.json`.
 
-- **Là dès le premier jour**, avec **10 d'Intendance** ; il fait tout ce que fait un intendant (candidats, échanges,
+- **Là dès le premier jour**, avec **30 d'Intendance** (Idan, 2026-11-22 ; 10 avant) ; il fait tout ce que fait un intendant (candidats, échanges,
   apprentissages, prix des marchands, tags).
 - **Ce n'est pas un mercenaire** : ni salaire, ni place au dortoir, ni fiche, ni mission.
 - **Affinité** : chaque mercenaire (et chaque marchand) l'apprécie exactement comme le capitaine.

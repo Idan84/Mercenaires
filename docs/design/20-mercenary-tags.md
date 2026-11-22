@@ -538,11 +538,15 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
 
 - **Calcul automatique** : les tags de l'atelier (§11) sont recalculés à chaque mise à jour du mercenaire (équipement,
   XP, étoiles, sorts, monture…). Plus de demande de tags.
-- **Où on les voit** : sur la fiche au survol pour l'instant, et plus tard sur la fiche complète v2.
+- **Où on les voit** : sur la fiche au survol, à la place des tags d'aujourd'hui ; plus tard sur la fiche complète v2.
 - **Ce qu'on retire** : l'onglet de l'intendant qui tague (Cruxor, §5 à §9), l'onglet « Rôle et formation » de la fiche
   complète et tous les boutons de demande de tags.
 - **Le titre** (doc 19) reste calculé comme aujourd'hui ; il viendra plus tard des tags.
-- Les données de l'atelier (tags, tests, constantes) sont copiées dans le dépôt : le jeu ne lit pas l'artefact.
+- **L'atelier passe dans le Design Lab** (Idan, 2026-11-22 : « je voudrais intégrer l'atelier dans le design lab et que
+  le jeu le lise pour générer les tags ») : Idan y règle tags, tests et constantes, ses enregistrements sont rangés sur
+  Hostinger, et le jeu les lit au chargement, comme les réglages des cultures (doc DEPLOYMENT). Sans eux (serveur local,
+  tests), la copie du dépôt (`scripts/atelier-tags/donnees/`). Le même moteur (game-core) calcule les tags dans le jeu et
+  dans l'onglet « Essayer » de l'atelier.
 
 ### Deux sortes de tags, un même calcul
 
@@ -566,14 +570,16 @@ ValeurVue  = Valeur × (1 + Biais)
 |---|---|---|---|
 | Excellent | 90 | 70 | 3 % |
 | Correct | 80 | 70 | 5 % |
-| Cruxor Limortel | 50 | 50 | 18 % |
+| Cruxor Limortel | 30 | 50 | 26 % |
 | Mauvais | 25 | 40 | 30 % |
 | Nul | 0 | 30 | 45 % |
 
-- **Cruxor Limortel**, pour les tags : 50 d'Intendance, 50 d'Intelligence, affinité neutre (0) avec tout le monde.
-- **Un tirage par couple intendant / mercenaire**, gardé tant que rien ne change ; on retire quand le mercenaire change
-  d'étoile de réputation ou quand on change d'intendant. La taille de l'erreur diffère donc d'un mercenaire à l'autre :
-  un mauvais intendant tombe parfois juste.
+- **Cruxor Limortel** reste celui du doc 11 (chaque mercenaire l'apprécie comme le capitaine), avec **30 d'Intendance**
+  (Idan, 2026-11-22 ; 10 avant). Il n'a pas d'Intelligence : 50 pour la formule.
+- **Un tirage par couple intendant / mercenaire** (taille et sens), gardé tant que rien ne change ; on retire quand le
+  mercenaire change d'étoile de réputation ou quand on change d'intendant. La taille est tirée entre 0 et l'erreur au plus
+  (Idan, 2026-11-22 : « sinon le biais sera trop marqué… je veux qu'il diffère pour chaque mercenaire ») : un mauvais
+  intendant tombe parfois juste.
 - **Ce qui reçoit le biais** : les capacités (caractéristiques, compétences, résistances, Précision, Puissance au tir,
   Dextérité + Vitesse, réserve de mana, chances de réussite des sorts, Discrétion, PM). **Pas** les oui / non, les noms,
   les nombres de sorts, les coûts en mana, les durées des sorts ni les étoiles de la compagnie (sinon le biais

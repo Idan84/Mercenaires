@@ -1415,6 +1415,8 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-talk-box>#recruit-talk-choices{flex:none;max-height:260px;overflow-y:auto}
 .hc-unknown{font:700 22px/1 var(--police-texte);color:var(--encre);opacity:.7}
 .hc-magic>.hc-unknown{display:block;text-align:center}
+.hc-school--unknown{align-self:stretch}
+.hc-affinity-word{font:700 18px/1 var(--police-texte);color:var(--encre)}
 .hc-tag--unknown{text-align:center}
 .talk-face{flex:none}
 .avatar-frame--talk{width:96px;aspect-ratio:1;margin:0;border:2px solid #c9a461;border-radius:10px;box-shadow:0 4px 14px #000a}

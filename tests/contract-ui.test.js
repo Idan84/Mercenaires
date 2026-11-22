@@ -561,17 +561,50 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(masked, /<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3\/span 2">\?<\/li>/, "un seul tag « ? »");
     assert.equal((masked.match(/<span class="hc-kit-item"><i>\?<\/i><\/span>/g) || []).length, 3, "les deux sets et l'armure");
     assert.match(masked, /<p class="hc-title">[\s\S]*?<span>\?<\/span>/, "le titre");
-    assert.doesNotMatch(masked, /Épée longue|Archer|hc-steed-portrait/, "rien de ce qu'on ne sait pas, ni la monture");
+    assert.doesNotMatch(masked, /Épée longue|Archer|hc-steed-portrait|hc-school"/, "rien de ce qu'on ne sait pas, ni la monture");
     assert.match(masked, /class="avatar"/, "son portrait");
     assert.match(masked, /class="hc-origin">Orc des steppes</, "ses origines, visibles");
     assert.match(render(merc, {unknown: new Set(["title"]), bonus: 99}), /<b>99 PO<\/b>/, "la prime qu'il demande");
+    // Ce qu'on apprend en lui parlant (doc 14 §6 bis ; Idan, 2026-11-22 : « il faut ajouter absolument le salaire dans cette
+    // fiche ») : le salaire à côté de la prime (fiche du candidat seulement), chaque case de l'équipement à part, le titre
+    // entendu, l'affinité en un mot, les écoles où il a dit oui puis un « ? » tant qu'il en reste.
+    assert.doesNotMatch(full, /hc-stat--salary/, "pas de salaire sur la fiche au survol de nos mercenaires");
+    assert.match(render(merc, {unknown: new Set(["salary", "bonus"])}), /<div class="hc-stat hc-stat--salary"><span class="hc-label" title="Salaire journalier">Salaire<\/span><span class="hc-unknown">\?<\/span><\/div>/);
+    const learnt = render(merc, {unknown: new Set(["tags", "mount", "set2", "armor", "magic"]), salary: 12, bonus: 30, title: "Mage Légendaire Omnipotent",
+      affinityWord: "Amical", schools: ["Feu"]});
+    assert.match(learnt, /Salaire<\/span><span class="hc-bonus"><img src="assets\/hud\/picto-or\.webp" alt=""><b>12 PO<\/b><\/span><\/div>\s*<div class="hc-stat hc-stat--bonus">[\s\S]*?<b>30 PO<\/b>/, "le salaire, puis la prime");
+    assert.deepEqual([...learnt.matchAll(/<span class="hc-kit-item"><i>([^<]*)<\/i><\/span>/g)].map(x => x[1]), ["Épée longue et épée courte", "?", "?"], "chaque case à part");
+    assert.match(learnt, /<span>Mage Légendaire Omnipotent<\/span>/, "le titre entendu (vanté)");
+    assert.match(learnt, /<span class="hc-label">Affinité<\/span><b class="hc-affinity-word">Amical<\/b>/, "un mot à la place des cœurs");
+    assert.match(learnt, /<span class="hc-school" role="img" aria-label="Feu">[\s\S]*?<span class="hc-school hc-school--unknown"><span class="hc-unknown">\?<\/span><\/span>/, "ses écoles, puis « ? »");
+    assert.doesNotMatch(learnt, /hc-steed-portrait/, "toujours sans la monture");
+    assert.doesNotMatch(render(merc, {unknown: new Set(["mount"]), schools: []}), /hc-unknown|hc-magic/, "toutes les écoles demandées, aucune : rien");
   }
   // La fenêtre du candidat (Idan, 2026-11-22) : sa fiche à côté de la discussion, un fond noir flou derrière.
   {
     const tavernJs = fs.readFileSync(path.join(root, "prototype-web/tavern-ui.js"), "utf8");
     assert.match(html, /<dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit talk-dialog--fiche" aria-labelledby="recruit-talk-name">\s*<div id="recruit-talk-card" class="recruit-fiche"><\/div>\s*<div class="recruit-talk-box">/);
-    assert.match(tavernJs, /const unknown=new Set\(\["title","affinity","tags","kit","magic",\.\.\.\(t\.salaryKnown\?\[\]:\["bonus"\]\)\]\);/, "la prime, une fois ses prétentions dites");
-    assert.match(tavernJs, /\$\("recruit-talk-card"\)\.innerHTML=renderMercenaryHoverCard\(m,\{unknown,bonus:n\?\(n\.agreed\?\.bonus\?\?n\.bonus\):null\}\);/);
+    assert.match(tavernJs, /\$\("recruit-talk-card"\)\.innerHTML=renderMercenaryHoverCard\(m,recruitCardOptions\(candidate\)\);/);
+    // Les cases : ce qu'on a appris (recruitDialogue().known) ; le salaire et la prime, une fois ses prétentions dites, suivent
+    // la négociation.
+    const cardOptions = new Function("recruitDialogue", "tavernRules",
+      tavernJs.slice(tavernJs.indexOf("function recruitCardOptions(candidate){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return recruitCardOptions;");
+    const {createRecruitDialogue} = require(path.join(root, "game-core/recruit-dialogue.js"));
+    const dialogue = createRecruitDialogue({reference: {tavernDialogue: JSON.parse(fs.readFileSync(path.join(root, "data/reference/tavern-dialogue.json"), "utf8")),
+      spells: JSON.parse(fs.readFileSync(path.join(root, "data/reference/spells.json"), "utf8"))}});
+    const candidate = {mercenary: merc};
+    const negotiation = {salary: 12, bonus: 30, agreed: null};
+    const optionsOf = cardOptions(() => dialogue, () => ({negotiationState: () => negotiation}));
+    const fresh = optionsOf(candidate);
+    assert.deepEqual([...fresh.unknown].sort(), ["affinity", "armor", "bonus", "magic", "mount", "salary", "set1", "set2", "tags", "title"]);
+    const k = dialogue.known(candidate);
+    Object.assign(k, {salary: true, title: "", affinity: -40});
+    k.asked.set1 = true;
+    for (const name of dialogue.schools) k.schools[name] = name === "Vie";
+    negotiation.agreed = {salary: 10, bonus: 25};
+    const later = optionsOf(candidate);
+    assert.deepEqual([...later.unknown].sort(), ["armor", "mount", "set2", "tags"]);
+    assert.deepEqual([later.salary, later.bonus, later.title, later.affinityWord, later.schools], [10, 25, "", "Hostile", ["Vie"]]);
     assert.match(css, /\.talk-dialog--fiche::backdrop\{background:rgba\(0,0,0,\.82\);backdrop-filter:blur\(8px\);/);
     assert.match(css, /\.talk-dialog--fiche\[open\]\{display:flex;align-items:stretch;gap:24px;height:fit-content\}/);
   }
@@ -580,7 +613,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
   // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
   assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:6px 2px\}/, "de la marge avant et après le bloc armes");
-  assert.match(hoverSrc, /const kit=\(hidden\("kit"\)\?\["\?","\?","\?"\]:\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\)\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
+  assert.match(hoverSrc, /const kitValues=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\];\s*const kit=\["set1","set2","armor"\]\.map\(\(key,i\)=>hidden\("kit"\)\|\|hidden\(key\)\?"\?":kitValues\[i\]\)\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
   // Entre les colonnes de l'équipement et entre les écoles, la fente du parchemin (Idan : « Oui »).
   assert.match(css, /\.hc-kit-item\+\.hc-kit-item::before,\.hc-school\+\.hc-school::before\{content:"";position:absolute;[^}]*width:3px;background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
   assert.doesNotMatch(css, /\.hc-(kit-item|school)[^{]*\{[^}]*border-left/);
@@ -591,7 +624,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(css, /\.hc-foot\.is-2\{grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/);
   // La monture : son portrait seul, un peu plus petit (Idan, 2026-11-16 : « réduire un peu l'avatar monture, virer le nom
   // de la monture ») ; son nom reste pour les lecteurs d'écran.
-  assert.match(hoverSrc, /const steed=d\.mount&&!hidden\("magic"\)\?hoverMountPortrait\(d\.mount\):"";/, "le portrait seul, sans le nom");
+  assert.match(hoverSrc, /const showSteed=Boolean\(d\.mount\)&&!hidden\("magic"\)&&!hidden\("mount"\);[\s\S]*?const steed=showSteed\?hoverMountPortrait\(d\.mount\):"";/, "le portrait seul, sans le nom");
   assert.match(css, /\.hc-steed-portrait\{[^}]*width:72px;height:72px;/, "réduire un peu l'avatar monture");
   assert.doesNotMatch(css, /\.hc-steed[\s>{]/, "plus de bloc portrait + nom");
   {

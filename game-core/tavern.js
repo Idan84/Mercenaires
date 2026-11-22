@@ -148,17 +148,18 @@
       return {ok:true,answer,repeated:false};
     }
 
-    // Conseils du tavernier (Idan, 2026-10-21) : il répète ce que le candidat dit de lui-même, donc la même
-    // vantardise qu'au §7 sans Intendant (×1,10 à ×3,00). Pas de limite de questions ; une rumeur reste figée.
-    // value : valeur réelle, calculée par l'appelant (caractéristique, résistance, points de vie…).
-    function rumor(candidate,key,value){
-      candidate.rumors=candidate.rumors||{};
-      if(Number.isFinite(candidate.rumors[key])) return {estimate:candidate.rumors[key],repeated:true};
-      const real=Number(value);
-      if(!Number.isFinite(real)) return null;
-      const estimate=Math.round(real*uniform(BOAST_MIN,BOAST_MAX));
-      candidate.rumors[key]=estimate;
-      return {estimate,repeated:false};
+    // Les questions à l'aubergiste (doc 14 §6 bis et §7 ; Idan, 2026-11-19) : il estime à ±10 % (Rand(0,90 ; 1,10)). Une
+    // réponse reste figée : reposer la question redonne la même réponse (elle se paie encore, campaign.js).
+    // compute(draw) : la réponse, calculée par l'appelant avec draw() pour chaque valeur estimée (le titre, l'affinité).
+    const KEEPER_MIN=referenceConstant(options.reference,"tavern.keeper.precision_min",0.9);
+    const KEEPER_MAX=referenceConstant(options.reference,"tavern.keeper.precision_max",1.1);
+    function keeperAnswer(candidate,key,compute){
+      candidate.keeperAnswers=candidate.keeperAnswers||{};
+      if(Object.hasOwn(candidate.keeperAnswers,key)) return {answer:candidate.keeperAnswers[key],repeated:true};
+      const answer=compute(()=>uniform(KEEPER_MIN,KEEPER_MAX));
+      if(answer==null) return null;
+      candidate.keeperAnswers[key]=answer;
+      return {answer,repeated:false};
     }
 
     function negotiationState(candidate){
@@ -243,7 +244,7 @@
       tavernMorning,
       findCandidate,
       askQuestion,
-      rumor,
+      keeperAnswer,
       negotiationState,
       negotiationResistance,
       makeOffer,

@@ -307,14 +307,21 @@ function hoverWeapons(names){
 function hoverHearts(filled){
   return Array.from({length:10},(_,i)=>`<i class="hc-heart${i<filled?" is-full":""}"></i>`).join("");
 }
-// unknown (la fiche du candidat, Idan, 2026-11-22 : « la fiche au survol avec des ? quand on ne connait pas les infos ») :
-// les cases qu'on ne connaît pas encore, « ? » à la place : title, affinity, bonus, tags, kit, magic (sans la monture).
-// bonus : la prime à montrer (celle qu'il demande, la négociation).
+// La fiche du candidat (Idan, 2026-11-22 : « la fiche au survol avec des ? quand on ne connait pas les infos ») :
+// - unknown : les cases qu'on ne connaît pas encore, « ? » à la place : title, affinity, bonus, salary, tags, set1, set2,
+//   armor (kit : les trois), magic (les écoles pas encore demandées ; sans la monture) ; mount : pas de monture montrée ;
+// - ce qu'on a appris (doc 14 §6 bis) : title (le titre entendu, du candidat ou du tavernier), affinityWord (le mot du
+//   tavernier à la place des cœurs), bonus et salary (sa demande, puis la négociation ; la ligne Salaire n'existe que sur
+//   la fiche du candidat), schools (les écoles où il a dit oui).
 const hoverUnknown=`<span class="hc-unknown">?</span>`;
-function renderMercenaryHoverCard(c,{unknown=null,bonus=null}={}){
+function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=null,affinityWord=null,schools=null}={}){
   const d=mercenaryHoverData(c);
   const hidden=key=>Boolean(unknown&&unknown.has(key));
   if(bonus!=null) d.bonus=bonus;
+  if(title!=null) d.title=title;
+  // Les écoles cachées sans réponse : aucune montrée.
+  if(schools) d.schools=schools;
+  else if(hidden("magic")) d.schools=[];
   const frame=hoverCultureFrame(d.culture);
   // Le nom en grand (Idan, 2026-11-15 : « on reste pour que 20 caractères rentrent dans le cartouche. On réduira auto pour
   // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il
@@ -324,20 +331,25 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null}={}){
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}</span>`).join("");
   const affinity=hidden("affinity")?`<div class="hc-stat"><span class="hc-label">Affinité</span>${hoverUnknown}</div>`
+    :affinityWord?`<div class="hc-stat"><span class="hc-label">Affinité</span><b class="hc-affinity-word">${esc(affinityWord)}</b></div>`
     :d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
   // L'équipement en trois colonnes (Idan, 2026-11-16) : les armes du set 1 (« épée longue et écu »), celles du set 2, l'armure ;
   // les noms seuls (« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »).
-  const kit=(hidden("kit")?["?","?","?"]:[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"])
+  const kitValues=[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"];
+  const kit=["set1","set2","armor"].map((key,i)=>hidden("kit")||hidden(key)?"?":kitValues[i])
     .map(value=>`<span class="hc-kit-item"><i>${esc(value)}</i></span>`).join("");
   // Dessous, deux colonnes (Idan, 2026-11-16 : « Les pictos d'écoles de magie à gauche, l'avatar de la monture à droite ») ;
   // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp), sans plaque « Écoles
   // de magie » (Idan, 2026-11-16 : « Retire le école de magie ») ni nom : « Pictos seuls en 48 px avec la possibilité de les
   // rétrécir pour tout rentrer » (une seule ligne, styles.css).
-  const school=name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
-  const rows=hoverSchoolRows(d.schools,Boolean(d.mount));
-  const magic=hidden("magic")?`<div class="hc-magic">${hoverUnknown}</div>`
+  // Sur la fiche du candidat, les écoles où il a dit oui, puis un « ? » tant qu'il reste des écoles à lui demander.
+  const school=name=>name===hoverUnknown?`<span class="hc-school hc-school--unknown">${hoverUnknown}</span>`
+    :`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
+  const showSteed=Boolean(d.mount)&&!hidden("magic")&&!hidden("mount");
+  const rows=hoverSchoolRows(hidden("magic")&&d.schools.length?[...d.schools,hoverUnknown]:d.schools,showSteed);
+  const magic=hidden("magic")&&!d.schools.length?`<div class="hc-magic">${hoverUnknown}</div>`
     :rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
-  const steed=d.mount&&!hidden("magic")?hoverMountPortrait(d.mount):"";
+  const steed=showSteed?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hidden("tags")?`<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3/span 2">?</li>`:hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
@@ -350,6 +362,7 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null}={}){
         <div class="hc-stats">
           <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
           ${affinity}
+          ${salary!=null||hidden("salary")?`<div class="hc-stat hc-stat--salary"><span class="hc-label" title="Salaire journalier">Salaire</span>${hidden("salary")?hoverUnknown:`<span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(salary))} PO</b></span>`}</div>`:""}
           <div class="hc-stat hc-stat--bonus"><span class="hc-label" title="Prime de mission">Prime</span>${hidden("bonus")?hoverUnknown:`<span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span>`}</div>
         </div>
       </div>

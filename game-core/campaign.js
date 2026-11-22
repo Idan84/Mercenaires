@@ -1716,14 +1716,15 @@
       return tavern.askQuestion(candidate,key,intendantOf(state));
     }
 
-    // Conseils du tavernier : chaque question coûte de l'or (tavern.advice.cost), même déjà posée.
-    function askTavernkeeper(state,mercenaryId,key,value){
+    // Les questions à l'aubergiste (doc 14 §6 bis) : chacune coûte de l'or (tavern.advice.cost), même déjà posée ; la
+    // réponse reste figée (tavern.keeperAnswer). compute(draw) : la réponse, estimée avec draw() (±10 %).
+    function askTavernkeeper(state,mercenaryId,key,compute){
       const candidate=tavern.findCandidate(state.tavern,mercenaryId);
       if(!candidate) return {ok:false,reason:"Candidat introuvable."};
       const cost=referenceConstant(reference,"tavern.advice.cost",1);
       if(state.company.gold<cost) return {ok:false,reason:"gold",cost};
-      const result=tavern.rumor(candidate,key,value);
-      if(!result) return {ok:false,reason:"Valeur inconnue : "+key};
+      const result=tavern.keeperAnswer(candidate,key,compute);
+      if(!result) return {ok:false,reason:"Réponse inconnue : "+key};
       state.company.gold-=cost;
       return {ok:true,cost,...result};
     }

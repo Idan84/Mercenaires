@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 489,
+  "row_count": 492,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1544,6 +1544,30 @@
       "description": "Or payé au tavernier pour chaque question sur un candidat (rien n’est gratuit dans ce bas monde). Pas de limite de questions.",
       "formule": "Taverne V1",
       "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — précision du tavernier, minimum",
+      "code": "tavern.keeper.precision_min",
+      "description": "Le tavernier estime les valeurs d’un candidat (pour son titre) et son affinité avec le capitaine à ±10 % : valeur × Rand(minimum ; maximum), arrondi (doc 14 §7 ; Idan, 2026-11-19 : l’échelle de l’Intendant figée à 50 d’Intendance).",
+      "formule": "Taverne V1",
+      "valeur": 0.9,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — précision du tavernier, maximum",
+      "code": "tavern.keeper.precision_max",
+      "description": "Voir tavern.keeper.precision_min.",
+      "formule": "Taverne V1",
+      "valeur": 1.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — affinité en un mot, seuil",
+      "code": "tavern.affinity_word.threshold",
+      "description": "Sur la fiche du candidat, l’affinité estimée par le tavernier devient un mot, chacun pour un tiers de l’échelle (−100 à +100) : Hostile sous −seuil, Amical au-dessus de +seuil, Neutre entre les deux (doc 14 §7 ; Idan, 2026-11-19).",
+      "formule": "Taverne V1",
+      "valeur": 33.3,
       "version": "V1"
     },
     {

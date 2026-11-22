@@ -112,7 +112,6 @@ assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","save-ui.js"),"utf8"
 const layout=reference.characterSheetCopy.skills_layout;
 assert.deepEqual(layout.styles_de_combat,["Combat à une main","Combat à deux armes","Combat à deux mains","Boucliers"]);
 assert.ok(!layout.corps_a_corps.includes("Armes naturelles"));
-assert.ok(reference.tavernDialogue.answers.style["Combat à une main"].length>=2,"le candidat sait parler de son style");
 
 // Combat : le bouton, la prise remise à une main à chaque tour, l'IA, l'attaque du joueur.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");

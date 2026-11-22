@@ -1642,7 +1642,7 @@ function companyTagRules() {
   return game.companyTagRules;
 }
 // La compagnie telle que l'intendant la voit : le capitaine et les mercenaires, l'intendant (le nommé, sinon Cruxor ;
-// aucun : les valeurs exactes), les étoiles de la compagnie ; view : ce qu'il voit de chacun, calculé une fois.
+// aucun : aucun tag), les étoiles de la compagnie ; view : ce qu'il voit de chacun, calculé une fois.
 function companyTagContext() {
   const rules = companyTagRules(), c = game.campaign;
   if (!rules) return null;

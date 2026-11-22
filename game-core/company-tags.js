@@ -7,8 +7,9 @@
 // - l'intendant décrit nos mercenaires (le capitaine compris) : une erreur tirée pour chaque couple intendant /
 //   mercenaire, sa taille entre 0 et l'erreur au plus de l'intendant, son sens selon son affinité et l'écart d'étoiles ;
 //   gardée sur le mercenaire (tagBias) tant qu'il ne change pas d'étoile et qu'on ne change pas d'intendant.
-// « Le meilleur de la compagnie » se compare sur ce que l'intendant voit, chacun avec son biais. Sans intendant, les
-// valeurs exactes. Les constantes : data/reference/formula-constants.json (tags.*). Le hasard est donné (random).
+// « Le meilleur de la compagnie » se compare sur ce que l'intendant voit, chacun avec son biais. Sans intendant, personne
+// ne décrit nos mercenaires : aucun tag (Idan, 2026-11-22). Les constantes : data/reference/formula-constants.json
+// (tags.*). Le hasard est donné (random).
 (function(root,factory){
   const engine=typeof module!=="undefined"&&module.exports?require("./tag-engine.js"):root.MercenairesTagEngine;
   const api=factory(engine);
@@ -106,6 +107,8 @@
     // Les tags d'un membre : {affiches, restent, motif, reps} (tag-engine). view : company(), à réutiliser pour toute la
     // compagnie.
     function tagsOf(m,{members=[],steward=null,companyStars=1,view=null}={}){
+      // Sans intendant, aucun tag (Idan, 2026-11-22 : « Sans intendant […] aucun tag s'affiche »).
+      if(!steward) return {affiches:[],restent:[],motif:new Map(),reps:[]};
       const v=view||company({members,steward,companyStars});
       const mine=v.get(m)||seen(valuesOf(m),factorOf(stewardBias(m,{steward,companyStars})));
       return tree.tags(Engine.withCompany(mine,others(v,members,m),companyStars));

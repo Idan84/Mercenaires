@@ -368,11 +368,12 @@ assert.match(choice, /kind:"tired",label:missionFem\(c,"Fatigué"\)\+" −"\+mis
 // « Picto de combat, on va le virer » ; ni grisés, ni PV, ni peuple, ni mots de dev.
 assert.doesNotMatch(choice, /unavailable|"disabled"|profile\?\.type|maxHp|c\.people/);
 // Les tags (Idan, 2026-11-22 ; doc 20 §12) : « Tous » (éteint à l'ouverture), puis ceux de l'atelier que portent les
-// mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres tags ».
+// mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres compétences » (Idan, 2026-11-22).
 assert.match(choice, /const lists=typeof mercenaryTagLists==="function"\?mercenaryTagLists\(list\):new Map\(\);/);
 assert.match(choice, /tab\("","Tous"\)\s*\+main\.map\(id=>tab\(id,names\.get\(id\)\)\)/);
 assert.match(missionJs, /const MISSION_CHOICE_TABS=4;/);
-assert.match(choice, /Autres tags/);
+assert.match(choice, />Autres compétences<\/button>/);
+assert.match(missionJs, /picked\?picked\.textContent:"Autres compétences"/);
 assert.doesNotMatch(missionJs, /missionTag|tagRules/, "plus de tag de la mission (l'ancien arbre)");
 // L'escouade : x / 20, la croix, et la règle de la fatigue en clair.
 assert.match(choice, /\$\("mission-select-count"\)\.textContent=ids\.length\+" \/ "\+max;/);

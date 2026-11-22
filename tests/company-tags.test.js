@@ -91,12 +91,17 @@ assert.notEqual(tags.valuesOf(roster[2]),v1,"il change : recalculées");
 assert.equal(tags.valuesOf(roster[2])["carac.force"],v1["carac.force"]+10);
 
 // ---- Les tags de la compagnie ----
-// Sans intendant : les valeurs exactes, comme l'atelier.
+// Un intendant parfait (Intendance et Intelligence 100 : aucune erreur) : les valeurs exactes, comme l'atelier.
 const tree=E.createTagTree(E.clean(reference.tagWorkshop));
+const parfait={id:"parfait",skills:{camp:{Intendance:100}},stats:{Intelligence:100}};
+assert.equal(tags.maxError(parfait),0);
+for(const x of members) delete x.tagBias;
 for(const x of members.slice(0,6)){
   const direct=tree.tags(E.withCompany(tags.valuesOf(x),members.filter(o=>o!==x).map(o=>tags.valuesOf(o)),3));
-  assert.deepEqual(tags.tagsOf(x,{members,steward:null,companyStars:3}).affiches.map(t=>t.id),direct.affiches.map(t=>t.id),x.name);
+  assert.deepEqual(tags.tagsOf(x,{members,steward:parfait,companyStars:3}).affiches.map(t=>t.id),direct.affiches.map(t=>t.id),x.name);
 }
+// Sans intendant, aucun tag (Idan, 2026-11-22 : « Sans intendant […] aucun tag s'affiche »).
+for(const x of members.slice(0,6)) assert.deepEqual(tags.tagsOf(x,{members,steward:null,companyStars:3}).affiches,[],x.name);
 // Avec Cruxor : chacun vu à travers son biais (au plus 26 %), le meilleur de la compagnie comparé sur ce qu'il voit.
 for(const x of members) delete x.tagBias;
 const view=tags.company({members,steward:cruxor,companyStars:3});

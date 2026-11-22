@@ -598,14 +598,16 @@ ValeurVue  = Valeur × (1 + Biais)
 ### Ce que JC a dû préciser en codant (à valider par Idan)
 
 - **Le capitaine** est décrit par l'intendant comme les mercenaires (il est dans « le meilleur de la compagnie »).
-- **Sans intendant** (Cruxor parti et personne au poste) : les valeurs exactes, sans biais.
+- **Sans intendant** (Cruxor parti et personne au poste) : aucun tag ne s'affiche (Idan, 2026-11-22).
+- **La fiche du candidat** (Idan, 2026-11-22) : « C'est normalement la fiche au survol avec des ? quand on ne connait pas
+  les infos. En lui parlant, en parlant à l'aubergiste ou à l'intendant, on doit remplir les cases » (doc 14 §6 bis).
 - **Les écoles de magie** comptent comme des compétences (elles reçoivent le biais). **La réserve de mana** aussi
   (« mana » et `carac.reserve_de_mana`) ; le nombre de soins qu'il peut lancer (`lancers.soin`) suit sa réserve vue.
 - **Le candidat** compare ses valeurs annoncées à la compagnie telle que l'intendant la voit. Son tirage est gardé sur
   lui (`tagSelfBias`). Ses tags sont calculés (`candidateTags`) mais **pas encore affichés** : la fiche du candidat à la
   Taverne, avec sa case « Tags » (doc 14 §6), reste à faire avec le dialogue de recrutement.
 - **Le choix de l'escouade** : les onglets de filtre prennent les nouveaux tags (« Tous », puis les tags que portent les
-  mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres tags ») ; l'onglet du tag de la
+  mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres compétences », Idan, 2026-11-22) ; l'onglet du tag de la
   mission (camp, chasse, garde du corps) disparaît : l'atelier n'a pas de tags de mission.
 - **La fiche au survol** : les tags de l'atelier, dans l'ordre de l'atelier, en bleu comme l'ancien rôle au combat ; au
   plus 5 plaques, comme avant (« N autres rôles »).

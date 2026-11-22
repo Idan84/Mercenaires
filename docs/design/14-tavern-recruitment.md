@@ -129,6 +129,10 @@ l'aubergiste.
 | Magie | vide | « Connais-tu des sorts de [école] ? », une question par école | Candidat | oui / non : le picto de l'école s'affiche | aucun : réponse exacte |
 | Tags | vides | à définir avec la refonte des tags (doc 20) | — | — | biais de niveau et de précision |
 
+**La fiche du candidat** (Idan, 2026-11-22) : « C'est normalement la fiche au survol avec des ? quand on ne connait pas
+les infos. En lui parlant, en parlant à l'aubergiste ou à l'intendant, on doit remplir les cases... » Ses tags, tels qu'il
+se décrit, sont calculés par le jeu (doc 20 §12, `candidateTags`) ; ce que chaque source remplit reste à décider.
+
 Le titre (doc 19) se calcule sur les notes de ses rôles : avec un biais, on recalcule ces notes sur les valeurs annoncées
 ou estimées, d'où des titres justes et des titres faux (« Mage Légendaire Omnipotent »). La fiche montre le **salaire**
 à côté de la prime.

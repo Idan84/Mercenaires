@@ -956,7 +956,7 @@ function missionChoiceHeading(name,level,route,eyebrow){
 const missionChoiceDays=n=>typeof missionDays==="function"?missionDays(n):n+" jour"+(n>1?"s":"");
 
 // Les tags en onglets (la maquette de Chatty) : ceux de l'atelier (Idan, 2026-11-22 ; doc 20 §12) que portent les
-// mercenaires de la galerie, les plus portés d'abord ; au-delà de quatre, dans « Autres tags ».
+// mercenaires de la galerie, les plus portés d'abord ; au-delà de quatre, dans « Autres compétences » (Idan, 2026-11-22).
 const MISSION_CHOICE_TABS=4;
 const missionSearchKey=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 
@@ -983,7 +983,7 @@ function renderMissionChoice(list,{error=""}={}){
   const tab=(id,label,extra="")=>`<button type="button" class="mission-tab${extra}" data-tag-filter="${esc(id)}" aria-pressed="${id===""}">${esc(label)}</button>`;
   $("mission-select-tags").innerHTML=!order.length?"":tab("","Tous")
     +main.map(id=>tab(id,names.get(id))).join("")
-    +(others.length?`<span class="mission-tabs-more"><button type="button" class="mission-tab mission-tab--more" aria-expanded="false" aria-haspopup="true">Autres tags</button>
+    +(others.length?`<span class="mission-tabs-more"><button type="button" class="mission-tab mission-tab--more" aria-expanded="false" aria-haspopup="true">Autres compétences</button>
       <span class="mission-tabs-menu" hidden>${others.map(id=>tab(id,names.get(id))).join("")}</span></span>`:"");
   $("mission-select-search").value="";
   $("mission-select-error").textContent=error;
@@ -1027,10 +1027,10 @@ function searchMissionChoice(){
 function applyMissionChoiceFilter(){
   const {tag=null}=game.missionSelect||{};
   document.querySelectorAll("#mission-select-tags [data-tag-filter]").forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.tagFilter||null)===tag)));
-  // « Autres tags » : le tag choisi dans le menu prend sa place.
+  // « Autres compétences » : le tag choisi dans le menu prend sa place.
   const more=document.querySelector("#mission-select-tags .mission-tab--more");
   const picked=tag&&document.querySelector(`#mission-select-tags .mission-tabs-menu [data-tag-filter="${CSS.escape(tag)}"]`);
-  if(more){ more.textContent=picked?picked.textContent:"Autres tags"; more.classList.toggle("is-active",Boolean(picked)); }
+  if(more){ more.textContent=picked?picked.textContent:"Autres compétences"; more.classList.toggle("is-active",Boolean(picked)); }
   if(game.missionSelect) game.missionSelect.page=0;
   refreshMissionRoster();
 }

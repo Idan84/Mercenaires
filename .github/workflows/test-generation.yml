@@ -191,9 +191,12 @@ jobs:
       - run: php tests/avatar-index.test.php
       - run: php tests/depots.test.php
       - run: php tests/reglages.test.php
+      - run: php tests/atelier.test.php
       - run: php -l prototype-web/design/api/depot.php
       - run: php -l prototype-web/design/api/reglages.php
       - run: php -l prototype-web/api/lib/reglages.php
+      - run: php -l prototype-web/design/api/atelier.php
+      - run: php -l prototype-web/api/lib/atelier.php
       - run: php -l prototype-web/api/avatars.php
       - run: php -l prototype-web/api/silhouettes.php
       - run: php -l prototype-web/api/pictos.php
@@ -202,6 +205,7 @@ jobs:
       - run: php -l prototype-web/api/lib/avatar-index.php
       - name: Assemblage du site (numéros de version)
         run: bash scripts/build-site.sh site && grep -q 'src="ui.js?v=' site/index.html
+      - run: grep -q 'const HEBERGEMENT="site"' site/design/atelier/index.html && grep -q 'MercenairesTagEngine' site/design/atelier/index.html
       - run: node --check prototype-web/mission.js
       - run: node --check prototype-web/ui.js
       - run: node --check game-core/godmode.js

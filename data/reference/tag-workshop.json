@@ -1,0 +1,2589 @@
+{
+ "description": "L’atelier des tags (Idan ; doc 20 §11 et §12) : tags, tests et constantes. Copie de secours du dépôt : le jeu et la Design Lab lisent d’abord la dernière version sur Hostinger (media/atelier/actuel.json), puis celle-ci si Hostinger n’en a pas.",
+ "date": "2026-11-22",
+ "tags": [
+  {
+   "id": "ce-qu-il-est",
+   "nom": "Ce qu'il est",
+   "parents": [],
+   "groupe": true,
+   "note": "Passe 1 de ton arbre : ce que le mercenaire est, oui ou non.",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ka5k6bo1",
+   "nom": "Comment il le fait",
+   "parents": [],
+   "groupe": true,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "magie",
+   "nom": "Magie",
+   "parents": [
+    "ka5k6bo1"
+   ],
+   "groupe": true,
+   "note": "Rôle à part, ou manière de tenir les autres rôles : à décider. Ses écoles en dessous.",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "z2qn61fz",
+   "nom": "Tireur",
+   "parents": [
+    "ka5k6bo1"
+   ],
+   "groupe": true,
+   "note": "",
+   "rang": null,
+   "garder": 1,
+   "inactif": false
+  },
+  {
+   "id": "pou5c9pp",
+   "nom": "CAC",
+   "parents": [
+    "ka5k6bo1"
+   ],
+   "groupe": true,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "vol",
+   "nom": "Vol",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "regeneration",
+   "nom": "Régénération",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "amphibie",
+   "nom": "Amphibie",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Respiration aquatique.",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "3eo3yjmy",
+   "nom": "Grosse Brute",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Force exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "03tml0iu",
+   "nom": "Force de la nature",
+   "parents": [
+    "3eo3yjmy"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "1b1t7f8y",
+   "nom": "Insaisissable",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Esquive exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "r8fjoadk",
+   "nom": "Roi de l'esquive",
+   "parents": [
+    "1b1t7f8y"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "6zp3q2r1",
+   "nom": "Cerveau sur pattes",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Intelligence exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "r5i3na08",
+   "nom": "Doigts agiles",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Dexterité exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "8a91th6k",
+   "nom": "6ème sens",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Perception exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "a6g49n26",
+   "nom": "Veinard",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Chance exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ojkh06zu",
+   "nom": "Roc",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Constitution ou Endurance ou Résistance physique exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "mzc3vqjp",
+   "nom": "Bolide",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Vitesse exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ko8qpwk8",
+   "nom": "Sans peur",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Courage exceptionnel",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "02p1prii",
+   "nom": "Volonté de Fer",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Volonté exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "i2f9v5k9",
+   "nom": "Effrayant",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Intimidation exceptionnelle",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "481drl5g",
+   "nom": "Séducteur",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Charisme exceptionnel",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "q78i7tqj",
+   "nom": "Ignifugé ",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Résistance au feu",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "swux6jo4",
+   "nom": "Paratonerre",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Résistance à la foudre",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ellzzuqw",
+   "nom": "Frigorifugé ",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Résistance au froid",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "9rvmbh6e",
+   "nom": "Mithridatisé ",
+   "parents": [
+    "ce-qu-il-est"
+   ],
+   "groupe": false,
+   "note": "Résistance Poison",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "8dgq82ry",
+   "nom": "Irresistible",
+   "parents": [
+    "481drl5g"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "0d9asz97",
+   "nom": "Terrorisant",
+   "parents": [
+    "i2f9v5k9"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "mlw1nq8u",
+   "nom": "Volonté de diamant",
+   "parents": [
+    "02p1prii"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "rz4rh0b8",
+   "nom": "Tête brulée",
+   "parents": [
+    "ko8qpwk8"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "mugvslw0",
+   "nom": "Flash",
+   "parents": [
+    "mzc3vqjp"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "haiegjex",
+   "nom": "Increvable",
+   "parents": [
+    "ojkh06zu"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "25ww25fb",
+   "nom": "Béni des dieux",
+   "parents": [
+    "a6g49n26"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "3u2qr4la",
+   "nom": "Oracle",
+   "parents": [
+    "8a91th6k"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "00vdecdw",
+   "nom": "Aux mains d'argent",
+   "parents": [
+    "r5i3na08"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "rgftfjcu",
+   "nom": "Le génie",
+   "parents": [
+    "6zp3q2r1"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "roles",
+   "nom": "Rôles",
+   "parents": [],
+   "groupe": true,
+   "note": "Passe 2 de ton arbre : on élimine les rôles qu'il ne peut pas remplir en l'état. S'il ne reste aucun rôle : Dégâts ou Polyvalent.",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "soin",
+   "nom": "Soigneur",
+   "parents": [
+    "roles",
+    "magie"
+   ],
+   "groupe": true,
+   "note": "",
+   "rang": null,
+   "garder": 1,
+   "inactif": false
+  },
+  {
+   "id": "soin-de-zone",
+   "nom": "Soigneur des masses",
+   "parents": [
+    "p98pjt14"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 3,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "soin-duree",
+   "nom": "Soigneur dans la durée",
+   "parents": [
+    "p98pjt14"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "5av4i928",
+   "nom": "Soigneur complet",
+   "parents": [
+    "soin-duree",
+    "soin-de-zone"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 7,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "6n4899ab",
+   "nom": "Grand Maître du soin",
+   "parents": [
+    "5av4i928",
+    "tnvt6pos",
+    "8za94vzc",
+    "ehfdxqs9"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 9,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ehfdxqs9",
+   "nom": "Grand soigneur dans la durée",
+   "parents": [
+    "soin-duree"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 5,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "p98pjt14",
+   "nom": "Soigneur occasionnel",
+   "parents": [
+    "soin"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "lyfdowvc",
+   "nom": "Soigneur reconnu",
+   "parents": [
+    "p98pjt14"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 4,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "tnvt6pos",
+   "nom": "Un hôpital sur le champ de bataille",
+   "parents": [
+    "lyfdowvc"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 8,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "controle-du-terrain",
+   "nom": "Eclaireur et contrôle du terrain",
+   "parents": [
+    "roles"
+   ],
+   "groupe": true,
+   "note": "",
+   "rang": null,
+   "garder": 1,
+   "inactif": false
+  },
+  {
+   "id": "soutien",
+   "nom": "Soutien",
+   "parents": [
+    "roles",
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "soutien-enchantements",
+   "nom": "Enchantements",
+   "parents": [
+    "soutien"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "soutien-degats-elementaires",
+   "nom": "Dégâts élémentaires",
+   "parents": [
+    "soutien"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "soutien-discretion",
+   "nom": "Discrétion",
+   "parents": [
+    "soutien"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "soutien-recuperation-de-mana",
+   "nom": "Récupération de mana",
+   "parents": [
+    "soutien"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "soutien-purges",
+   "nom": "Purges",
+   "parents": [
+    "soutien"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "protection",
+   "nom": "Protection",
+   "parents": [
+    "roles"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "protection-elementaire",
+   "nom": "Protection élémentaire",
+   "parents": [
+    "protection"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "protection-a-distance",
+   "nom": "Protection à distance",
+   "parents": [
+    "protection"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "entrave",
+   "nom": "Entrave",
+   "parents": [
+    "roles",
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "entrave-immobilisation",
+   "nom": "Immobilisation",
+   "parents": [
+    "entrave"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "entrave-affaiblissement",
+   "nom": "Affaiblissement",
+   "parents": [
+    "entrave"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "entrave-demoralisateur",
+   "nom": "Démoralisateur",
+   "parents": [
+    "entrave"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "entrave-anti-magie",
+   "nom": "Anti-magie",
+   "parents": [
+    "entrave"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "entrave-anti-soins",
+   "nom": "Anti-soins",
+   "parents": [
+    "entrave"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ypsqnotc",
+   "nom": "Contrôleur du terrain",
+   "parents": [
+    "controle-du-terrain"
+   ],
+   "groupe": false,
+   "note": "Sait utiliser des sorts de d'altération du terrain ou de déplacement des personnages",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "sxp05nhd",
+   "nom": "Maitre du champ de bataille",
+   "parents": [
+    "ypsqnotc"
+   ],
+   "groupe": false,
+   "note": "Maitrise supérieure à Contrôleur du terrain",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "pv521ntp",
+   "nom": "Architecte de l'enfer",
+   "parents": [
+    "sxp05nhd",
+    "6mdxudep"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "eclaireur",
+   "nom": "Éclaireur",
+   "parents": [
+    "controle-du-terrain"
+   ],
+   "groupe": false,
+   "note": "Est doué pour faire des repérages avant la bataille mais également pendant.",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "yt48k9y9",
+   "nom": "Poseur de pièges",
+   "parents": [
+    "controle-du-terrain"
+   ],
+   "groupe": false,
+   "note": "Pieges pas encore implémenté.  - Tag doit rester avec un test forcément éliminatoire pour l'instant",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "6mdxudep",
+   "nom": "Poseur de pièges émérite",
+   "parents": [
+    "yt48k9y9"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "commandement",
+   "nom": "Commandement",
+   "parents": [
+    "roles"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "ivtpihp7",
+   "nom": "Démineur",
+   "parents": [
+    "controle-du-terrain"
+   ],
+   "groupe": false,
+   "note": "Pieges pas encore implémenté.  - Tag doit rester avec un test forcément éliminatoire pour l'instant",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "ql2dvl0b",
+   "nom": "Démineur émérite",
+   "parents": [
+    "ivtpihp7"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "8ssf9csv",
+   "nom": "Créateur de voie royale",
+   "parents": [
+    "ql2dvl0b",
+    "yanyx0p4",
+    "6mdxudep"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "yanyx0p4",
+   "nom": "Eclaireur vétéran",
+   "parents": [
+    "eclaireur"
+   ],
+   "groupe": false,
+   "note": "Niveau supérieur à éclaireur",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "x5vamdd5",
+   "nom": "Grand maitre du contrôle et de l'information",
+   "parents": [
+    "yanyx0p4",
+    "sxp05nhd"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats",
+   "nom": "Dégâts",
+   "parents": [
+    "roles"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": true
+  },
+  {
+   "id": "ecole-eau",
+   "nom": "Eau",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-feu",
+   "nom": "Feu",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-foudre",
+   "nom": "Foudre",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-illusion",
+   "nom": "Illusion",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-invocation",
+   "nom": "Invocation",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-necromancie",
+   "nom": "Apprentie Nécromancien",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-telekinesie",
+   "nom": "Télékinésie",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-transmutation",
+   "nom": "Transmutation",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ecole-vie",
+   "nom": "Vie",
+   "parents": [
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-a-distance",
+   "nom": "Archer",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "674uapot",
+   "nom": "Arbalétrier",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "emzk3ewz",
+   "nom": "Frondeur",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "7tb8bw9s",
+   "nom": "Sarbacanier ",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "hi6gkpzw",
+   "nom": "Arquebusier",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "4f29dawl",
+   "nom": "Canonier",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "usfefo5q",
+   "nom": "Tromblonnier ",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "rang": 1,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "vhl8stgh",
+   "nom": "Sniper",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "Tire très bien et a une bonne discrétion pour rester embusqué après avoir tiré",
+   "rang": 3,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "ijxps20b",
+   "nom": "Maitre sniper",
+   "parents": [
+    "vhl8stgh",
+    "rha264n3"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 4,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "n1yv29qr",
+   "nom": "Sniper tacticien",
+   "parents": [
+    "vhl8stgh",
+    "pso4am5x"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 4,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "o969o3js",
+   "nom": "Grand maître du combat à distance",
+   "parents": [
+    "vhl8stgh",
+    "pso4am5x",
+    "rha264n3"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 5,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "rha264n3",
+   "nom": "Maitre de la salve",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "Tire très bien et est assez rapide pour enchainer les tires",
+   "rang": 3,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "6r545ray",
+   "nom": "Maître harceleur",
+   "parents": [
+    "rha264n3",
+    "pso4am5x"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 4,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "pso4am5x",
+   "nom": "Tireur d'escarmouche",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "Tire très bien et se déplace rapidement",
+   "rang": 3,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "8xuypvlj",
+   "nom": "Maitre de la poudre noire",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "groupe": false,
+   "note": "A un certain niveau dans deux armes à feu et est équipé en set1 et en set 2 d'une arme à feu différente (inclus le pistolet",
+   "rang": 3,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "p0waxc9s",
+   "nom": "Tromblonnier  d'élite",
+   "parents": [
+    "usfefo5q"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "o11g5hjd",
+   "nom": "Canonier d'élite",
+   "parents": [
+    "4f29dawl"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "qj1zxb19",
+   "nom": "Arquebusier d'élite",
+   "parents": [
+    "hi6gkpzw"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "iz9tsjqq",
+   "nom": "Sarbacanier  d'éli",
+   "parents": [
+    "7tb8bw9s"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "l7b25hu3",
+   "nom": "Frondeur d'élite",
+   "parents": [
+    "emzk3ewz"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "rt333lv6",
+   "nom": "Arbalétrier d'élite",
+   "parents": [
+    "674uapot"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "maztg4cg",
+   "nom": "Archer d'élite",
+   "parents": [
+    "degats-a-distance"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 2,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-de-zone",
+   "nom": "De zone",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-charge",
+   "nom": "Charge",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-tranchant",
+   "nom": "Tranchant",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-perforant",
+   "nom": "Perforant",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-contondant",
+   "nom": "Contondant",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-glacant",
+   "nom": "Glaçant",
+   "parents": [
+    "degats",
+    "ecole-eau"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-foudroyant",
+   "nom": "Foudroyant",
+   "parents": [
+    "degats",
+    "ecole-foudre"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-corrosif",
+   "nom": "Corrosif",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-poison",
+   "nom": "Poison",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-necrotique",
+   "nom": "Nécrotique",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-anti-morts-vivants",
+   "nom": "Anti morts-vivants",
+   "parents": [
+    "degats"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "degats-anti-invocations",
+   "nom": "Anti invocations",
+   "parents": [
+    "degats",
+    "magie"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": null,
+   "garder": null,
+   "inactif": false
+  },
+  {
+   "id": "8za94vzc",
+   "nom": "Grand soigneur des masses",
+   "parents": [
+    "soin-de-zone"
+   ],
+   "groupe": false,
+   "note": "",
+   "rang": 6,
+   "garder": null,
+   "inactif": false
+  }
+ ],
+ "tests": [
+  {
+   "id": "t-vol",
+   "nom": "Vole-t-il ?",
+   "type": "binaire",
+   "formule": "Il sait voler ou est équipé d'une monture volante.",
+   "calcul": "capacite.vol ou monture.vol",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "vol"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "t-regeneration",
+   "nom": "A-t-il de la Régénération ?",
+   "type": "binaire",
+   "formule": "Il a de la Régénération (valeur au-dessus de 0).",
+   "calcul": "capacite.regeneration > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "regeneration"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "t-amphibie",
+   "nom": "Respire-t-il sous l'eau ?",
+   "type": "binaire",
+   "formule": "Respiration aquatique : il traverse l'eau profonde, normalement infranchissable, et s'y couvre.",
+   "calcul": "capacite.respiration_aquatique",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "amphibie"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "ujfonxaw",
+   "nom": "Grosse Brute : Force exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Force > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.force > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "3eo3yjmy"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "71bnmliq",
+   "nom": "Force de la nature : Force hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Force > (100 + étoiles de la compagnie) × 1,5, et la meilleure Force de la compagnie (ex æquo compris).",
+   "calcul": "carac.force > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.force >= compagnie.max.carac.force",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "03tml0iu"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "ujfonxaw",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "xxy131q7",
+   "nom": "Insaisissable : Esquive exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Esquive > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.esquive > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "1b1t7f8y"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "bop374z4",
+   "nom": "Roi de l'esquive : Esquive hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Esquive > (100 + étoiles de la compagnie) × 1,5, et la meilleure Esquive de la compagnie (ex æquo compris).",
+   "calcul": "carac.esquive > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.esquive >= compagnie.max.carac.esquive",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "r8fjoadk"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "xxy131q7",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "3h5xezh3",
+   "nom": "Cerveau sur pattes : Intelligence exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Intelligence > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.intelligence > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "6zp3q2r1"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "vtgltmqa",
+   "nom": "Le génie : Intelligence hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Intelligence > (100 + étoiles de la compagnie) × 1,5, et la meilleure Intelligence de la compagnie (ex æquo compris).",
+   "calcul": "carac.intelligence > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.intelligence >= compagnie.max.carac.intelligence",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "rgftfjcu"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "3h5xezh3",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "zx4tub48",
+   "nom": "Doigts agiles : Dextérité exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Dextérité > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.dexterite > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "r5i3na08"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "i09i7864",
+   "nom": "Aux mains d'argent : Dextérité hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Dextérité > (100 + étoiles de la compagnie) × 1,5, et la meilleure Dextérité de la compagnie (ex æquo compris).",
+   "calcul": "carac.dexterite > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.dexterite >= compagnie.max.carac.dexterite",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "00vdecdw"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "zx4tub48",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "o5gweytp",
+   "nom": "6ème sens : Perception exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Perception > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.perception > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "8a91th6k"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "qbcpk3h4",
+   "nom": "Oracle : Perception hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Perception > (100 + étoiles de la compagnie) × 1,5, et la meilleure Perception de la compagnie (ex æquo compris).",
+   "calcul": "carac.perception > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.perception >= compagnie.max.carac.perception",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "3u2qr4la"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "o5gweytp",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "5ttdq5ec",
+   "nom": "Veinard : Chance exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Chance > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.chance > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "a6g49n26"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "t8dmd7nc",
+   "nom": "Béni des dieux : Chance hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Chance > (100 + étoiles de la compagnie) × 1,5, et la meilleure Chance de la compagnie (ex æquo compris).",
+   "calcul": "carac.chance > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.chance >= compagnie.max.carac.chance",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "25ww25fb"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "5ttdq5ec",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "cmyonk68",
+   "nom": "Roc : Constitution, Endurance ou Résistance physique exceptionnelle ?",
+   "type": "binaire",
+   "formule": "L'une des trois (Constitution, Endurance ou Résistance physique) > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.constitution > base_carac_exceptionnelle + compagnie.etoiles ou carac.endurance > base_carac_exceptionnelle + compagnie.etoiles ou res.physique > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "ojkh06zu"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "ktsrl7f6",
+   "nom": "Increvable : Constitution, Endurance ou Résistance physique hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "L'une des trois > (100 + étoiles de la compagnie) × 1,5, et la meilleure de la compagnie dans cette caractéristique (ex æquo compris).",
+   "calcul": "(carac.constitution > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.constitution >= compagnie.max.carac.constitution) ou (carac.endurance > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.endurance >= compagnie.max.carac.endurance) ou (res.physique > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et res.physique >= compagnie.max.res.physique)",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "haiegjex"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "cmyonk68",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "h94run82",
+   "nom": "Bolide : Vitesse exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Vitesse > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.vitesse > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "mzc3vqjp"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "7omq1goa",
+   "nom": "Flash : Vitesse hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Vitesse > (100 + étoiles de la compagnie) × 1,5, et la meilleure Vitesse de la compagnie (ex æquo compris).",
+   "calcul": "carac.vitesse > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.vitesse >= compagnie.max.carac.vitesse",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "mugvslw0"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "h94run82",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "lpsourny",
+   "nom": "Sans peur : Courage exceptionnel ?",
+   "type": "binaire",
+   "formule": "Courage > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.courage > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "ko8qpwk8"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "xdbi6p16",
+   "nom": "Tête brulée : Courage hors norme et le meilleur de la compagnie ?",
+   "type": "binaire",
+   "formule": "Courage > (100 + étoiles de la compagnie) × 1,5, et le meilleur Courage de la compagnie (ex æquo compris).",
+   "calcul": "carac.courage > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.courage >= compagnie.max.carac.courage",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "rz4rh0b8"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "lpsourny",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "xrye9wo9",
+   "nom": "Volonté de Fer : Volonté exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Volonté > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.volonte > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "02p1prii"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "uqsdf813",
+   "nom": "Volonté de diamant : Volonté hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Volonté > (100 + étoiles de la compagnie) × 1,5, et la meilleure Volonté de la compagnie (ex æquo compris).",
+   "calcul": "carac.volonte > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.volonte >= compagnie.max.carac.volonte",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "mlw1nq8u"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "xrye9wo9",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "cr3u1hex",
+   "nom": "Effrayant : Intimidation exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Intimidation > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "comp.intimidation > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "i2f9v5k9"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "lh73jb5x",
+   "nom": "Terrorisant : Intimidation hors norme et la meilleure de la compagnie ?",
+   "type": "binaire",
+   "formule": "Intimidation > (100 + étoiles de la compagnie) × 1,5, et la meilleure Intimidation de la compagnie (ex æquo compris).",
+   "calcul": "comp.intimidation > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et comp.intimidation >= compagnie.max.comp.intimidation",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "0d9asz97"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "cr3u1hex",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "p67g1sgu",
+   "nom": "Séducteur : Charisme exceptionnel ?",
+   "type": "binaire",
+   "formule": "Charisme > 100 + étoiles de la compagnie (équipement compris).",
+   "calcul": "carac.charisme > base_carac_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "481drl5g"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "hzsdw8aq",
+   "nom": "Irresistible : Charisme hors norme et le meilleur de la compagnie ?",
+   "type": "binaire",
+   "formule": "Charisme > (100 + étoiles de la compagnie) × 1,5, et le meilleur Charisme de la compagnie (ex æquo compris).",
+   "calcul": "carac.charisme > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.charisme >= compagnie.max.carac.charisme",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "8dgq82ry"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "p67g1sgu",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "s5p94mwz",
+   "nom": "Ignifugé : Résistance au feu exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Protection contre le feu (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le feu et se soigne de ce qui dépasse.",
+   "calcul": "res.feu > base_resistance_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "q78i7tqj"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "s54w2lov",
+   "nom": "Paratonerre : Résistance à la foudre exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Protection contre la foudre (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe la foudre et se soigne de ce qui dépasse.",
+   "calcul": "res.foudre > base_resistance_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "swux6jo4"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "ttnns28v",
+   "nom": "Frigorifugé : Résistance au froid exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Protection contre le froid (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le froid et se soigne de ce qui dépasse.",
+   "calcul": "res.froid > base_resistance_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "ellzzuqw"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "aojhb83v",
+   "nom": "Mithridatisé : Résistance au poison exceptionnelle ?",
+   "type": "binaire",
+   "formule": "Protection contre le poison (résistance avec l'équipement + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le poison et se soigne de ce qui dépasse.",
+   "calcul": "res.poison > base_resistance_exceptionnelle + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "9rvmbh6e"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "ad0vqpzs",
+   "nom": "Sait-il lancer un sort ?",
+   "type": "binaire",
+   "formule": "",
+   "calcul": "nb_sorts > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "magie"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "r21vxkkc",
+   "nom": "As-t-il une arme de tir ou arme à feu ?",
+   "type": "binaire",
+   "formule": "On ne prends pas un compte le pistolet qui est particulier",
+   "calcul": "((arme1.categorie = \"Armes de tir\" ou arme1.categorie = \"Armes à feu\") et arme1 != \"Pistolet\") ou ((arme2.categorie = \"Armes de tir\" ou arme2.categorie = \"Armes à feu\") et arme2 != \"Pistolet\")",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "z2qn61fz"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "t-soin",
+   "nom": "Connaît-il un sort de soin ?",
+   "type": "binaire",
+   "formule": "Il connaît un sort qui soigne un allié.",
+   "calcul": "sorts.soin > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "soin"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "ad0vqpzs",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "ti1hjns0",
+   "nom": "Connaît-il un sort de soutien ?",
+   "type": "binaire",
+   "formule": "Tout sort qui cible un allié et qui augmente leur caractéristiques",
+   "calcul": "",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "soutien"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "ad0vqpzs",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "opckbax6",
+   "nom": "Connait il un sort d'entrave ?",
+   "type": "binaire",
+   "formule": "Tout sort qui cible un ennemi et qui reduit les carac",
+   "calcul": "",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "entrave"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "ad0vqpzs",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "cksne967",
+   "nom": "Ses soins marchent-ils vraiment ?",
+   "type": "binaire",
+   "formule": "Réussite moyenne de ses sorts de soin supérieure à 50 %, et assez de mana pour lancer un soin (coût moyen de ses soins) une fois par étoile de la compagnie.",
+   "calcul": "moy.chance.soin > seuil_soin_occasionnel et lancers.soin >= compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "p98pjt14"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-soin",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "6sz8g2qk",
+   "nom": "Ses soins sont-ils puissants ?",
+   "type": "binaire",
+   "formule": "Puissance magique + niveau de l'école de ses soins > 100 + étoiles de la compagnie × 10. École : la moyenne des écoles de ses sorts de soin, équipement compris.",
+   "calcul": "carac.puissance_magique + moy.ecole.soin > base_puissance_soin + puissance_soin_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "lyfdowvc",
+    "8za94vzc",
+    "ehfdxqs9",
+    "tnvt6pos"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-soin",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "wc3phdwm",
+   "nom": "Connait il un sort de soin de zone ",
+   "type": "binaire",
+   "formule": "",
+   "calcul": "sorts.soin.de_zone > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "soin-de-zone"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-soin",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "n3ijaard",
+   "nom": "Connait il un sort de soin multi tour ?",
+   "type": "binaire",
+   "formule": "",
+   "calcul": "sorts.soin.dans_la_duree > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "soin-duree"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-soin",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "otpid6k6",
+   "nom": "As-t-il plus de 70% de chance de réussir ses sorts de soin ?",
+   "type": "binaire",
+   "formule": "taux de réussite du sort > (80 nombre d'étoile de la compagnie)%",
+   "calcul": "moy.chance.soin > seuil_soin + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "lyfdowvc"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-soin",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "umaeqa3r",
+   "nom": "est-il assez efficaces pour etre grand soigneur des masses",
+   "type": "binaire",
+   "formule": "Plusieurs tests imbriqués dans la formule à faire : \n\nReserve de mana totale > cout du sort de soin de zone x nombre d'étoile de la compagnie\net\ntaux de réussite du sort > (79 + nombre d'étoiles de la compagnie) %\net \nnombre de sort de soin >1",
+   "calcul": "carac.reserve_de_mana > cout.soin.de_zone * compagnie.etoiles et chance.soin.de_zone > base_grand_soin + compagnie.etoiles et sorts.soin > 1",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "8za94vzc"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "wc3phdwm",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "kuf9sasc",
+   "nom": "Est-il assez efficace pour être grand soigneur dans la durée ?",
+   "type": "binaire",
+   "formule": "Comme le grand soigneur des masses : réserve de mana totale > coût du soin sur la durée × étoiles de la compagnie, et réussite de ce soin > 79 + étoiles. En plus : son soin tient au moins 3 tours.",
+   "calcul": "carac.reserve_de_mana > cout.soin.dans_la_duree * compagnie.etoiles et chance.soin.dans_la_duree > base_grand_soin + compagnie.etoiles et duree.soin.dans_la_duree >= duree_min_soin",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "ehfdxqs9"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "n3ijaard",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "zqgn49uk",
+   "nom": "A-t-il une purge ou un soin rapide ?",
+   "type": "binaire",
+   "formule": "Le soigneur complet peut être un peu moins fiable sur le soin pur, mais il a une purge, ou au moins un soin rapide (Idan). Fiabilité demandée : celle de Soigneur reconnu, 70 + étoiles (proposition de JC, à valider).",
+   "calcul": "(sorts.soutien.purges > 0 ou sorts.soin_rapide > 0) et moy.chance.soin > seuil_soin + compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "5av4i928"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-soin",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "u8pfmlbi",
+   "nom": "Est-il un hôpital sur le champ de bataille ?",
+   "type": "binaire",
+   "formule": "Il peut lancer au moins 2 × étoiles de la compagnie soins avec sa réserve de mana (coût moyen de ses soins), sa réussite moyenne en soin dépasse 79 + étoiles, et il connaît un soin en action rapide. (Proposition de JC, à valider.)",
+   "calcul": "lancers.soin >= 2 * compagnie.etoiles et moy.chance.soin > base_grand_soin + compagnie.etoiles et sorts.soin_rapide > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "tnvt6pos"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "otpid6k6",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-terrain",
+   "nom": "Connaît-il un sort de contrôle du terrain ?",
+   "type": "binaire",
+   "formule": "Il connaît au moins un sort de contrôle du terrain (altération du terrain ou déplacement des personnages).",
+   "calcul": "sorts.controle_du_terrain > 0",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "ypsqnotc",
+    "sxp05nhd"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "t-terrain-lancers",
+   "nom": "Peut-il lancer son sort de terrain 2 fois par étoile ?",
+   "type": "binaire",
+   "formule": "Avec sa réserve de mana (équipement compris), il peut lancer 2 × étoiles de la compagnie sorts de contrôle du terrain, au coût moyen de ses sorts de terrain (Idan, 2026-11-21).",
+   "calcul": "carac.reserve_de_mana >= moy.cout.controle_du_terrain * 2 * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "ypsqnotc",
+    "sxp05nhd"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-terrain",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-terrain-maitre",
+   "nom": "Maîtrise-t-il assez de sorts de terrain pour être Maître du champ de bataille ?",
+   "type": "binaire",
+   "formule": "Il connaît au moins 3 sorts de contrôle du terrain, et sa réserve de mana (équipement compris) lui permet d'en lancer 3 × étoiles de la compagnie, au coût moyen de ses sorts de terrain (Idan, 2026-11-21).",
+   "calcul": "sorts.controle_du_terrain >= min_sorts_maitre_terrain et carac.reserve_de_mana >= moy.cout.controle_du_terrain * 3 * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "sxp05nhd"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-terrain-lancers",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-eclaireur",
+   "nom": "Est-il éclaireur ?",
+   "type": "binaire",
+   "formule": "Il a un animal éclaireur (un des 3 papillons), ou il peut invoquer le Corbeau 2 × étoiles de la compagnie fois avec sa réserve de mana, ou sa Discrétion + Perception (équipement compris) dépasse 100 + étoiles × 10 (Idan, 2026-11-21).",
+   "calcul": "monture contient \"Papillon\" ou (sorts.eclaireur > 0 et carac.reserve_de_mana >= cout.eclaireur * 2 * compagnie.etoiles) ou comp.discretion_effective + comp.perception_effective > base_eclaireur + eclaireur_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "eclaireur",
+    "yanyx0p4"
+   ],
+   "paliers": [],
+   "si": null
+  },
+  {
+   "id": "t-eclaireur-veteran",
+   "nom": "Est-il éclaireur vétéran ?",
+   "type": "binaire",
+   "formule": "Il a un animal éclaireur haut de gamme (le papillon télépathe), ou sa Discrétion + Perception (équipement compris) dépasse 150 + étoiles × 10 (Idan, 2026-11-21).",
+   "calcul": "monture = \"Papillon télépathe\" ou comp.discretion_effective + comp.perception_effective > base_eclaireur_veteran + eclaireur_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "yanyx0p4"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-eclaireur",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-1",
+   "nom": "Tireur, rang 1 : tire-t-il au niveau de la compagnie ?",
+   "type": "binaire",
+   "formule": "Avec son arme de tir la plus efficace (hors pistolet) : Précision, Puissance au tir et Dextérité + Vitesse (équipement compris) > 60 + étoiles de la compagnie × 10 (Idan, 2026-11-22).",
+   "calcul": "tir.precision > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "z2qn61fz"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "r21vxkkc",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-1",
+   "nom": "Son arme de tir la plus efficace est-elle : Arc ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Arc (Archer).",
+   "calcul": "tir.arme = \"Arc\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "degats-a-distance"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-2",
+   "nom": "Son arme de tir la plus efficace est-elle : Arbalète ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Arbalète (Arbalétrier).",
+   "calcul": "tir.arme = \"Arbalète\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "674uapot"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-3",
+   "nom": "Son arme de tir la plus efficace est-elle : Fronde ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Fronde (Frondeur).",
+   "calcul": "tir.arme = \"Fronde\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "emzk3ewz"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-4",
+   "nom": "Son arme de tir la plus efficace est-elle : Sarbacane ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Sarbacane (Sarbacanier).",
+   "calcul": "tir.arme = \"Sarbacane\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "7tb8bw9s"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-5",
+   "nom": "Son arme de tir la plus efficace est-elle : Arquebuse ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Arquebuse (Arquebusier).",
+   "calcul": "tir.arme = \"Arquebuse\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "hi6gkpzw"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-6",
+   "nom": "Son arme de tir la plus efficace est-elle : Canon à main ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Canon à main (Canonnier).",
+   "calcul": "tir.arme = \"Canon à main\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "4f29dawl"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-arme-7",
+   "nom": "Son arme de tir la plus efficace est-elle : Tromblon ?",
+   "type": "binaire",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Tromblon (Tromblonnier).",
+   "calcul": "tir.arme = \"Tromblon\"",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "usfefo5q"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-2",
+   "nom": "Tireur, rang 2 : est-il un tireur d'élite ?",
+   "type": "binaire",
+   "formule": "Précision, Puissance au tir et Dextérité + Vitesse > 100 + étoiles × 10. Les rangs 3 demandent le rang 2 (Idan, 2026-11-22).",
+   "calcul": "tir.precision > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "maztg4cg",
+    "rt333lv6",
+    "l7b25hu3",
+    "iz9tsjqq",
+    "qj1zxb19",
+    "o11g5hjd",
+    "p0waxc9s",
+    "vhl8stgh",
+    "rha264n3",
+    "pso4am5x",
+    "8xuypvlj"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-1",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-sniper",
+   "nom": "Sniper : précis et discret ?",
+   "type": "binaire",
+   "formule": "Précision > 130 + étoiles × 10, et Discrétion (armure comprise) > 40 + étoiles × 10 (Idan, 2026-11-22).",
+   "calcul": "tir.precision > base_sniper_precision + tir_par_etoile * compagnie.etoiles et comp.discretion_effective > base_sniper_discretion + tir_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "vhl8stgh"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-2",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-salve",
+   "nom": "Maître de la salve : enchaîne-t-il les tirs ?",
+   "type": "binaire",
+   "formule": "Son arme enchaîne les tirs (arc, arbalète, fronde, sarbacane ; plus tard les arquebuses automatiques), et Dextérité + Vitesse > 150 + étoiles × 10 (Idan, 2026-11-22).",
+   "calcul": "tir.repetable et tir.dex_vit > base_salve + tir_par_etoile * compagnie.etoiles",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "rha264n3"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-2",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-escarmouche",
+   "nom": "Tireur d'escarmouche : se déplace-t-il vite ?",
+   "type": "binaire",
+   "formule": "PM > 6 (Idan, 2026-11-22).",
+   "calcul": "pm > pm_escarmouche",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "pso4am5x"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-2",
+    "rep": "oui"
+   }
+  },
+  {
+   "id": "t-tir-poudre",
+   "nom": "Maître de la poudre noire : deux armes à feu différentes en set 1 et en set 2 ?",
+   "type": "binaire",
+   "formule": "D'après la note du tag : une arme à feu en set 1 et une autre, différente, en set 2 (pistolet compris). Le niveau : celui du rang 2. (Proposition de JC, à valider.)",
+   "calcul": "arme1.categorie = \"Armes à feu\" et arme2.categorie = \"Armes à feu\" et arme1 != arme2",
+   "aReecrire": false,
+   "oui": [],
+   "non": [
+    "8xuypvlj"
+   ],
+   "paliers": [],
+   "si": {
+    "test": "t-tir-2",
+    "rep": "oui"
+   }
+  }
+ ],
+ "constantes": [
+  {
+   "id": "c-seuil-soin",
+   "nom": "seuil soin",
+   "valeur": 70,
+   "note": "Réussite du meilleur soin pour Soigneur reconnu, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 70 + étoiles »)."
+  },
+  {
+   "id": "c-base-grand-soin",
+   "nom": "base grand soin",
+   "valeur": 79,
+   "note": "Réussite pour les « Grand » soigneurs et l'hôpital, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 79 + étoiles »)."
+  },
+  {
+   "id": "c-duree-min-soin",
+   "nom": "duree min soin",
+   "valeur": 3,
+   "note": "Nombre de tours minimum du soin sur la durée pour Grand soigneur dans la durée."
+  },
+  {
+   "id": "c-seuil-soin-occasionnel",
+   "nom": "seuil soin occasionnel",
+   "valeur": 50,
+   "note": "Réussite minimale de son meilleur soin pour être Soigneur occasionnel, en % (Idan, 2026-11-21 : « réussite supérieure à 50 % »)."
+  },
+  {
+   "id": "c-base-puissance-soin",
+   "nom": "base puissance soin",
+   "valeur": 100,
+   "note": "Puissance des soins : Puissance magique + école moyenne de ses soins > cette base + (par étoile) × étoiles de la compagnie (Idan, 2026-11-21)."
+  },
+  {
+   "id": "c-puissance-soin-etoile",
+   "nom": "puissance soin par etoile",
+   "valeur": 10,
+   "note": "Ce que chaque étoile de la compagnie ajoute au seuil de puissance des soins (Idan, 2026-11-21 : « 100 + étoiles × 10 »)."
+  },
+  {
+   "id": "7lrwfvea",
+   "nom": "base carac exceptionnelle",
+   "valeur": 100,
+   "note": "Carac exceptionnelle (« Ce qu'il est ») : carac > cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 100 + nombre d'étoiles de la compagnie »)."
+  },
+  {
+   "id": "lkxwkkxz",
+   "nom": "facteur carac superieure",
+   "valeur": 1.5,
+   "note": "Tag du dessous : carac > (base + étoiles de la compagnie) × ce facteur, et la meilleure valeur de la compagnie (Idan, 2026-11-21 : « x1.5 et avoir la meilleure stat de la compagnie »)."
+  },
+  {
+   "id": "wwhp0e4f",
+   "nom": "base resistance exceptionnelle",
+   "valeur": 100,
+   "note": "Résistances exceptionnelles : protection > cette base + étoiles de la compagnie (Idan, 2026-11-21 : même règle que les caracs ; le plafond de 75 % est retiré du jeu, à 100 on ne prend plus rien de l'élément, au-delà il soigne)."
+  },
+  {
+   "id": "c-base-eclaireur",
+   "nom": "base éclaireur",
+   "valeur": 100,
+   "note": "Éclaireur : Discrétion + Perception (équipement compris) > cette base + étoiles de la compagnie × « éclaireur par étoile » (Idan, 2026-11-21 : « 100 + nombre d'étoiles × 10 »)."
+  },
+  {
+   "id": "c-base-eclaireur-veteran",
+   "nom": "base éclaireur vétéran",
+   "valeur": 150,
+   "note": "Éclaireur vétéran : Discrétion + Perception > cette base + étoiles × « éclaireur par étoile » (Idan, 2026-11-21 : « 150 + nombre d'étoiles × 10 »)."
+  },
+  {
+   "id": "c-eclaireur-par-etoile",
+   "nom": "éclaireur par étoile",
+   "valeur": 10,
+   "note": "Ce qu'ajoute chaque étoile de la compagnie aux seuils d'éclaireur (Idan, 2026-11-21 : × 10)."
+  },
+  {
+   "id": "c-min-sorts-maitre-terrain",
+   "nom": "min sorts maître terrain",
+   "valeur": 3,
+   "note": "Maître du champ de bataille : nombre minimum de sorts de contrôle du terrain (Idan, 2026-11-21 : 3)."
+  },
+  {
+   "id": "c-tir-etoile",
+   "nom": "tir par étoile",
+   "valeur": 10,
+   "note": "Ce qu'ajoute chaque étoile de la compagnie aux seuils du Tireur (Idan, 2026-11-22 : × 10)."
+  },
+  {
+   "id": "c-tir-rang1",
+   "nom": "base tir rang 1",
+   "valeur": 60,
+   "note": "Rang 1 (Archer, Arbalétrier…) : Précision, Puissance et Dextérité + Vitesse > cette base + étoiles × 10 (Idan, 2026-11-22)."
+  },
+  {
+   "id": "c-tir-rang2",
+   "nom": "base tir rang 2",
+   "valeur": 100,
+   "note": "Rang 2 (… d'élite) : les trois mêmes valeurs > cette base + étoiles × 10 (Idan, 2026-11-22)."
+  },
+  {
+   "id": "c-tir-sniper",
+   "nom": "base sniper precision",
+   "valeur": 130,
+   "note": "Sniper : Précision > cette base + étoiles × 10 (Idan, 2026-11-22)."
+  },
+  {
+   "id": "c-tir-sniper-disc",
+   "nom": "base sniper discretion",
+   "valeur": 40,
+   "note": "Sniper : Discrétion (armure comprise) > cette base + étoiles × 10 (Idan, 2026-11-22)."
+  },
+  {
+   "id": "c-tir-salve",
+   "nom": "base salve",
+   "valeur": 150,
+   "note": "Maître de la salve : Dextérité + Vitesse > cette base + étoiles × 10, avec une arme qui enchaîne les tirs (Idan, 2026-11-22)."
+  },
+  {
+   "id": "c-tir-pm",
+   "nom": "pm escarmouche",
+   "valeur": 6,
+   "note": "Tireur d'escarmouche : PM > cette valeur (Idan, 2026-11-22)."
+  }
+ ]
+}

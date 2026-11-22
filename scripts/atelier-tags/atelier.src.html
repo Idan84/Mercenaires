@@ -133,6 +133,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 <div class="wrap">
   <header>
     <div>
+      <a id="retour-lab" class="sub" href="../" hidden>← Design Lab</a>
       <h1>Atelier des tags</h1>
       <p class="sub">Tous les tags qu'un mercenaire peut avoir, les tests qui en éliminent, puis un essai sur une recrue tirée par le générateur du jeu.</p>
     </div>
@@ -265,6 +266,11 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 <script>@@MOTEUR@@</script>
 <script>
 "use strict";
+// Le moteur des tags du jeu (game-core/tag-engine.js), inséré par construit.js.
+const E=MercenairesTagEngine;
+// Où l'atelier est enregistré (construit.js) : « artefact » (la base de l'artefact claude.ai) ou « site » (la Design Lab,
+// sur Hostinger : media/atelier/, que le jeu lit aussi ; Idan, 2026-11-22).
+const HEBERGEMENT="@@HEBERGEMENT@@";
 const $=id=>document.getElementById(id);
 const el=(tag,props={},...kids)=>{ const e=document.createElement(tag); for(const [k,v] of Object.entries(props)){ if(k==="class") e.className=v; else if(k==="text") e.textContent=v; else if(k.startsWith("on")) e[k]=v; else if(v!==false&&v!=null) e.setAttribute(k,v===true?"":v); } for(const x of kids) if(x!=null) e.append(x); return e; };
 const uid=()=>Math.random().toString(36).slice(2,10);
@@ -273,7 +279,7 @@ const chevron='<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true
 
 // ---------- Données ----------
 let doc={tags:[],tests:[],constantes:[]};
-let tagChoisi=null, testChoisi=null, peutEcrire=true, ref=null, sale=false, enCours=false, encore=false, minuteur=null;
+let tagChoisi=null, testChoisi=null, peutEcrire=true, stockage=null, sale=false, enCours=false, encore=false, minuteur=null;
 const memo=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
 const fermes=new Set(memo("atelier-fermes")||[]);
 const memoFermes=()=>memo("atelier-fermes",[...fermes]);
@@ -304,15 +310,18 @@ const numeros=()=>new Map(ordreTests().map(o=>[o.x.id,o.num]));
 function descendantsTest(id,acc=new Set()){ for(const c of doc.tests.filter(t=>t.si?.test===id)) if(!acc.has(c.id)){ acc.add(c.id); descendantsTest(c.id,acc); } return acc; }
 
 function etat(texte,ok){ const e=$("etat"); e.textContent=texte; e.dataset.ok=String(ok); }
-function change(){ sale=true; majCompteurs(); if(!ref){ etat(peutEcrire?"Modifications non enregistrées (hors de claude.ai)":"Lecture seule",2); return; }
-  etat("Modifications en attente…",2); clearTimeout(minuteur); minuteur=setTimeout(enregistre,700); }
+// stockage : {delai (ms avant d'enregistrer), ecrire(doc) → Promise, libelle()} ; branché en bas de la page.
+function change(){ sale=true; majCompteurs(); if(!stockage){ etat(peutEcrire?"Modifications non enregistrées (hors de claude.ai)":"Lecture seule",2); return; }
+  etat("Modifications en attente…",2); clearTimeout(minuteur); minuteur=setTimeout(enregistre,stockage.delai); }
 async function enregistre(){
-  if(!ref||!peutEcrire) return;
+  if(!stockage||!peutEcrire) return;
   if(enCours){ encore=true; return; }
   enCours=true; etat("Enregistrement…",2);
-  try{ await ref.set(JSON.parse(JSON.stringify(doc))); sale=false; etat("Enregistré",1); }
+  try{ await stockage.ecrire(JSON.parse(JSON.stringify(doc))); sale=false; etat("Enregistré"+(stockage.libelle?stockage.libelle():""),1); }
   catch(e){
-    if(e?.code==="invalid_argument"||e?.code==="permission_denied"){ peutEcrire=false; etat("Lecture seule : vous ne pouvez pas modifier l'atelier",0); rendreTout(); }
+    if(e?.code==="invalid_argument"||e?.code==="permission_denied"){ peutEcrire=false; etat("Lecture seule : vous ne pouvez pas modifier l'atelier"+(e.message?" ("+e.message+")":""),0); rendreTout(); }
+    else if(e?.code==="conflict"){ peutEcrire=false; memo("atelier-conflit",{date:new Date().toISOString(),doc});
+      etat("L'atelier a été modifié ailleurs (version "+(e.version??"?")+") : recharge la page. Tes dernières modifications sont gardées dans ce navigateur (atelier-conflit).",0); rendreTout(); }
     else if(e?.code==="unavailable"){ etat("Réseau indisponible, nouvel essai…",2); setTimeout(enregistre,1500+Math.random()*1000); }
     else etat("Enregistrement impossible ("+(e?.code||"erreur")+")",0);
   }
@@ -332,7 +341,6 @@ const cle=n=>norm(n).replace(/[^a-z0-9_.]+/g,"_").replace(/^_+|_+$/g,"");
 const constante=n=>(doc.constantes||[]).find(c=>cle(c.nom)===n);
 // Le langage des calculs : celui du moteur des tags du jeu (game-core/tag-engine.js, Idan, 2026-11-22 : « que le jeu lise
 // les datas de l'atelier »), le même pour l'atelier et pour le jeu.
-const E=MercenairesTagEngine;
 const {ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe}=E;
 function proche(n){ const m=norm(n); let best=null,bs=0; for(const v of VARS){ const k=v.k; let s=0; const a=m.split(/[._]/),b=k.split(/[._]/); for(const x of a) if(x&&b.some(y=>y.startsWith(x)||x.startsWith(y))) s++; if(s>bs){ bs=s; best=k; } } return best; }
 function controle(src){
@@ -749,14 +757,53 @@ const dernier=memo("atelier-profil"); if(Number.isInteger(dernier)&&POOL.profils
   const c=memo("atelier-compagnie"); if(Array.isArray(c)&&c.every(i=>Number.isInteger(i)&&POOL.profils[i]&&i!==dernier)) autres=c; else tirerCompagnie(); }
 montreOnglet(["tags","tests","essai"].includes(onglet)?onglet:"tags"); rendreTout(); if(profil) rendreEssai(true);
 
+// ---------- Enregistrement sur Hostinger (la Design Lab, Idan, 2026-11-22) ----------
+// La dernière version : media/atelier/actuel.json (lue aussi par le jeu) ; sinon la copie du dépôt (data/tag-workshop.json),
+// et la première modification crée la version 1. Chaque version part de la précédente (design/api/atelier.php refuse
+// sinon : deux onglets ne s'écrasent pas).
+async function brancheSite(){
+  $("retour-lab").hidden=false;
+  const lire=async url=>{ const r=await fetch(url+"?t="+Date.now(),{cache:"no-store"});
+    return r.ok&&/json/.test(r.headers.get("content-type")||"")?r.json():null; };
+  const charge=x=>{ doc=propre(x); if(tagChoisi&&!tagPar(tagChoisi)) tagChoisi=null; if(testChoisi&&!testPar(testChoisi)) testChoisi=null;
+    rendreTout(); if(profil&&onglet==="essai") rendreResultats(); };
+  let version=0, actuel=null, copie=null;
+  try{ actuel=await lire("/media/atelier/actuel.json"); }catch(e){}
+  if(actuel&&Number.isInteger(actuel.version)&&actuel.doc){ version=actuel.version; charge(actuel.doc); }
+  else{ try{ copie=await lire("/data/tag-workshop.json"); }catch(e){} if(copie) charge(copie); }
+  if(!actuel&&!copie){ etat("Atelier introuvable : lecture seule",0); peutEcrire=false; rendreTout(); return; }
+  stockage={delai:2500,libelle:()=>" (version "+version+")",
+    async ecrire(d){
+      let r=null, x=null;
+      try{ r=await fetch("../api/atelier.php",{method:"POST",headers:{"Content-Type":"application/json","X-Depot":"1"},
+        body:JSON.stringify({version,doc:E.clean(d,{uid}),note:""})}); }catch(e){ throw {code:"unavailable"}; }
+      try{ x=await r.json(); }catch(e){}
+      if(r.status===409) throw {code:"conflict",version:x?.actuel?.version};
+      if(r.status===401||r.status===403) throw {code:"permission_denied",message:x?.erreur};
+      if(!r.ok||!x?.ok) throw {code:"erreur",message:x?.erreur||"HTTP "+r.status};
+      version=x.fiche.version;
+    }};
+  etat(version?"À jour (version "+version+")":"Copie du dépôt : ta première modification crée la version 1 sur Hostinger",1);
+  window.addEventListener("beforeunload",e=>{ if(sale&&peutEcrire){ e.preventDefault(); e.returnValue=""; } });
+  // Un autre onglet ou appareil a enregistré : on relit la dernière version toutes les 30 s (jamais par-dessus des
+  // modifications en cours).
+  setInterval(async()=>{
+    if(sale||enCours||document.hidden||!peutEcrire) return;
+    let a=null; try{ a=await lire("/media/atelier/actuel.json"); }catch(e){ return; }
+    if(a&&Number.isInteger(a.version)&&a.version>version&&!sale&&!enCours){ version=a.version; charge(a.doc); etat("Mis à jour (version "+version+")",1); }
+  },30000);
+}
+
 (async()=>{
+  if(HEBERGEMENT==="site"){ await brancheSite(); return; }
   const use=window.claude&&window.claude.use;
   if(!use){ etat("Hors de claude.ai : rien n'est enregistré",0); return; }
   const db=await window.claude.use("db");
   if(!db){ etat("Enregistrement indisponible ici : lecture seule",0); peutEcrire=false; rendreTout(); return; }
   const user=await window.claude.use("user");
   if(user){ try{ const c=await user.can("data.write"); if(c===false) peutEcrire=false; }catch(e){} }
-  ref=db.doc("atelier/principal");
+  const ref=db.doc("atelier/principal");
+  stockage={delai:700,ecrire:d=>ref.set(d)};
   const delai=setTimeout(()=>etat("L'atelier n'est pas encore joignable…",2),10000);
   ref.onSnapshot(snap=>{
     if(!snap.metadata.fromCache) clearTimeout(delai);

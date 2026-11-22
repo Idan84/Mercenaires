@@ -158,7 +158,7 @@ const VARS=new Set(tagVars.vars().map(x=>x.k));
 for(const k of ["carac.force","comp.armes_de_tir","tir.precision","tir.puissance","tir.dex_vit","tir.repetable","pm","sorts","nb_sorts","moy.cout.soin","lancers.soin"])
   assert.ok(VARS.has(k),k);
 
-const donnees=E.clean(JSON.parse(read("scripts/atelier-tags/donnees/atelier-2026-11-22.json")));
+const donnees=E.clean(JSON.parse(read("data/reference/tag-workshop.json")));
 const arbre=E.createTagTree(donnees);
 // Chaque calcul se lit, et ne parle que de variables du jeu, de la compagnie ou de constantes de l'atelier.
 for(const x of donnees.tests.filter(x=>x.calcul.trim())){

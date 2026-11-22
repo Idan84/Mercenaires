@@ -95,8 +95,19 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 « Je veux que le jeu lise les datas de l'atelier, que l'atelier soit une sorte de base admin de gestion du jeu. » Le
 principe, domaine par domaine : Idan règle les données dans un onglet du Design Lab ; ses enregistrements sont rangés sur
 Hostinger (`media/…`, par une API de `design/api/`) ; le jeu les lit au chargement et, sans eux (serveur local, tests),
-garde la copie du dépôt (`data/reference/`). Déjà fait : les réglages des cultures (ci-dessous). Prochain : l'atelier des
-tags (doc 20 §12). Ensuite : le bestiaire et les constantes de formules.
+garde la copie du dépôt (`data/reference/`). Déjà fait : les réglages des cultures (ci-dessous). En cours : l'atelier
+des tags (ci-dessous, doc 20 §12). Ensuite : le bestiaire et les constantes de formules.
+
+### Atelier des tags : `media/atelier/` (préparé le 2026-11-22, pas encore en ligne)
+
+Le bouton **Atelier des tags** du Design Lab ouvre `design/atelier/` : la page de l'artefact « Atelier des tags »
+(`scripts/atelier-tags/`), assemblée par `scripts/build-site.sh` avec le moteur des tags (`game-core/tag-engine.js`) et
+des recrues tirées par le générateur du jeu. Elle lit la dernière version, `media/atelier/actuel.json`, ou, s'il n'y en a
+pas, la copie du dépôt (`data/reference/tag-workshop.json`). Chaque modification est enregistrée 2,5 s après par
+`design/api/atelier.php` (mêmes gardes que les dépôts d'images) : une nouvelle version, qui doit partir de la dernière
+(sinon refusée : deux onglets ne s'écrasent pas ; la page le dit et garde les modifications refusées dans le
+navigateur). Chaque version est gardée dans `media/atelier/<id>/atelier.json` (les 200 dernières, puis la dernière de
+chaque jour) ; `media/atelier/index.json` liste l'historique. Le jeu lira `actuel.json` (doc 20 §12, à brancher).
 
 ### Réglages des cultures : `media/reglages/`
 

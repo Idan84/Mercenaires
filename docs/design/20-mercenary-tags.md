@@ -239,8 +239,8 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 ## 11 — La refonte (atelier des tags, 2026-11-20 à 22)
 
 > Travail en cours d'Idan dans l'artefact « Atelier des tags ». Copie de ses données du 2026-11-22 :
-> `scripts/atelier-tags/donnees/atelier-2026-11-22.json` ; l'outil se reconstruit avec `scripts/atelier-tags/` (voir
-> son README). Le jeu applique encore les §2 à §10 ; cette refonte n'y est pas branchée.
+> `data/reference/tag-workshop.json` ; l'outil se reconstruit avec `scripts/atelier-tags/` (voir son README). Le jeu
+> applique encore les §2 à §10 ; cette refonte n'y est pas branchée (§12).
 
 ### Les principes (Idan)
 
@@ -545,8 +545,15 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
 - **L'atelier passe dans le Design Lab** (Idan, 2026-11-22 : « je voudrais intégrer l'atelier dans le design lab et que
   le jeu le lise pour générer les tags ») : Idan y règle tags, tests et constantes, ses enregistrements sont rangés sur
   Hostinger, et le jeu les lit au chargement, comme les réglages des cultures (doc DEPLOYMENT). Sans eux (serveur local,
-  tests), la copie du dépôt (`scripts/atelier-tags/donnees/`). Le même moteur (game-core) calcule les tags dans le jeu et
-  dans l'onglet « Essayer » de l'atelier.
+  tests), la copie du dépôt (`data/reference/tag-workshop.json`). Le même moteur (`game-core/tag-engine.js`) calcule les
+  tags dans le jeu et dans l'onglet « Essayer » de l'atelier.
+- **Préparé (2026-11-22), pas encore en ligne** : le moteur des tags (`game-core/tag-engine.js` : le langage des
+  calculs, l'arbre, les tags affichés, les variables d'un mercenaire), utilisé par l'artefact ; la page de l'atelier dans
+  le Design Lab (`design/atelier/`, bouton « Atelier des tags ») ; son enregistrement sur Hostinger
+  (`media/atelier/actuel.json`, la dernière version ; un historique des versions ; deux onglets ne s'écrasent pas).
+  **La bascule** : l'artefact reste la référence tant qu'Idan y travaille ; au moment de basculer, JC recopie sa base dans
+  `data/reference/tag-workshop.json` et met en ligne ; la première modification dans le Design Lab crée la version 1
+  sur Hostinger, et l'artefact n'est plus utilisé.
 
 ### Deux sortes de tags, un même calcul
 

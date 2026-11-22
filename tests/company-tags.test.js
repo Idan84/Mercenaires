@@ -127,6 +127,15 @@ const fort=tags.candidateTags(candidat,{members,steward:cruxor,companyStars:3,vi
 const attendu=tree.tags(E.withCompany(tags.seen(tags.valuesOf(candidat.mercenary),3),members.map(x=>view.get(x)),3));
 assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses valeurs × 3, contre la compagnie vue par l'intendant");
 
+// ---- Branché dans le jeu (Idan, 2026-11-22) : plus d'onglet ni de demande de tags ----
+const ui=read("prototype-web/ui.js"), stewardUi=read("prototype-web/steward-ui.js"), html=read("prototype-web/index.html");
+assert.match(html,/<script src="\/core\/tag-engine\.js"><\/script>\s*<script src="\/core\/company-tags\.js"><\/script>/);
+assert.doesNotMatch(html,/mercenary-tags\.js|steward-tags\.js/,"l'ancien moteur n'est plus chargé");
+assert.doesNotMatch(ui,/"Rôle et occupations"|renderTagsTab|data-tag-toggle|data-tag-steward|stewardRetag/,"plus d'onglet Rôle et occupations ni de demande à l'intendant");
+assert.doesNotMatch(stewardUi,/data-steward-retag|>Retaguer la compagnie</,"plus de « Retaguer la compagnie »");
+assert.match(ui,/MercenairesCompanyTags\.createCompanyTags\(\{reference, workshop: reference\.tagWorkshop,/);
+assert.match(ui,/const steward = c && typeof stewardRules === "function" \? stewardRules\(\)\.personOf\(c\) : null;/,"l'intendant nommé, sinon Cruxor");
+
 // ---- Le jeu lit l'atelier du Design Lab (media/atelier/actuel.json), sinon la copie du dépôt ----
 (async()=>{
   const src=read("prototype-web/reference-data.js");

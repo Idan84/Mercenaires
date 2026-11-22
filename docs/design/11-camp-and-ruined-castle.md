@@ -661,7 +661,7 @@ proposition par mercenaire et par jour**. L'intendant ne part plus en mission ; 
 `data/reference/old-steward.json`.
 
 - **Là dès le premier jour**, avec **30 d'Intendance** (Idan, 2026-11-22 ; 10 avant) ; il fait tout ce que fait un intendant (candidats, échanges,
-  apprentissages, prix des marchands, tags).
+  apprentissages, prix des marchands, et il décrit les mercenaires pour leurs tags, doc 20 §12).
 - **Ce n'est pas un mercenaire** : ni salaire, ni place au dortoir, ni fiche, ni mission.
 - **Affinité** : chaque mercenaire (et chaque marchand) l'apprécie exactement comme le capitaine.
 - **Il demande à partir, mais n'ose pas de lui-même** : seulement quand on lui parle, en fin de phrase (« Vous savez, je

@@ -31,9 +31,6 @@ function originPhrase({people="",culture="",ascendance=""}={}){
   return (ascendance?`${phrase} au ${lower(ascendance)}`:phrase).trim();
 }
 
-// Les tags de la fiche au survol (Idan, 2026-11-16 : « On va limiter le nombre. On met que la catégorie la plus basse. On
-// met uniquement les tags missions et rôle au combat ») : les missions (camps, chasses, garde du corps) et le rôle au combat.
-const HOVER_TAG_BRANCHES=["occupation/mission","occupation/garde-du-corps","role"];
 // Les plaques des tags (Idan, 2026-11-16 : « on va en mettre jusqu'à 5 en quinconce. S'il existe 6 tags ou plus on marque
 // dans le dernier x autres rôles ») : au plus 5, trois en haut et deux décalés dessous, chaque rangée centrée ; à partir de
 // 6, les 4 premiers et une plaque « N autres rôles ». col : la colonne où commence la plaque, sur une grille de 6 (chaque
@@ -56,23 +53,16 @@ function hoverTagFullName(parent,name){
   return `${parent} ${low}${plural?"s":""}`;
 }
 // Ce que la fiche montre, sans HTML (tests, portage).
-function mercenaryHoverData(c,{missionTag=null}={}){
+function mercenaryHoverData(c){
   const reference=game.referenceData||{};
-  const rules=typeof tagRules==="function"?tagRules():null;
-  // Les tags allumés, seulement les plus précis (aucun de leurs sous-tags n'est allumé) ; celui de la mission d'abord.
-  const lit=rules?rules.litIds(c):[];
-  const precise=lit.filter(id=>!lit.some(other=>other.startsWith(id+"/")))
-    .filter(id=>HOVER_TAG_BRANCHES.some(branch=>id===branch||id.startsWith(branch+"/")));
-  const toneOf=id=>rules?.columns.find(col=>col.code===String(id).split("/")[0])?.teinte||"";
-  const isMission=id=>Boolean(missionTag)&&(id===missionTag||id.startsWith(missionTag+"/"));
-  const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id)}))
-    .sort((a,b)=>Number(b.mission)-Number(a.mission));
+  // Les tags (Idan, 2026-11-22 ; doc 20 §12 : « sur la fiche au survol, ça remplace les tags actuels ») : ceux de l'atelier
+  // des tags, calculés sur ce que l'intendant voit de lui (mercenaryTagList, ui.js), en bleu comme le rôle au combat ;
+  // déjà les plus précis (le plus bas de chaque branche).
+  const tags=(typeof mercenaryTagList==="function"?mercenaryTagList(c):[]).map(t=>({id:t.id,name:t.name,parent:t.parent,tone:"bleu",mission:false}));
   for(const tag of tags){
-    if(tags.filter(other=>other.name===tag.name).length<2) continue;
-    const parent=rules?.node(tag.id.split("/").slice(0,-1).join("/"))?.nom;
-    if(parent) tag.fullName=hoverTagFullName(parent,tag.name);
+    if(tags.filter(other=>other.name===tag.name).length>1&&tag.parent) tag.fullName=hoverTagFullName(tag.parent,tag.name);
   }
-  for(const tag of tags) if(tag.fullName){ tag.name=tag.fullName; delete tag.fullName; }
+  for(const tag of tags){ if(tag.fullName){ tag.name=tag.fullName; delete tag.fullName; } delete tag.parent; }
   // Les objets portés.
   const slots=c.equipment?.slots||{},items=c.items||[];
   const itemIn=slot=>slots[slot]==null?null:items.find(item=>String(item.id)===String(slots[slot]))||null;
@@ -317,8 +307,8 @@ function hoverWeapons(names){
 function hoverHearts(filled){
   return Array.from({length:10},(_,i)=>`<i class="hc-heart${i<filled?" is-full":""}"></i>`).join("");
 }
-function renderMercenaryHoverCard(c,{missionTag=null}={}){
-  const d=mercenaryHoverData(c,{missionTag});
+function renderMercenaryHoverCard(c){
+  const d=mercenaryHoverData(c);
   const frame=hoverCultureFrame(d.culture);
   // Le nom en grand (Idan, 2026-11-15 : « on reste pour que 20 caractères rentrent dans le cartouche. On réduira auto pour
   // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il

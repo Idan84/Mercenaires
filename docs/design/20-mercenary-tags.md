@@ -1,11 +1,10 @@
 # Tags des mercenaires
 
-> Décisions d'Idan du 2026-11-12. Données : `data/reference/mercenary-tags.json`, `data/reference/steward-tags.json`, la
-> colonne `tags` de `spells.json`.
->
-> Idan, 2026-11-20 : niveaux des tags retirés (un tag est allumé ou éteint).
->
-> Refonte en cours (atelier des tags, 2026-11-20 et 21) : voir le §11.
+> **Les §1 à §10 sont l'historique** (décisions d'Idan du 2026-11-12, niveaux retirés le 2026-11-20) : ce système a été
+> retiré du jeu le 2026-11-22 (onglet Rôle et occupations, demandes à l'intendant, « Retaguer la compagnie », moteurs
+> `mercenary-tags.js` et `steward-tags.js`, données `mercenary-tags.json` et `steward-tags.json` ; l'historique Git les
+> garde). **Le jeu suit la refonte : l'atelier des tags (§11), branché dans le jeu (§12).** La colonne `tags` de
+> `spells.json` reste lue par l'atelier.
 
 ## 1 — Pourquoi
 
@@ -532,7 +531,9 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
 
 ## 12 — Brancher la refonte dans le jeu (Idan, 2026-11-22)
 
-> Décidé, pas encore codé. Le jeu applique encore les §2 à §10 tant que ce chantier n'est pas fait.
+> Codé le 2026-11-22, **pas encore en ligne** (mise en ligne quand Idan le dit). Le code : `game-core/tag-engine.js` (le
+> moteur de l'atelier), `game-core/company-tags.js` (les biais, la compagnie), `prototype-web/ui.js` (companyTagRules,
+> mercenaryTagLists), la fiche au survol, le choix de l'escouade. Les constantes : `formula-constants.json` (`tags.*`).
 
 ### Ce qui change
 
@@ -593,3 +594,18 @@ ValeurVue  = Valeur × (1 + Biais)
   s'annulerait, par exemple réserve de mana et coût d'un sort).
 - **« Le meilleur de la compagnie »** : l'intendant compare ce qu'il voit, chaque mercenaire avec son propre biais.
 - Un tag ne bascule que si le mercenaire est près d'un seuil : les très bons et les très mauvais restent bien vus.
+
+### Ce que JC a dû préciser en codant (à valider par Idan)
+
+- **Le capitaine** est décrit par l'intendant comme les mercenaires (il est dans « le meilleur de la compagnie »).
+- **Sans intendant** (Cruxor parti et personne au poste) : les valeurs exactes, sans biais.
+- **Les écoles de magie** comptent comme des compétences (elles reçoivent le biais). **La réserve de mana** aussi
+  (« mana » et `carac.reserve_de_mana`) ; le nombre de soins qu'il peut lancer (`lancers.soin`) suit sa réserve vue.
+- **Le candidat** compare ses valeurs annoncées à la compagnie telle que l'intendant la voit. Son tirage est gardé sur
+  lui (`tagSelfBias`). Ses tags sont calculés (`candidateTags`) mais **pas encore affichés** : la fiche du candidat à la
+  Taverne, avec sa case « Tags » (doc 14 §6), reste à faire avec le dialogue de recrutement.
+- **Le choix de l'escouade** : les onglets de filtre prennent les nouveaux tags (« Tous », puis les tags que portent les
+  mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres tags ») ; l'onglet du tag de la
+  mission (camp, chasse, garde du corps) disparaît : l'atelier n'a pas de tags de mission.
+- **La fiche au survol** : les tags de l'atelier, dans l'ordre de l'atelier, en bleu comme l'ancien rôle au combat ; au
+  plus 5 plaques, comme avant (« N autres rôles »).

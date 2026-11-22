@@ -920,8 +920,7 @@ function openMissionSelection(contract=null){
     state:c=>missionChoiceState(c,offer)});
   missionChoiceHeading(offer?offer.campName+" de "+offer.fields.lieu:"Mission Test",offer?.difficulty,
     offer?"Départ demain matin · "+missionChoiceDays(offer.distance)+" de marche":"","L’escouade");
-  renderMissionChoice(available,{missionTag:missionTagOf(offer),
-    error:available.length<game.missionSelect.min?"Personne n’est en état de partir.":""});
+  renderMissionChoice(available,{error:available.length<game.missionSelect.min?"Personne n’est en état de partir.":""});
 }
 
 function openBodyguardSelection(offer){
@@ -933,8 +932,7 @@ function openBodyguardSelection(offer){
   // Ceux qui n'ont pas la réputation demandée, ou qui ne peuvent pas partir, ne sont pas dans la galerie.
   const members=c.company.roster.filter(m=>m.id!==c.company.captainId&&m.id!==c.company.intendantId&&(c.company.medicId==null||m.id!==c.company.medicId)
     &&!MercenairesCampPosts.postOf(c,m)&&!rules.expeditionOf(c,m.id)&&!(rules.studyBusy&&rules.studyBusy(c,m))&&rules.canGuard(c,m,offer).ok);
-  renderMissionChoice(members,{missionTag:missionTagOf(offer),
-    error:members.length<offer.count?"Pas assez de mercenaires de cette réputation pour cette garde.":""});
+  renderMissionChoice(members,{error:members.length<offer.count?"Pas assez de mercenaires de cette réputation pour cette garde.":""});
 }
 
 const missionFem=(c,word)=>word+(String(c?.sex||"").toLowerCase().startsWith("f")?"e":"");
@@ -957,23 +955,16 @@ function missionChoiceHeading(name,level,route,eyebrow){
 }
 const missionChoiceDays=n=>typeof missionDays==="function"?missionDays(n):n+" jour"+(n>1?"s":"");
 
-// Le tag de la mission (doc 20) : son camp ou sa chasse sous Mission, ou Garde du corps.
-function missionTagOf(offer){
-  const rules=typeof tagRules==="function"?tagRules():null;
-  if(!rules||!offer) return null;
-  if(offer.kind==="bodyguard") return rules.has("occupation/garde-du-corps")?"occupation/garde-du-corps":null;
-  return rules.childNamed("occupation/mission/camps",offer.faction)||rules.childNamed("occupation/mission/chasses",offer.faction)||null;
-}
-// Les rôles en onglets (la maquette de Chatty) ; les autres dans « Autres rôles ».
-const MISSION_CHOICE_MAIN_ROLES=["role/degats","role/soutien","role/protection","role/magie"];
+// Les tags en onglets (la maquette de Chatty) : ceux de l'atelier (Idan, 2026-11-22 ; doc 20 §12) que portent les
+// mercenaires de la galerie, les plus portés d'abord ; au-delà de quatre, dans « Autres tags ».
+const MISSION_CHOICE_TABS=4;
 const missionSearchKey=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 
 // La galerie, les tags et l'escouade.
-function renderMissionChoice(list,{missionTag=null,error=""}={}){
-  const sel=game.missionSelect,rules=typeof tagRules==="function"?tagRules():null;
-  // La fiche au survol met le tag de la mission en premier.
-  sel.missionTag=missionTag;
-  const tagsOf=c=>rules?rules.litIds(c):[];
+function renderMissionChoice(list,{error=""}={}){
+  const sel=game.missionSelect;
+  const lists=typeof mercenaryTagLists==="function"?mercenaryTagLists(list):new Map();
+  const tagsOf=c=>(lists.get(c)||[]).map(t=>t.id);
   $("mission-select-list").innerHTML=list.map(c=>{
     const state=sel.state(c);
     return `<label class="mission-pick" data-hover-card="${c.id}" data-tags="${esc(tagsOf(c).join(" "))}" data-name="${esc(missionSearchKey(c.name))}">
@@ -984,16 +975,16 @@ function renderMissionChoice(list,{missionTag=null,error=""}={}){
       <span class="mission-pick-state mission-pick-state--${state.kind}">${esc(state.label)}</span>
     </label>`;
   }).join("")+`<p class="mission-roster-empty" hidden>Personne ne correspond.</p>`;
-  // Les tags : « Tous » (le filtre éteint, à l'ouverture), le tag de la mission, les rôles que porte au moins l'un d'eux.
-  const lit=new Set(list.flatMap(tagsOf));
-  const roles=rules?(rules.columns.find(col=>col.code==="role")?.tags||[]).map(t=>t.id).filter(id=>lit.has(id)):[];
-  const main=roles.filter(id=>MISSION_CHOICE_MAIN_ROLES.includes(id)),others=roles.filter(id=>!MISSION_CHOICE_MAIN_ROLES.includes(id));
+  // Les tags : « Tous » (le filtre éteint, à l'ouverture), puis ceux que porte au moins l'un d'eux.
+  const count=new Map(),names=new Map();
+  for(const tags of lists.values()) for(const t of tags){ count.set(t.id,(count.get(t.id)||0)+1); names.set(t.id,t.name); }
+  const order=[...count.keys()].sort((a,b)=>count.get(b)-count.get(a));
+  const main=order.slice(0,MISSION_CHOICE_TABS),others=order.slice(MISSION_CHOICE_TABS);
   const tab=(id,label,extra="")=>`<button type="button" class="mission-tab${extra}" data-tag-filter="${esc(id)}" aria-pressed="${id===""}">${esc(label)}</button>`;
-  $("mission-select-tags").innerHTML=!rules?"":tab("","Tous")
-    +(missionTag?tab(missionTag,rules.node(missionTag)?.nom||missionTag," mission-tab--mission"):"")
-    +main.map(id=>tab(id,rules.node(id)?.nom||id)).join("")
-    +(others.length?`<span class="mission-tabs-more"><button type="button" class="mission-tab mission-tab--more" aria-expanded="false" aria-haspopup="true">Autres rôles</button>
-      <span class="mission-tabs-menu" hidden>${others.map(id=>tab(id,rules.node(id)?.nom||id)).join("")}</span></span>`:"");
+  $("mission-select-tags").innerHTML=!order.length?"":tab("","Tous")
+    +main.map(id=>tab(id,names.get(id))).join("")
+    +(others.length?`<span class="mission-tabs-more"><button type="button" class="mission-tab mission-tab--more" aria-expanded="false" aria-haspopup="true">Autres tags</button>
+      <span class="mission-tabs-menu" hidden>${others.map(id=>tab(id,names.get(id))).join("")}</span></span>`:"");
   $("mission-select-search").value="";
   $("mission-select-error").textContent=error;
   $("cancel-mission-select-btn").textContent=sel.detailId?"‹ Retour à l’annonce":"‹ Retour";
@@ -1036,10 +1027,10 @@ function searchMissionChoice(){
 function applyMissionChoiceFilter(){
   const {tag=null}=game.missionSelect||{};
   document.querySelectorAll("#mission-select-tags [data-tag-filter]").forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.tagFilter||null)===tag)));
-  // « Autres rôles » : le rôle choisi dans le menu prend sa place.
+  // « Autres tags » : le tag choisi dans le menu prend sa place.
   const more=document.querySelector("#mission-select-tags .mission-tab--more");
   const picked=tag&&document.querySelector(`#mission-select-tags .mission-tabs-menu [data-tag-filter="${CSS.escape(tag)}"]`);
-  if(more){ more.textContent=picked?picked.textContent:"Autres rôles"; more.classList.toggle("is-active",Boolean(picked)); }
+  if(more){ more.textContent=picked?picked.textContent:"Autres tags"; more.classList.toggle("is-active",Boolean(picked)); }
   if(game.missionSelect) game.missionSelect.page=0;
   refreshMissionRoster();
 }
@@ -1183,7 +1174,7 @@ function showMissionChoiceHover(anchor){
   const box=$("mission-choice-hover"),sel=game.missionSelect;
   const c=allCharacters().find(m=>String(m.id)===anchor.dataset.hoverCard);
   if(!box||!sel||!c||!anchor.isConnected||typeof renderMercenaryHoverCard!=="function") return;
-  box.innerHTML=renderMercenaryHoverCard(c,{missionTag:sel.missionTag||null});
+  box.innerHTML=renderMercenaryHoverCard(c);
   box.hidden=false;
   const card=box.querySelector(".hover-card");
   if(typeof fitHoverCard==="function") fitHoverCard(card);

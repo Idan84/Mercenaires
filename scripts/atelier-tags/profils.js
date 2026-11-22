@@ -26,6 +26,10 @@ const magic=createMagicRules({reference,combat:engine});
 const stars=createStarRules({reference});
 const prof=createProfileRules({reference,engine,magic});
 const pdata=reference.mercenaryProfile;
+const etalonLeger=(()=>{ const et=pdata.etalon,g=et.armes.leger,row=reference.weapons.rows.find(w=>w.nom===g.arme)||{},cat=String(row.domaine||"").split(",")[0].trim();
+  return {character:{id:"etalon-leger",name:"Étalon",stats:{...et.caracteristiques},resistances:{},skills:{martial:{[cat]:et.maitrise,[g.arme]:et.maitrise},magic:{}},spells:[],
+    items:[{id:"w",name:g.arme,itemType:"weapon",tier:1,qualityCode:"standard",category:cat},{id:"a",name:g.armure,itemType:"armor",tier:1,qualityCode:"standard"}],
+    equipment:{slots:{weapon_set_1_main:"w",armor:"a"}}},activeSet:1}; })();
 const spellRows=new Map(reference.spells.rows.map(r=>[r.code,r]));
 const mountRows=new Map((reference.mounts?.rows||[]).map(r=>[r.code,r]));
 const weaponRows=new Map(reference.weapons.rows.map(r=>[r.nom,r]));
@@ -105,6 +109,20 @@ for(let i=0;i<demandes.length;i++){
     put("arme"+n+".main_gauche","Set "+n+" : main gauche","Équipement porté","texte",o?.name||"");
     put("arme"+n+".bouclier","Set "+n+" : bouclier","Équipement porté","oui/non",Boolean(o&&(o.category==="Boucliers"||weaponRows.get(o.name)?.categorie==="Boucliers")));
   }
+  // Le tir (Idan, 2026-11-22 : tags du Tireur) : son set de tir le plus efficace (dégâts par tour contre l'étalon en
+  // gambison, comme les titres), et les valeurs du moteur avec ce set en main : Précision (toucher), Puissance (blesser au
+  // tir), Dextérité + Vitesse (enchaîner les tirs). PM : ses cases de déplacement.
+  const tirSets=[1,2].map(set=>({set,dps:prof.setDamage(c,set,true,etalonLeger)})).filter(x=>x.dps!=null).sort((a,b)=>b.dps-a.dps);
+  const tirUnit=tirSets.length?{character:c,activeSet:tirSets[0].set}:null;
+  const tirArme=tirUnit&&engine.weaponTemplate(engine.activeWeaponItem(tirUnit));
+  put("tir.arme","Son arme de tir la plus efficace","Tir (son meilleur set de tir)","texte",tirArme?.nom||"");
+  put("tir.repetable","Son arme de tir enchaîne les tirs (arc, arbalète, fronde, sarbacane)","Tir (son meilleur set de tir)","oui/non",Boolean(tirArme&&engine.isRepeatable(tirArme)));
+  put("tir.precision","Précision au tir (toucher)","Tir (son meilleur set de tir)","nombre",tirUnit?r1(engine.attackPrecision(tirUnit)):0);
+  put("tir.puissance","Puissance au tir (blesser)","Tir (son meilleur set de tir)","nombre",tirUnit?r1(engine.attackPower(tirUnit,"ranged")):0);
+  put("tir.dex_vit","Dextérité + Vitesse effectives (enchaîner les tirs)","Tir (son meilleur set de tir)","nombre",
+    r1(Number(engine.effectiveDexterity(tirUnit||unit))+Number(engine.effectiveSpeed(tirUnit||unit))));
+  put("tir.degats_tour","Dégâts par tour au tir contre l'étalon en gambison (comme les titres)","Tir (son meilleur set de tir)","nombre",tirSets.length?r1(tirSets[0].dps):0);
+  put("pm","PM : cases de déplacement","Capacités","nombre",Number(engine.movementBase(unit))||0);
   const arm=slot("armor");
   put("armure","Armure","Équipement porté","texte",arm?.name||"");
   put("armure.classe","Classe d'armure","Équipement porté","texte",c.equipment?.armorClass||"");

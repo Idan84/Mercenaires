@@ -53,6 +53,72 @@
    "nom": "base resistance exceptionnelle",
    "note": "Résistances exceptionnelles : protection > cette base + étoiles de la compagnie (Idan, 2026-11-21 : même règle que les caracs ; le plafond de 75 % est retiré du jeu, à 100 on ne prend plus rien de l'élément, au-delà il soigne).",
    "valeur": 100
+  },
+  {
+   "id": "c-base-eclaireur",
+   "nom": "base éclaireur",
+   "note": "Éclaireur : Discrétion + Perception (équipement compris) > cette base + étoiles de la compagnie × « éclaireur par étoile » (Idan, 2026-11-21 : « 100 + nombre d'étoiles × 10 »).",
+   "valeur": 100
+  },
+  {
+   "id": "c-base-eclaireur-veteran",
+   "nom": "base éclaireur vétéran",
+   "note": "Éclaireur vétéran : Discrétion + Perception > cette base + étoiles × « éclaireur par étoile » (Idan, 2026-11-21 : « 150 + nombre d'étoiles × 10 »).",
+   "valeur": 150
+  },
+  {
+   "id": "c-eclaireur-par-etoile",
+   "nom": "éclaireur par étoile",
+   "note": "Ce qu'ajoute chaque étoile de la compagnie aux seuils d'éclaireur (Idan, 2026-11-21 : × 10).",
+   "valeur": 10
+  },
+  {
+   "id": "c-min-sorts-maitre-terrain",
+   "nom": "min sorts maître terrain",
+   "note": "Maître du champ de bataille : nombre minimum de sorts de contrôle du terrain (Idan, 2026-11-21 : 3).",
+   "valeur": 3
+  },
+  {
+   "id": "c-tir-etoile",
+   "nom": "tir par étoile",
+   "note": "Ce qu'ajoute chaque étoile de la compagnie aux seuils du Tireur (Idan, 2026-11-22 : × 10).",
+   "valeur": 10
+  },
+  {
+   "id": "c-tir-rang1",
+   "nom": "base tir rang 1",
+   "note": "Rang 1 (Archer, Arbalétrier…) : Précision, Puissance et Dextérité + Vitesse > cette base + étoiles × 10 (Idan, 2026-11-22).",
+   "valeur": 60
+  },
+  {
+   "id": "c-tir-rang2",
+   "nom": "base tir rang 2",
+   "note": "Rang 2 (… d'élite) : les trois mêmes valeurs > cette base + étoiles × 10 (Idan, 2026-11-22).",
+   "valeur": 100
+  },
+  {
+   "id": "c-tir-sniper",
+   "nom": "base sniper precision",
+   "note": "Sniper : Précision > cette base + étoiles × 10 (Idan, 2026-11-22).",
+   "valeur": 130
+  },
+  {
+   "id": "c-tir-sniper-disc",
+   "nom": "base sniper discretion",
+   "note": "Sniper : Discrétion (armure comprise) > cette base + étoiles × 10 (Idan, 2026-11-22).",
+   "valeur": 40
+  },
+  {
+   "id": "c-tir-salve",
+   "nom": "base salve",
+   "note": "Maître de la salve : Dextérité + Vitesse > cette base + étoiles × 10, avec une arme qui enchaîne les tirs (Idan, 2026-11-22).",
+   "valeur": 150
+  },
+  {
+   "id": "c-tir-pm",
+   "nom": "pm escarmouche",
+   "note": "Tireur d'escarmouche : PM > cette valeur (Idan, 2026-11-22).",
+   "valeur": 6
   }
  ],
  "tags": [
@@ -60,6 +126,7 @@
    "garder": null,
    "groupe": true,
    "id": "ce-qu-il-est",
+   "inactif": false,
    "nom": "Ce qu'il est",
    "note": "Passe 1 de ton arbre : ce que le mercenaire est, oui ou non.",
    "parents": [],
@@ -69,6 +136,7 @@
    "garder": null,
    "groupe": true,
    "id": "ka5k6bo1",
+   "inactif": false,
    "nom": "Comment il le fait",
    "note": "",
    "parents": [],
@@ -78,6 +146,7 @@
    "garder": null,
    "groupe": true,
    "id": "magie",
+   "inactif": false,
    "nom": "Magie",
    "note": "Rôle à part, ou manière de tenir les autres rôles : à décider. Ses écoles en dessous.",
    "parents": [
@@ -86,9 +155,10 @@
    "rang": null
   },
   {
-   "garder": null,
+   "garder": 1,
    "groupe": true,
    "id": "z2qn61fz",
+   "inactif": false,
    "nom": "Tireur",
    "note": "",
    "parents": [
@@ -100,6 +170,7 @@
    "garder": null,
    "groupe": true,
    "id": "pou5c9pp",
+   "inactif": false,
    "nom": "CAC",
    "note": "",
    "parents": [
@@ -111,6 +182,7 @@
    "garder": null,
    "groupe": false,
    "id": "vol",
+   "inactif": false,
    "nom": "Vol",
    "note": "",
    "parents": [
@@ -122,6 +194,7 @@
    "garder": null,
    "groupe": false,
    "id": "regeneration",
+   "inactif": false,
    "nom": "Régénération",
    "note": "",
    "parents": [
@@ -133,6 +206,7 @@
    "garder": null,
    "groupe": false,
    "id": "amphibie",
+   "inactif": false,
    "nom": "Amphibie",
    "note": "Respiration aquatique.",
    "parents": [
@@ -144,6 +218,7 @@
    "garder": null,
    "groupe": false,
    "id": "3eo3yjmy",
+   "inactif": false,
    "nom": "Grosse Brute",
    "note": "Force exceptionnelle",
    "parents": [
@@ -155,6 +230,7 @@
    "garder": null,
    "groupe": false,
    "id": "03tml0iu",
+   "inactif": false,
    "nom": "Force de la nature",
    "note": "",
    "parents": [
@@ -166,6 +242,7 @@
    "garder": null,
    "groupe": false,
    "id": "1b1t7f8y",
+   "inactif": false,
    "nom": "Insaisissable",
    "note": "Esquive exceptionnelle",
    "parents": [
@@ -177,6 +254,7 @@
    "garder": null,
    "groupe": false,
    "id": "r8fjoadk",
+   "inactif": false,
    "nom": "Roi de l'esquive",
    "note": "",
    "parents": [
@@ -188,6 +266,7 @@
    "garder": null,
    "groupe": false,
    "id": "6zp3q2r1",
+   "inactif": false,
    "nom": "Cerveau sur pattes",
    "note": "Intelligence exceptionnelle",
    "parents": [
@@ -199,6 +278,7 @@
    "garder": null,
    "groupe": false,
    "id": "r5i3na08",
+   "inactif": false,
    "nom": "Doigts agiles",
    "note": "Dexterité exceptionnelle",
    "parents": [
@@ -210,6 +290,7 @@
    "garder": null,
    "groupe": false,
    "id": "8a91th6k",
+   "inactif": false,
    "nom": "6ème sens",
    "note": "Perception exceptionnelle",
    "parents": [
@@ -221,6 +302,7 @@
    "garder": null,
    "groupe": false,
    "id": "a6g49n26",
+   "inactif": false,
    "nom": "Veinard",
    "note": "Chance exceptionnelle",
    "parents": [
@@ -232,6 +314,7 @@
    "garder": null,
    "groupe": false,
    "id": "ojkh06zu",
+   "inactif": false,
    "nom": "Roc",
    "note": "Constitution ou Endurance ou Résistance physique exceptionnelle",
    "parents": [
@@ -243,6 +326,7 @@
    "garder": null,
    "groupe": false,
    "id": "mzc3vqjp",
+   "inactif": false,
    "nom": "Bolide",
    "note": "Vitesse exceptionnelle",
    "parents": [
@@ -254,6 +338,7 @@
    "garder": null,
    "groupe": false,
    "id": "ko8qpwk8",
+   "inactif": false,
    "nom": "Sans peur",
    "note": "Courage exceptionnel",
    "parents": [
@@ -265,6 +350,7 @@
    "garder": null,
    "groupe": false,
    "id": "02p1prii",
+   "inactif": false,
    "nom": "Volonté de Fer",
    "note": "Volonté exceptionnelle",
    "parents": [
@@ -276,6 +362,7 @@
    "garder": null,
    "groupe": false,
    "id": "i2f9v5k9",
+   "inactif": false,
    "nom": "Effrayant",
    "note": "Intimidation exceptionnelle",
    "parents": [
@@ -287,6 +374,7 @@
    "garder": null,
    "groupe": false,
    "id": "481drl5g",
+   "inactif": false,
    "nom": "Séducteur",
    "note": "Charisme exceptionnel",
    "parents": [
@@ -298,6 +386,7 @@
    "garder": null,
    "groupe": false,
    "id": "q78i7tqj",
+   "inactif": false,
    "nom": "Ignifugé ",
    "note": "Résistance au feu",
    "parents": [
@@ -309,6 +398,7 @@
    "garder": null,
    "groupe": false,
    "id": "swux6jo4",
+   "inactif": false,
    "nom": "Paratonerre",
    "note": "Résistance à la foudre",
    "parents": [
@@ -320,6 +410,7 @@
    "garder": null,
    "groupe": false,
    "id": "ellzzuqw",
+   "inactif": false,
    "nom": "Frigorifugé ",
    "note": "Résistance au froid",
    "parents": [
@@ -331,6 +422,7 @@
    "garder": null,
    "groupe": false,
    "id": "9rvmbh6e",
+   "inactif": false,
    "nom": "Mithridatisé ",
    "note": "Résistance Poison",
    "parents": [
@@ -342,6 +434,7 @@
    "garder": null,
    "groupe": false,
    "id": "8dgq82ry",
+   "inactif": false,
    "nom": "Irresistible",
    "note": "",
    "parents": [
@@ -353,6 +446,7 @@
    "garder": null,
    "groupe": false,
    "id": "0d9asz97",
+   "inactif": false,
    "nom": "Terrorisant",
    "note": "",
    "parents": [
@@ -364,6 +458,7 @@
    "garder": null,
    "groupe": false,
    "id": "mlw1nq8u",
+   "inactif": false,
    "nom": "Volonté de diamant",
    "note": "",
    "parents": [
@@ -375,6 +470,7 @@
    "garder": null,
    "groupe": false,
    "id": "rz4rh0b8",
+   "inactif": false,
    "nom": "Tête brulée",
    "note": "",
    "parents": [
@@ -386,6 +482,7 @@
    "garder": null,
    "groupe": false,
    "id": "mugvslw0",
+   "inactif": false,
    "nom": "Flash",
    "note": "",
    "parents": [
@@ -397,6 +494,7 @@
    "garder": null,
    "groupe": false,
    "id": "haiegjex",
+   "inactif": false,
    "nom": "Increvable",
    "note": "",
    "parents": [
@@ -408,6 +506,7 @@
    "garder": null,
    "groupe": false,
    "id": "25ww25fb",
+   "inactif": false,
    "nom": "Béni des dieux",
    "note": "",
    "parents": [
@@ -419,6 +518,7 @@
    "garder": null,
    "groupe": false,
    "id": "3u2qr4la",
+   "inactif": false,
    "nom": "Oracle",
    "note": "",
    "parents": [
@@ -430,6 +530,7 @@
    "garder": null,
    "groupe": false,
    "id": "00vdecdw",
+   "inactif": false,
    "nom": "Aux mains d'argent",
    "note": "",
    "parents": [
@@ -441,6 +542,7 @@
    "garder": null,
    "groupe": false,
    "id": "rgftfjcu",
+   "inactif": false,
    "nom": "Le génie",
    "note": "",
    "parents": [
@@ -452,6 +554,7 @@
    "garder": null,
    "groupe": true,
    "id": "roles",
+   "inactif": false,
    "nom": "Rôles",
    "note": "Passe 2 de ton arbre : on élimine les rôles qu'il ne peut pas remplir en l'état. S'il ne reste aucun rôle : Dégâts ou Polyvalent.",
    "parents": [],
@@ -461,6 +564,7 @@
    "garder": 1,
    "groupe": true,
    "id": "soin",
+   "inactif": false,
    "nom": "Soigneur",
    "note": "",
    "parents": [
@@ -473,6 +577,7 @@
    "garder": null,
    "groupe": false,
    "id": "soin-de-zone",
+   "inactif": false,
    "nom": "Soigneur des masses",
    "note": "",
    "parents": [
@@ -484,6 +589,7 @@
    "garder": null,
    "groupe": false,
    "id": "soin-duree",
+   "inactif": false,
    "nom": "Soigneur dans la durée",
    "note": "",
    "parents": [
@@ -495,6 +601,7 @@
    "garder": null,
    "groupe": false,
    "id": "5av4i928",
+   "inactif": false,
    "nom": "Soigneur complet",
    "note": "",
    "parents": [
@@ -507,6 +614,7 @@
    "garder": null,
    "groupe": false,
    "id": "6n4899ab",
+   "inactif": false,
    "nom": "Grand Maître du soin",
    "note": "",
    "parents": [
@@ -521,6 +629,7 @@
    "garder": null,
    "groupe": false,
    "id": "ehfdxqs9",
+   "inactif": false,
    "nom": "Grand soigneur dans la durée",
    "note": "",
    "parents": [
@@ -532,6 +641,7 @@
    "garder": null,
    "groupe": false,
    "id": "p98pjt14",
+   "inactif": false,
    "nom": "Soigneur occasionnel",
    "note": "",
    "parents": [
@@ -543,6 +653,7 @@
    "garder": null,
    "groupe": false,
    "id": "lyfdowvc",
+   "inactif": false,
    "nom": "Soigneur reconnu",
    "note": "",
    "parents": [
@@ -554,6 +665,7 @@
    "garder": null,
    "groupe": false,
    "id": "tnvt6pos",
+   "inactif": false,
    "nom": "Un hôpital sur le champ de bataille",
    "note": "",
    "parents": [
@@ -565,7 +677,8 @@
    "garder": 1,
    "groupe": true,
    "id": "controle-du-terrain",
-   "nom": "Contrôle du terrain",
+   "inactif": false,
+   "nom": "Eclaireur et contrôle du terrain",
    "note": "",
    "parents": [
     "roles"
@@ -576,6 +689,7 @@
    "garder": null,
    "groupe": false,
    "id": "soutien",
+   "inactif": true,
    "nom": "Soutien",
    "note": "",
    "parents": [
@@ -588,6 +702,7 @@
    "garder": null,
    "groupe": false,
    "id": "soutien-enchantements",
+   "inactif": false,
    "nom": "Enchantements",
    "note": "",
    "parents": [
@@ -599,6 +714,7 @@
    "garder": null,
    "groupe": false,
    "id": "soutien-degats-elementaires",
+   "inactif": false,
    "nom": "Dégâts élémentaires",
    "note": "",
    "parents": [
@@ -610,6 +726,7 @@
    "garder": null,
    "groupe": false,
    "id": "soutien-discretion",
+   "inactif": false,
    "nom": "Discrétion",
    "note": "",
    "parents": [
@@ -621,6 +738,7 @@
    "garder": null,
    "groupe": false,
    "id": "soutien-recuperation-de-mana",
+   "inactif": false,
    "nom": "Récupération de mana",
    "note": "",
    "parents": [
@@ -632,6 +750,7 @@
    "garder": null,
    "groupe": false,
    "id": "soutien-purges",
+   "inactif": false,
    "nom": "Purges",
    "note": "",
    "parents": [
@@ -643,6 +762,7 @@
    "garder": null,
    "groupe": false,
    "id": "protection",
+   "inactif": true,
    "nom": "Protection",
    "note": "",
    "parents": [
@@ -654,6 +774,7 @@
    "garder": null,
    "groupe": false,
    "id": "protection-elementaire",
+   "inactif": false,
    "nom": "Protection élémentaire",
    "note": "",
    "parents": [
@@ -665,6 +786,7 @@
    "garder": null,
    "groupe": false,
    "id": "protection-a-distance",
+   "inactif": false,
    "nom": "Protection à distance",
    "note": "",
    "parents": [
@@ -676,6 +798,7 @@
    "garder": null,
    "groupe": false,
    "id": "entrave",
+   "inactif": true,
    "nom": "Entrave",
    "note": "",
    "parents": [
@@ -688,6 +811,7 @@
    "garder": null,
    "groupe": false,
    "id": "entrave-immobilisation",
+   "inactif": false,
    "nom": "Immobilisation",
    "note": "",
    "parents": [
@@ -699,6 +823,7 @@
    "garder": null,
    "groupe": false,
    "id": "entrave-affaiblissement",
+   "inactif": false,
    "nom": "Affaiblissement",
    "note": "",
    "parents": [
@@ -710,6 +835,7 @@
    "garder": null,
    "groupe": false,
    "id": "entrave-demoralisateur",
+   "inactif": false,
    "nom": "Démoralisateur",
    "note": "",
    "parents": [
@@ -721,6 +847,7 @@
    "garder": null,
    "groupe": false,
    "id": "entrave-anti-magie",
+   "inactif": false,
    "nom": "Anti-magie",
    "note": "",
    "parents": [
@@ -732,6 +859,7 @@
    "garder": null,
    "groupe": false,
    "id": "entrave-anti-soins",
+   "inactif": false,
    "nom": "Anti-soins",
    "note": "",
    "parents": [
@@ -743,8 +871,9 @@
    "garder": null,
    "groupe": false,
    "id": "ypsqnotc",
+   "inactif": false,
    "nom": "Contrôleur du terrain",
-   "note": "",
+   "note": "Sait utiliser des sorts de d'altération du terrain ou de déplacement des personnages",
    "parents": [
     "controle-du-terrain"
    ],
@@ -754,8 +883,9 @@
    "garder": null,
    "groupe": false,
    "id": "sxp05nhd",
+   "inactif": false,
    "nom": "Maitre du champ de bataille",
-   "note": "",
+   "note": "Maitrise supérieure à Contrôleur du terrain",
    "parents": [
     "ypsqnotc"
    ],
@@ -765,6 +895,7 @@
    "garder": null,
    "groupe": false,
    "id": "pv521ntp",
+   "inactif": false,
    "nom": "Architecte de l'enfer",
    "note": "",
    "parents": [
@@ -776,9 +907,22 @@
   {
    "garder": null,
    "groupe": false,
+   "id": "eclaireur",
+   "inactif": false,
+   "nom": "Éclaireur",
+   "note": "Est doué pour faire des repérages avant la bataille mais également pendant.",
+   "parents": [
+    "controle-du-terrain"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
    "id": "yt48k9y9",
+   "inactif": true,
    "nom": "Poseur de pièges",
-   "note": "",
+   "note": "Pieges pas encore implémenté.  - Tag doit rester avec un test forcément éliminatoire pour l'instant",
    "parents": [
     "controle-du-terrain"
    ],
@@ -788,6 +932,7 @@
    "garder": null,
    "groupe": false,
    "id": "6mdxudep",
+   "inactif": false,
    "nom": "Poseur de pièges émérite",
    "note": "",
    "parents": [
@@ -799,6 +944,7 @@
    "garder": null,
    "groupe": false,
    "id": "commandement",
+   "inactif": true,
    "nom": "Commandement",
    "note": "",
    "parents": [
@@ -809,9 +955,10 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "eclaireur",
-   "nom": "Éclaireur",
-   "note": "",
+   "id": "ivtpihp7",
+   "inactif": true,
+   "nom": "Démineur",
+   "note": "Pieges pas encore implémenté.  - Tag doit rester avec un test forcément éliminatoire pour l'instant",
    "parents": [
     "controle-du-terrain"
    ],
@@ -820,9 +967,36 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "yanyx0p4",
-   "nom": "Eclaireur vétéran",
+   "id": "ql2dvl0b",
+   "inactif": false,
+   "nom": "Démineur émérite",
    "note": "",
+   "parents": [
+    "ivtpihp7"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "8ssf9csv",
+   "inactif": false,
+   "nom": "Créateur de voie royale",
+   "note": "",
+   "parents": [
+    "ql2dvl0b",
+    "yanyx0p4",
+    "6mdxudep"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "yanyx0p4",
+   "inactif": false,
+   "nom": "Eclaireur vétéran",
+   "note": "Niveau supérieur à éclaireur",
    "parents": [
     "eclaireur"
    ],
@@ -831,7 +1005,21 @@
   {
    "garder": null,
    "groupe": false,
+   "id": "x5vamdd5",
+   "inactif": false,
+   "nom": "Grand maitre du contrôle et de l'information",
+   "note": "",
+   "parents": [
+    "yanyx0p4",
+    "sxp05nhd"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
    "id": "degats",
+   "inactif": true,
    "nom": "Dégâts",
    "note": "",
    "parents": [
@@ -843,6 +1031,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-eau",
+   "inactif": false,
    "nom": "Eau",
    "note": "",
    "parents": [
@@ -854,6 +1043,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-feu",
+   "inactif": false,
    "nom": "Feu",
    "note": "",
    "parents": [
@@ -865,6 +1055,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-foudre",
+   "inactif": false,
    "nom": "Foudre",
    "note": "",
    "parents": [
@@ -876,6 +1067,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-illusion",
+   "inactif": false,
    "nom": "Illusion",
    "note": "",
    "parents": [
@@ -887,6 +1079,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-invocation",
+   "inactif": false,
    "nom": "Invocation",
    "note": "",
    "parents": [
@@ -898,6 +1091,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-necromancie",
+   "inactif": false,
    "nom": "Apprentie Nécromancien",
    "note": "",
    "parents": [
@@ -909,6 +1103,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-telekinesie",
+   "inactif": false,
    "nom": "Télékinésie",
    "note": "",
    "parents": [
@@ -920,6 +1115,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-transmutation",
+   "inactif": false,
    "nom": "Transmutation",
    "note": "",
    "parents": [
@@ -931,6 +1127,7 @@
    "garder": null,
    "groupe": false,
    "id": "ecole-vie",
+   "inactif": false,
    "nom": "Vie",
    "note": "",
    "parents": [
@@ -942,18 +1139,276 @@
    "garder": null,
    "groupe": false,
    "id": "degats-a-distance",
-   "nom": "À distance",
-   "note": "",
+   "inactif": false,
+   "nom": "Archer",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
    "parents": [
-    "degats",
     "z2qn61fz"
    ],
-   "rang": null
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "674uapot",
+   "inactif": false,
+   "nom": "Arbalétrier",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "emzk3ewz",
+   "inactif": false,
+   "nom": "Frondeur",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "7tb8bw9s",
+   "inactif": false,
+   "nom": "Sarbacanier ",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "hi6gkpzw",
+   "inactif": false,
+   "nom": "Arquebusier",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "4f29dawl",
+   "inactif": false,
+   "nom": "Canonier",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "usfefo5q",
+   "inactif": false,
+   "nom": "Tromblonnier ",
+   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "vhl8stgh",
+   "inactif": false,
+   "nom": "Sniper",
+   "note": "Tire très bien et a une bonne discrétion pour rester embusqué après avoir tiré",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ijxps20b",
+   "inactif": false,
+   "nom": "Maitre sniper",
+   "note": "",
+   "parents": [
+    "vhl8stgh",
+    "rha264n3"
+   ],
+   "rang": 4
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "n1yv29qr",
+   "inactif": false,
+   "nom": "Sniper tacticien",
+   "note": "",
+   "parents": [
+    "vhl8stgh",
+    "pso4am5x"
+   ],
+   "rang": 4
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "o969o3js",
+   "inactif": false,
+   "nom": "Grand maître du combat à distance",
+   "note": "",
+   "parents": [
+    "vhl8stgh",
+    "pso4am5x",
+    "rha264n3"
+   ],
+   "rang": 5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "rha264n3",
+   "inactif": false,
+   "nom": "Maitre de la salve",
+   "note": "Tire très bien et est assez rapide pour enchainer les tires",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "6r545ray",
+   "inactif": false,
+   "nom": "Maître harceleur",
+   "note": "",
+   "parents": [
+    "rha264n3",
+    "pso4am5x"
+   ],
+   "rang": 4
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "pso4am5x",
+   "inactif": false,
+   "nom": "Tireur d'escarmouche",
+   "note": "Tire très bien et se déplace rapidement",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "8xuypvlj",
+   "inactif": false,
+   "nom": "Maitre de la poudre noire",
+   "note": "A un certain niveau dans deux armes à feu et est équipé en set1 et en set 2 d'une arme à feu différente (inclus le pistolet",
+   "parents": [
+    "z2qn61fz"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "p0waxc9s",
+   "inactif": false,
+   "nom": "Tromblonnier  d'élite",
+   "note": "",
+   "parents": [
+    "usfefo5q"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "o11g5hjd",
+   "inactif": false,
+   "nom": "Canonier d'élite",
+   "note": "",
+   "parents": [
+    "4f29dawl"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "qj1zxb19",
+   "inactif": false,
+   "nom": "Arquebusier d'élite",
+   "note": "",
+   "parents": [
+    "hi6gkpzw"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "iz9tsjqq",
+   "inactif": false,
+   "nom": "Sarbacanier  d'éli",
+   "note": "",
+   "parents": [
+    "7tb8bw9s"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "l7b25hu3",
+   "inactif": false,
+   "nom": "Frondeur d'élite",
+   "note": "",
+   "parents": [
+    "emzk3ewz"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "rt333lv6",
+   "inactif": false,
+   "nom": "Arbalétrier d'élite",
+   "note": "",
+   "parents": [
+    "674uapot"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "maztg4cg",
+   "inactif": false,
+   "nom": "Archer d'élite",
+   "note": "",
+   "parents": [
+    "degats-a-distance"
+   ],
+   "rang": 2
   },
   {
    "garder": null,
    "groupe": false,
    "id": "degats-de-zone",
+   "inactif": false,
    "nom": "De zone",
    "note": "",
    "parents": [
@@ -965,6 +1420,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-charge",
+   "inactif": false,
    "nom": "Charge",
    "note": "",
    "parents": [
@@ -976,6 +1432,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-tranchant",
+   "inactif": false,
    "nom": "Tranchant",
    "note": "",
    "parents": [
@@ -987,6 +1444,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-perforant",
+   "inactif": false,
    "nom": "Perforant",
    "note": "",
    "parents": [
@@ -998,6 +1456,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-contondant",
+   "inactif": false,
    "nom": "Contondant",
    "note": "",
    "parents": [
@@ -1009,6 +1468,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-glacant",
+   "inactif": false,
    "nom": "Glaçant",
    "note": "",
    "parents": [
@@ -1021,6 +1481,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-foudroyant",
+   "inactif": false,
    "nom": "Foudroyant",
    "note": "",
    "parents": [
@@ -1033,6 +1494,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-corrosif",
+   "inactif": false,
    "nom": "Corrosif",
    "note": "",
    "parents": [
@@ -1044,6 +1506,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-poison",
+   "inactif": false,
    "nom": "Poison",
    "note": "",
    "parents": [
@@ -1055,6 +1518,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-necrotique",
+   "inactif": false,
    "nom": "Nécrotique",
    "note": "",
    "parents": [
@@ -1066,6 +1530,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-anti-morts-vivants",
+   "inactif": false,
    "nom": "Anti morts-vivants",
    "note": "",
    "parents": [
@@ -1077,6 +1542,7 @@
    "garder": null,
    "groupe": false,
    "id": "degats-anti-invocations",
+   "inactif": false,
    "nom": "Anti invocations",
    "note": "",
    "parents": [
@@ -1089,6 +1555,7 @@
    "garder": null,
    "groupe": false,
    "id": "8za94vzc",
+   "inactif": false,
    "nom": "Grand soigneur des masses",
    "note": "",
    "parents": [
@@ -1800,6 +2267,319 @@
    "si": {
     "rep": "oui",
     "test": "otpid6k6"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.controle_du_terrain > 0",
+   "formule": "Il connaît au moins un sort de contrôle du terrain (altération du terrain ou déplacement des personnages).",
+   "id": "t-terrain",
+   "nom": "Connaît-il un sort de contrôle du terrain ?",
+   "non": [
+    "ypsqnotc",
+    "sxp05nhd"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "carac.reserve_de_mana >= moy.cout.controle_du_terrain * 2 * compagnie.etoiles",
+   "formule": "Avec sa réserve de mana (équipement compris), il peut lancer 2 × étoiles de la compagnie sorts de contrôle du terrain, au coût moyen de ses sorts de terrain (Idan, 2026-11-21).",
+   "id": "t-terrain-lancers",
+   "nom": "Peut-il lancer son sort de terrain 2 fois par étoile ?",
+   "non": [
+    "ypsqnotc",
+    "sxp05nhd"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-terrain"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.controle_du_terrain >= min_sorts_maitre_terrain et carac.reserve_de_mana >= moy.cout.controle_du_terrain * 3 * compagnie.etoiles",
+   "formule": "Il connaît au moins 3 sorts de contrôle du terrain, et sa réserve de mana (équipement compris) lui permet d'en lancer 3 × étoiles de la compagnie, au coût moyen de ses sorts de terrain (Idan, 2026-11-21).",
+   "id": "t-terrain-maitre",
+   "nom": "Maîtrise-t-il assez de sorts de terrain pour être Maître du champ de bataille ?",
+   "non": [
+    "sxp05nhd"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-terrain-lancers"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "monture contient \"Papillon\" ou (sorts.eclaireur > 0 et carac.reserve_de_mana >= cout.eclaireur * 2 * compagnie.etoiles) ou comp.discretion_effective + comp.perception_effective > base_eclaireur + eclaireur_par_etoile * compagnie.etoiles",
+   "formule": "Il a un animal éclaireur (un des 3 papillons), ou il peut invoquer le Corbeau 2 × étoiles de la compagnie fois avec sa réserve de mana, ou sa Discrétion + Perception (équipement compris) dépasse 100 + étoiles × 10 (Idan, 2026-11-21).",
+   "id": "t-eclaireur",
+   "nom": "Est-il éclaireur ?",
+   "non": [
+    "eclaireur",
+    "yanyx0p4"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "monture = \"Papillon télépathe\" ou comp.discretion_effective + comp.perception_effective > base_eclaireur_veteran + eclaireur_par_etoile * compagnie.etoiles",
+   "formule": "Il a un animal éclaireur haut de gamme (le papillon télépathe), ou sa Discrétion + Perception (équipement compris) dépasse 150 + étoiles × 10 (Idan, 2026-11-21).",
+   "id": "t-eclaireur-veteran",
+   "nom": "Est-il éclaireur vétéran ?",
+   "non": [
+    "yanyx0p4"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-eclaireur"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.precision > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles",
+   "formule": "Avec son arme de tir la plus efficace (hors pistolet) : Précision, Puissance au tir et Dextérité + Vitesse (équipement compris) > 60 + étoiles de la compagnie × 10 (Idan, 2026-11-22).",
+   "id": "t-tir-1",
+   "nom": "Tireur, rang 1 : tire-t-il au niveau de la compagnie ?",
+   "non": [
+    "z2qn61fz"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "r21vxkkc"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Arc\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Arc (Archer).",
+   "id": "t-tir-arme-1",
+   "nom": "Son arme de tir la plus efficace est-elle : Arc ?",
+   "non": [
+    "degats-a-distance"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Arbalète\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Arbalète (Arbalétrier).",
+   "id": "t-tir-arme-2",
+   "nom": "Son arme de tir la plus efficace est-elle : Arbalète ?",
+   "non": [
+    "674uapot"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Fronde\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Fronde (Frondeur).",
+   "id": "t-tir-arme-3",
+   "nom": "Son arme de tir la plus efficace est-elle : Fronde ?",
+   "non": [
+    "emzk3ewz"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Sarbacane\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Sarbacane (Sarbacanier).",
+   "id": "t-tir-arme-4",
+   "nom": "Son arme de tir la plus efficace est-elle : Sarbacane ?",
+   "non": [
+    "7tb8bw9s"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Arquebuse\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Arquebuse (Arquebusier).",
+   "id": "t-tir-arme-5",
+   "nom": "Son arme de tir la plus efficace est-elle : Arquebuse ?",
+   "non": [
+    "hi6gkpzw"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Canon à main\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Canon à main (Canonnier).",
+   "id": "t-tir-arme-6",
+   "nom": "Son arme de tir la plus efficace est-elle : Canon à main ?",
+   "non": [
+    "4f29dawl"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.arme = \"Tromblon\"",
+   "formule": "L'arme de tir avec laquelle il fait le plus de dégâts est : Tromblon (Tromblonnier).",
+   "id": "t-tir-arme-7",
+   "nom": "Son arme de tir la plus efficace est-elle : Tromblon ?",
+   "non": [
+    "usfefo5q"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.precision > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles",
+   "formule": "Précision, Puissance au tir et Dextérité + Vitesse > 100 + étoiles × 10. Les rangs 3 demandent le rang 2 (Idan, 2026-11-22).",
+   "id": "t-tir-2",
+   "nom": "Tireur, rang 2 : est-il un tireur d'élite ?",
+   "non": [
+    "maztg4cg",
+    "rt333lv6",
+    "l7b25hu3",
+    "iz9tsjqq",
+    "qj1zxb19",
+    "o11g5hjd",
+    "p0waxc9s",
+    "vhl8stgh",
+    "rha264n3",
+    "pso4am5x",
+    "8xuypvlj"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.precision > base_sniper_precision + tir_par_etoile * compagnie.etoiles et comp.discretion_effective > base_sniper_discretion + tir_par_etoile * compagnie.etoiles",
+   "formule": "Précision > 130 + étoiles × 10, et Discrétion (armure comprise) > 40 + étoiles × 10 (Idan, 2026-11-22).",
+   "id": "t-tir-sniper",
+   "nom": "Sniper : précis et discret ?",
+   "non": [
+    "vhl8stgh"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "tir.repetable et tir.dex_vit > base_salve + tir_par_etoile * compagnie.etoiles",
+   "formule": "Son arme enchaîne les tirs (arc, arbalète, fronde, sarbacane ; plus tard les arquebuses automatiques), et Dextérité + Vitesse > 150 + étoiles × 10 (Idan, 2026-11-22).",
+   "id": "t-tir-salve",
+   "nom": "Maître de la salve : enchaîne-t-il les tirs ?",
+   "non": [
+    "rha264n3"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "pm > pm_escarmouche",
+   "formule": "PM > 6 (Idan, 2026-11-22).",
+   "id": "t-tir-escarmouche",
+   "nom": "Tireur d'escarmouche : se déplace-t-il vite ?",
+   "non": [
+    "pso4am5x"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "arme1.categorie = \"Armes à feu\" et arme2.categorie = \"Armes à feu\" et arme1 != arme2",
+   "formule": "D'après la note du tag : une arme à feu en set 1 et une autre, différente, en set 2 (pistolet compris). Le niveau : celui du rang 2. (Proposition de JC, à valider.)",
+   "id": "t-tir-poudre",
+   "nom": "Maître de la poudre noire : deux armes à feu différentes en set 1 et en set 2 ?",
+   "non": [
+    "8xuypvlj"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tir-2"
    },
    "type": "binaire"
   }

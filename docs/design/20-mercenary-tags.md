@@ -236,10 +236,10 @@ seul style conseillé et les caractéristiques du seul rôle principal (5 à 6 t
 Les questions fermées à l'intendant, ses biais, l'endroit où les tags ressortent ailleurs (liste des mercenaires, choix de
 l'équipe d'une mission…) et des titres plus drôles (historique, classement dans la compagnie) : à discuter.
 
-## 11 — La refonte (atelier des tags, 2026-11-20 et 21)
+## 11 — La refonte (atelier des tags, 2026-11-20 à 22)
 
-> Travail en cours d'Idan dans l'artefact « Atelier des tags ». Copie de ses données du 2026-11-21 :
-> `scripts/atelier-tags/donnees/atelier-2026-11-21.json` ; l'outil se reconstruit avec `scripts/atelier-tags/` (voir
+> Travail en cours d'Idan dans l'artefact « Atelier des tags ». Copie de ses données du 2026-11-22 :
+> `scripts/atelier-tags/donnees/atelier-2026-11-22.json` ; l'outil se reconstruit avec `scripts/atelier-tags/` (voir
 > son README). Le jeu applique encore les §2 à §10 ; cette refonte n'y est pas branchée.
 
 ### Les principes (Idan)
@@ -254,6 +254,8 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 - Les seuils suivent les **étoiles de la compagnie** (on juge un vétéran, pas une recrue) et sont des constantes
   réglables.
 - Les niveaux 1 / 2 / 3 des tags sont retirés du jeu (2026-11-20).
+- Un tag **inactif** (Idan, 2026-11-21) n'est pas encore dans le jeu : il est éliminé d'office, sans test, avec ses
+  enfants (Poseur de pièges et Démineur, tant que les pièges n'existent pas).
 
 ### Le Soigneur (garde 1)
 
@@ -300,6 +302,64 @@ le jeu n'a plus de plafond (Idan, 2026-11-21) : ni 75 % pour les éléments, ni 
 
 L'onglet « Essayer » tire une compagnie au hasard (taille réglable, lui compris) : les calculs lisent
 `compagnie.max.<variable>`, la meilleure valeur de la compagnie.
+
+### Éclaireur et contrôle du terrain (Idan, 2026-11-21)
+
+- **Contrôleur du terrain** : il connaît au moins un sort de contrôle du terrain (altération du terrain ou déplacement des
+  personnages : Flaque de magma, Mur de flammes, Brouillard, Blizzard, Tempête, Attraction, Projection, Déplacement, Onde
+  de choc, Bourbier, et Transposition, ajoutée le 2026-11-21), et sa réserve de mana lui permet d'en lancer 2 × étoiles de
+  la compagnie, au coût moyen de ses sorts de terrain.
+- **Maître du champ de bataille** : au moins 3 sorts de contrôle du terrain, et assez de mana pour en lancer 3 × étoiles,
+  au coût moyen.
+- **Éclaireur** : un animal éclaireur (un des 3 papillons), ou le Corbeau lancé 2 × étoiles avec sa réserve, ou Discrétion
+  + Perception (équipement compris) > 100 + étoiles × 10.
+- **Éclaireur vétéran** : un animal éclaireur haut de gamme (le papillon télépathe), ou Discrétion + Perception > 150 +
+  étoiles × 10.
+- Poseur de pièges, Démineur : inactifs (les pièges ne sont pas encore dans le jeu).
+- Les étoiles de la compagnie vont de 1 à 15 (doc 09).
+
+### Le Tireur (garde 1 ; Idan, 2026-11-22)
+
+Les tags du Tireur ne dépendent pas des titres (doc 19) : les titres viendront des tags. Trois valeurs du moteur de combat,
+avec son **arme de tir la plus efficace** (le set qui fait le plus de dégâts contre l'étalon en gambison), sans le pistolet
+(« particulier ») :
+
+- **Précision** (toucher) = Dextérité + 0,2 × (Armes de tir ou Armes à feu + compétence de l'arme + Perception + Vitesse) ;
+- **Puissance au tir** (blesser) = Perception + 0,2 × (Armes de tir ou Armes à feu + compétence de l'arme) ;
+- **Dextérité + Vitesse** (enchaîner les tirs), avec le malus de l'armure ;
+- **PM** = (Vitesse + ¼ Endurance + 1/10 Volonté) ÷ 15, arrondi au-dessus.
+
+| Rang | Condition (étoiles de la compagnie × 10 sur chaque base) |
+|---|---|
+| 1 | Précision, Puissance et Dextérité + Vitesse > 60 ; puis le tag de son arme (Arc → Archer, Arbalète → Arbalétrier, Fronde → Frondeur, Sarbacane → Sarbacanier, Arquebuse → Arquebusier, Canon à main → Canonnier, Tromblon → Tromblonnier) |
+| 2 | les trois > 100 : le tag « d'élite » de son arme ; les rangs 3 demandent le rang 2 |
+| 3 | Sniper : Précision > 130 et Discrétion (armure comprise) > 40 · Maître de la salve : une arme qui enchaîne les tirs (arc, arbalète, fronde, sarbacane ; plus tard des arquebuses automatiques, « Répétable ») et Dextérité + Vitesse > 150 · Tireur d'escarmouche : PM > 6 (sans étoiles) · Maître de la poudre noire : une arme à feu en set 1 et une autre, différente, en set 2 (proposition de JC, à valider) |
+| 4, 5 | se cumulent par l'arbre : Maître sniper (Sniper + Maître de la salve), Sniper tacticien (Sniper + Escarmouche), Maître harceleur (Salve + Escarmouche), Grand maître du combat à distance (les trois) |
+
+| Rang | Tag | Parents |
+|---|---|---|
+| 1 | Archer | Tireur |
+| 1 | Arbalétrier | Tireur |
+| 1 | Frondeur | Tireur |
+| 1 | Sarbacanier | Tireur |
+| 1 | Arquebusier | Tireur |
+| 1 | Canonier | Tireur |
+| 1 | Tromblonnier | Tireur |
+| 2 | Tromblonnier d'élite | Tromblonnier |
+| 2 | Canonier d'élite | Canonier |
+| 2 | Arquebusier d'élite | Arquebusier |
+| 2 | Sarbacanier d'éli | Sarbacanier |
+| 2 | Frondeur d'élite | Frondeur |
+| 2 | Arbalétrier d'élite | Arbalétrier |
+| 2 | Archer d'élite | Archer |
+| 3 | Sniper | Tireur |
+| 3 | Maitre de la salve | Tireur |
+| 3 | Tireur d'escarmouche | Tireur |
+| 3 | Maitre de la poudre noire | Tireur |
+| 4 | Maitre sniper | Sniper, Maitre de la salve |
+| 4 | Sniper tacticien | Sniper, Tireur d'escarmouche |
+| 4 | Maître harceleur | Maitre de la salve, Tireur d'escarmouche |
+| 5 | Grand maître du combat à distance | Sniper, Tireur d'escarmouche, Maitre de la salve |
 
 ### Les tests, dans l'ordre de l'arbre
 
@@ -353,6 +413,24 @@ la réponse est non. Un calcul vide est à écrire.
 | → Connaît-il un sort de soutien ? | Tout sort qui cible un allié et qui augmente leur caractéristiques | à écrire | Soutien |
 | → Connait il un sort d'entrave ? | Tout sort qui cible un ennemi et qui reduit les carac | à écrire | Entrave |
 | As-t-il une arme de tir ou arme à feu ? | On ne prends pas un compte le pistolet qui est particulier | `((arme1.categorie = "Armes de tir" ou arme1.categorie = "Armes à feu") et arme1 != "Pistolet") ou ((arme2.categorie = "Armes de tir" ou arme2.categorie = "Armes à feu") et arme2 != "Pistolet")` | Tireur |
+| → Tireur, rang 1 : tire-t-il au niveau de la compagnie ? | Avec son arme de tir la plus efficace (hors pistolet) : Précision, Puissance au tir et Dextérité + Vitesse (équipement compris) > 60 + étoiles de la compagnie × 10 (Idan, 2026-11-22). | `tir.precision > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_1 + tir_par_etoile * compagnie.etoiles` | Tireur |
+| → → Son arme de tir la plus efficace est-elle : Arc ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Arc (Archer). | `tir.arme = "Arc"` | Archer |
+| → → Son arme de tir la plus efficace est-elle : Arbalète ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Arbalète (Arbalétrier). | `tir.arme = "Arbalète"` | Arbalétrier |
+| → → Son arme de tir la plus efficace est-elle : Fronde ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Fronde (Frondeur). | `tir.arme = "Fronde"` | Frondeur |
+| → → Son arme de tir la plus efficace est-elle : Sarbacane ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Sarbacane (Sarbacanier). | `tir.arme = "Sarbacane"` | Sarbacanier  |
+| → → Son arme de tir la plus efficace est-elle : Arquebuse ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Arquebuse (Arquebusier). | `tir.arme = "Arquebuse"` | Arquebusier |
+| → → Son arme de tir la plus efficace est-elle : Canon à main ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Canon à main (Canonnier). | `tir.arme = "Canon à main"` | Canonier |
+| → → Son arme de tir la plus efficace est-elle : Tromblon ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Tromblon (Tromblonnier). | `tir.arme = "Tromblon"` | Tromblonnier  |
+| → → Tireur, rang 2 : est-il un tireur d'élite ? | Précision, Puissance au tir et Dextérité + Vitesse > 100 + étoiles × 10. Les rangs 3 demandent le rang 2 (Idan, 2026-11-22). | `tir.precision > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles` | Archer d'élite, Arbalétrier d'élite, Frondeur d'élite, Sarbacanier  d'éli, Arquebusier d'élite, Canonier d'élite, Tromblonnier  d'élite, Sniper, Maitre de la salve, Tireur d'escarmouche, Maitre de la poudre noire |
+| → → → Sniper : précis et discret ? | Précision > 130 + étoiles × 10, et Discrétion (armure comprise) > 40 + étoiles × 10 (Idan, 2026-11-22). | `tir.precision > base_sniper_precision + tir_par_etoile * compagnie.etoiles et comp.discretion_effective > base_sniper_discretion + tir_par_etoile * compagnie.etoiles` | Sniper |
+| → → → Maître de la salve : enchaîne-t-il les tirs ? | Son arme enchaîne les tirs (arc, arbalète, fronde, sarbacane ; plus tard les arquebuses automatiques), et Dextérité + Vitesse > 150 + étoiles × 10 (Idan, 2026-11-22). | `tir.repetable et tir.dex_vit > base_salve + tir_par_etoile * compagnie.etoiles` | Maitre de la salve |
+| → → → Tireur d'escarmouche : se déplace-t-il vite ? | PM > 6 (Idan, 2026-11-22). | `pm > pm_escarmouche` | Tireur d'escarmouche |
+| → → → Maître de la poudre noire : deux armes à feu différentes en set 1 et en set 2 ? | D'après la note du tag : une arme à feu en set 1 et une autre, différente, en set 2 (pistolet compris). Le niveau : celui du rang 2. (Proposition de JC, à valider.) | `arme1.categorie = "Armes à feu" et arme2.categorie = "Armes à feu" et arme1 != arme2` | Maitre de la poudre noire |
+| Connaît-il un sort de contrôle du terrain ? | Il connaît au moins un sort de contrôle du terrain (altération du terrain ou déplacement des personnages). | `sorts.controle_du_terrain > 0` | Contrôleur du terrain, Maitre du champ de bataille |
+| → Peut-il lancer son sort de terrain 2 fois par étoile ? | Avec sa réserve de mana (équipement compris), il peut lancer 2 × étoiles de la compagnie sorts de contrôle du terrain, au coût moyen de ses sorts de terrain (Idan, 2026-11-21). | `carac.reserve_de_mana >= moy.cout.controle_du_terrain * 2 * compagnie.etoiles` | Contrôleur du terrain, Maitre du champ de bataille |
+| → → Maîtrise-t-il assez de sorts de terrain pour être Maître du champ de bataille ? | Il connaît au moins 3 sorts de contrôle du terrain, et sa réserve de mana (équipement compris) lui permet d'en lancer 3 × étoiles de la compagnie, au coût moyen de ses sorts de terrain (Idan, 2026-11-21). | `sorts.controle_du_terrain >= min_sorts_maitre_terrain et carac.reserve_de_mana >= moy.cout.controle_du_terrain * 3 * compagnie.etoiles` | Maitre du champ de bataille |
+| Est-il éclaireur ? | Il a un animal éclaireur (un des 3 papillons), ou il peut invoquer le Corbeau 2 × étoiles de la compagnie fois avec sa réserve de mana, ou sa Discrétion + Perception (équipement compris) dépasse 100 + étoiles × 10 (Idan, 2026-11-21). | `monture contient "Papillon" ou (sorts.eclaireur > 0 et carac.reserve_de_mana >= cout.eclaireur * 2 * compagnie.etoiles) ou comp.discretion_effective + comp.perception_effective > base_eclaireur + eclaireur_par_etoile * compagnie.etoiles` | Éclaireur, Eclaireur vétéran |
+| → Est-il éclaireur vétéran ? | Il a un animal éclaireur haut de gamme (le papillon télépathe), ou sa Discrétion + Perception (équipement compris) dépasse 150 + étoiles × 10 (Idan, 2026-11-21). | `monture = "Papillon télépathe" ou comp.discretion_effective + comp.perception_effective > base_eclaireur_veteran + eclaireur_par_etoile * compagnie.etoiles` | Eclaireur vétéran |
 
 ### Les constantes
 
@@ -367,10 +445,23 @@ la réponse est non. Un calcul vide est à écrire.
 | base carac exceptionnelle | 100 | Carac exceptionnelle (« Ce qu'il est ») : carac > cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 100 + nombre d'étoiles de la compagnie »). |
 | facteur carac superieure | 1.5 | Tag du dessous : carac > (base + étoiles de la compagnie) × ce facteur, et la meilleure valeur de la compagnie (Idan, 2026-11-21 : « x1.5 et avoir la meilleure stat de la compagnie »). |
 | base resistance exceptionnelle | 100 | Résistances exceptionnelles : protection > cette base + étoiles de la compagnie (Idan, 2026-11-21 : même règle que les caracs ; le plafond de 75 % est retiré du jeu, à 100 on ne prend plus rien de l'élément, au-delà il soigne). |
+| base éclaireur | 100 | Éclaireur : Discrétion + Perception (équipement compris) > cette base + étoiles de la compagnie × « éclaireur par étoile » (Idan, 2026-11-21 : « 100 + nombre d'étoiles × 10 »). |
+| base éclaireur vétéran | 150 | Éclaireur vétéran : Discrétion + Perception > cette base + étoiles × « éclaireur par étoile » (Idan, 2026-11-21 : « 150 + nombre d'étoiles × 10 »). |
+| éclaireur par étoile | 10 | Ce qu'ajoute chaque étoile de la compagnie aux seuils d'éclaireur (Idan, 2026-11-21 : × 10). |
+| min sorts maître terrain | 3 | Maître du champ de bataille : nombre minimum de sorts de contrôle du terrain (Idan, 2026-11-21 : 3). |
+| tir par étoile | 10 | Ce qu'ajoute chaque étoile de la compagnie aux seuils du Tireur (Idan, 2026-11-22 : × 10). |
+| base tir rang 1 | 60 | Rang 1 (Archer, Arbalétrier…) : Précision, Puissance et Dextérité + Vitesse > cette base + étoiles × 10 (Idan, 2026-11-22). |
+| base tir rang 2 | 100 | Rang 2 (… d'élite) : les trois mêmes valeurs > cette base + étoiles × 10 (Idan, 2026-11-22). |
+| base sniper precision | 130 | Sniper : Précision > cette base + étoiles × 10 (Idan, 2026-11-22). |
+| base sniper discretion | 40 | Sniper : Discrétion (armure comprise) > cette base + étoiles × 10 (Idan, 2026-11-22). |
+| base salve | 150 | Maître de la salve : Dextérité + Vitesse > cette base + étoiles × 10, avec une arme qui enchaîne les tirs (Idan, 2026-11-22). |
+| pm escarmouche | 6 | Tireur d'escarmouche : PM > cette valeur (Idan, 2026-11-22). |
 
 Variables du profil : `scripts/atelier-tags/profils.js` (caractéristiques, résistances, compétences, ports d'armure,
 écoles, capacités, armes, armure, monture, sorts par tag de rôle, réussite / coût / durée par tag de sort, moyennes des
-soins, `lancers.soin` = réserve ÷ coût moyen, `compagnie.etoiles`).
+soins, `lancers.soin` = réserve ÷ coût moyen, `moy.cout.<tag de sort>` = coût moyen de ses sorts de ce tag, le tir
+`tir.arme`, `tir.precision`, `tir.puissance`, `tir.dex_vit`, `tir.repetable`, `tir.degats_tour`, `pm`, `compagnie.etoiles`
+de 1 à 15).
 
 ### La simulation des soigneurs (2026-11-21)
 
@@ -412,10 +503,27 @@ parenthèses : celles qui passent aussi le seuil × 1,5, sans la condition « me
 Le palier est haut pour presque toutes les caracs ; Chance et Courage débordent à cause des 6 bagues identiques. Idan,
 2026-11-21 : « On laisse comme ça pour l'instant ».
 
+### La simulation du Tireur (2026-11-22)
+
+1000 recrues, dont 642 ont une arme de tir (sans le pistolet). Avec l'équipement d'un tireur au tier T4 (gants de
+dextérité, cape de discrétion, et une seule paire de bottes : perception ou vitesse) :
+
+| Étoiles | Sans équipement | T4, bottes de perception | T4, bottes de vitesse |
+|---|---|---|---|
+| 1 | rang 1 : 380 · rang 2 : 28 · Sniper : 2 | rang 1 : 502 · rang 2 : 101 · Sniper : 38 · Salve : 8 · Escarmouche : 1 | rang 1 : 403 · rang 2 : 41 · Sniper : 16 · Salve : 8 · Escarmouche : 2 |
+| 3 | rang 1 : 137 | rang 1 : 279 · rang 2 : 18 · Sniper : 1 | rang 1 : 166 · rang 2 : 2 |
+| 5 | rang 1 : 28 | rang 1 : 101 | rang 1 : 41 |
+| 8 | 0 | rang 1 : 4 | rang 1 : 1 |
+
+L'équipement ajoute au plus 15 par valeur ; au-delà de 5 étoiles, la progression doit venir de l'XP (caracs et
+compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
+
 ### Pour plus tard
 
-- Les autres rôles (Soutien, Entrave, Protection, Contrôle du terrain, Commandement, Éclaireur, Dégâts) : tests à écrire
-  avec Idan.
+- Les autres rôles (Soutien, Entrave, Protection, Commandement, Dégâts) et le CAC : tests à écrire avec Idan.
+- Tireur : vérifier les seuils sur des mercenaires entraînés ; Maître de la poudre noire à valider ; le pistolet
+  sans tag ; des arquebuses automatiques (« façon kalachnikov », Idan, 2026-11-22).
+- Retirer les tests de l'ancien intendant (Cruxor, §5 à §9) quand la refonte sera branchée.
 - Le titre tiré des tags (un seul tag de soigneur peut donner le titre), des titres d'exploits (« Soigneur de masse des
   ennemis »), les tags de création pour affiner les avatars (phase 2).
 - Monter le niveau des recrues de la taverne avec les étoiles de la compagnie.

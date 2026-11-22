@@ -2,8 +2,9 @@
 
 // Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; refonte doc 14 §6 bis, Idan, 2026-11-19 et 2026-11-22) : le
 // candidat salue selon son affinité avec le capitaine, puis on ne pose que des questions dont la réponse remplit une case
-// de sa fiche (titre, armes, armure, magie, salaire et prime), regroupées sous « Puis-je en savoir plus sur vous ? ».
-// L'aubergiste répond sur son titre et son affinité. Textes : data/reference/tavern-dialogue.json ; la négociation
+// de sa fiche (titre, armes, armure, magie, salaire et prime), regroupées sous « Puis-je en savoir plus sur vous ? »,
+// toutes au vouvoiement (Idan, 2026-11-22 : « on a un langage décalé presque corporate »). L'aubergiste répond sur son
+// titre et son affinité. Textes : data/reference/tavern-dialogue.json ; la négociation
 // elle-même reste dans tavern.js (doc 14 §9).
 (function(root,factory){
   const api=factory();
@@ -58,8 +59,6 @@
       return Number.isFinite(value)?value:fallback;
     };
     const AFFINITY_WORD=constant("tavern.affinity_word.threshold",33.3);
-    // Les écoles de magie, une question par école (« Connais-tu des sorts de [école] ? »).
-    const SCHOOLS=[...new Set((reference?.spells?.rows||[]).map(r=>r.ecole).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
 
     function say(list,m,seed,vars={}){
       const options=Array.isArray(list)?list:[];
@@ -83,12 +82,15 @@
     function ofSchool(name){
       return (/^[aeiouyàâéèêëîïôöûüh]/i.test(String(name||""))?"d’":"de ")+name;
     }
-    function schoolQuestion(name){
-      return fill(copy.questions?.school,{ecole:ofSchool(name)});
+    // Ses écoles, d'une seule réponse (Idan, 2026-11-22 : « on lui demande s'il connait des sorts, il répond en listant les
+    // écoles ») : « d’Eau, de Feu et de Vie ».
+    function schoolList(names){
+      const parts=(names||[]).map(ofSchool);
+      return parts.length>1?parts.slice(0,-1).join(", ")+" et "+parts.at(-1):parts.join("");
     }
 
-    // Les réponses du candidat : title / no_title, set1 / set1_none, set2 / set2_none, armor / armor_none,
-    // school_yes / school_no (vars : titre, armes, armure, ecole).
+    // Les réponses du candidat : title / no_title, set1 / set1_none, set2 / set2_none, armor / armor_clothes /
+    // armor_none, magic / no_magic (vars : titre, armes, armure, ecoles).
     function answer(kind,m,vars={}){
       return say(copy.answers?.[kind],m,kind,vars);
     }
@@ -101,18 +103,21 @@
 
     // Ce qu'on sait d'un candidat (tavern.candidates[] : {mercenary, …}), gardé sur lui tant qu'il est à la taverne : la
     // fiche garde ce qu'on a appris, une question posée disparaît, une réponse reste figée (doc 14 §6 bis).
-    // {asked: {title, set1, set2, armor} (ce qu'on lui a demandé), schools: {école: oui / non}, salary (il a dit ses
-    // prétentions), title (le dernier titre entendu, de lui ou du tavernier), affinity (l'estimation du tavernier)}
+    // {asked: {title, set1, set2, armor, magic} (ce qu'on lui a demandé), salary (il a dit ses prétentions), title (le
+    // titre qu'il se donne), keeperTitle (celui que donne le tavernier), affinity (l'estimation du tavernier)}
     function known(candidate){
       const k=candidate.recruitKnown||(candidate.recruitKnown={});
       k.asked=k.asked||{};
-      k.schools=k.schools||{};
       return k;
     }
-    const schoolsLeft=k=>SCHOOLS.filter(name=>!Object.hasOwn(k.schools||{},name));
-    // Les questions qu'il reste à lui poser sur lui (la magie tant qu'une école n'est pas demandée).
+    // Les questions qu'il reste à lui poser sur lui.
     function aboutLeft(k){
-      return ABOUT_QUESTIONS.filter(key=>key==="magic"?schoolsLeft(k).length>0:!k.asked?.[key]);
+      return ABOUT_QUESTIONS.filter(key=>!k.asked?.[key]);
+    }
+    // Le titre sur sa fiche : celui du tavernier d'abord (Idan, 2026-11-22 : « priorité au tavernier »), sinon le sien ;
+    // null tant qu'on ne sait rien.
+    function shownTitle(k){
+      return k.keeperTitle??k.title??null;
     }
 
     // L'affinité en un mot, chacun pour un tiers de l'échelle (doc 14 §7) : Hostile, Neutre, Amical.
@@ -149,16 +154,15 @@
       keeperAnswer,
       questions:copy.questions||{},
       aboutQuestions:ABOUT_QUESTIONS.slice(),
-      schools:SCHOOLS.slice(),
-      schoolQuestion,
       ofSchool,
+      schoolList,
       withArticles,
       greeting,
       answer,
       line,
       known,
       aboutLeft,
-      schoolsLeft,
+      shownTitle,
       affinityWord,
       described
     };

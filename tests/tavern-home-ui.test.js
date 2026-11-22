@@ -53,12 +53,12 @@ assert.deepEqual(menu({view:"what",candidateId:7}).slice(0,2).map(o=>[o.key,o.ar
 assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur les caractéristiques (Idan, 2026-11-19)");
 
 // Le dialogue avec un candidat (doc 14 §6 bis ; Idan, 2026-11-22 : « On va regrouper toutes les questions […] comme Puis-je
-// en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ») : le menu, ses questions sur lui, une par école ; chaque
-// réponse remplit sa fiche et la question disparaît.
+// en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ») : le menu, ses questions sur lui (la magie : il liste ses
+// écoles) ; chaque réponse remplit sa fiche et la question disparaît.
 {
   const els=new Map();
   const $=id=>els.get(id)||(els.set(id,{innerHTML:"",textContent:"",scrollTop:0,scrollHeight:0,querySelector:()=>null,showModal(){},close(){},focus(){}}),els.get(id));
-  const dialogue=createRecruitDialogue({reference:{tavernDialogue:dialogueCopy,spells:{rows:["Eau","Feu","Vie"].map(ecole=>({ecole}))}}});
+  const dialogue=createRecruitDialogue({reference:{tavernDialogue:dialogueCopy}});
   const merc={id:7,name:"Inga Longueforge",sex:"femme",stats:{Force:40},items:[{id:"a",name:"Gambison",category:"Légère"}],equipment:{slots:{armor:"a"}}};
   const candidate={mercenary:merc};
   const negotiation={salary:12,bonus:30,agreed:null};
@@ -71,17 +71,18 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
     // Le titre suit sa Force : sa vantardise (×2 ici, le tirage de ses tags) se voit.
     ()=>({evaluate:c=>({force:c.stats.Force}),composeTitle:(c,r)=>({name:"Colosse "+r.force})}),
     ()=>({candidateFactor:()=>2}),
-    ()=>({sets:[["Épée longue","Écu"],[]],schools:["Vie"]}),()=>({total:0}),
+    ()=>({sets:[["Épée longue","Écu"],[]],schools:["Eau","Vie"]}),()=>({total:0}),
     ()=>{},(m,o)=>{ cards.push(o); return ""; },()=>"",x=>String(x??""),n=>String(n),
     {firstName:m=>m.name.split(" ")[0]},()=>{});
   api.openRecruitTalk(7);
   const t=game.recruitTalk,q=dialogueCopy.questions;
   const keys=()=>api.recruitChoices(t).map(c=>c.key);
   const lastSay=()=>t.lines.at(-1).text;
-  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Puis-je en savoir plus sur vous ?","Combien demandes-tu ?","Partir"],"trois choix");
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Puis-je en savoir plus sur vous ?","Quelles sont vos prétentions salariales ?","Partir"],"trois choix");
   assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","armor","bonus","magic","mount","salary","set1","set2","tags","title"]);
   api.recruitTalkChoice("about");
-  assert.deepEqual(keys(),["title","set1","set2","armor","magic","back"]);
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
+    "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Retour"]);
   api.recruitTalkChoice("title");
   assert.deepEqual(t.lines.slice(-2).map(l=>l.who),["you","merc"]);
   assert.equal(t.lines.at(-2).text,q.title);
@@ -91,31 +92,29 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.match(lastSay(),/l’épée longue et l’écu/i);
   api.recruitTalkChoice("set2");
   assert.ok(dialogueCopy.answers.set2_none.includes(lastSay()),"rien en set 2");
+  api.recruitTalkChoice("back");
+  assert.equal(t.mode,"choices");
+  api.recruitTalkChoice("about");
+  assert.deepEqual(keys(),["armor","magic","back"],"une question posée disparaît");
   api.recruitTalkChoice("armor");
   assert.match(lastSay(),/^Gambison\./);
-  assert.deepEqual(keys(),["magic","back"],"une question posée disparaît");
   api.recruitTalkChoice("magic");
-  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Connais-tu des sorts d’Eau ?","Connais-tu des sorts de Feu ?","Connais-tu des sorts de Vie ?","Retour"]);
-  api.recruitTalkChoice("school","Eau");
-  assert.match(lastSay(),/d’Eau/);
-  api.recruitTalkChoice("back");
-  assert.deepEqual(keys(),["magic","back"],"retour au sous-menu");
-  api.recruitTalkChoice("magic");
-  api.recruitTalkChoice("school","Feu");
-  api.recruitTalkChoice("school","Vie");
-  assert.ok(dialogueCopy.answers.school_yes.map(x=>x.replace("{ecole}","de Vie")).includes(lastSay()),"oui pour Vie");
+  assert.equal(t.lines.at(-2).text,"Connaissez-vous des sorts ?");
+  assert.match(lastSay(),/des sorts d’Eau et de Vie\./,"il liste ses écoles");
   assert.equal(t.mode,"choices","plus rien à lui demander : retour au menu");
-  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Combien demandes-tu ?","Partir"]);
-  assert.deepEqual(cards.at(-1).schools,["Vie"]);
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Quelles sont vos prétentions salariales ?","Partir"]);
   assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","bonus","mount","salary","tags"]);
   api.recruitTalkChoice("salary");
+  assert.equal(t.lines.at(-2).text,"Quelles sont vos prétentions salariales ?");
   assert.match(lastSay(),/12 PO par jour et 30 PO par mission/);
   assert.deepEqual(keys(),["negotiate","sign","leave"]);
   assert.deepEqual([cards.at(-1).salary,cards.at(-1).bonus,cards.at(-1).unknown.has("salary")],[12,30,false],"le salaire et la prime sur sa fiche");
-  // Rouvrir la fenêtre : la fiche garde ce qu'on a appris.
+  // Le tavernier a parlé : son titre passe devant (Idan, 2026-11-22 : « priorité au tavernier »). Rouvrir la fenêtre : la
+  // fiche garde ce qu'on a appris.
+  dialogue.known(candidate).keeperTitle="Chair à canon";
   api.openRecruitTalk(7);
   assert.deepEqual(api.recruitChoices(game.recruitTalk).map(c=>c.key),["negotiate","sign","leave"]);
-  assert.equal(cards.at(-1).title,"Colosse 80");
+  assert.equal(cards.at(-1).title,"Chair à canon");
 }
 
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.

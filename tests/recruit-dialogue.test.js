@@ -10,7 +10,7 @@ const {createRecruitDialogue,fill}=require("../game-core/recruit-dialogue.js");
 const {createGenerator}=require("../game-core/mercenary-generator.js");
 const read=f=>JSON.parse(fs.readFileSync(path.join(__dirname,"..","data","reference",f),"utf8"));
 const copy=read("tavern-dialogue.json");
-const dialogue=createRecruitDialogue({reference:{tavernDialogue:copy,spells:read("spells.json"),formulaConstants:read("formula-constants.json")}});
+const dialogue=createRecruitDialogue({reference:{tavernDialogue:copy,formulaConstants:read("formula-constants.json")}});
 
 // Salutations : 20 tranches contiguës de −100 à +100, une phrase par affinité.
 assert.equal(copy.greetings.length,20);
@@ -24,33 +24,35 @@ assert.notEqual(dialogue.greeting({name:"X"},-100),dialogue.greeting({name:"X"},
 assert.equal(fill("{Ravi|Ravie} de voir {arme}. {Arme} !",{arme:"l’arc"},true),"Ravie de voir l’arc. L’arc !");
 assert.equal(fill("{un idiot|une idiote}",{},false),"un idiot");
 
-// Couverture des données : chaque arme a son article ; une question par école de magie (« de Feu », « d’Eau »).
+// Couverture des données : chaque arme a son article ; ses écoles en une seule réponse (Idan, 2026-11-22 : « on lui demande
+// s'il connait des sorts, il répond en listant les écoles »).
 const weapons=read("weapons.json").rows.map(r=>r.nom).sort();
 assert.deepEqual(copy.weapons.map(r=>r.nom).sort(),weapons);
-const schools=read("skills.json").rows.filter(r=>r.domaine==="Magie"&&r.niveau==="Catégorie").map(r=>r.nom).sort((a,b)=>a.localeCompare(b,"fr"));
-assert.deepEqual(dialogue.schools,schools);
-assert.equal(dialogue.schoolQuestion("Feu"),"Connais-tu des sorts de Feu ?");
-assert.equal(dialogue.schoolQuestion("Eau"),"Connais-tu des sorts d’Eau ?");
-assert.equal(dialogue.schoolQuestion("Illusion"),"Connais-tu des sorts d’Illusion ?");
+assert.equal(dialogue.schoolList(["Feu"]),"de Feu");
+assert.equal(dialogue.schoolList(["Eau","Feu","Vie"]),"d’Eau, de Feu et de Vie");
+assert.equal(dialogue.schoolList(["Illusion","Invocation"]),"d’Illusion et d’Invocation");
+assert.match(dialogue.answer("magic",{id:4,name:"Aldo"},{ecoles:"d’Eau et de Vie"}),/des sorts d’Eau et de Vie\./);
 
-// Les questions du tableau (doc 14 §6 bis) : le menu, puis ce qu'on lui demande sur lui ; une question posée disparaît,
-// la magie tant qu'une école n'est pas demandée.
+// Les questions du tableau (doc 14 §6 bis), au vouvoiement (Idan, 2026-11-22 : « on a un langage décalé presque
+// corporate ») ; le salaire, sa question d'origine (« Tu repasses à la bonne version »). Une question posée disparaît.
 const q=copy.questions;
 assert.equal(q.about,"Puis-je en savoir plus sur vous ?");
-assert.deepEqual([q.title,q.set1,q.set2,q.armor,q.salary],["Comment on t’appelle, dans le métier ?","Quelle arme de corps à corps manies-tu ?",
-  "Quelle arme de tir as-tu ?","Quelle armure portes-tu ?","Combien demandes-tu ?"]);
+assert.deepEqual([q.title,q.set1,q.set2,q.armor,q.magic,q.salary],["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
+  "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Quelles sont vos prétentions salariales ?"]);
+assert.ok(!Object.values(q).some(text=>/\b(tu|t’|te|ton)\b|-tu\b/i.test(text)),"pas de tutoiement");
 assert.deepEqual(dialogue.aboutQuestions,["title","set1","set2","armor","magic"]);
 const candidate={mercenary:{id:9}};
 const k=dialogue.known(candidate);
 assert.equal(candidate.recruitKnown,k,"gardé sur le candidat");
 assert.deepEqual(dialogue.aboutLeft(k),["title","set1","set2","armor","magic"]);
-k.asked.title=true; k.asked.armor=true;
-for(const name of schools.slice(1)) k.schools[name]=false;
-assert.deepEqual(dialogue.aboutLeft(k),["set1","set2","magic"]);
-assert.deepEqual(dialogue.schoolsLeft(k),[schools[0]]);
-k.schools[schools[0]]=true;
+k.asked.title=true; k.asked.armor=true; k.asked.magic=true;
 assert.deepEqual(dialogue.aboutLeft(k),["set1","set2"]);
 assert.equal(dialogue.known(candidate),k,"même objet la seconde fois");
+// Le titre sur sa fiche : priorité au tavernier (Idan, 2026-11-22), même quand il n'en connaît pas (« »).
+assert.equal(dialogue.shownTitle({}),null);
+assert.equal(dialogue.shownTitle({title:"Mage Légendaire Omnipotent"}),"Mage Légendaire Omnipotent");
+assert.equal(dialogue.shownTitle({title:"Mage Légendaire Omnipotent",keeperTitle:"Chair à canon"}),"Chair à canon");
+assert.equal(dialogue.shownTitle({title:"Mage Légendaire Omnipotent",keeperTitle:""}),"");
 
 // L'affinité en un mot (doc 14 §7) : un tiers de l'échelle chacun.
 assert.deepEqual([-100,-34,-33.3,0,33.3,34,100].map(dialogue.affinityWord),["Hostile","Hostile","Neutre","Neutre","Neutre","Amical","Amical"]);
@@ -81,9 +83,8 @@ for(let i=0;i<60;i++){
   const text=dialogue.answer("set1",m,{armes:phrase});
   assert.ok(noTemplate(text)&&text.toLowerCase().includes(phrase.toLowerCase()),`set 1 : « ${text} »`);
   assert.equal(dialogue.answer("set1",m,{armes:phrase}),text,"toujours la même réponse");
-  for(const kind of ["set1_none","set2_none","armor_clothes","armor_none","no_title"]) assert.ok(noTemplate(dialogue.answer(kind,m)),kind);
-  for(const kind of ["set2","title","armor"]) assert.ok(noTemplate(dialogue.answer(kind,m,{armes:"l’arc",titre:"Archer en herbe",armure:"Gambison"})),kind);
-  for(const kind of ["school_yes","school_no"]) assert.ok(noTemplate(dialogue.answer(kind,m,{ecole:dialogue.ofSchool("Eau")})),kind);
+  for(const kind of ["set1_none","set2_none","armor_clothes","armor_none","no_title","no_magic"]) assert.ok(noTemplate(dialogue.answer(kind,m)),kind);
+  for(const kind of ["set2","title","armor","magic"]) assert.ok(noTemplate(dialogue.answer(kind,m,{armes:"l’arc",titre:"Archer en herbe",armure:"Gambison",ecoles:"de Feu"})),kind);
   for(const kind of Object.keys(copy.lines)){
     const line=dialogue.line(kind,m,{salaire:47,prime:140,compagnie:"la Compagnie de Bob"});
     assert.ok(noTemplate(line),`${kind} : « ${line} »`);
@@ -92,7 +93,6 @@ for(let i=0;i<60;i++){
 const female={id:1,name:"Inga Longueforge",sex:"femme"};
 assert.equal(dialogue.line("accepted",female,{compagnie:"la Compagnie de Bob"}),"Parfait. Ravie de faire partie de la Compagnie de Bob.");
 assert.match(dialogue.line("left",female),/^Inga /);
-assert.match(dialogue.answer("school_no",female,{ecole:"d’Eau"}),/d’Eau/);
 
 // Le tavernier : ses deux questions sur un candidat (doc 14 §6 bis), au masculin ou au féminin, et ses réponses.
 assert.equal(dialogue.keeperQuestion("title",{name:"Aldo Fer",sex:"homme"}),"Qu’est-ce qu’on dit de lui ?");

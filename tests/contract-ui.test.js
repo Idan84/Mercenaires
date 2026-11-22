@@ -567,18 +567,17 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(render(merc, {unknown: new Set(["title"]), bonus: 99}), /<b>99 PO<\/b>/, "la prime qu'il demande");
     // Ce qu'on apprend en lui parlant (doc 14 §6 bis ; Idan, 2026-11-22 : « il faut ajouter absolument le salaire dans cette
     // fiche ») : le salaire à côté de la prime (fiche du candidat seulement), chaque case de l'équipement à part, le titre
-    // entendu, l'affinité en un mot, les écoles où il a dit oui puis un « ? » tant qu'il en reste.
+    // entendu, l'affinité en un mot ; ses écoles quand il les a dites.
     assert.doesNotMatch(full, /hc-stat--salary/, "pas de salaire sur la fiche au survol de nos mercenaires");
     assert.match(render(merc, {unknown: new Set(["salary", "bonus"])}), /<div class="hc-stat hc-stat--salary"><span class="hc-label" title="Salaire journalier">Salaire<\/span><span class="hc-unknown">\?<\/span><\/div>/);
-    const learnt = render(merc, {unknown: new Set(["tags", "mount", "set2", "armor", "magic"]), salary: 12, bonus: 30, title: "Mage Légendaire Omnipotent",
-      affinityWord: "Amical", schools: ["Feu"]});
+    const learnt = render(merc, {unknown: new Set(["tags", "mount", "set2", "armor"]), salary: 12, bonus: 30, title: "Mage Légendaire Omnipotent",
+      affinityWord: "Amical"});
     assert.match(learnt, /Salaire<\/span><span class="hc-bonus"><img src="assets\/hud\/picto-or\.webp" alt=""><b>12 PO<\/b><\/span><\/div>\s*<div class="hc-stat hc-stat--bonus">[\s\S]*?<b>30 PO<\/b>/, "le salaire, puis la prime");
     assert.deepEqual([...learnt.matchAll(/<span class="hc-kit-item"><i>([^<]*)<\/i><\/span>/g)].map(x => x[1]), ["Épée longue et épée courte", "?", "?"], "chaque case à part");
     assert.match(learnt, /<span>Mage Légendaire Omnipotent<\/span>/, "le titre entendu (vanté)");
     assert.match(learnt, /<span class="hc-label">Affinité<\/span><b class="hc-affinity-word">Amical<\/b>/, "un mot à la place des cœurs");
-    assert.match(learnt, /<span class="hc-school" role="img" aria-label="Feu">[\s\S]*?<span class="hc-school hc-school--unknown"><span class="hc-unknown">\?<\/span><\/span>/, "ses écoles, puis « ? »");
-    assert.doesNotMatch(learnt, /hc-steed-portrait/, "toujours sans la monture");
-    assert.doesNotMatch(render(merc, {unknown: new Set(["mount"]), schools: []}), /hc-unknown|hc-magic/, "toutes les écoles demandées, aucune : rien");
+    assert.match(learnt, /<span class="hc-school" role="img" aria-label="Feu">[\s\S]*?aria-label="Vie"/, "ses écoles, toutes");
+    assert.doesNotMatch(learnt, /hc-steed-portrait|hc-unknown">\?<\/span><\/div>\s*<\/div>/, "toujours sans la monture");
   }
   // La fenêtre du candidat (Idan, 2026-11-22) : sa fiche à côté de la discussion, un fond noir flou derrière.
   {
@@ -590,21 +589,22 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     const cardOptions = new Function("recruitDialogue", "tavernRules",
       tavernJs.slice(tavernJs.indexOf("function recruitCardOptions(candidate){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return recruitCardOptions;");
     const {createRecruitDialogue} = require(path.join(root, "game-core/recruit-dialogue.js"));
-    const dialogue = createRecruitDialogue({reference: {tavernDialogue: JSON.parse(fs.readFileSync(path.join(root, "data/reference/tavern-dialogue.json"), "utf8")),
-      spells: JSON.parse(fs.readFileSync(path.join(root, "data/reference/spells.json"), "utf8"))}});
+    const dialogue = createRecruitDialogue({reference: {tavernDialogue: JSON.parse(fs.readFileSync(path.join(root, "data/reference/tavern-dialogue.json"), "utf8"))}});
     const candidate = {mercenary: merc};
     const negotiation = {salary: 12, bonus: 30, agreed: null};
     const optionsOf = cardOptions(() => dialogue, () => ({negotiationState: () => negotiation}));
     const fresh = optionsOf(candidate);
     assert.deepEqual([...fresh.unknown].sort(), ["affinity", "armor", "bonus", "magic", "mount", "salary", "set1", "set2", "tags", "title"]);
     const k = dialogue.known(candidate);
-    Object.assign(k, {salary: true, title: "", affinity: -40});
+    Object.assign(k, {salary: true, title: "Mage Légendaire Omnipotent", affinity: -40});
     k.asked.set1 = true;
-    for (const name of dialogue.schools) k.schools[name] = name === "Vie";
+    k.asked.magic = true;
     negotiation.agreed = {salary: 10, bonus: 25};
     const later = optionsOf(candidate);
     assert.deepEqual([...later.unknown].sort(), ["armor", "mount", "set2", "tags"]);
-    assert.deepEqual([later.salary, later.bonus, later.title, later.affinityWord, later.schools], [10, 25, "", "Hostile", ["Vie"]]);
+    assert.deepEqual([later.salary, later.bonus, later.title, later.affinityWord], [10, 25, "Mage Légendaire Omnipotent", "Hostile"]);
+    k.keeperTitle = "Chair à canon";
+    assert.equal(optionsOf(candidate).title, "Chair à canon", "priorité au tavernier");
     assert.match(css, /\.talk-dialog--fiche::backdrop\{background:rgba\(0,0,0,\.82\);backdrop-filter:blur\(8px\);/);
     assert.match(css, /\.talk-dialog--fiche\[open\]\{display:flex;align-items:stretch;gap:24px;height:fit-content\}/);
   }

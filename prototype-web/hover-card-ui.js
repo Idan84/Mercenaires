@@ -312,16 +312,13 @@ function hoverHearts(filled){
 //   armor (kit : les trois), magic (les écoles pas encore demandées ; sans la monture) ; mount : pas de monture montrée ;
 // - ce qu'on a appris (doc 14 §6 bis) : title (le titre entendu, du candidat ou du tavernier), affinityWord (le mot du
 //   tavernier à la place des cœurs), bonus et salary (sa demande, puis la négociation ; la ligne Salaire n'existe que sur
-//   la fiche du candidat), schools (les écoles où il a dit oui).
+//   la fiche du candidat).
 const hoverUnknown=`<span class="hc-unknown">?</span>`;
-function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=null,affinityWord=null,schools=null}={}){
+function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=null,affinityWord=null}={}){
   const d=mercenaryHoverData(c);
   const hidden=key=>Boolean(unknown&&unknown.has(key));
   if(bonus!=null) d.bonus=bonus;
   if(title!=null) d.title=title;
-  // Les écoles cachées sans réponse : aucune montrée.
-  if(schools) d.schools=schools;
-  else if(hidden("magic")) d.schools=[];
   const frame=hoverCultureFrame(d.culture);
   // Le nom en grand (Idan, 2026-11-15 : « on reste pour que 20 caractères rentrent dans le cartouche. On réduira auto pour
   // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il
@@ -342,12 +339,10 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=n
   // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp), sans plaque « Écoles
   // de magie » (Idan, 2026-11-16 : « Retire le école de magie ») ni nom : « Pictos seuls en 48 px avec la possibilité de les
   // rétrécir pour tout rentrer » (une seule ligne, styles.css).
-  // Sur la fiche du candidat, les écoles où il a dit oui, puis un « ? » tant qu'il reste des écoles à lui demander.
-  const school=name=>name===hoverUnknown?`<span class="hc-school hc-school--unknown">${hoverUnknown}</span>`
-    :`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
+  const school=name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
   const showSteed=Boolean(d.mount)&&!hidden("magic")&&!hidden("mount");
-  const rows=hoverSchoolRows(hidden("magic")&&d.schools.length?[...d.schools,hoverUnknown]:d.schools,showSteed);
-  const magic=hidden("magic")&&!d.schools.length?`<div class="hc-magic">${hoverUnknown}</div>`
+  const rows=hoverSchoolRows(d.schools,showSteed);
+  const magic=hidden("magic")?`<div class="hc-magic">${hoverUnknown}</div>`
     :rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
   const steed=showSteed?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";

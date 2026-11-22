@@ -117,17 +117,23 @@ l'aubergiste.
 
 | Case de la fiche | Au départ | Question | Source | Réponse | Biais (§7) |
 |---|---|---|---|---|---|
-| Titre | ligne vide | « Comment on t'appelle, dans le métier ? » | Candidat | son titre | vantardise : le titre recalculé sur ses valeurs telles qu'il les annonce |
+| Titre | ligne vide | « Comment vous appelle-t-on, dans le métier ? » | Candidat | son titre | vantardise : le titre recalculé sur ses valeurs telles qu'il les annonce |
 | Titre | ligne vide | « Qu'est-ce qu'on dit de lui ? » | Aubergiste | son titre | précision de l'aubergiste : le titre recalculé sur ses estimations |
 | Origines | visibles | — | — | — | — |
 | Réputation | visible | — | — | — | — |
 | Affinité | vide | « Il m'apprécierait, à ton avis ? » | Aubergiste seul | un mot à la place des cœurs : Hostile, Neutre ou Amical | précision de l'aubergiste, comme pour le titre |
-| Salaire et prime | vides | « Combien demandes-tu ? » | Candidat | sa demande, puis ses contre-propositions | aucun |
-| Set 1 | vide | « Quelle arme de corps à corps manies-tu ? » | Candidat | l'arme qu'il porte (pas sa meilleure) | aucun |
-| Set 2 | vide | « Quelle arme de tir as-tu ? » | Candidat | l'arme de tir qu'il porte | aucun |
-| Armure | vide | « Quelle armure portes-tu ? » | Candidat | son armure | aucun |
-| Magie | vide | « Connais-tu des sorts de [école] ? », une question par école | Candidat | oui / non : le picto de l'école s'affiche | aucun : réponse exacte |
+| Salaire et prime | vides | « Quelles sont vos prétentions salariales ? » | Candidat | sa demande, puis ses contre-propositions | aucun |
+| Set 1 | vide | « Quelle arme de corps à corps maniez-vous ? » | Candidat | l'arme qu'il porte (pas sa meilleure) | aucun |
+| Set 2 | vide | « Quelle arme de tir avez-vous ? » | Candidat | l'arme de tir qu'il porte | aucun |
+| Armure | vide | « Quelle armure portez-vous ? » | Candidat | son armure | aucun |
+| Magie | vide | « Connaissez-vous des sorts ? » | Candidat | il liste ses écoles : leurs pictos s'affichent | aucun : réponse exacte |
 | Tags | vides | à définir avec la refonte des tags (doc 20) | — | — | biais de niveau et de précision |
+
+Le capitaine **vouvoie** les candidats (Idan, 2026-11-22 : « on a un langage décalé presque corporate ») ; le tavernier
+et lui se tutoient. La question du salaire reste « Quelles sont vos prétentions salariales ? » (Idan, 2026-11-22 : « Tu
+repasses à la bonne version »). La magie : une seule question, il répond en listant ses écoles (Idan, 2026-11-22 : « on
+lui demande s'il connait des sorts, il répond en listant les écoles »). **Le titre sur la fiche : priorité au
+tavernier** (Idan, 2026-11-22) ; sinon celui que le candidat se donne.
 
 **La fiche du candidat** (Idan, 2026-11-22) : « C'est normalement la fiche au survol avec des ? quand on ne connait pas
 les infos. En lui parlant, en parlant à l'aubergiste ou à l'intendant, on doit remplir les cases... » Ses tags, tels qu'il
@@ -144,24 +150,23 @@ même jour, ci-dessous). La mise en page de la boîte de dialogue viendra ensuit
 ajouter absolument le salaire dans cette fiche. On va regrouper toutes les questions pour mieux le comprendre comme Puis-je
 en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ».
 
-- **Le menu** : « Puis-je en savoir plus sur vous ? », « Combien demandes-tu ? » (puis Négocier et Signer), Partir.
-- **« Puis-je en savoir plus sur vous ? »** ouvre ses questions sur lui : son titre, son set 1, son set 2, son armure, et
-  « Connais-tu des sorts… ? », qui ouvre une question par école (9). Retour à chaque étape ; quand il n'y a plus rien à
-  demander, on remonte d'un cran, et le choix disparaît du menu.
+- **Le menu** : « Puis-je en savoir plus sur vous ? », « Quelles sont vos prétentions salariales ? » (puis Négocier et
+  Signer), Partir.
+- **« Puis-je en savoir plus sur vous ? »** ouvre ses questions sur lui : son titre, son set 1, son set 2, son armure, ses
+  sorts (il liste ses écoles), et Retour. Quand il n'y a plus rien à demander, on revient au menu et le choix disparaît.
 - **Sa fiche** : la ligne **Salaire** à côté de la prime (sur la fiche du candidat seulement) ; chaque case de
-  l'équipement se remplit à part ; les écoles où il a dit oui s'affichent, avec un « ? » tant qu'il en reste à demander.
+  l'équipement se remplit à part ; les pictos de ses écoles une fois qu'il les a dites.
 - **Son titre** : recalculé sur ses capacités vantées, avec le même tirage que ses tags (×1,10 à ×3,00, une fois par
   candidat, doc 20 §12).
 - **Le tavernier** : « Demander des conseils », puis qui ?, puis ses deux questions (« Qu'est-ce qu'on dit de lui ? »,
   « Il m'apprécierait, à ton avis ? »), 1 PO chacune, réponse figée. Le titre : recalculé sur ses capacités estimées une à
-  une à ±10 %. L'affinité : estimée à ±10 %, puis le mot. Ses réponses vont sur la fiche du candidat.
+  une à ±10 %. L'affinité : estimée à ±10 %, puis le mot. Ses réponses vont sur la fiche du candidat ; son titre passe
+  devant celui du candidat.
 - **Ce qu'on a appris reste sur le candidat** tant qu'il est à la taverne : on peut fermer la fenêtre et revenir.
 - Les anciennes questions et les conseils du tavernier sur les caractéristiques sont retirés du jeu. Les groupes de
   caractéristiques restent pour l'Intendant (laissé de côté, §7).
 - Les textes des réponses sont des propositions de JC (`data/reference/tavern-dialogue.json`), à retoucher librement.
 - Constantes : `tavern.keeper.precision_min` / `precision_max` (0,90 / 1,10), `tavern.affinity_word.threshold` (33,3).
-- **À trancher par Idan** : quand le candidat et le tavernier ont tous deux donné un titre, la fiche montre le dernier
-  entendu.
 
 Le titre (doc 19) se calcule sur les notes de ses rôles : avec un biais, on recalcule ces notes sur les valeurs annoncées
 ou estimées, d'où des titres justes et des titres faux (« Mage Légendaire Omnipotent »). La fiche montre le **salaire**

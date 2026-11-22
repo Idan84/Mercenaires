@@ -252,7 +252,7 @@ function logDayReport(report){
 // Dialogue de recrutement (Idan, 2026-10-21 ; doc 14 §6 bis) : salutation selon l'affinité, puis trois choix (Idan,
 // 2026-11-22 : « On va regrouper toutes les questions pour mieux le comprendre comme Puis-je en savoir plus sur vous ?
 // (on aura donc 3 choix en menu 1) ») : « Puis-je en savoir plus sur vous ? » (son titre, ses armes, son armure, sa
-// magie : une question par école), « Combien demandes-tu ? » (ensuite Négocier et Signer) et Partir. Chaque réponse
+// magie : il liste ses écoles), « Quelles sont vos prétentions salariales ? » (ensuite Négocier et Signer) et Partir. Chaque réponse
 // remplit une case de sa fiche ; ce qu'on a appris reste sur le candidat (recruitDialogue().known). Les règles de
 // négociation restent celles de tavern.js (doc 14 §9).
 function recruitDialogue(){
@@ -296,15 +296,13 @@ function openRecruitTalk(id){
   $("recruit-talk-dialog").showModal();
 }
 
-// Les choix du moment : le menu (choices), ses questions sur lui (about), les écoles de magie (schools).
+// Les choix du moment : le menu (choices) ou ses questions sur lui (about).
 function recruitChoices(t){
   const d=recruitDialogue(),q=d.questions,candidate=tavernCandidate(t.id);
   if(t.mode==="left") return [];
   if(t.mode==="ended") return [{key:"leave",label:q.leave}];
-  const k=candidate?d.known(candidate):{asked:{},schools:{}};
-  const back={key:"back",label:q.back};
-  if(t.mode==="schools") return [...d.schoolsLeft(k).map(name=>({key:"school",arg:name,label:d.schoolQuestion(name)})),back];
-  if(t.mode==="about") return [...d.aboutLeft(k).map(key=>({key,label:q[key]})),back];
+  const k=candidate?d.known(candidate):{asked:{}};
+  if(t.mode==="about") return [...d.aboutLeft(k).map(key=>({key,label:q[key]})),{key:"back",label:q.back}];
   const list=d.aboutLeft(k).length?[{key:"about",label:q.about}]:[];
   if(k.salary) list.push({key:"negotiate",label:q.negotiate},{key:"sign",label:q.sign});
   else list.push({key:"salary",label:q.salary});
@@ -317,14 +315,12 @@ function recruitChoices(t){
 // réponses (doc 14 §6 bis). Le salaire et la prime suivent la négociation (sa demande, puis ses contre-propositions).
 function recruitCardOptions(candidate){
   const d=recruitDialogue(),k=d.known(candidate),n=tavernRules().negotiationState(candidate),terms=n.agreed||n;
-  const unknown=new Set(["tags","mount"]);
-  if(k.title==null) unknown.add("title");
+  const unknown=new Set(["tags","mount"]),title=d.shownTitle(k);
+  if(title==null) unknown.add("title");
   if(k.affinity==null) unknown.add("affinity");
   if(!k.salary){ unknown.add("salary"); unknown.add("bonus"); }
-  for(const key of ["set1","set2","armor"]) if(!k.asked[key]) unknown.add(key);
-  if(d.schoolsLeft(k).length) unknown.add("magic");
-  return {unknown,salary:terms.salary,bonus:terms.bonus,title:k.title??null,
-    affinityWord:k.affinity!=null?d.affinityWord(k.affinity):null,schools:d.schools.filter(name=>k.schools[name]===true)};
+  for(const key of ["set1","set2","armor","magic"]) if(!k.asked[key]) unknown.add(key);
+  return {unknown,salary:terms.salary,bonus:terms.bonus,title,affinityWord:k.affinity!=null?d.affinityWord(k.affinity):null};
 }
 
 function renderRecruitTalk(){
@@ -355,11 +351,11 @@ function renderRecruitTalk(){
     return;
   }
   $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map(choice=>
-    `<li><button type="button" data-talk="${choice.key}"${choice.arg!=null?` data-arg="${esc(choice.arg)}"`:""}>${esc(choice.label)}</button></li>`).join("")}</ol>`;
+    `<li><button type="button" data-talk="${choice.key}">${esc(choice.label)}</button></li>`).join("")}</ol>`;
 }
 
-// Sa réponse à une question sur lui (title, set1, set2, armor, school) ; elle remplit sa case et la question disparaît.
-function recruitAnswer(candidate,key,arg){
+// Sa réponse à une question sur lui (title, set1, set2, armor, magic) ; elle remplit sa case et la question disparaît.
+function recruitAnswer(candidate,key){
   const d=recruitDialogue(),m=candidate.mercenary,k=d.known(candidate);
   if(key==="title"){
     const title=boastedTitle(candidate);
@@ -378,34 +374,32 @@ function recruitAnswer(candidate,key,arg){
     if(!armor) return d.answer("armor_none",m);
     return armor.category==="Vêtement"?d.answer("armor_clothes",m):d.answer("armor",m,{armure:armor.name||armor.category});
   }
-  if(key==="school"&&d.schools.includes(arg)){
-    const yes=mercenaryHoverData(m).schools.includes(arg);
-    k.schools[arg]=yes;
-    return d.answer(yes?"school_yes":"school_no",m,{ecole:d.ofSchool(arg)});
+  if(key==="magic"){
+    // Il liste ses écoles (celles où il a au moins un sort, comme les pictos de sa fiche).
+    k.asked.magic=true;
+    const schools=mercenaryHoverData(m).schools;
+    return schools.length?d.answer("magic",m,{ecoles:d.schoolList(schools)}):d.answer("no_magic",m);
   }
   return "";
 }
 
-function recruitTalkChoice(key,arg){
+function recruitTalkChoice(key){
   const t=game.recruitTalk;
   if(!t) return;
   if(key==="leave"){ $("recruit-talk-dialog").close(); return; }
-  if(key==="back"){ t.mode=t.mode==="schools"?"about":"choices"; renderRecruitTalk(); return; }
+  if(key==="back"){ t.mode="choices"; renderRecruitTalk(); return; }
   if(key==="negotiate"){ t.mode="negotiate"; renderRecruitTalk(); $("recruit-offer-salary")?.focus(); return; }
   if(key==="about"){ t.mode="about"; renderRecruitTalk(); return; }
-  if(key==="magic"){ t.mode="schools"; renderRecruitTalk(); return; }
   const candidate=tavernCandidate(t.id);
   if(!candidate) return;
   const d=recruitDialogue(),m=t.mercenary,k=d.known(candidate);
   const n=tavernRules().negotiationState(candidate);
-  if(["title","set1","set2","armor","school"].includes(key)){
-    const question=key==="school"?d.schoolQuestion(arg):d.questions[key];
-    const answer=recruitAnswer(candidate,key,arg);
+  if(d.aboutQuestions.includes(key)){
+    const answer=recruitAnswer(candidate,key);
     if(!answer) return;
-    t.lines.push({who:"you",text:question},{who:"merc",text:answer});
-    // Plus rien à demander ici : on remonte d'un cran.
-    if(t.mode==="schools"&&!d.schoolsLeft(k).length) t.mode="about";
-    if(t.mode==="about"&&!d.aboutLeft(k).length) t.mode="choices";
+    t.lines.push({who:"you",text:d.questions[key]},{who:"merc",text:answer});
+    // Plus rien à lui demander : retour au menu.
+    if(!d.aboutLeft(k).length) t.mode="choices";
     saveGame();
   }else if(key==="salary"){
     t.lines.push({who:"you",text:d.questions.salary},{who:"merc",text:d.line("salary",m,{salaire:fmt(n.salary),prime:fmt(n.bonus)})});
@@ -582,7 +576,7 @@ function askTavernAbout(kind){
   if(!result.ok){ t.line=result.reason==="gold"?d.keeperLine("no_gold"):result.reason; return; }
   const k=d.known(candidate);
   if(kind==="title"){
-    k.title=result.answer;
+    k.keeperTitle=result.answer;
     t.line=d.keeperAnswer(result.answer?"title":"no_title",m,{titre:result.answer});
   }else{
     k.affinity=result.answer;
@@ -627,7 +621,7 @@ function initializeTavernUi(){
   const recruit=$("recruit-talk-dialog");
   recruit.addEventListener("click",event=>{
     const option=event.target.closest("[data-talk]");
-    if(option&&!option.disabled) recruitTalkChoice(option.dataset.talk,option.dataset.arg);
+    if(option&&!option.disabled) recruitTalkChoice(option.dataset.talk);
   });
   recruit.addEventListener("submit",event=>{
     event.preventDefault();
@@ -644,7 +638,7 @@ function initializeTavernUi(){
     if(!option||option.disabled) return;
     event.preventDefault();
     if(open===talk) tavernTalk(option.dataset.talk,option.dataset.arg);
-    else recruitTalkChoice(option.dataset.talk,option.dataset.arg);
+    else recruitTalkChoice(option.dataset.talk);
   });
   recruit.addEventListener("close",()=>{
     clearTimeout(game.recruitTalk?.closeTimer);

@@ -118,6 +118,17 @@ const seul=tags.tagsOf(roster[3],{members,steward:cruxor,companyStars:3});
 assert.deepEqual(seul.affiches.map(t=>t.id),tags.tagsOf(roster[3],{members,steward:cruxor,companyStars:3,view}).affiches.map(t=>t.id),
   "le même résultat, la vue de la compagnie donnée ou non");
 
+// ---- Les auras (Commandement) : la place dans la compagnie, et le biais de l'intendant ----
+for(const k of ["aura.officier","aura.fouet","aura.courage","bonus.commandement"]) assert.ok(isBiased(k,10),k);
+assert.ok(!isBiased("role","capitaine"));
+{
+  const roleOf=x=>x===captain?"capitaine":x===roster[4]?"lieutenant":"";
+  const vue=tags.company({members,steward:parfait,companyStars:3,roleOf});
+  assert.ok(vue.get(captain)["aura.officier"]>0&&vue.get(roster[4])["aura.officier"]>0&&vue.get(roster[5])["aura.officier"]===0);
+  assert.equal(vue.get(captain).role,"capitaine");
+  assert.equal(tags.company({members,steward:parfait,companyStars:3}).get(captain)["aura.officier"],0,"sans place donnée : pas d'aura d'officier");
+}
+
 // ---- Le candidat se vante ----
 const candidat={mercenary:generator.createMercenary({id:99,captain})};
 const f=tags.candidateFactor(candidat);

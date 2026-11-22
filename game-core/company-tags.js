@@ -21,7 +21,8 @@
   // Ce qui reçoit le biais (doc 20 §12) : les capacités (caractéristiques, réserve de mana comprise, compétences et écoles
   // de magie, résistances, Précision, Puissance au tir, Dextérité + Vitesse, chances de réussite des sorts, Discrétion,
   // PM). Pas les oui / non, les noms, les nombres de sorts, les coûts en mana, les durées ni les étoiles.
-  const BIASED_PREFIXES=["carac.","res.","comp.","ecole.","chance."];
+  // Les auras et les bonus des sorts aussi (Idan, 2026-11-22 : « Oui »).
+  const BIASED_PREFIXES=["carac.","res.","comp.","ecole.","chance.","aura.","bonus."];
   const BIASED_KEYS=new Set(["mana","tir.precision","tir.puissance","tir.dex_vit","moy.chance.soin","pm"]);
   const isBiased=(key,value)=>typeof value==="number"&&(BIASED_KEYS.has(key)||BIASED_PREFIXES.some(p=>key.startsWith(p)));
   // Ce qui change les variables d'un mercenaire (pour ne les recalculer que quand il change).
@@ -51,12 +52,13 @@
     const doc=Engine.clean(workshop||{});
     const tree=Engine.createTagTree(doc);
 
-    // Les valeurs exactes d'un mercenaire (équipement compris), recalculées seulement quand il change.
+    // Les valeurs exactes d'un mercenaire (équipement compris ; role : capitaine, lieutenant ou rien), recalculées seulement
+    // quand il change.
     const cache=new WeakMap();
-    function valuesOf(c){
-      const sig=signature(c), hit=cache.get(c);
+    function valuesOf(c,role=""){
+      const sig=signature(c)+"|"+role, hit=cache.get(c);
       if(hit&&hit.sig===sig) return hit.values;
-      const values=variables.of(c);
+      const values=variables.of(c,{role});
       cache.set(c,{sig,values});
       return values;
     }
@@ -98,19 +100,20 @@
     const factorOf=b=>b?1+b.sign*b.size:1;
 
     // Ce que l'intendant voit de chaque membre (le capitaine et les mercenaires) : Map membre → valeurs vues.
-    function company({members=[],steward=null,companyStars=1}={}){
+    // roleOf(m) : « capitaine », « lieutenant » ou rien.
+    function company({members=[],steward=null,companyStars=1,roleOf=()=>""}={}){
       const out=new Map();
-      for(const m of members) out.set(m,seen(valuesOf(m),factorOf(stewardBias(m,{steward,companyStars}))));
+      for(const m of members) out.set(m,seen(valuesOf(m,roleOf(m)||""),factorOf(stewardBias(m,{steward,companyStars}))));
       return out;
     }
     const others=(view,members,self)=>members.filter(x=>x!==self).map(x=>view.get(x)).filter(Boolean);
     // Les tags d'un membre : {affiches, restent, motif, reps} (tag-engine). view : company(), à réutiliser pour toute la
     // compagnie.
-    function tagsOf(m,{members=[],steward=null,companyStars=1,view=null}={}){
+    function tagsOf(m,{members=[],steward=null,companyStars=1,roleOf=()=>"",view=null}={}){
       // Sans intendant, aucun tag (Idan, 2026-11-22 : « Sans intendant […] aucun tag s'affiche »).
       if(!steward) return {affiches:[],restent:[],motif:new Map(),reps:[]};
-      const v=view||company({members,steward,companyStars});
-      const mine=v.get(m)||seen(valuesOf(m),factorOf(stewardBias(m,{steward,companyStars})));
+      const v=view||company({members,steward,companyStars,roleOf});
+      const mine=v.get(m)||seen(valuesOf(m,roleOf(m)||""),factorOf(stewardBias(m,{steward,companyStars})));
       return tree.tags(Engine.withCompany(mine,others(v,members,m),companyStars));
     }
     // Le candidat (tavern.candidates[] : {mercenary, …}) : son tirage, gardé sur lui (tagSelfBias).
@@ -119,8 +122,8 @@
       return candidate.tagSelfBias;
     }
     // Ses tags tels qu'il les annonce, comparés à la compagnie telle que l'intendant la voit.
-    function candidateTags(candidate,{members=[],steward=null,companyStars=1,view=null}={}){
-      const v=view||company({members,steward,companyStars});
+    function candidateTags(candidate,{members=[],steward=null,companyStars=1,roleOf=()=>"",view=null}={}){
+      const v=view||company({members,steward,companyStars,roleOf});
       const mine=seen(valuesOf(candidate.mercenary),candidateFactor(candidate));
       return tree.tags(Engine.withCompany(mine,others(v,members,null),companyStars));
     }

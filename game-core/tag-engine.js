@@ -197,8 +197,10 @@
   }
 
   // ---- La compagnie ----
-  // Les variables comparables (« le meilleur de la compagnie ») : caractéristiques, résistances, compétences chiffrées.
-  const comparable=(k,v)=>/^(carac|res|comp)\./.test(k)&&typeof v==="number";
+  // Les variables comparables (« le meilleur de la compagnie ») : caractéristiques, résistances, compétences chiffrées,
+  // auras (Commandement, Idan, 2026-11-22 : « la plus forte aura de la compagnie »).
+  const comparableKey=k=>/^(carac|res|comp|aura)\./.test(k);
+  const comparable=(k,v)=>comparableKey(k)&&typeof v==="number";
   // values : les siennes ; others : celles des autres membres ; etoiles : le niveau de renommée de la compagnie (1 à 15).
   function withCompany(values,others=[],etoiles=1){
     const out={...values,"compagnie.etoiles":Number(etoiles)||1,"compagnie.taille":others.length+1};
@@ -242,8 +244,12 @@
       }
       for(const r of spellRows.values()) for(const t of roleTags(r)) if(t!=="role/soin")
         v("moy.cout."+tagKey(t),"Coût moyen en mana de ses sorts « "+tagLabel(t)+" »","Sorts : coût en mana","nombre");
+      // Le bonus des sorts qui en donnent un (Courage de masse : +20, +5 par pas de maîtrise ; magic.bonus).
+      for(const r of spellRows.values()) if(r.bonus_base!=null) for(const t of roleTags(r))
+        v("bonus."+tagKey(t),"Bonus de son meilleur sort « "+tagLabel(t)+" » (points)","Sorts : bonus","nombre");
     }
-    function of(c){
+    // role : sa place dans la compagnie, « capitaine », « lieutenant » ou rien (le jeu la donne ; une recrue n'en a pas).
+    function of(c,{role=""}={}){
       const unit={character:c,activeSet:1};
       const out={};
       const put=(k,label,groupe,type,val)=>{ v(k,label,groupe,type); out[k]=val; };
@@ -257,6 +263,7 @@
       put("niveau_ascendance","Niveau d'ascendance","Identité","nombre",Number(c.ascendanceLevel)||0);
       put("domaine","Domaine (contact, distance, magie)","Identité","texte",DOMAINE[c.domain]||c.domain||"");
       put("etoiles","Étoiles (réputation)","Identité","nombre",stars?.personal?.(c.reputation)?.level||1);
+      put("role","Sa place dans la compagnie (capitaine, lieutenant, ou rien)","Identité","texte",role==="capitaine"||role==="lieutenant"?role:"");
       put("pv_max","PV max","Identité","nombre",Number(c.pvMax)||0);
       put("mana","Mana","Identité","nombre",Number(c.mana)||0);
       // Caractéristiques à l'instant T (Idan, 2026-11-21 : « On doit prendre en compte l'équipement ») : la valeur que
@@ -347,6 +354,9 @@
           if(du) out["duree."+k]=Math.max(out["duree."+k]||0,du);
           somme[t]=(somme[t]||0)+mc; nb[t]=(nb[t]||0)+1; } }
       for(const [t,n] of Object.entries(nb)) if(t!=="role/soin") out["moy.cout."+tagKey(t)]=r1(somme[t]/n);
+      for(const sp of known){ const row=spellRows.get(sp.code); if(row.bonus_base==null) continue;
+        const b=Number(magic?.bonus?.(unit,sp.code))||0;
+        for(const t of roleTags(row)) out["bonus."+tagKey(t)]=Math.max(out["bonus."+tagKey(t)]||0,b); }
       const reserve=Number(engine.statWithGear(unit,"Réserve de mana"))||0;
       // Moyennes sur tous ses sorts de soin (Idan, 2026-11-21 : « on peut prendre la moyenne de tous les sorts de soin »).
       const soins=known.filter(sp=>(spellRows.get(sp.code).tags||[]).includes("role/soin"));
@@ -357,6 +367,19 @@
       put("moy.ecole.soin","Niveau moyen des écoles de ses sorts de soin (équipement compris)","Sorts : moyennes des soins","nombre",r1(moy(sp=>Number(engine.statWithGear(unit,spellRows.get(sp.code).ecole))||0)));
       put("lancers.soin","Nombre de soins qu'il peut lancer avec sa réserve (coût moyen de ses soins)","Sorts : moyennes des soins","nombre",moyCout?Math.floor(reserve/moyCout):0);
       put("sorts.soin_rapide","Sorts de soin en action rapide","Sorts","nombre",soins.filter(sp=>spellRows.get(sp.code).action==="rapide").length);
+      // Les auras de courage (Commandement, Idan, 2026-11-22) : celle d'officier, en points de Courage pour ses alliés
+      // (capitaine : 0,35 × Courage + 0,25 × Charisme ; lieutenant : la moitié ; combat-engine.js), celle de son fouet (le %
+      // du Courage de chaque allié proche, selon le tier : 5 / 10 / 15 / 20), et la plus forte en points (officier ou sort).
+      const officier=role==="capitaine"&&engine.captainAuraBonus?engine.captainAuraBonus(unit):role==="lieutenant"&&engine.lieutenantAuraBonus?engine.lieutenantAuraBonus(unit):0;
+      put("aura.officier","Son aura d'officier (points de Courage pour ses alliés ; capitaine ou lieutenant)","Auras","nombre",Number(officier)||0);
+      let fouet=0;
+      for(const s of ["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off"]){
+        const it=slot(s), w=it&&engine.weaponTemplate(it);
+        if(w?.aura_caracteristique==="Courage") fouet=Math.max(fouet,Number(w["aura_t"+Math.min(4,Math.max(1,Math.round(Number(it.tier)||1)))])||0);
+      }
+      put("aura.fouet","L'aura de son fouet (% du Courage de chaque allié proche)","Auras","nombre",fouet);
+      put("aura.courage","Sa plus forte aura de courage en points (officier, ou son meilleur sort de commandement)","Auras","nombre",
+        Math.max(Number(officier)||0,Number(out["bonus.commandement"])||0));
       // Mesures des titres (doc 19)
       const ev=profile?.evaluate?profile.evaluate(c):null;
       const vals=ev?.values||{};
@@ -376,5 +399,5 @@
     return {of,vars:()=>VARS};
   }
 
-  return {norm,cle,ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe,evalue,clean,createTagTree,withCompany,createTagVariables};
+  return {norm,cle,ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe,evalue,clean,createTagTree,withCompany,comparableKey,createTagVariables};
 });

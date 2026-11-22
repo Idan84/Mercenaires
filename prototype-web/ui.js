@@ -1649,7 +1649,10 @@ function companyTagContext() {
   const members = teamCharacters();
   const steward = c && typeof stewardRules === "function" ? stewardRules().personOf(c) : null;
   const companyStars = c && typeof campaignRules === "function" ? campaignRules().companyRenownLevel(c) : 1;
-  return {rules, members, steward, companyStars, view: rules.company({members, steward, companyStars})};
+  // Sa place : capitaine, lieutenant ou rien (l'aura d'officier, Commandement).
+  const company = c?.company;
+  const roleOf = m => company && m.id === company.captainId ? "capitaine" : (company?.lieutenantIds || []).includes(m.id) ? "lieutenant" : "";
+  return {rules, members, steward, companyStars, roleOf, view: rules.company({members, steward, companyStars, roleOf})};
 }
 // Les tags affichés de chaque membre de la compagnie : Map membre → [{id, name, parent}] (hors de la compagnie : rien ; une
 // copie d'un membre, comme l'aperçu du mode dieu : ceux du membre).

@@ -611,3 +611,8 @@ ValeurVue  = Valeur × (1 + Biais)
   mission (camp, chasse, garde du corps) disparaît : l'atelier n'a pas de tags de mission.
 - **La fiche au survol** : les tags de l'atelier, dans l'ordre de l'atelier, en bleu comme l'ancien rôle au combat ; au
   plus 5 plaques, comme avant (« N autres rôles »).
+- **Les auras de courage** (Commandement, test 24 ; Idan, 2026-11-22) : `role` (capitaine, lieutenant ou rien, donné par le
+  jeu ; une recrue n'en a pas), `aura.officier` (points de Courage de son aura d'officier : capitaine 0,35 × Courage +
+  0,25 × Charisme, lieutenant la moitié), `aura.fouet` (5 / 10 / 15 / 20 % selon le tier), `bonus.<tag>` (le bonus de son
+  meilleur sort de ce tag, dont `bonus.commandement`), `aura.courage` (la plus forte, officier ou sort, comparée à la
+  compagnie). Elles reçoivent le biais de l'intendant (Idan : « Oui »). Seuils : 30 et 40 points, + 2 par étoile.

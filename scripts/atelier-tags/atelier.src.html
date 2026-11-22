@@ -332,7 +332,7 @@ async function enregistre(){
 const POOL=JSON.parse($("profils").textContent);
 // La compagnie (Idan, 2026-11-21 : « avoir la meilleure stat de la compagnie ») : des recrues tirées au hasard, lui compris ;
 // pour chaque caractéristique, compétence et résistance, compagnie.max.<variable> est la meilleure valeur parmi elles.
-const COMPARABLES=POOL.vars.filter(v=>v.type==="nombre"&&/^(carac|res|comp)\./.test(v.k));
+const COMPARABLES=POOL.vars.filter(v=>v.type==="nombre"&&E.comparableKey(v.k));
 const VARS=[...POOL.vars,{k:"compagnie.etoiles",label:"Étoiles de la compagnie (réglées dans « Essayer »)",groupe:"Compagnie",type:"nombre"},
   {k:"compagnie.taille",label:"Taille de la compagnie, lui compris (réglée dans « Essayer »)",groupe:"Compagnie",type:"nombre"},
   ...COMPARABLES.map(v=>({k:"compagnie.max."+v.k,label:"Meilleure valeur de la compagnie : "+v.label,groupe:"Compagnie",type:"nombre"}))]; const VAR_IDX=new Map(VARS.map((v,i)=>[v.k,i]));

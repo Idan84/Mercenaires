@@ -176,4 +176,34 @@ for(const e of [1,3]) for(const v of recrues){
 }
 assert.ok(tireurs>0,"des tireurs parmi les recrues à 1 étoile");
 
+// ---- Les auras de courage (Commandement, Idan, 2026-11-22) ----
+{
+  const m=gen.createMercenary({id:500,captain});
+  const unit={character:m,activeSet:1};
+  const sans=tagVars.of(m);
+  assert.equal(sans.role,"");
+  assert.equal(sans["aura.officier"],0,"une recrue n'est ni capitaine ni lieutenant");
+  const cap=tagVars.of(m,{role:"capitaine"}), lt=tagVars.of(m,{role:"lieutenant"});
+  assert.equal(cap.role,"capitaine");
+  assert.equal(cap["aura.officier"],engine.captainAuraBonus(unit),"capitaine : 0,35 × Courage + 0,25 × Charisme");
+  assert.equal(lt["aura.officier"],engine.lieutenantAuraBonus(unit),"lieutenant : la moitié");
+  assert.ok(cap["aura.officier"]>lt["aura.officier"]&&lt["aura.officier"]>0);
+  assert.equal(cap["aura.courage"],Math.max(cap["aura.officier"],cap["bonus.commandement"]));
+  // Le fouet : 5 / 10 / 15 / 20 % selon le tier, dans l'un ou l'autre set.
+  for(const [tier,pct] of [[1,5],[3,15],[4,20]]){
+    const c=JSON.parse(JSON.stringify(m)), it={...gen.createItemByName("weapon","Fouet",tier),id:"fouet-"+tier};
+    c.items=[...(c.items||[]),it]; c.equipment.slots.weapon_set_2_main=it.id;
+    assert.equal(tagVars.of(c)["aura.fouet"],pct,"fouet T"+tier);
+  }
+  // Le sort de courage : son bonus (magic.bonus), le meilleur de ses sorts de commandement.
+  const mage=JSON.parse(JSON.stringify(m)); mage.spells=[...(mage.spells||[]),{code:"mass_courage"},{code:"illusory_support"}];
+  mage.skills.magic={...(mage.skills.magic||{}),Illusion:60};
+  const vm=tagVars.of(mage), um={character:mage,activeSet:1};
+  assert.equal(vm["bonus.commandement"],Math.max(magic.bonus(um,"mass_courage"),magic.bonus(um,"illusory_support")));
+  assert.ok(vm["bonus.commandement"]>=30);
+  assert.equal(vm["aura.courage"],vm["bonus.commandement"],"sans être officier : le sort");
+  assert.ok(E.comparableKey("aura.courage")&&!E.comparableKey("bonus.commandement"));
+  assert.ok("compagnie.max.aura.courage" in E.withCompany(vm,[cap],3),"la plus forte aura de la compagnie");
+}
+
 console.log("tag-engine tests ok ("+recrues.length+" recrues, "+donnees.tests.length+" tests, "+tireurs+" tireurs à 1★)");

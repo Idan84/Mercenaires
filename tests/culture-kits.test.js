@@ -48,6 +48,11 @@ for (const kit of kits.rows) {
   assert.deepEqual(imageSize(path.join(WEB, "assets/pictos/culture-" + kit.cle + ".webp")), {w: 256, h: 256});
   assert.ok(fs.existsSync(path.join(ROOT, "assets-src/Kits", kit.cle, "logo.png")), kit.cle + " : logo du kit");
 }
+// L'équerre à la rune des Nains du chaos : son master a un voile blanc en haut, qui tranchait le haut de l'équerre à la
+// découpe (Idan, 2026-11-22 : « le bas est tronqué… une partie de l'ornement d'angle disparaît »). Entière : 700 × 621
+// (tronquée, elle faisait 700 × 558) ; découpe expliquée dans scripts/build-culture-kit.sh.
+assert.deepEqual(imageSize(path.join(WEB, "assets/fiche/kits/nains-du-chaos/coin-orne-leger.webp")), {w: 700, h: 621});
+assert.match(fs.readFileSync(path.join(ROOT, "scripts/build-culture-kit.sh"), "utf8"), /for piece in coin-orne-riche coin-orne-courbe; do orn "\$SRC\/\$piece\.png"[\s\S]*?-morphology Dilate Disk:3[\s\S]*?"\$OUT\/coin-orne-leger\.webp"/);
 const byKey = Object.fromEntries(kits.rows.map(k => [k.cle, k]));
 const elfes = byKey["elfes-noirs"], sylvains = byKey["elfes-sylvains"], cites = byKey["elfes-des-grandes-cites"];
 

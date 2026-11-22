@@ -149,7 +149,21 @@ orn "$SRC/ornement-cor.png" "$OUT/suspendu.webp"
 orn "$SRC/ornement-hache.png" "$OUT/allonge.webp"
 SRC=assets-src/Kits/nains-du-chaos; OUT=prototype-web/assets/fiche/kits/nains-du-chaos
 communs nains-du-chaos
-for piece in coin-orne-riche coin-orne-leger coin-orne-courbe; do orn "$SRC/$piece.png" "$OUT/$piece.webp"; done
+for piece in coin-orne-riche coin-orne-courbe; do orn "$SRC/$piece.png" "$OUT/$piece.webp"; done
+# L'équerre à la rune (coin-orne-leger) : le master garde en haut un voile blanc à demi transparent (35 à 44 %), reste du
+# détourage. Rogné tel quel, le voile passait pour le fond et la découpe tranchait le haut de l'équerre (Idan,
+# 2026-11-22 : « le bas est tronqué… une partie de l'ornement d'angle disparaît », le coin du bas étant ce coin retourné).
+# On efface le voile hors de la pièce (alpha au-dessus de 50 %, élargie de 3 px pour garder l'anticrénelage), puis on
+# découpe du haut au bas de la pièce sur toute la largeur du master, comme avant : la taille et la place réglées par Idan
+# ne bougent pas.
+convert "$SRC/coin-orne-leger.png" -alpha extract "$tmp/la.png"
+convert "$tmp/la.png" -threshold 50% -morphology Dilate Disk:3 "$tmp/lm.png"
+convert "$tmp/la.png" "$tmp/lm.png" -compose multiply -composite "$tmp/la2.png"
+convert "$SRC/coin-orne-leger.png" "$tmp/la2.png" -alpha off -compose copy_opacity -composite "$tmp/l.png"
+leger=$(convert "$tmp/l.png" -alpha extract -threshold 6% -format %@ info:)
+read -r _ lh _ ly <<<"$(echo "$leger" | tr 'x+' '  ')"
+convert "$tmp/l.png" -crop "$(identify -format %w "$tmp/l.png")x${lh}+0+${ly}" +repage "$tmp/l2.png"
+webp "$tmp/l2.png" -resize 700x700\> -strip -quality 90 "$OUT/coin-orne-leger.webp"
 orn "$SRC/ornement-accelerateur.png" "$OUT/pose-accelerateur.webp"
 orn "$SRC/ornement-ampoule.png" "$OUT/suspendu.webp"
 orn "$SRC/ornement-sonde.png" "$OUT/allonge.webp"

@@ -130,7 +130,8 @@ l'aubergiste.
 | Tags | vides | à définir avec la refonte des tags (doc 20) | — | — | biais de niveau et de précision |
 
 Le capitaine **vouvoie** les candidats (Idan, 2026-11-22 : « on a un langage décalé presque corporate ») ; le tavernier
-et lui se tutoient. La question du salaire reste « Quelles sont vos prétentions salariales ? » (Idan, 2026-11-22 : « Tu
+et lui se tutoient. **Le ton** (Idan, 2026-11-22) : « le capitaine est corporate... les mercenaires pas trop ! » ; les
+textes sont un détail pour la v2. La question du salaire reste « Quelles sont vos prétentions salariales ? » (Idan, 2026-11-22 : « Tu
 repasses à la bonne version »). La magie : une seule question, il répond en listant ses écoles (Idan, 2026-11-22 : « on
 lui demande s'il connait des sorts, il répond en listant les écoles »). **Le titre sur la fiche : priorité au
 tavernier** (Idan, 2026-11-22) ; sinon celui que le candidat se donne.

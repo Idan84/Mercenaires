@@ -112,10 +112,12 @@ for(let i=0;i<demandes.length;i++){
   // Le tir (Idan, 2026-11-22 : tags du Tireur) : son set de tir le plus efficace (dégâts par tour contre l'étalon en
   // gambison, comme les titres), et les valeurs du moteur avec ce set en main : Précision (toucher), Puissance (blesser au
   // tir), Dextérité + Vitesse (enchaîner les tirs). PM : ses cases de déplacement.
-  const tirSets=[1,2].map(set=>({set,dps:prof.setDamage(c,set,true,etalonLeger)})).filter(x=>x.dps!=null).sort((a,b)=>b.dps-a.dps);
+  // Sans le pistolet, « qui est particulier » (Idan, test « As-t-il une arme de tir ou arme à feu ? »).
+  const tirSets=[1,2].filter(set=>prof.setWeapon(c,set,true)?.weapon?.nom!=="Pistolet")
+    .map(set=>({set,dps:prof.setDamage(c,set,true,etalonLeger)})).filter(x=>x.dps!=null).sort((a,b)=>b.dps-a.dps);
   const tirUnit=tirSets.length?{character:c,activeSet:tirSets[0].set}:null;
   const tirArme=tirUnit&&engine.weaponTemplate(engine.activeWeaponItem(tirUnit));
-  put("tir.arme","Son arme de tir la plus efficace","Tir (son meilleur set de tir)","texte",tirArme?.nom||"");
+  put("tir.arme","Son arme de tir la plus efficace (hors pistolet)","Tir (son meilleur set de tir)","texte",tirArme?.nom||"");
   put("tir.repetable","Son arme de tir enchaîne les tirs (arc, arbalète, fronde, sarbacane)","Tir (son meilleur set de tir)","oui/non",Boolean(tirArme&&engine.isRepeatable(tirArme)));
   put("tir.precision","Précision au tir (toucher)","Tir (son meilleur set de tir)","nombre",tirUnit?r1(engine.attackPrecision(tirUnit)):0);
   put("tir.puissance","Puissance au tir (blesser)","Tir (son meilleur set de tir)","nombre",tirUnit?r1(engine.attackPower(tirUnit,"ranged")):0);

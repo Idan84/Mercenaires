@@ -286,7 +286,17 @@ function renderRecruitTalk(){
   const t=game.recruitTalk;
   if(!t) return;
   const m=t.mercenary,first=MercenairesRecruitDialogue.firstName(m);
-  $("recruit-talk-portrait").innerHTML=renderAvatar(m,{variant:"talk",kind:"portrait"});
+  // Sa fiche (Idan, 2026-11-22 : « reprendre le contenu de la fiche au survol, d'ajouter son portrait, une boite de
+  // dialogue ») : ce qu'on ne sait pas encore est un « ? » ; on connaît ses origines et sa réputation, puis sa prime quand
+  // il a dit ses prétentions (la dernière demande de la négociation). Les autres cases se rempliront avec les questions
+  // du doc 14 §6 bis.
+  const candidate=tavernCandidate(t.id),n=candidate?tavernRules().negotiationState(candidate):null;
+  const unknown=new Set(["title","affinity","tags","kit","magic",...(t.salaryKnown?[]:["bonus"])]);
+  if(typeof renderMercenaryHoverCard==="function"){
+    $("recruit-talk-card").innerHTML=renderMercenaryHoverCard(m,{unknown,bonus:n?(n.agreed?.bonus??n.bonus):null});
+    const card=$("recruit-talk-card").querySelector(".hover-card");
+    if(card&&typeof fitHoverCard==="function") requestAnimationFrame(()=>fitHoverCard(card));
+  }
   $("recruit-talk-name").textContent=m.name;
   $("recruit-talk-origin").innerHTML=`${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}`;
   const log=$("recruit-talk-log");
@@ -294,7 +304,6 @@ function renderRecruitTalk(){
     ?`<p class="talk-note">${esc(line.text)}</p>`
     :`<p class="talk-say talk-say--${line.who}"><b>${line.who==="you"?"Vous":esc(first)}</b><span>«\u00a0${esc(line.text)}\u00a0»</span></p>`).join("");
   log.scrollTop=log.scrollHeight;
-  const candidate=tavernCandidate(t.id);
   if(t.mode==="negotiate"&&candidate){
     const n=tavernRules().negotiationState(candidate);
     $("recruit-talk-choices").innerHTML=`<form id="recruit-offer" class="talk-offer">

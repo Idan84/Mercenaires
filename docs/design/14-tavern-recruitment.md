@@ -133,6 +133,13 @@ l'aubergiste.
 les infos. En lui parlant, en parlant à l'aubergiste ou à l'intendant, on doit remplir les cases... » Ses tags, tels qu'il
 se décrit, sont calculés par le jeu (doc 20 §12, `candidateTags`) ; ce que chaque source remplit reste à décider.
 
+**Fait (2026-11-22, pas encore en ligne)** : « Aller lui parler » ouvre sa fiche (la fiche au survol, son portrait en pied
+compris) à côté de la discussion, sur un fond noir flou (Idan : « reprendre le contenu de la fiche au survol, d'ajouter son
+portrait, une boite de dialogue et de mettre un fond noir et flou pour cacher le reste »). Visibles : ses origines et sa
+réputation ; sa prime une fois ses prétentions dites (la dernière demande). Le reste est un « ? » (titre, affinité, tags,
+armes et armure, magie ; la monture n'est pas montrée). Les questions du tableau ci-dessus restent à coder : elles
+rempliront les cases. La mise en page de la boîte de dialogue viendra ensuite (Idan : « On fait simple »).
+
 Le titre (doc 19) se calcule sur les notes de ses rôles : avec un biais, on recalcule ces notes sur les valeurs annoncées
 ou estimées, d'où des titres justes et des titres faux (« Mage Légendaire Omnipotent »). La fiche montre le **salaire**
 à côté de la prime.

@@ -529,3 +529,54 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
 - Monter le niveau des recrues de la taverne avec les étoiles de la compagnie.
 - Caracs exceptionnelles : un palier par carac, ou limiter le cumul des bagues identiques (Chance, Courage, écoles).
 - Brancher la refonte dans le jeu, une fois les rôles décidés.
+
+## 12 — Brancher la refonte dans le jeu (Idan, 2026-11-22)
+
+> Décidé, pas encore codé. Le jeu applique encore les §2 à §10 tant que ce chantier n'est pas fait.
+
+### Ce qui change
+
+- **Calcul automatique** : les tags de l'atelier (§11) sont recalculés à chaque mise à jour du mercenaire (équipement,
+  XP, étoiles, sorts, monture…). Plus de demande de tags.
+- **Où on les voit** : sur la fiche au survol pour l'instant, et plus tard sur la fiche complète v2.
+- **Ce qu'on retire** : l'onglet de l'intendant qui tague (Cruxor, §5 à §9), l'onglet « Rôle et formation » de la fiche
+  complète et tous les boutons de demande de tags.
+- **Le titre** (doc 19) reste calculé comme aujourd'hui ; il viendra plus tard des tags.
+- Les données de l'atelier (tags, tests, constantes) sont copiées dans le dépôt : le jeu ne lit pas l'artefact.
+
+### Deux sortes de tags, un même calcul
+
+Les mêmes tests de l'atelier, sur des valeurs vues à travers un **biais** :
+
+- **Le candidat**, avant son recrutement, se décrit lui-même : il se vante (doc 14 §7). Toutes ses valeurs × un même
+  tirage entre **1,10 et 3,00**, une fois par candidat. Ses tags s'affichent sur sa fiche à la Taverne (la case « Tags »).
+- **L'intendant** décrit nos mercenaires (Cruxor Limortel, ou celui qu'on a nommé) :
+
+```
+Compétence = 0,75 × Intendance + 0,25 × Intelligence        (bornée de 0 à 100)
+ErreurMax  = 50 % × (1 − Compétence / 100) ^ 1,5
+Taille     = Rand(0 ; ErreurMax)                              (tirée pour chaque mercenaire)
+R          = Clamp((étoiles du mercenaire − étoiles de la compagnie) / 5 ; −1 ; 1)
+P(surestimer) = 50 % + 25 % × Affinité(intendant → mercenaire) / 100 + 25 % × R
+Biais      = + Taille avec la chance P, sinon − Taille
+ValeurVue  = Valeur × (1 + Biais)
+```
+
+| Intendant | Intendance | Intelligence | Erreur au plus |
+|---|---|---|---|
+| Excellent | 90 | 70 | 3 % |
+| Correct | 80 | 70 | 5 % |
+| Cruxor Limortel | 50 | 50 | 18 % |
+| Mauvais | 25 | 40 | 30 % |
+| Nul | 0 | 30 | 45 % |
+
+- **Cruxor Limortel**, pour les tags : 50 d'Intendance, 50 d'Intelligence, affinité neutre (0) avec tout le monde.
+- **Un tirage par couple intendant / mercenaire**, gardé tant que rien ne change ; on retire quand le mercenaire change
+  d'étoile de réputation ou quand on change d'intendant. La taille de l'erreur diffère donc d'un mercenaire à l'autre :
+  un mauvais intendant tombe parfois juste.
+- **Ce qui reçoit le biais** : les capacités (caractéristiques, compétences, résistances, Précision, Puissance au tir,
+  Dextérité + Vitesse, réserve de mana, chances de réussite des sorts, Discrétion, PM). **Pas** les oui / non, les noms,
+  les nombres de sorts, les coûts en mana, les durées des sorts ni les étoiles de la compagnie (sinon le biais
+  s'annulerait, par exemple réserve de mana et coût d'un sort).
+- **« Le meilleur de la compagnie »** : l'intendant compare ce qu'il voit, chaque mercenaire avec son propre biais.
+- Un tag ne bascule que si le mercenaire est près d'un seuil : les très bons et les très mauvais restent bien vus.

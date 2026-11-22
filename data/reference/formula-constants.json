@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 478,
+  "row_count": 489,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3856,6 +3856,94 @@
       "description": "L'usurier (Idan, 2026-11-11) : la chance est multipliée par ce facteur chaque matin (« Ca double tous les jours »), au plus 100 %.",
       "formule": "Usurier V1",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — vantardise du candidat, minimum",
+      "code": "tags.candidate.min",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : le candidat se décrit lui-même : toutes ses valeurs × un même tirage entre ce minimum et le maximum, une fois par candidat (« 1,1 à 3 »).",
+      "formule": "Tags V1",
+      "valeur": 1.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — vantardise du candidat, maximum",
+      "code": "tags.candidate.max",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : le candidat : le maximum du tirage (« 1,1 à 3 »).",
+      "formule": "Tags V1",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, part de l'Intendance",
+      "code": "tags.steward.intendance_weight",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : Compétence de l'intendant = 0,75 × Intendance + 0,25 × Intelligence, de 0 à 100 (« capacité d'intendance (plus important), un peu de l'intelligence »).",
+      "formule": "Tags V1",
+      "valeur": 0.75,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, part de l'Intelligence",
+      "code": "tags.steward.intelligence_weight",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : Compétence de l'intendant = 0,75 × Intendance + 0,25 × Intelligence.",
+      "formule": "Tags V1",
+      "valeur": 0.25,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant sans Intelligence",
+      "code": "tags.steward.default_intelligence",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : l'Intelligence comptée pour un intendant qui n'en a pas (Cruxor Limortel n'a pas d'Intelligence : 50 pour la formule, d'après « cruxor en 50 en intelligence »).",
+      "formule": "Tags V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, erreur au plus",
+      "code": "tags.steward.max_error",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : ErreurMax = 50 % × (1 − Compétence / 100) ^ 1,5 ; la taille de l'erreur est tirée entre 0 et ErreurMax, pour chaque mercenaire.",
+      "formule": "Tags V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, exposant de l'erreur",
+      "code": "tags.steward.exponent",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : ErreurMax = 50 % × (1 − Compétence / 100) ^ 1,5.",
+      "formule": "Tags V1",
+      "valeur": 1.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, écart d'étoiles",
+      "code": "tags.steward.stars_gap",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : R = (étoiles du mercenaire − étoiles de la compagnie) / 5, de −1 à 1.",
+      "formule": "Tags V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, part de l'affinité",
+      "code": "tags.steward.affinity_weight",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : P(surestimer) = 50 % + 25 % × Affinité(intendant → mercenaire) / 100 + 25 % × R.",
+      "formule": "Tags V1",
+      "valeur": 0.25,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — intendant, part des étoiles",
+      "code": "tags.steward.stars_weight",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : P(surestimer) = 50 % + 25 % × Affinité / 100 + 25 % × R.",
+      "formule": "Tags V1",
+      "valeur": 0.25,
+      "version": "V1"
+    },
+    {
+      "nom": "Tags — affinité de Cruxor",
+      "code": "tags.steward.old_steward_affinity",
+      "description": "Les biais des tags (Idan, 2026-11-22 ; doc 20 §12) : l'affinité de Cruxor Limortel, l'ancien intendant, envers chaque mercenaire : neutre (« cruxor … affinité neutre »).",
+      "formule": "Tags V1",
+      "valeur": 0,
       "version": "V1"
     }
   ]

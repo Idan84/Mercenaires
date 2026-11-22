@@ -348,7 +348,7 @@ assert.match(css, /\.game-bottom-bar\.is-dore \.hud-nav-img\{filter:sepia\(1\) s
   assert.deepEqual(plain(applyCultureSettings(base, null)), plain(base), "sans index : le kit du dépôt");
   // L'index en ligne n'est lu qu'à côté du site (sans index, le jeu garde son kit), sans cache.
   assert.match(read("prototype-web/reference-data.js"), /fetch\("\/media\/reglages\/index\.json\?t=" \+ Date\.now\(\), \{ cache: "no-store" \}\)/);
-  assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)\]\)/);
+  assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits[^\]]*\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)[^\]]*\]\)/);
 }
 
 console.log(`Kits des cultures : ${kits.rows.map(k => k.culture).join(", ")} — cadre en une pièce, jonctions, ornements, logo, barres du camp — OK`);

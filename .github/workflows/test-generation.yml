@@ -48,6 +48,7 @@ jobs:
       - run: node tests/steward-tags.test.js
       - run: node tests/old-steward.test.js
       - run: node tests/tag-engine.test.js
+      - run: node tests/company-tags.test.js
       - run: node tests/poison-stealth-rules.test.js
       - run: node tests/music-ui.test.js
       - run: node tests/recruit-dialogue.test.js

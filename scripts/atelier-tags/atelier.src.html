@@ -262,6 +262,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 </div>
 
 <script type="application/json" id="profils">@@PROFILS@@</script>
+<script>@@MOTEUR@@</script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -280,26 +281,7 @@ const memoFermes=()=>memo("atelier-fermes",[...fermes]);
 const testsFermes=new Set(memo("atelier-tests-fermes")||[]);
 const memoTestsFermes=()=>memo("atelier-tests-fermes",[...testsFermes]);
 
-function propre(d){
-  const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||uid()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
-    rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null,inactif:Boolean(t.inactif)}));
-  const ids=new Set(tags.map(t=>t.id));
-  for(const t of tags) t.parents=[...new Set(t.parents.filter(p=>ids.has(p)&&p!==t.id))];
-  const liste=a=>Array.isArray(a)?[...new Set(a.map(String).filter(x=>ids.has(x)))]:[];
-  const tests=(Array.isArray(d?.tests)?d.tests:[]).map(x=>({id:String(x.id||uid()),nom:String(x.nom||"Nouveau test"),type:x.type==="niveau"?"niveau":"binaire",
-    formule:String(x.formule||""),calcul:String(x.calcul||""),aReecrire:Boolean(x.aReecrire),oui:liste(x.oui),non:liste(x.non),
-    paliers:(Array.isArray(x.paliers)?x.paliers:[]).map((p,i)=>({id:String(p.id||uid()),de:i===0||p.de===""||p.de==null||!Number.isFinite(Number(p.de))?null:Number(p.de),nom:String(p.nom||""),elimine:liste(p.elimine)})),
-    si:x.si&&x.si.test?{test:String(x.si.test),rep:String(x.si.rep??"oui")}:null}));
-  for(const x of tests) if(x.type==="niveau"&&!x.paliers.length) x.paliers=[{id:uid(),de:null,nom:"Bas",elimine:[]},{id:uid(),de:50,nom:"Haut",elimine:[]}];
-  // Condition : un test posé seulement si un autre a donné telle réponse (jamais en boucle).
-  const parId=new Map(tests.map(x=>[x.id,x]));
-  for(const x of tests){ const m=x.si&&parId.get(x.si.test); if(!m||m===x){ x.si=null; continue; }
-    if(m.type==="binaire"&&x.si.rep!=="oui"&&x.si.rep!=="non") x.si.rep="oui";
-    if(m.type==="niveau"&&!m.paliers.some(q=>q.id===x.si.rep)) x.si.rep=m.paliers[0].id; }
-  for(const x of tests){ const vus=new Set([x.id]); let y=x; while(y.si){ if(vus.has(y.si.test)){ x.si=null; break; } vus.add(y.si.test); y=parId.get(y.si.test); } }
-  const constantes=(Array.isArray(d?.constantes)?d.constantes:[]).map(c=>({id:String(c.id||uid()),nom:String(c.nom||""),valeur:Number.isFinite(Number(c.valeur))?Number(c.valeur):0,note:String(c.note||"")}));
-  return {tags,tests,constantes};
-}
+const propre=d=>E.clean(d,{uid});
 const tagPar=id=>doc.tags.find(t=>t.id===id);
 const nomTag=id=>tagPar(id)?.nom||"?";
 const enfants=id=>doc.tags.filter(t=>t.parents.includes(id));
@@ -348,82 +330,17 @@ const VARS=[...POOL.vars,{k:"compagnie.etoiles",label:"Étoiles de la compagnie 
 // Constantes : un nom lisible par les calculs (« seuil soin » → seuil_soin).
 const cle=n=>norm(n).replace(/[^a-z0-9_.]+/g,"_").replace(/^_+|_+$/g,"");
 const constante=n=>(doc.constantes||[]).find(c=>cle(c.nom)===n);
-const MOTS={et:"et",and:"et",ou:"ou",or:"ou",non:"non",not:"non",vrai:"vrai",true:"vrai",oui:"vrai",faux:"faux",false:"faux",contient:"contient"};
-const FONCTIONS={max:(...a)=>Math.max(...a.map(nombre)),min:(...a)=>Math.min(...a.map(nombre)),abs:a=>Math.abs(nombre(a)),arrondi:a=>Math.round(nombre(a)),
-  nombre:a=>Array.isArray(a)?a.length:typeof a==="string"?(a?1:0):nombre(a),somme:(...a)=>a.reduce((s,x)=>s+nombre(x),0)};
-class ErreurCalcul extends Error{}
-function nombre(x){ if(typeof x==="number") return x; if(typeof x==="boolean") return x?1:0; if(Array.isArray(x)) return x.length; const n=Number(String(x).replace(",",".")); if(Number.isFinite(n)&&String(x).trim()!=="") return n; throw new ErreurCalcul("« "+x+" » n'est pas un nombre"); }
-function vrai(x){ return Array.isArray(x)?x.length>0:typeof x==="string"?x!=="":Boolean(x); }
-function lexer(src){
-  const toks=[]; let i=0;
-  while(i<src.length){
-    const c=src[i];
-    if(/\s/.test(c)){ i++; continue; }
-    if(/[0-9]/.test(c)){ let j=i; while(j<src.length&&/[0-9.]/.test(src[j])) j++; toks.push({t:"nb",v:parseFloat(src.slice(i,j))}); i=j; continue; }
-    if(c==='"'||c==="'"||c==="«"||c==="“"){ const fin=c==="«"?"»":c==="“"?"”":c; const j=src.indexOf(fin,i+1); if(j<0) throw new ErreurCalcul("guillemet non fermé"); toks.push({t:"txt",v:src.slice(i+1,j).trim()}); i=j+1; continue; }
-    if(/[\p{L}_]/u.test(c)){ let j=i; while(j<src.length&&/[\p{L}\p{N}_.]/u.test(src[j])) j++; const w=src.slice(i,j); const m=MOTS[w.toLowerCase()]; toks.push(m?{t:"mot",v:m}:{t:"id",v:w}); i=j; continue; }
-    const deux=src.slice(i,i+2);
-    const OPS2={"<=":"<=",">=":">=","!=":"!=","<>":"!=","==":"=","&&":"et","||":"ou"};
-    if(OPS2[deux]){ const v=OPS2[deux]; toks.push({t:["et","ou"].includes(v)?"mot":"op",v}); i+=2; continue; }
-    if("+-*/()<>=,".includes(c)){ toks.push({t:"op",v:c}); i++; continue; }
-    if(c==="!"){ toks.push({t:"mot",v:"non"}); i++; continue; }
-    throw new ErreurCalcul("caractère inattendu « "+c+" »");
-  }
-  return toks;
-}
-function analyse(src){
-  const toks=lexer(src); let i=0;
-  const voit=(t,v)=>toks[i]&&toks[i].t===t&&(v===undefined||toks[i].v===v);
-  const prend=(t,v)=>{ if(!voit(t,v)) throw new ErreurCalcul(v?"« "+v+" » attendu":"calcul incomplet"); return toks[i++]; };
-  const ou=()=>{ let a=et(); while(voit("mot","ou")){ i++; a={k:"ou",a,b:et()}; } return a; };
-  const et=()=>{ let a=non(); while(voit("mot","et")){ i++; a={k:"et",a,b:non()}; } return a; };
-  const non=()=>{ if(voit("mot","non")){ i++; return {k:"non",a:non()}; } return cmp(); };
-  const cmp=()=>{ const a=add(); for(const op of ["<=",">=","!=","<",">","="]) if(voit("op",op)){ i++; return {k:"cmp",op,a,b:add()}; }
-    if(voit("mot","contient")){ i++; return {k:"contient",a,b:add()}; } return a; };
-  const add=()=>{ let a=mul(); while(voit("op","+")||voit("op","-")){ const op=toks[i++].v; a={k:"arith",op,a,b:mul()}; } return a; };
-  const mul=()=>{ let a=un(); while(voit("op","*")||voit("op","/")){ const op=toks[i++].v; a={k:"arith",op,a,b:un()}; } return a; };
-  const un=()=>{ if(voit("op","-")){ i++; return {k:"neg",a:un()}; } return prim(); };
-  const prim=()=>{
-    const t=toks[i]; if(!t) throw new ErreurCalcul("calcul incomplet");
-    if(t.t==="nb"){ i++; return {k:"val",v:t.v}; }
-    if(t.t==="txt"){ i++; return {k:"val",v:t.v}; }
-    if(t.t==="mot"&&(t.v==="vrai"||t.v==="faux")){ i++; return {k:"val",v:t.v==="vrai"}; }
-    if(t.t==="op"&&t.v==="("){ i++; const e=ou(); prend("op",")"); return e; }
-    if(t.t==="id"){ i++;
-      if(voit("op","(")){ i++; const f=t.v.toLowerCase(); if(!FONCTIONS[f]) throw new ErreurCalcul("fonction inconnue « "+t.v+" »"); const args=[];
-        if(!voit("op",")")){ args.push(ou()); while(voit("op",",")){ i++; args.push(ou()); } } prend("op",")"); return {k:"appel",f,args}; }
-      return {k:"var",n:t.v}; }
-    throw new ErreurCalcul("« "+t.v+" » inattendu");
-  };
-  if(!toks.length) throw new ErreurCalcul("calcul vide");
-  const ast=ou(); if(i<toks.length) throw new ErreurCalcul("« "+toks[i].v+" » en trop");
-  return ast;
-}
-function variablesDe(ast,out=new Set()){ if(!ast) return out; if(ast.k==="var") out.add(ast.n); for(const x of [ast.a,ast.b,...(ast.args||[])]) variablesDe(x,out); return out; }
+// Le langage des calculs : celui du moteur des tags du jeu (game-core/tag-engine.js, Idan, 2026-11-22 : « que le jeu lise
+// les datas de l'atelier »), le même pour l'atelier et pour le jeu.
+const E=MercenairesTagEngine;
+const {ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe}=E;
 function proche(n){ const m=norm(n); let best=null,bs=0; for(const v of VARS){ const k=v.k; let s=0; const a=m.split(/[._]/),b=k.split(/[._]/); for(const x of a) if(x&&b.some(y=>y.startsWith(x)||x.startsWith(y))) s++; if(s>bs){ bs=s; best=k; } } return best; }
 function controle(src){
   const ast=analyse(src);
   for(const n of variablesDe(ast)) if(!VAR_IDX.has(n)&&!constante(n)){ const p=proche(n); throw new ErreurCalcul("variable inconnue « "+n+" »"+(p?" (vouliez-vous « "+p+" » ?)":"")); }
   return ast;
 }
-function evalue(ast,p){
-  switch(ast.k){
-    case "val": return ast.v;
-    case "var": return VAR_IDX.has(ast.n)?p[ast.n]:constante(ast.n)?.valeur;
-    case "non": return !vrai(evalue(ast.a,p));
-    case "et": return vrai(evalue(ast.a,p))&&vrai(evalue(ast.b,p));
-    case "ou": return vrai(evalue(ast.a,p))||vrai(evalue(ast.b,p));
-    case "neg": return -nombre(evalue(ast.a,p));
-    case "arith": { const a=nombre(evalue(ast.a,p)),b=nombre(evalue(ast.b,p)); return ast.op==="+"?a+b:ast.op==="-"?a-b:ast.op==="*"?a*b:(b===0?0:a/b); }
-    case "contient": { const a=evalue(ast.a,p),b=norm(evalue(ast.b,p)); return Array.isArray(a)?a.some(x=>norm(x)===b):norm(a).includes(b); }
-    case "cmp": { const a=evalue(ast.a,p),b=evalue(ast.b,p);
-      const num=x=>typeof x==="number"||typeof x==="boolean";
-      if(ast.op==="="||ast.op==="!="){ const eg=num(a)&&num(b)?nombre(a)===nombre(b):norm(a)===norm(b); return ast.op==="="?eg:!eg; }
-      const x=nombre(a),y=nombre(b); return ast.op==="<"?x<y:ast.op==="<="?x<=y:ast.op===">"?x>y:x>=y; }
-    case "appel": return FONCTIONS[ast.f](...ast.args.map(x=>evalue(x,p)));
-  }
-  throw new ErreurCalcul("calcul illisible");
-}
+function evalue(ast,p){ return E.evalue(ast,n=>VAR_IDX.has(n)?p[n]:constante(n)?.valeur); }
 const affiche=v=>typeof v==="boolean"?(v?"vrai":"faux"):Array.isArray(v)?(v.length?v.join(", "):"aucun"):typeof v==="number"?String(Math.round(v*100)/100).replace(".",","):(v===""?"(vide)":String(v));
 
 // ---------- Onglets ----------
@@ -727,27 +644,7 @@ function reponseAuto(x){
 }
 function resultats(){
   majCompagnie();
-  const direct=new Map(); const reps=[]; const vus=new Set();
-  // On suit l'arbre : un test n'est posé que si la réponse au-dessus de lui est sortie.
-  const visite=(x,num,prof,saute)=>{
-    if(vus.has(x.id)) return; vus.add(x.id);
-    if(saute){ reps.push({x,num,prof,saute});
-      let k=0; for(const b of branches(x)) for(const c of suivants(x.id,b)) visite(c,num+"."+(++k),prof+1,"la question "+num+" n'est pas posée"); return; }
-    const a=reponseAuto(x); const f=forces[x.id]; const rep=f!==undefined?f:a.rep;
-    let ids=[], libelle="sans réponse", branche=null;
-    if(rep!==undefined){ if(x.type==="binaire"){ ids=rep?x.oui:x.non; libelle=rep?"oui":"non"; branche=libelle; } else { const p=x.paliers[rep]; ids=p?.elimine||[]; libelle=p?.nom||("palier "+(rep+1)); branche=p?.id; } }
-    for(const id of ids){ if(!direct.has(id)) direct.set(id,[]); direct.get(id).push(num+". "+x.nom+" → "+libelle); }
-    reps.push({x,num,prof,a,rep,force:f!==undefined,libelle,ids});
-    let k=0; for(const b of branches(x)) for(const c of suivants(x.id,b)){ const n=num+"."+(++k);
-      visite(c,n,prof+1,branche===b?null:rep===undefined?"la question "+num+" attend sa réponse":"posé seulement si « "+x.nom+" » → "+libRep(x,b)); }
-  };
-  doc.tests.filter(t=>!t.si).forEach((t,i)=>visite(t,String(i+1),0,null));
-  // Un tag tombe si un test l'élimine, ou si l'un de ses parents tombe (jusqu'à ce que plus rien ne change).
-  const motif=new Map([...direct].map(([id,r])=>[id,r.join(" ; ")]));
-  for(const t of doc.tags) if(t.inactif&&!motif.has(t.id)) motif.set(t.id,"tag inactif (pas encore dans le jeu)");
-  for(let encore=true;encore;){ encore=false;
-    for(const t of doc.tags) if(!motif.has(t.id)){ const p=t.parents.find(x=>motif.has(x)); if(p){ motif.set(t.id,"son parent « "+nomTag(p)+" » est éliminé"); encore=true; } } }
-  return {reps,motif};
+  return E.createTagTree(doc).solve(x=>{ const a=reponseAuto(x), f=forces[x.id]; return {a,rep:f!==undefined?f:a.rep,force:f!==undefined}; });
 }
 function rendreFiche(){
   const p=profil, f=$("fiche"); f.replaceChildren();
@@ -801,20 +698,9 @@ function rendreResultats(){
   if(!profil) return;
   rendreFiche(); // la ligne « Compagnie » suit les changements du profil et de la compagnie
   const {reps,motif}=resultats();
-  const restent=doc.tags.filter(t=>!t.groupe&&!motif.has(t.id));
-  // Décision d'Idan : pour une branche, seul le tag le plus bas qui reste s'affiche.
-  const plusBas=t=>![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id); });
-  // Catégories limitées (Idan, 2026-11-20) : une catégorie peut ne garder que ses X tags de plus haut rang qui restent ;
-  // à rang égal, l'ordre de la liste. Ailleurs, le tag le plus bas de chaque branche.
-  const ancetres=(id,acc=new Set())=>{ for(const p of tagPar(id)?.parents||[]) if(!acc.has(p)){ acc.add(p); ancetres(p,acc); } return acc; };
-  const gardes=new Map();
-  for(const c of doc.tags.filter(c=>c.groupe&&c.garder)){
-    const cand=[...descendants(c.id)].map(tagPar).filter(d=>d&&!d.groupe&&!motif.has(d.id))
-      .sort((a,b)=>(b.rang??-Infinity)-(a.rang??-Infinity)||doc.tags.indexOf(a)-doc.tags.indexOf(b));
-    gardes.set(c.id,new Set(cand.slice(0,c.garder).map(d=>d.id)));
-  }
-  const limitees=t=>[...ancetres(t.id)].filter(id=>gardes.has(id));
-  const affiches=restent.filter(t=>{ const l=limitees(t); return l.length?l.every(id=>gardes.get(id).has(t.id)):plusBas(t); });
+  // Décision d'Idan : pour une branche, seul le tag le plus bas qui reste s'affiche ; une catégorie limitée (Idan,
+  // 2026-11-20) ne garde que ses X tags de plus haut rang (le moteur, game-core/tag-engine.js).
+  const {restent,affiches}=E.createTagTree(doc).displayed(motif);
   const r=$("restent"); r.replaceChildren();
   const tete=el("p",{style:"margin:0"},el("b",{text:affiches.length+" tag"+(affiches.length>1?"s":"")+" affiché"+(affiches.length>1?"s":"")}));
   if(affiches.length>4) tete.append(" ",el("span",{class:"trop",text:"(l'objectif est 3 ou 4 : il manque des tests)"}));

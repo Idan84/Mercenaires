@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 492,
+  "row_count": 494,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1267,6 +1267,14 @@
       "version": "V1"
     },
     {
+      "nom": "Progression — plancher des compétences",
+      "code": "progression.skills.floor",
+      "description": "Une perte d'XP (la régression) ne fait pas descendre une compétence sous cette valeur ; une compétence déjà plus bas (une catégorie d'armes non pratiquée, à 0) n'en perd pas davantage (Idan, 2026-11-23 : « fais en sorte qu'on ne puisse pas perdre d'xp en dessous de 1 »). Les écoles de magie : progression.magic.school_floor.",
+      "formule": "Progression",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
       "nom": "XP — Puissance magique par sort efficace",
       "code": "progression.magic_power.spell_effect_xp",
       "description": "XP de Puissance magique à chaque sort réussi qui a un vrai effet (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
@@ -2144,6 +2152,14 @@
       "description": "Valeur d'une compétence non pratiquée (voir generation.skills.unpracticed_max) : 1, comme une école de magie absente.",
       "formule": "Génération des compétences",
       "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Génération — catégorie d'armes non pratiquée",
+      "code": "generation.skills.unpracticed_category_value",
+      "description": "Une catégorie d'armes à generation.skills.unpracticed_max ou moins passe à cette valeur (Idan, 2026-11-23 : « Fais passer les armes à 1 ») : sur la fiche, une arme montre arme + catégorie, et une arme jamais pratiquée y vaut 1 + 0 = 1. Les armes, les styles et les écoles restent à generation.skills.unpracticed_value.",
+      "formule": "Génération des compétences",
+      "valeur": 0,
       "version": "V1"
     },
     {

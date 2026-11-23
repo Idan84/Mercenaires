@@ -251,14 +251,19 @@ for (let i = 0; i < 1000; i++) {
     assert.ok(reference.rings.rows.some(row => row.nom === ring.name && "ring:" + row.code === ring.templateId), ring.name);
     ringsSeen[ring.name] = (ringsSeen[ring.name] || 0) + 1;
   }
-  // Compétences non pratiquées (Idan, 2026-11-06) : armes précises, catégories, styles et écoles à 20 ou moins → 1 ; aucun
-// sort dans une école à 20 ou moins.
+  // Compétences non pratiquées (Idan, 2026-11-06) : armes précises, styles et écoles à 20 ou moins → 1 ; catégories d'armes
+  // → 0 (Idan, 2026-11-23 : une arme jamais pratiquée montre 1 + 0 = 1 sur la fiche) ; aucun sort dans une école à 20 ou moins.
   {
-    const unpracticed = new Set([...reference.weapons.rows.map(w => w.nom), ...reference.weapons.rows.map(w => skillByName.get(w.nom)?.parent).filter(Boolean),
-      "Combat à une main","Combat à deux mains","Combat à deux armes","Boucliers"]);
+    const styles = ["Combat à une main","Combat à deux mains","Combat à deux armes","Boucliers"];
+    const categories = new Set(reference.weapons.rows.map(w => skillByName.get(w.nom)?.parent).filter(x => x && !styles.includes(x)));
+    const unpracticed = new Set([...reference.weapons.rows.map(w => w.nom), ...styles]);
     for (const name of unpracticed) {
       const v = c.skills.martial[name];
       if (Number.isFinite(v)) assert.ok(v === 1 || v > 20, `${name} : ${v} (20 ou moins, 0 compris → 1)`);
+    }
+    for (const name of categories) {
+      const v = c.skills.martial[name];
+      if (Number.isFinite(v)) assert.ok(v === 0 || v > 20, `${name} : ${v} (catégorie à 20 ou moins → 0)`);
     }
     for (const [school, v] of Object.entries(c.skills.magic)) assert.ok(v === 1 || v > 20, `${school} : ${v} (20 ou moins, 0 compris → 1)`);
     for (const spell of c.spells || []) assert.ok(c.skills.magic[spell.school] > 20, `${spell.name} : école ${spell.school} à ${c.skills.magic[spell.school]}`);
@@ -348,7 +353,7 @@ assert.ok(Object.keys(ringsSeen).length >= 8, "la plupart des onze types de bagu
 // Seconde main (Idan, 2026-11-04) : environ 6 % de boucliers et 12 % de secondes armes.
 assert.ok(offHandsSeen.shield >= 25 && offHandsSeen.shield <= 110, `boucliers à la création ≈ 6 % : ${offHandsSeen.shield}/1000`);
 assert.ok(offHandsSeen.dual >= 60 && offHandsSeen.dual <= 190, `secondes armes à la création ≈ 12 % : ${offHandsSeen.dual}/1000`);
-assert.deepEqual(["generation.skills.unpracticed_max","generation.skills.unpracticed_value"].map(code => reference.formulaConstants.rows.find(r => r.code === code)?.valeur), [20,1]);
+assert.deepEqual(["generation.skills.unpracticed_max","generation.skills.unpracticed_value","generation.skills.unpracticed_category_value"].map(code => reference.formulaConstants.rows.find(r => r.code === code)?.valeur), [20,1,0]);
 assert.deepEqual(["generation.off_hand.shield_min","generation.off_hand.dual_min","generation.off_hand.light_max_speed_malus"].map(code => reference.formulaConstants.rows.find(r => r.code === code)?.valeur), [50,50,8]);
 assert.deepEqual(reference.weapons.rows.filter(x => !/Armes de tir|Armes à feu|Boucliers/.test(x.domaine) && ["1 main","Au choix"].includes(x.prise) && x.malus_vitesse_arme_base <= 8).map(x => x.nom).sort(),
   ["Bâton court","Dague","Estoc","Fouet","Hachette","Kukri","Nunchaku","Sai","Épée courte"].sort(), "les neuf armes légères");

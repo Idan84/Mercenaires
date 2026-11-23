@@ -124,6 +124,9 @@ arme+cat. » Les règles ne changent pas : la catégorie et l'arme restent deux 
 - une catégorie d'armes montre la valeur de sa **meilleure arme** et, dans sa fenêtre, plus de valeur à elle ;
 - les styles (une main, deux mains, deux armes, Boucliers) gardent leur valeur ; les animaux ne changent pas.
 
+Une arme jamais pratiquée montre **1** (arme 1 + catégorie 0 : doc 02, « Compétences non pratiquées », Idan,
+2026-11-23) ; une perte d'XP ne fait pas descendre une compétence sous 1 (doc 08).
+
 ## Fiche : onglets Camp et Historique (Idan, 2026-10-24)
 
 - **Camp** : Transmission du savoir, Intendance, Médecine, et l'Artisanat avec ses huit métiers, du meilleur au moins

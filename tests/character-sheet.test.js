@@ -139,6 +139,10 @@ assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
   assert.equal(api.shownSkillValue(m,"martial","Combat à une main"),25);
   assert.equal(api.shownSkillValue(m,"animal","Équidés"),9,"les animaux ne changent pas");
   assert.ok(Number.isNaN(api.shownSkillValue(m,"martial","Lames longues")),"aucune lame : pas de ligne");
+  // Une arme jamais pratiquée (1) dans une catégorie jamais pratiquée (0, Idan, 2026-11-23) : la fiche montre 1.
+  const novice={skills:{martial:{"Lames longues":0,"Épée longue":1}}};
+  assert.equal(api.shownSkillValue(novice,"martial","Épée longue"),1,"1 + 0");
+  assert.equal(api.shownSkillValue(novice,"martial","Lames longues"),1,"la catégorie : sa meilleure arme");
   assert.match(api.skillLine(m,"martial","Haches"),/data-skill-open="Haches"[^>]*style="--skill-level:39%">[\s\S]*?<span class="sheet-stat-value" tabindex="0">78</);
   const fenetre=api.skillOverlay(m,"martial","Haches");
   assert.match(fenetre,/<h4>Haches<\/h4><button/,"pas de valeur pour la catégorie");

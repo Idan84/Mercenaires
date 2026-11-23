@@ -269,6 +269,10 @@
       spellEffect:k("progression.magic.spell_effect_xp",5),
       schoolRegressionRatio:k("progression.magic.opposite_regression_ratio",0.5),
       schoolFloor:k("progression.magic.school_floor",1),
+      // Plancher des compétences (Idan, 2026-11-23 : « fais en sorte qu'on ne puisse pas perdre d'xp en dessous de 1 ») :
+      // une perte (la régression) ne descend pas sous 1 ; une compétence déjà plus bas (une catégorie d'armes non
+      // pratiquée, à 0) n'en perd pas davantage.
+      skillFloor:k("progression.skills.floor",1),
       magicPowerSpellEffect:k("progression.magic_power.spell_effect_xp",20),
       manaReserveManaSpent:k("progression.mana_reserve.mana_spent_xp",2),
       // XP de combat (Idan, 2026-11-08).
@@ -557,8 +561,8 @@
           const store=skillStore[group]||(skillStore[group]={});
           const stored=store[name];
           const xpBefore=Number.isFinite(stored)&&Math.abs(continuousLevel(stored)-before)<1e-6?stored:xpForContinuous(before);
-          // Une école ne descend pas sous la valeur « sans l'école » de la génération (1).
-          const floor=group==="magic"?xpForContinuous(Math.min(before,C.schoolFloor)):0;
+          // Une école ne descend pas sous la valeur « sans l'école » de la génération (1) ; les autres compétences pas sous 1.
+          const floor=xpForContinuous(Math.min(before,group==="magic"?C.schoolFloor:C.skillFloor));
           const xpAfter=Math.max(floor,xpBefore+delta);
           const after=Math.round(continuousLevel(xpAfter)*1e6)/1e6;
           store[name]=xpAfter;

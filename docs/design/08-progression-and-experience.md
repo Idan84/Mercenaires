@@ -187,6 +187,10 @@ Même courbe que les caractéristiques, sans plafond (§1).
     autres lames longues) ;
   - un gain de catégorie : les autres catégories d'armes ;
   - un gain de style : les autres styles (une main, deux mains, deux armes, boucliers).
+- **Plancher à 1** (Idan, 2026-11-23 : « fais en sorte qu'on ne puisse pas perdre d'xp en dessous de 1 ») : une perte
+  ne fait pas descendre une compétence sous **1** ; une compétence déjà plus bas (une catégorie d'armes jamais
+  pratiquée, à 0) n'en perd pas davantage. Constante `progression.skills.floor` ; les écoles gardent leur plancher
+  (`progression.magic.school_floor`, 1).
 
 ### Application en fin de mission (Idan, 2026-10-06)
 

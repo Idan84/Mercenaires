@@ -3,7 +3,7 @@
 // Moteur des tags (refonte de l'atelier des tags, doc 20 §11 et §12 ; Idan, 2026-11-22 : « je veux que le jeu lise les
 // datas de l'atelier »). Une seule source pour l'atelier (artefact et Design Lab) et pour le jeu :
 // - le langage des calculs de l'atelier (sûr : aucun code exécuté) : variables, constantes, et / ou / non, comparaisons,
-//   + − × ÷, « contient », max, min, abs, arrondi, nombre, somme ;
+//   + − × ÷, « contient », max, min, abs, arrondi, arrondi_sup, arrondi_inf, nombre, somme ;
 // - les données de l'atelier (tags à plusieurs parents, tests rangés en arbre, constantes), nettoyées par clean ;
 // - la résolution : chaque test posé élimine des tags, un tag tombe avec l'un de ses parents, un tag inactif tombe
 //   d'office ; seuls s'affichent le tag le plus bas de chaque branche, ou les X tags de plus haut rang d'une catégorie
@@ -31,6 +31,8 @@
   }
   function vrai(x){ return Array.isArray(x)?x.length>0:typeof x==="string"?x!=="":Boolean(x); }
   const FONCTIONS={max:(...a)=>Math.max(...a.map(nombre)),min:(...a)=>Math.min(...a.map(nombre)),abs:a=>Math.abs(nombre(a)),arrondi:a=>Math.round(nombre(a)),
+    // Arrondi au-dessus et au-dessous (Idan, 2026-11-23 : « arr sup (nombre d'étoiles de la compagnie/5) »).
+    arrondi_sup:a=>Math.ceil(nombre(a)),arrondi_inf:a=>Math.floor(nombre(a)),
     nombre:a=>Array.isArray(a)?a.length:typeof a==="string"?(a?1:0):nombre(a),somme:(...a)=>a.reduce((s,x)=>s+nombre(x),0)};
   function lexer(src){
     const toks=[]; let i=0;
@@ -367,6 +369,23 @@
       put("moy.ecole.soin","Niveau moyen des écoles de ses sorts de soin (équipement compris)","Sorts : moyennes des soins","nombre",r1(moy(sp=>Number(engine.statWithGear(unit,spellRows.get(sp.code).ecole))||0)));
       put("lancers.soin","Nombre de soins qu'il peut lancer avec sa réserve (coût moyen de ses soins)","Sorts : moyennes des soins","nombre",moyCout?Math.floor(reserve/moyCout):0);
       put("sorts.soin_rapide","Sorts de soin en action rapide","Sorts","nombre",soins.filter(sp=>spellRows.get(sp.code).action==="rapide").length);
+      // Par école, comme les soins (Idan, 2026-11-23 : tags des écoles, « Tu avais fait des seuils et des constantes pour
+      // soin, tu peux te baser dessus ») : ses sorts de l'école, leur réussite moyenne, leur coût moyen, et combien il
+      // peut en lancer avec sa réserve ; puis les mêmes sur tous ses sorts (Mage pluridisciplinaire et suivants).
+      const moyennes=(liste,k,lib,groupe)=>{
+        const m=f=>liste.length?liste.reduce((t,sp)=>t+f(sp),0)/liste.length:0;
+        const cout=m(sp=>Number(magic?.manaCost(unit,sp.code))||0);
+        put("moy.chance."+k,"Réussite moyenne de "+lib+" (%)",groupe,"nombre",Math.round(m(sp=>Number(magic?.castChance(unit,sp.code)?.p)||0)));
+        put("moy.cout."+k,"Coût moyen en mana de "+lib,groupe,"nombre",r1(cout));
+        put("lancers."+k,"Nombre de "+lib+" qu'il peut lancer avec sa réserve (coût moyen)",groupe,"nombre",cout?Math.floor(reserve/cout):0);
+      };
+      for(const s of SCHOOLS){
+        const k="ecole."+key(s), lib="ses sorts de l'école "+s, deEcole=known.filter(sp=>spellRows.get(sp.code).ecole===s);
+        put("sorts."+k,"Sorts connus de l'école "+s,"Sorts par école","nombre",deEcole.length);
+        moyennes(deEcole,k,lib,"Sorts par école");
+      }
+      put("nb_ecoles_sorts","Nombre d'écoles où il connaît au moins un sort","Sorts par école","nombre",new Set(known.map(sp=>spellRows.get(sp.code).ecole)).size);
+      moyennes(known,"sorts","tous ses sorts","Sorts par école");
       // Les auras de courage (Commandement, Idan, 2026-11-22) : celle d'officier, en points de Courage pour ses alliés
       // (capitaine : 0,35 × Courage + 0,25 × Charisme ; lieutenant : la moitié ; combat-engine.js), celle de son fouet (le %
       // du Courage de chaque allié proche, selon le tier : 5 / 10 / 15 / 20), et la plus forte en points (officier ou sort).

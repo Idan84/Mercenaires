@@ -18,6 +18,9 @@ assert.equal(ev("(1 + 2) * 3"),9);
 assert.equal(ev("-3 + 5"),2);
 assert.equal(ev("10 / 0"),0,"diviser par 0 donne 0");
 assert.equal(ev("max(1, 4, 2) + min(3, 9) + abs(-2) + arrondi(2.6)"),12);
+// Arrondi au-dessus et au-dessous (Idan, 2026-11-23 : « arr sup (nombre d'étoiles de la compagnie/5) »).
+assert.deepEqual(["arrondi_sup(1/5)","arrondi_sup(5/5)","arrondi_sup(6/5)","arrondi_inf(9/5)"].map(ev),[1,1,2,1]);
+assert.equal(ev("somme(3 >= 2, 1 >= 2, 5 >= 2)"),2,"compter des conditions vraies");
 assert.equal(ev("somme(1, vrai, 2)"),4);
 assert.equal(ev("nombre(sorts)",{sorts:["a","b"]}),2);
 assert.equal(ev("a > 2 et b < 1",{a:3,b:0}),true);
@@ -155,8 +158,19 @@ const cles=Object.keys(recrues[0]).sort();
 assert.ok(cles.length>300,"toutes les variables de l'atelier");
 for(const v of recrues) assert.deepEqual(Object.keys(v).sort(),cles,"la même liste de variables pour chacun");
 const VARS=new Set(tagVars.vars().map(x=>x.k));
-for(const k of ["carac.force","comp.armes_de_tir","tir.precision","tir.puissance","tir.dex_vit","tir.repetable","pm","sorts","nb_sorts","moy.cout.soin","lancers.soin"])
+for(const k of ["carac.force","comp.armes_de_tir","tir.precision","tir.puissance","tir.dex_vit","tir.repetable","pm","sorts","nb_sorts","moy.cout.soin","lancers.soin",
+  "nb_ecoles_sorts","moy.chance.sorts","moy.cout.sorts","lancers.sorts"])
   assert.ok(VARS.has(k),k);
+// Par école (Idan, 2026-11-23 : tags des écoles de magie) : ses sorts de l'école, leur réussite et leur coût moyens, et
+// combien il peut en lancer avec sa réserve.
+const ECOLES=["vie","feu","eau","transmutation","foudre","telekinesie","illusion","necromancie","invocation"];
+for(const e of ECOLES) for(const k of ["sorts.ecole.","moy.chance.ecole.","moy.cout.ecole.","lancers.ecole."]) assert.ok(VARS.has(k+e),k+e);
+for(const v of recrues){
+  assert.equal(ECOLES.reduce((t,e)=>t+v["sorts.ecole."+e],0),v.nb_sorts,"ses sorts, école par école");
+  assert.equal(ECOLES.filter(e=>v["sorts.ecole."+e]>0).length,v.nb_ecoles_sorts);
+  for(const e of ECOLES) if(v["moy.cout.ecole."+e]>0) assert.equal(v["lancers.ecole."+e],Math.floor(v["carac.reserve_de_mana"]/v["moy.cout.ecole."+e]));
+}
+assert.ok(recrues.some(v=>v.nb_ecoles_sorts>=1&&v["moy.chance.sorts"]>0),"des recrues qui lancent des sorts");
 
 const donnees=E.clean(JSON.parse(read("data/reference/tag-workshop.json")));
 const arbre=E.createTagTree(donnees);

@@ -458,7 +458,10 @@ la réponse est non. Un calcul vide est à écrire.
 
 Variables du profil : `scripts/atelier-tags/profils.js` (caractéristiques, résistances, compétences, ports d'armure,
 écoles, capacités, armes, armure, monture, sorts par tag de rôle, réussite / coût / durée par tag de sort, moyennes des
-soins, `lancers.soin` = réserve ÷ coût moyen, `moy.cout.<tag de sort>` = coût moyen de ses sorts de ce tag, le tir
+soins, `lancers.soin` = réserve ÷ coût moyen, `moy.cout.<tag de sort>` = coût moyen de ses sorts de ce tag ; par école
+(Idan, 2026-11-23, tags des écoles de magie, calqués sur les soins) `sorts.ecole.<école>`, `moy.chance.ecole.<école>`,
+`moy.cout.ecole.<école>`, `lancers.ecole.<école>`, et sur tous ses sorts `nb_ecoles_sorts`, `moy.chance.sorts`,
+`moy.cout.sorts`, `lancers.sorts` ; fonctions `arrondi_sup` et `arrondi_inf` ; le tir
 `tir.arme`, `tir.precision`, `tir.puissance`, `tir.dex_vit`, `tir.repetable`, `tir.degats_tour`, `pm`, `compagnie.etoiles`
 de 1 à 15).
 

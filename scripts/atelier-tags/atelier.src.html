@@ -608,7 +608,7 @@ $("const-ajout").onclick=()=>{ if(!peutEcrire) return; doc.constantes.push({id:u
 function rendreAideVars(){
   const box=$("aide-vars"); const groupes=new Map();
   for(const v of VARS){ if(!groupes.has(v.groupe)) groupes.set(v.groupe,[]); groupes.get(v.groupe).push(v); }
-  box.append(el("p",{class:"aide",text:"Opérateurs : > < >= <= = != , et, ou, non, + - * /, « contient » pour une liste (sorts contient \"Soin rapide\"). Fonctions : max, min, abs, arrondi, nombre, somme. Textes entre guillemets. Les constantes (au-dessus de la liste des tests) s'utilisent par leur nom."}));
+  box.append(el("p",{class:"aide",text:"Opérateurs : > < >= <= = != , et, ou, non, + - * /, « contient » pour une liste (sorts contient \"Soin rapide\"). Fonctions : max, min, abs, arrondi, arrondi_sup (au-dessus), arrondi_inf (au-dessous), nombre, somme (somme(a >= 1, b >= 1) compte les conditions vraies). Textes entre guillemets. Les constantes (au-dessus de la liste des tests) s'utilisent par leur nom."}));
   for(const [g,vs] of groupes){ const d=el("details",{},el("summary",{text:g+" ("+vs.length+")"}));
     const ul=el("ul",{style:"margin:4px 0;padding-left:18px"}); for(const v of vs) ul.append(el("li",{},el("code",{text:v.k}),"  "+v.label+" ("+v.type+")")); d.append(ul); box.append(d); }
 }

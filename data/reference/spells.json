@@ -3115,7 +3115,9 @@
       "invocation_de": null,
       "invocation_pas_maitrise": null,
       "cadre": "spells/invocation/cadre.webp",
-      "tags": []
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Invocation de loups",

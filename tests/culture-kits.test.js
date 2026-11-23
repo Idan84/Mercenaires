@@ -48,6 +48,14 @@ for (const kit of kits.rows) {
   assert.deepEqual(imageSize(path.join(WEB, "assets/pictos/culture-" + kit.cle + ".webp")), {w: 256, h: 256});
   assert.ok(fs.existsSync(path.join(ROOT, "assets-src/Kits", kit.cle, "logo.png")), kit.cle + " : logo du kit");
 }
+// L'équerre à la rune des Nains du chaos : son master a un voile blanc en haut, qui tranchait le haut de l'équerre à la
+// découpe (Idan, 2026-11-22 : « le bas est tronqué… une partie de l'ornement d'angle disparaît »). Entière : 700 × 621
+// (tronquée, elle faisait 700 × 558) ; découpe expliquée dans scripts/build-culture-kit.sh.
+assert.deepEqual(imageSize(path.join(WEB, "assets/fiche/kits/nains-du-chaos/coin-orne-leger.webp")), {w: 700, h: 621});
+// Le morceau ajouté (lignes 70 à 183 d'un master de 1254 px de large) déborde du coin : la pièce reste où Idan l'a réglée
+// (Idan, 2026-11-23 : « A gauche c'est coupé, à droite c'est trop haut »). Contrôlé sur la fiche plus bas.
+assert.equal(kits.rows.find(k => k.cle === "nains-du-chaos").geometrie.ornementsCoinDebord.leger, +((183 - 70) / 1254).toFixed(4));
+assert.match(fs.readFileSync(path.join(ROOT, "scripts/build-culture-kit.sh"), "utf8"), /for piece in coin-orne-riche coin-orne-courbe; do orn "\$SRC\/\$piece\.png"[\s\S]*?-morphology Dilate Disk:3[\s\S]*?"\$OUT\/coin-orne-leger\.webp"/);
 const byKey = Object.fromEntries(kits.rows.map(k => [k.cle, k]));
 const elfes = byKey["elfes-noirs"], sylvains = byKey["elfes-sylvains"], cites = byKey["elfes-des-grandes-cites"];
 
@@ -261,6 +269,16 @@ assert.match(kitScript, /\ncadre nains-du-chaos 110x110\+47\+28 400x87\+150\+28 
 assert.match(kitScript, /\ncadre nains-esclaves 280x280\+40\+37 132x101\+307\+37 "" 109x132\+40\+266 "" 106x132\+715\+264 "" /, "chaînes : cellules d'un pas, sans reflet");
 // La fiche et les barres des Nains : leur cadre, leurs ornements, leur bouton.
 assert.equal(api.hoverCultureFrame("Nains du chaos").kit, chaos);
+// L'équerre à la rune du coin bas-gauche (retournée) : sa boîte descend du débord (0,0901 × 158 px), la pièce reste à la
+// place réglée et le carré à la rune dépasse sous la fiche. Les autres coins et les autres kits ne bougent pas.
+{
+  const o = chaos.fiche.ornementsCoin.bg, html = api.hoverKitFrame(chaos);
+  const top = 565 + chaos.fiche.cotes.bas - o.taille + o.dy + chaos.geometrie.ornementsCoinDebord.leger * o.taille;
+  assert.match(html, new RegExp(`<img src="[^"]*nains-du-chaos/coin-orne-leger\\.webp" alt="" style="left:${o.dx}px;top:${+top.toFixed(2)}px;width:${o.taille}px;height:${o.taille}px;[^"]*transform:scaleY\\(-1\\)">`));
+  const riche = chaos.fiche.ornementsCoin.hg;
+  assert.ok(html.includes(`style="left:${riche.dx}px;top:${riche.dy + chaos.fiche.cotes.haut}px;`), "le coin du haut ne bouge pas");
+  assert.ok(kits.rows.every(k => k === chaos || !k.geometrie.ornementsCoinDebord), "seule l'équerre des Nains du chaos a un débord");
+}
 assert.ok(api.hoverCultureFrame("Nains esclaves").vars.includes('--hc-orn:url("assets/fiche/kits/nains-esclaves/titre.webp")'));
 assert.equal(srcsOf(api.hoverKitFrame(montagnes)).filter(s => s.endsWith("/pose-belier.webp")).length, 1, "le bélier en bas de la fiche");
 assert.equal(srcsOf(api.hoverKitFrame(esclaves)).filter(s => s.endsWith("/pose-chopes.webp")).length, 1, "les chopes en bas de la fiche");
@@ -348,7 +366,7 @@ assert.match(css, /\.game-bottom-bar\.is-dore \.hud-nav-img\{filter:sepia\(1\) s
   assert.deepEqual(plain(applyCultureSettings(base, null)), plain(base), "sans index : le kit du dépôt");
   // L'index en ligne n'est lu qu'à côté du site (sans index, le jeu garde son kit), sans cache.
   assert.match(read("prototype-web/reference-data.js"), /fetch\("\/media\/reglages\/index\.json\?t=" \+ Date\.now\(\), \{ cache: "no-store" \}\)/);
-  assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)\]\)/);
+  assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits[^\]]*\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)[^\]]*\]\)/);
 }
 
 console.log(`Kits des cultures : ${kits.rows.map(k => k.culture).join(", ")} — cadre en une pièce, jonctions, ornements, logo, barres du camp — OK`);

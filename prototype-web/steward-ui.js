@@ -39,13 +39,13 @@ function stewardFill(text,m,vars={}){
 function stewardDays(n){ return `${fmt(n)} jour${n>1?"s":""}`; }
 
 // En haut de l'Intendance, compact (Idan, 2026-10-31 : l'essentiel au premier coup d'œil, le reste au survol) : son
-// portrait, son nom, « Lui parler » et « Retaguer la compagnie » (doc 20) ; sa compétence et son ancienneté au survol. Sans intendant : « Nommer un
-// intendant » ouvre la liste des mercenaires ; un mercenaire déjà sollicité aujourd'hui est grisé.
+// portrait, son nom, « Lui parler » ; sa compétence et son ancienneté au survol (« Retaguer la compagnie » est retiré, Idan,
+// 2026-11-22 : les tags sont calculés à chaque fois, doc 20 §12). Sans intendant : « Nommer un intendant » ouvre la liste
+// des mercenaires ; un mercenaire déjà sollicité aujourd'hui est grisé.
 function renderStewardPanel(){
   const panel=$("steward-panel");
   if(!panel||!game.campaign) return;
   const copy=stewardCopy().panel||{},steward=currentSteward();
-  const retag=typeof stewardTagRules==="function"&&stewardTagRules()?`<button type="button" class="talk-offer-btn" data-steward-retag title="Il revoit les tags de tous les mercenaires (il ne touche pas aux vôtres).">Retaguer la compagnie</button>`:"";
   const company=game.campaign.company;
   // Les mercenaires à qui proposer le poste : sans intendant, ou pour remplacer Cruxor.
   const picks=()=>company.roster.filter(m=>m.id!==company.captainId&&!(company.lieutenantIds||[]).includes(m.id)&&m.id!==company.medicId&&!MercenairesCampPosts.postOf(game.campaign,m)).map(m=>{
@@ -62,7 +62,6 @@ function renderStewardPanel(){
       <span class="steward-face">${oldStewardPortrait(steward,"compact")}</span>
       <div class="steward-info"><small>${esc(stewardFill(copy.steward_title,steward))}</small><strong>${esc(steward.name)}</strong></div>
       <button type="button" class="talk-offer-btn" data-steward-talk>${esc(copy.talk||"")}</button>
-      ${retag}
     </div>${appoint(picks())}`;
     return;
   }
@@ -73,7 +72,6 @@ function renderStewardPanel(){
       <button type="button" class="steward-face" data-character-id="${esc(steward.id)}" aria-label="Voir la fiche de ${esc(steward.name)}">${renderAvatar(steward,{variant:"compact",kind:"portrait"})}</button>
       <div class="steward-info"><small>${esc(stewardFill(copy.steward_title,steward))}</small><strong>${esc(steward.name)}</strong></div>
       <button type="button" class="talk-offer-btn" data-steward-talk>${esc(copy.talk||"")}</button>
-      ${retag}
     </div>`;
     return;
   }
@@ -191,13 +189,6 @@ function initializeSteward(){
     const offer=event.target.closest?.("[data-steward-offer]");
     if(offer){ offerStewardship(offer.dataset.stewardOffer); return; }
     if(event.target.closest?.("[data-steward-talk]")){ openStewardTalk(); return; }
-    // Retaguer toute la compagnie (doc 20 §5 : « Il faudra une option retaguer tous les mercenaires »).
-    const retag=event.target.closest?.("[data-steward-retag]");
-    if(retag){
-      const count=stewardRetag();
-      retag.textContent=count?`${fmt(count)} mercenaire${count>1?"s":""} tagué${count>1?"s":""}`:"Retaguer la compagnie";
-      return;
-    }
     const choice=event.target.closest?.("[data-steward-choice]");
     if(choice) stewardTalk(choice.dataset.stewardChoice,choice.dataset.arg);
   });

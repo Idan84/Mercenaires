@@ -1,7 +1,8 @@
 "use strict";
 
-// Dialogue de recrutement à la Taverne (Idan, 2026-10-21) : salutation selon l'affinité (20 tranches),
-// réponses sincères aux questions, répliques de négociation ; textes dans data/reference/tavern-dialogue.json.
+// Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; doc 14 §6 bis, 2026-11-19 et 2026-11-22) : salutation selon
+// l'affinité (20 tranches), les questions qui remplissent la fiche du candidat (« Puis-je en savoir plus sur vous ? »),
+// répliques de négociation, questions au tavernier ; textes dans data/reference/tavern-dialogue.json.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -9,8 +10,7 @@ const {createRecruitDialogue,fill}=require("../game-core/recruit-dialogue.js");
 const {createGenerator}=require("../game-core/mercenary-generator.js");
 const read=f=>JSON.parse(fs.readFileSync(path.join(__dirname,"..","data","reference",f),"utf8"));
 const copy=read("tavern-dialogue.json");
-const sheet=read("character-sheet-copy.json");
-const dialogue=createRecruitDialogue({reference:{tavernDialogue:copy,characterSheetCopy:sheet}});
+const dialogue=createRecruitDialogue({reference:{tavernDialogue:copy,formulaConstants:read("formula-constants.json")}});
 
 // Salutations : 20 tranches contiguës de −100 à +100, une phrase par affinité.
 assert.equal(copy.greetings.length,20);
@@ -24,60 +24,85 @@ assert.notEqual(dialogue.greeting({name:"X"},-100),dialogue.greeting({name:"X"},
 assert.equal(fill("{Ravi|Ravie} de voir {arme}. {Arme} !",{arme:"l’arc"},true),"Ravie de voir l’arc. L’arc !");
 assert.equal(fill("{un idiot|une idiote}",{},false),"un idiot");
 
-// Couverture des données : chaque arme a son article, chaque style et chaque école leur réplique.
+// Couverture des données : chaque arme a son article ; ses écoles en une seule réponse (Idan, 2026-11-22 : « on lui demande
+// s'il connait des sorts, il répond en listant les écoles »).
 const weapons=read("weapons.json").rows.map(r=>r.nom).sort();
 assert.deepEqual(copy.weapons.map(r=>r.nom).sort(),weapons);
-for(const style of sheet.skills_layout.styles_de_combat) assert.ok(copy.answers.style[style]?.length,style);
-const schools=read("skills.json").rows.filter(r=>r.domaine==="Magie"&&r.niveau==="Catégorie").map(r=>r.nom);
-for(const school of schools) assert.ok(copy.answers.magic[school]?.length,school);
+assert.equal(dialogue.schoolList(["Feu"]),"de Feu");
+assert.equal(dialogue.schoolList(["Eau","Feu","Vie"]),"d’Eau, de Feu et de Vie");
+assert.equal(dialogue.schoolList(["Illusion","Invocation"]),"d’Illusion et d’Invocation");
+assert.match(dialogue.answer("magic",{id:4,name:"Aldo"},{ecoles:"d’Eau et de Vie"}),/des sorts d’Eau et de Vie\./);
 
-// Réponses sincères sur de vrais mercenaires : la vraie prédilection, sans gabarit oublié.
+// Les questions du tableau (doc 14 §6 bis), au vouvoiement (Idan, 2026-11-22 : « on a un langage décalé presque
+// corporate ») ; le salaire, sa question d'origine (« Tu repasses à la bonne version »). Une question posée disparaît.
+const q=copy.questions;
+assert.equal(q.about,"Puis-je en savoir plus sur vous ?");
+assert.deepEqual([q.title,q.set1,q.set2,q.armor,q.magic,q.salary],["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
+  "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Quelles sont vos prétentions salariales ?"]);
+assert.ok(!Object.values(q).some(text=>/\b(tu|t’|te|ton)\b|-tu\b/i.test(text)),"pas de tutoiement");
+assert.deepEqual(dialogue.aboutQuestions,["title","set1","set2","armor","magic"]);
+const candidate={mercenary:{id:9}};
+const k=dialogue.known(candidate);
+assert.equal(candidate.recruitKnown,k,"gardé sur le candidat");
+assert.deepEqual(dialogue.aboutLeft(k),["title","set1","set2","armor","magic"]);
+k.asked.title=true; k.asked.armor=true; k.asked.magic=true;
+assert.deepEqual(dialogue.aboutLeft(k),["set1","set2"]);
+assert.equal(dialogue.known(candidate),k,"même objet la seconde fois");
+// Le titre sur sa fiche : priorité au tavernier (Idan, 2026-11-22), même quand il n'en connaît pas (« »).
+assert.equal(dialogue.shownTitle({}),null);
+assert.equal(dialogue.shownTitle({title:"Mage Légendaire Omnipotent"}),"Mage Légendaire Omnipotent");
+assert.equal(dialogue.shownTitle({title:"Mage Légendaire Omnipotent",keeperTitle:"Chair à canon"}),"Chair à canon");
+assert.equal(dialogue.shownTitle({title:"Mage Légendaire Omnipotent",keeperTitle:""}),"");
+
+// L'affinité en un mot (doc 14 §7) : un tiers de l'échelle chacun.
+assert.deepEqual([-100,-34,-33.3,0,33.3,34,100].map(dialogue.affinityWord),["Hostile","Hostile","Neutre","Neutre","Neutre","Amical","Amical"]);
+
+// Le candidat tel qu'on le décrit : ses capacités passées par l'estimation, arrondies ; le reste ne bouge pas, l'original
+// non plus.
+const real={id:3,name:"Aldo",stats:{Force:41,Courage:10},resistances:{Feu:5},skills:{martial:{Arc:12},magic:{Vie:7},camp:{Intendance:3}},spells:[{code:"soin"}]};
+const boasted=dialogue.described(real,v=>v*1.5);
+assert.deepEqual(boasted.stats,{Force:62,Courage:15});
+assert.deepEqual(boasted.resistances,{Feu:8});
+assert.deepEqual(boasted.skills,{martial:{Arc:18},magic:{Vie:11},camp:{Intendance:5}});
+assert.equal(boasted.spells,real.spells);
+assert.equal(real.stats.Force,41,"l'original ne change pas");
+
+// Réponses sur de vrais mercenaires : ses armes portées avec leur article, sans gabarit oublié ; toujours la même réponse.
 const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"};
-const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,read(f)]));
+const reference=Object.fromEntries(Object.entries(files).map(([key,f])=>[key,read(f)]));
 let seed=42;
 const generator=createGenerator(reference,{random:()=>((seed=(seed*1103515245+12345)%2147483648)/2147483648),nameGenerator:(p,id)=>"Aldo "+p+id});
 const article=new Map(copy.weapons.map(r=>[r.nom,r.avec_article]));
+const noTemplate=text=>text&&!/[{}]/.test(text);
 for(let i=0;i<60;i++){
   const m=generator.createMercenary();
-  for(const kind of dialogue.infoQuestions){
-    const text=dialogue.answer(kind,m);
-    assert.ok(text&&!/[{}]/.test(text),`${kind} : « ${text} »`);
-  }
-  const weapon=dialogue.favoriteWeapon(m);
-  assert.ok(dialogue.answer("weapon",m).toLowerCase().includes(article.get(weapon).toLowerCase()),"arme de prédilection : "+weapon);
-  const ranged=m.weaponPreferences?.ranged?.weapon;
-  if(ranged) assert.ok(dialogue.answer("ranged",m).toLowerCase().includes(article.get(ranged).toLowerCase()),"arme de tir : "+ranged);
-  const school=dialogue.favoriteSchool(m);
-  if(school) assert.ok(copy.answers.magic[school].includes(dialogue.answer("magic",m)),"école : "+school);
-  const style=dialogue.favoriteStyle(m);
-  assert.ok(copy.answers.style[style].includes(dialogue.answer("style",m)),"style : "+style);
-  assert.equal(dialogue.answer("weapon",m),dialogue.answer("weapon",m),"toujours la même réponse");
+  const slot=name=>(m.items||[]).find(item=>String(item.id)===String(m.equipment?.slots?.[name]));
+  const names=[slot("weapon_set_1_main"),slot("weapon_set_1_off")].filter(Boolean).map(item=>item.name);
+  const phrase=dialogue.withArticles(names);
+  for(const name of names) assert.ok(phrase.includes(article.get(name)),"l’article de "+name);
+  const text=dialogue.answer("set1",m,{armes:phrase});
+  assert.ok(noTemplate(text)&&text.toLowerCase().includes(phrase.toLowerCase()),`set 1 : « ${text} »`);
+  assert.equal(dialogue.answer("set1",m,{armes:phrase}),text,"toujours la même réponse");
+  for(const kind of ["set1_none","set2_none","armor_clothes","armor_none","no_title","no_magic"]) assert.ok(noTemplate(dialogue.answer(kind,m)),kind);
+  for(const kind of ["set2","title","armor","magic"]) assert.ok(noTemplate(dialogue.answer(kind,m,{armes:"l’arc",titre:"Archer en herbe",armure:"Gambison",ecoles:"de Feu"})),kind);
   for(const kind of Object.keys(copy.lines)){
-    const text=dialogue.line(kind,m,{salaire:47,prime:140,compagnie:"la Compagnie de Bob"});
-    assert.ok(text&&!/[{}]/.test(text),`${kind} : « ${text} »`);
+    const line=dialogue.line(kind,m,{salaire:47,prime:140,compagnie:"la Compagnie de Bob"});
+    assert.ok(noTemplate(line),`${kind} : « ${line} »`);
   }
 }
-const female={id:1,name:"Inga Longueforge",sex:"femme",origin:"Soldat / Guerrier / Combattant"};
+const female={id:1,name:"Inga Longueforge",sex:"femme"};
 assert.equal(dialogue.line("accepted",female,{compagnie:"la Compagnie de Bob"}),"Parfait. Ravie de faire partie de la Compagnie de Bob.");
-assert.match(dialogue.answer("origin",female),/J’étais guerrière\./);
 assert.match(dialogue.line("left",female),/^Inga /);
 
-// Conseils du tavernier : un adjectif pour chaque caractéristique de la fiche, une phrase par rang dans la
-// compagnie ; une égalité avec la médiane se lit « dans la moyenne ».
-const keeper=copy.tavernkeeper;
-assert.deepEqual(keeper.adjectives.map(r=>r.nom).sort(),sheet.stats.map(r=>r.nom).sort());
-assert.deepEqual(keeper.groups.map(g=>g.groupe).sort(),[...new Set(sheet.stats.map(r=>r.groupe))].sort());
-const crew=[["Brakka Os",80],["Thabo Kip",60],["Lia Vent",50],["Orm Roc",40],["Bob",30]].map(([name,value])=>({name,value}));
-assert.deepEqual([95,80,61,50,41,35,20].map(e=>dialogue.adviceTier(e,crew).tier),
-  ["top","well_above","well_above","average","below","well_below","bottom"]);
-assert.equal(dialogue.advice(female,"Force",95,crew),"Inga ? D’après elle, elle serait plus forte que n’importe qui chez toi. Même Brakka ne lui arrive pas à la cheville !");
-assert.equal(dialogue.advice(female,"Force",61,crew),"Inga ? D’après elle, elle serait bien plus forte que Lia.");
-assert.equal(dialogue.advice(female,"Force",20,crew),"Inga ? Même d’après elle, elle serait la moins forte de tous. Bob ferait mieux.");
-for(const tier of Object.keys(keeper.tiers)) for(const stat of keeper.adjectives.map(r=>r.nom)){
-  const estimate={top:99,well_above:79,above:56,average:50,below:44,well_below:31,bottom:1}[tier];
-  const text=dialogue.advice({id:2,name:"Aldo Fer",sex:"homme"},stat,estimate,[...crew,{name:"Zed",value:55},{name:"Ula",value:45}]);
-  assert.ok(text&&!/[{}]/.test(text),`${tier} / ${stat} : « ${text} »`);
-}
+// Le tavernier : ses deux questions sur un candidat (doc 14 §6 bis), au masculin ou au féminin, et ses réponses.
+assert.equal(dialogue.keeperQuestion("title",{name:"Aldo Fer",sex:"homme"}),"Qu’est-ce qu’on dit de lui ?");
+assert.equal(dialogue.keeperQuestion("affinity",{name:"Aldo Fer",sex:"homme"}),"Il m’apprécierait, à ton avis ?");
+assert.equal(dialogue.keeperQuestion("title",female),"Qu’est-ce qu’on dit d’elle ?");
+assert.equal(dialogue.keeperQuestion("affinity",female),"Elle m’apprécierait, à ton avis ?");
+assert.equal(dialogue.keeperAnswer("title",female,{titre:"Mage Légendaire Omnipotent"}),"Inga ? On l’appelle Mage Légendaire Omnipotent, à ce qu’on raconte.");
+for(const word of ["Hostile","Neutre","Amical","no_title"]) assert.ok(noTemplate(dialogue.keeperAnswer(word,female)),word);
+assert.equal(dialogue.keeperAnswer("Amical",female),"Inga ? Elle t’aime bien, ça se voit.");
+assert.ok(!("tiers" in copy.tavernkeeper)&&!("adjectives" in copy.tavernkeeper),"plus de conseils sur les caractéristiques (Idan, 2026-11-19)");
 assert.equal(dialogue.keeperLine("greeting",{capitaine:"Idan"}),"Salut Idan ! Comment vont les affaires ?");
 assert.equal(dialogue.keeperLine("ask_what",{cout:1},female),"Tu veux savoir quoi sur Inga ? C’est 1 PO la question.");
-console.log("Taverne : dialogue de recrutement (salutations, réponses sincères, négociation) et conseils du tavernier — OK");
+console.log("Taverne : dialogue de recrutement (salutations, questions de la fiche, négociation) et questions au tavernier — OK");

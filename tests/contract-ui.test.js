@@ -367,28 +367,19 @@ assert.match(choice, /kind:"rested",label:missionFem\(c,"Reposé"\)\+" à l’ar
 assert.match(choice, /kind:"tired",label:missionFem\(c,"Fatigué"\)\+" −"\+missionFatiguePercent\(\)\+" %"/);
 // « Picto de combat, on va le virer » ; ni grisés, ni PV, ni peuple, ni mots de dev.
 assert.doesNotMatch(choice, /unavailable|"disabled"|profile\?\.type|maxHp|c\.people/);
-// Les tags : « Tous » (éteint à l'ouverture), le tag de la mission, les rôles, « Autres rôles ».
-assert.match(choice, /tab\("","Tous"\)\s*\+\(missionTag\?tab\(missionTag,/, "Tous, puis le tag de la mission");
-assert.match(choice, /const MISSION_CHOICE_MAIN_ROLES=\["role\/degats","role\/soutien","role\/protection","role\/magie"\];/);
-assert.match(choice, /Autres rôles/);
+// Les tags (Idan, 2026-11-22 ; doc 20 §12) : « Tous » (éteint à l'ouverture), puis ceux de l'atelier que portent les
+// mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres compétences » (Idan, 2026-11-22).
+assert.match(choice, /const lists=typeof mercenaryTagLists==="function"\?mercenaryTagLists\(list\):new Map\(\);/);
+assert.match(choice, /tab\("","Tous"\)\s*\+main\.map\(id=>tab\(id,names\.get\(id\)\)\)/);
+assert.match(missionJs, /const MISSION_CHOICE_TABS=4;/);
+assert.match(choice, />Autres compétences<\/button>/);
+assert.match(missionJs, /picked\?picked\.textContent:"Autres compétences"/);
+assert.doesNotMatch(missionJs, /missionTag|tagRules/, "plus de tag de la mission (l'ancien arbre)");
 // L'escouade : x / 20, la croix, et la règle de la fatigue en clair.
 assert.match(choice, /\$\("mission-select-count"\)\.textContent=ids\.length\+" \/ "\+max;/);
 assert.match(choice, /class="mission-slot-remove" data-squad-remove=/);
 assert.match(choice, /" encore fatigué"\+\(still>1\?"s":""\)\+" au combat \(−"/);
 assert.match(choice, /min:1,max:20/, "un contrat : de 1 à 20");
-{
-  const {createTagRules} = require("../game-core/mercenary-tags.js");
-  const source = fs.readFileSync(path.join(root, "prototype-web/reference-data.js"), "utf8");
-  const block = source.slice(source.indexOf("REFERENCE_FILES"), source.indexOf("};", source.indexOf("REFERENCE_FILES")));
-  const files = Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)"/gm)].map(m => [m[1], m[2]]));
-  const reference = Object.fromEntries(Object.entries(files).map(([key, file]) => [key, JSON.parse(fs.readFileSync(path.join(root, "data/reference", file), "utf8"))]));
-  const rules = createTagRules({reference});
-  const missionTagOf = new Function("tagRules", choice.slice(choice.indexOf("function missionTagOf("), choice.indexOf("// Les rôles en onglets")) + "\nreturn missionTagOf;")(() => rules);
-  assert.equal(missionTagOf({faction:"Gobelins", camp:{}}), "occupation/mission/camps/gobelins", "un camp : sa faction sous Mission › Camps");
-  assert.equal(missionTagOf({faction:"Loups", camp:{}}), "occupation/mission/chasses/loups", "une chasse : sa bête sous Mission › Chasses");
-  assert.equal(missionTagOf({kind:"bodyguard", client:"Une veuve fortunée"}), "occupation/garde-du-corps");
-  assert.equal(missionTagOf(null), null, "Mission Test : pas de tag de mission");
-}
 // « Les persos sont cliquables et ça ouvre la fiche complète ? » → clic sur le nom : la fiche s'ouvre par-dessus ; le
 // portrait, lui, ajoute à l'escouade.
 assert.match(choice, /<button type="button" class="mission-pick-name" data-sheet-open="\$\{c\.id\}"/);
@@ -411,8 +402,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.ok(hoverCardPlacement({anchor: {left: 10, top: 10, right: 50, bottom: 50}, view: {w: 800, h: 450}, card}).scale <= (450 - 60) / 565 + .001, "un petit écran : plus petite");
   assert.match(choice, /<label class="mission-pick" data-hover-card="\$\{c\.id\}"/, "la galerie");
   assert.match(missionJs, /<div class="mission-slot" data-hover-card="\$\{c\.id\}">/, "l'escouade");
-  assert.match(choice, /sel\.missionTag=missionTag;/);
-  assert.match(missionJs, /box\.innerHTML=renderMercenaryHoverCard\(c,\{missionTag:sel\.missionTag\|\|null\}\);[\s\S]*?fitHoverCard\(card\);[\s\S]*?hoverCardPlacement\(/);
+  assert.match(missionJs, /box\.innerHTML=renderMercenaryHoverCard\(c\);[\s\S]*?fitHoverCard\(card\);[\s\S]*?hoverCardPlacement\(/);
   assert.match(missionJs, /for\(const id of \["mission-select-list","mission-squad-slots"\]\)\{\s*\$\(id\)\.addEventListener\("pointerover",onMissionChoiceHover\);\s*\$\(id\)\.addEventListener\("pointerout",onMissionChoiceHoverOut\);/);
   assert.match(missionJs, /\$\("mission-select-dialog"\)\.addEventListener\("close",hideMissionChoiceHover\);/);
   assert.match(missionJs, /if\(event\.pointerType&&event\.pointerType!=="mouse"\) return;/, "à la souris seulement");
@@ -420,13 +410,11 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(choiceCss, /\.mission-choice-hover\{position:fixed;[^}]*pointer-events:none;transform:scale\(var\(--hc-scale,1\)\);transform-origin:0 0\}/);
   assert.match(html, /<script src="contract-ui\.js"><\/script>\s*<script src="hover-card-ui\.js"><\/script>/);
   const HUD_BARS = new Function(fs.readFileSync(path.join(root, "prototype-web/hud-bars.js"), "utf8") + "\nreturn HUD_BARS;")();
-  const tagIds = ["occupation/mission", "occupation/mission/camps", "occupation/mission/camps/culte-des-morts", "occupation/garde-du-corps",
-    "equipement/armes", "equipement/armes/haches", "role/degats"];
-  const names = {"occupation/mission/camps/culte-des-morts": "Culte des morts", "occupation/garde-du-corps": "Garde du corps", "equipement/armes/haches": "Haches", "role/degats": "Dégâts"};
+  // Les tags de l'atelier, calculés par le jeu (mercenaryTagList, ui.js) : déjà les plus précis.
+  const tagList = [{id: "a1", name: "Archer", parent: "Tireur"}, {id: "s1", name: "Soigneur occasionnel", parent: "Soigneur"}, {id: "g1", name: "Grosse Brute", parent: "Ce qu'il est"}];
   const stubs = {
     game: {referenceData: {spells: {rows: [{code: "boule", nom: "Boule de feu", ecole: "Feu"}, {code: "soin", nom: "Soin", ecole: "Vie"}]}, mounts: {rows: [{code: "loup", nom: "Loup de combat"}]}}},
-    tagRules: () => ({litIds: () => tagIds, node: id => ({nom: names[id] || id}),
-      columns: [{code: "occupation", teinte: "rouge"}, {code: "equipement", teinte: "vert"}, {code: "role", teinte: "bleu"}]}),
+    mercenaryTagList: () => tagList,
     profileRules: () => null, captainAffinity: () => null, tavernRules: () => ({missionBonusDemand: () => 40}), HUD_BARS
   };
   const api = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData, hoverCultureFrame, originPhrase};")(...Object.values(stubs));
@@ -436,7 +424,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
       {id: 3, name: "Arc", category: "Armes de tir"}, {id: 4, name: "Armure de cuir", category: "Légère"},
       {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
     equipment: {slots: {weapon_set_1_main: 1, weapon_set_1_off: 2, weapon_set_2_main: 3, armor: 4, mount: 5}}};
-  const d = api.mercenaryHoverData(merc, {missionTag: "occupation/garde-du-corps"});
+  const d = api.mercenaryHoverData(merc);
   // Zone 2 : la phrase d'origine, le peuple et la culture en une fois, puis « au sang de » (Idan, 2026-11-15).
   assert.equal(d.origin, "Orc des steppes");
   assert.equal(api.originPhrase({people: "Nain", culture: "Nains des montagnes"}), "Nain des montagnes", "« Nains / Nains des montagnes devient Nains des montagnes ! »");
@@ -450,11 +438,12 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.equal(api.originPhrase({people: "Halfling", culture: "Explorateurs"}), "Halfling explorateur");
   // Au masculin pour tous, la phrase comme le titre (« Humain (pour un homme et une femme) »).
   assert.doesNotMatch(hoverSrc, /isFemale|female/);
-  // « On met que la catégorie la plus basse. On met uniquement les tags missions et rôle au combat » (Idan, 2026-11-16) :
-  // ni l'équipement (Haches), ni les autres occupations.
-  assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Dégâts"], "seulement les plus précis, missions et rôle au combat, celui de la mission d'abord");
-  assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "bleu"]);
-  assert.equal(d.tags[0].mission, true);
+  // « Sur la fiche au survol, ça remplace les tags actuels » (Idan, 2026-11-22) : les tags de l'atelier, dans leur ordre,
+  // en bleu comme le rôle au combat.
+  assert.deepEqual(d.tags.map(t => t.name), ["Archer", "Soigneur occasionnel", "Grosse Brute"]);
+  assert.deepEqual(d.tags.map(t => t.tone), ["bleu", "bleu", "bleu"]);
+  assert.ok(d.tags.every(t => t.mission === false && !("parent" in t)));
+  assert.doesNotMatch(hoverSrc, /tagRules|litIds|HOVER_TAG_BRANCHES/, "plus l'ancien arbre des tags");
   // Le nom de chaque arme et de l'armure (Idan, 2026-11-16 : « épée longue et écu », « Arc », « Armure de cuir »), les deux
   // mains (« deux épées, c'est pas épée et bouclier »).
   assert.deepEqual(d.sets, [["Épée longue", "Épée courte"], ["Arc"]], "« deux épées, c'est pas épée et bouclier »");
@@ -556,19 +545,75 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     const {hoverTagFullName} = require(path.join(root, "prototype-web/hover-card-ui.js"));
     assert.deepEqual([hoverTagFullName("Dégâts", "De zone"), hoverTagFullName("Soin", "De zone"), hoverTagFullName("Dégâts", "Brûlant"),
       hoverTagFullName("Dégâts élémentaires", "Glaçant")], ["Dégâts de zone", "Soin de zone", "Dégâts brûlants", "Dégâts élémentaires glaçants"]);
-    const dupNames = {"role/degats": "Dégâts", "role/soin": "Soin", "role/degats/de-zone": "De zone", "role/soin/de-zone": "De zone", "role/protection": "Protection"};
     const dupApi = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData};")(...Object.values({...stubs,
-      tagRules: () => ({litIds: () => ["role/degats", "role/degats/de-zone", "role/soin", "role/soin/de-zone", "role/protection"], node: id => ({nom: dupNames[id] || id}),
-        columns: [{code: "role", teinte: "bleu"}]})}));
+      mercenaryTagList: () => [{id: "d", name: "De zone", parent: "Dégâts"}, {id: "s", name: "De zone", parent: "Soin"}, {id: "p", name: "Protection", parent: "Rôles"}]}));
     assert.deepEqual(dupApi.mercenaryHoverData(merc).tags.map(t => t.name), ["Dégâts de zone", "Soin de zone", "Protection"], "le parent seulement en cas de doublon");
     assert.match(css, /\.hc-tags\{display:grid;grid-template-columns:repeat\(6,minmax\(0,1fr\)\);/);
+    // La fiche du candidat (Idan, 2026-11-22 : « la fiche au survol avec des ? quand on ne connait pas les infos ») : les cases
+    // inconnues en « ? », les autres comme d'habitude ; la prime donnée (celle de la négociation).
+    const render = new Function(...Object.keys(stubs), "renderAvatar", "renderPicto", "renderReputationStars", "goldAmount", "esc",
+      hoverSrc + "\nreturn renderMercenaryHoverCard;")(...Object.values(stubs), () => "<i class=\"avatar\"></i>", () => "", () => "<i class=\"stars\"></i>", n => String(n), x => String(x ?? ""));
+    const full = render(merc);
+    assert.doesNotMatch(full, /hc-unknown|hc-tag--unknown/, "sans masque : tout est montré");
+    assert.match(full, /Épée longue et épée courte/);
+    const masked = render(merc, {unknown: new Set(["title", "affinity", "bonus", "tags", "kit", "magic"]), bonus: 99});
+    assert.equal((masked.match(/class="hc-unknown"/g) || []).length, 3, "affinité, prime, magie");
+    assert.match(masked, /<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3\/span 2">\?<\/li>/, "un seul tag « ? »");
+    assert.equal((masked.match(/<span class="hc-kit-item"><i>\?<\/i><\/span>/g) || []).length, 3, "les deux sets et l'armure");
+    assert.match(masked, /<p class="hc-title">[\s\S]*?<span>\?<\/span>/, "le titre");
+    assert.doesNotMatch(masked, /Épée longue|Archer|hc-steed-portrait|hc-school"/, "rien de ce qu'on ne sait pas, ni la monture");
+    assert.match(masked, /class="avatar"/, "son portrait");
+    assert.match(masked, /class="hc-origin">Orc des steppes</, "ses origines, visibles");
+    assert.match(render(merc, {unknown: new Set(["title"]), bonus: 99}), /<b>99 PO<\/b>/, "la prime qu'il demande");
+    // Ce qu'on apprend en lui parlant (doc 14 §6 bis ; Idan, 2026-11-22 : « il faut ajouter absolument le salaire dans cette
+    // fiche ») : le salaire à côté de la prime (fiche du candidat seulement), chaque case de l'équipement à part, le titre
+    // entendu, l'affinité en un mot ; ses écoles quand il les a dites.
+    assert.doesNotMatch(full, /hc-stat--salary/, "pas de salaire sur la fiche au survol de nos mercenaires");
+    assert.match(render(merc, {unknown: new Set(["salary", "bonus"])}), /<div class="hc-stat hc-stat--salary"><span class="hc-label" title="Salaire journalier">Salaire<\/span><span class="hc-unknown">\?<\/span><\/div>/);
+    const learnt = render(merc, {unknown: new Set(["tags", "mount", "set2", "armor"]), salary: 12, bonus: 30, title: "Mage Légendaire Omnipotent",
+      affinityWord: "Amical"});
+    assert.match(learnt, /Salaire<\/span><span class="hc-bonus"><img src="assets\/hud\/picto-or\.webp" alt=""><b>12 PO<\/b><\/span><\/div>\s*<div class="hc-stat hc-stat--bonus">[\s\S]*?<b>30 PO<\/b>/, "le salaire, puis la prime");
+    assert.deepEqual([...learnt.matchAll(/<span class="hc-kit-item"><i>([^<]*)<\/i><\/span>/g)].map(x => x[1]), ["Épée longue et épée courte", "?", "?"], "chaque case à part");
+    assert.match(learnt, /<span>Mage Légendaire Omnipotent<\/span>/, "le titre entendu (vanté)");
+    assert.match(learnt, /<span class="hc-label">Affinité<\/span><b class="hc-affinity-word">Amical<\/b>/, "un mot à la place des cœurs");
+    assert.match(learnt, /<span class="hc-school" role="img" aria-label="Feu">[\s\S]*?aria-label="Vie"/, "ses écoles, toutes");
+    assert.doesNotMatch(learnt, /hc-steed-portrait|hc-unknown">\?<\/span><\/div>\s*<\/div>/, "toujours sans la monture");
+  }
+  // La fenêtre du candidat (Idan, 2026-11-22) : sa fiche à côté de la discussion, un fond noir flou derrière.
+  {
+    const tavernJs = fs.readFileSync(path.join(root, "prototype-web/tavern-ui.js"), "utf8");
+    assert.match(html, /<dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit talk-dialog--fiche" aria-labelledby="recruit-talk-name">\s*<div id="recruit-talk-card" class="recruit-fiche"><\/div>\s*<div class="recruit-talk-box">/);
+    assert.match(tavernJs, /\$\("recruit-talk-card"\)\.innerHTML=renderMercenaryHoverCard\(m,recruitCardOptions\(candidate\)\);/);
+    // Les cases : ce qu'on a appris (recruitDialogue().known) ; le salaire et la prime, une fois ses prétentions dites, suivent
+    // la négociation.
+    const cardOptions = new Function("recruitDialogue", "tavernRules",
+      tavernJs.slice(tavernJs.indexOf("function recruitCardOptions(candidate){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return recruitCardOptions;");
+    const {createRecruitDialogue} = require(path.join(root, "game-core/recruit-dialogue.js"));
+    const dialogue = createRecruitDialogue({reference: {tavernDialogue: JSON.parse(fs.readFileSync(path.join(root, "data/reference/tavern-dialogue.json"), "utf8"))}});
+    const candidate = {mercenary: merc};
+    const negotiation = {salary: 12, bonus: 30, agreed: null};
+    const optionsOf = cardOptions(() => dialogue, () => ({negotiationState: () => negotiation}));
+    const fresh = optionsOf(candidate);
+    assert.deepEqual([...fresh.unknown].sort(), ["affinity", "armor", "bonus", "magic", "mount", "salary", "set1", "set2", "tags", "title"]);
+    const k = dialogue.known(candidate);
+    Object.assign(k, {salary: true, title: "Mage Légendaire Omnipotent", affinity: -40});
+    k.asked.set1 = true;
+    k.asked.magic = true;
+    negotiation.agreed = {salary: 10, bonus: 25};
+    const later = optionsOf(candidate);
+    assert.deepEqual([...later.unknown].sort(), ["armor", "mount", "set2", "tags"]);
+    assert.deepEqual([later.salary, later.bonus, later.title, later.affinityWord], [10, 25, "Mage Légendaire Omnipotent", "Hostile"]);
+    k.keeperTitle = "Chair à canon";
+    assert.equal(optionsOf(candidate).title, "Chair à canon", "priorité au tavernier");
+    assert.match(css, /\.talk-dialog--fiche::backdrop\{background:rgba\(0,0,0,\.82\);backdrop-filter:blur\(8px\);/);
+    assert.match(css, /\.talk-dialog--fiche\[open\]\{display:flex;align-items:stretch;gap:24px;height:fit-content\}/);
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.
   assert.match(hoverSrc, /<\/div>\s*<i class="hc-sep" aria-hidden="true"><\/i>\s*\$\{tags\?`<ul class="hc-tags">\$\{tags\}<\/ul><i class="hc-fente hc-fente--h" aria-hidden="true"><\/i>`:""\}\s*<div class="hc-kit">/);
   // Sous les tags, la fente du parchemin couchée, puis l'équipement en trois colonnes : set 1, set 2, armure (Idan, 2026-11-16).
   assert.match(css, /\.hc-fente--h\{align-self:auto;width:auto;height:3px;margin:6px 2px\}/, "de la marge avant et après le bloc armes");
-  assert.match(hoverSrc, /const kit=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\]\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
+  assert.match(hoverSrc, /const kitValues=\[hoverWeapons\(d\.sets\[0\]\)\|\|"Mains nues",hoverWeapons\(d\.sets\[1\]\)\|\|"—",d\.armor\|\|"Sans armure"\];\s*const kit=\["set1","set2","armor"\]\.map\(\(key,i\)=>hidden\("kit"\)\|\|hidden\(key\)\?"\?":kitValues\[i\]\)\s*\.map\(value=>`<span class="hc-kit-item"><i>\$\{esc\(value\)\}<\/i><\/span>`\)/, "les noms seuls");
   // Entre les colonnes de l'équipement et entre les écoles, la fente du parchemin (Idan : « Oui »).
   assert.match(css, /\.hc-kit-item\+\.hc-kit-item::before,\.hc-school\+\.hc-school::before\{content:"";position:absolute;[^}]*width:3px;background:#8a6a40;clip-path:polygon\(50% 0,100% 50%,50% 100%,0 50%\)\}/);
   assert.doesNotMatch(css, /\.hc-(kit-item|school)[^{]*\{[^}]*border-left/);
@@ -579,7 +624,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(css, /\.hc-foot\.is-2\{grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\);/);
   // La monture : son portrait seul, un peu plus petit (Idan, 2026-11-16 : « réduire un peu l'avatar monture, virer le nom
   // de la monture ») ; son nom reste pour les lecteurs d'écran.
-  assert.match(hoverSrc, /const steed=d\.mount\?hoverMountPortrait\(d\.mount\):"";/, "le portrait seul, sans le nom");
+  assert.match(hoverSrc, /const showSteed=Boolean\(d\.mount\)&&!hidden\("magic"\)&&!hidden\("mount"\);[\s\S]*?const steed=showSteed\?hoverMountPortrait\(d\.mount\):"";/, "le portrait seul, sans le nom");
   assert.match(css, /\.hc-steed-portrait\{[^}]*width:72px;height:72px;/, "réduire un peu l'avatar monture");
   assert.doesNotMatch(css, /\.hc-steed[\s>{]/, "plus de bloc portrait + nom");
   {

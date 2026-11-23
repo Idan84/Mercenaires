@@ -32,20 +32,90 @@ assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
 assert.match(talk,/<ol id="tavern-talk-options" class="talk-options"><\/ol>/,"réponses écrites par tavern-ui.js");
-// Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ?
-// quoi ? quelle caractéristique ? avec un retour à chaque étape.
-const keeper=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-dialogue.json"),"utf8")).tavernkeeper;
+// Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ? et ses deux
+// questions (doc 14 §6 bis : son titre, son affinité), avec un retour à chaque étape.
+const dialogueCopy=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-dialogue.json"),"utf8"));
+const keeper=dialogueCopy.tavernkeeper;
 assert.deepEqual(keeper.options,{beer:"Boire une bière (1 PO)",round:"Payer sa tournée !",advice:"Demander des conseils",leave:"Partir",back:"Retour"});
-const menu=new Function("recruitDialogue","game","MercenairesRecruitDialogue",
-  js.slice(js.indexOf("function adviceStats(group){"),js.indexOf("function tavernTalkLine(t){"))+"return tavernTalkOptions;")(
-  ()=>({keeper}),
-  {campaign:{tavern:{candidates:[{mercenary:{id:7,name:"Inga Longueforge"}}]}},referenceData:{characterSheetCopy:{stats:[{nom:"Force",groupe:"physique"},{nom:"Courage",groupe:"mental"}]}}},
-  {firstName:m=>m.name.split(" ")[0]});
+const {createRecruitDialogue}=require(path.join(root,"game-core/recruit-dialogue.js"));
+const inga={id:7,name:"Inga Longueforge",sex:"femme"};
+const menu=new Function("recruitDialogue","game","MercenairesRecruitDialogue","tavernCandidate",
+  js.slice(js.indexOf("function tavernTalkOptions(t){"),js.indexOf("function tavernTalkLine(t){"))+"return tavernTalkOptions;")(
+  ()=>createRecruitDialogue({reference:{tavernDialogue:dialogueCopy}}),
+  {campaign:{tavern:{candidates:[{mercenary:inga}]}}},
+  {firstName:m=>m.name.split(" ")[0]},
+  id=>id===7?{mercenary:inga}:null);
 const labels=view=>menu(view).map(o=>o.label);
 assert.deepEqual(labels({view:"main"}),["Boire une bière (1 PO)","Payer sa tournée !","Demander des conseils","Partir"]);
 assert.deepEqual(labels({view:"who"}),["Inga","Retour"]);
-assert.deepEqual(labels({view:"what"}),[...keeper.groups.map(g=>g.label),"Retour"]);
-assert.deepEqual(labels({view:"stats",group:"physique"}),["Force","Retour"]);
+assert.deepEqual(labels({view:"what",candidateId:7}),["Qu’est-ce qu’on dit d’elle ?","Elle m’apprécierait, à ton avis ?","Retour"]);
+assert.deepEqual(menu({view:"what",candidateId:7}).slice(0,2).map(o=>[o.key,o.arg]),[["ask","title"],["ask","affinity"]]);
+assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur les caractéristiques (Idan, 2026-11-19)");
+
+// Le dialogue avec un candidat (doc 14 §6 bis ; Idan, 2026-11-22 : « On va regrouper toutes les questions […] comme Puis-je
+// en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ») : le menu, ses questions sur lui (la magie : il liste ses
+// écoles) ; chaque réponse remplit sa fiche et la question disparaît.
+{
+  const els=new Map();
+  const $=id=>els.get(id)||(els.set(id,{innerHTML:"",textContent:"",scrollTop:0,scrollHeight:0,querySelector:()=>null,showModal(){},close(){},focus(){}}),els.get(id));
+  const dialogue=createRecruitDialogue({reference:{tavernDialogue:dialogueCopy}});
+  const merc={id:7,name:"Inga Longueforge",sex:"femme",stats:{Force:40},items:[{id:"a",name:"Gambison",category:"Légère"}],equipment:{slots:{armor:"a"}}};
+  const candidate={mercenary:merc};
+  const negotiation={salary:12,bonus:30,agreed:null};
+  const game={referenceData:{},recruitDialogue:dialogue};
+  const cards=[];
+  const api=new Function("game","$","tavernCandidate","tavernRules","profileRules","companyTagRules","mercenaryHoverData","captainAffinity",
+    "saveGame","renderMercenaryHoverCard","renderPicto","esc","fmt","MercenairesRecruitDialogue","requestAnimationFrame",
+    js.slice(js.indexOf("function recruitDialogue(){"),js.indexOf("function submitRecruitOffer(){"))+"return {openRecruitTalk,recruitChoices,recruitTalkChoice};")(
+    game,$,id=>id===7?candidate:null,()=>({negotiationState:()=>negotiation}),
+    // Le titre suit sa Force : sa vantardise (×2 ici, le tirage de ses tags) se voit.
+    ()=>({evaluate:c=>({force:c.stats.Force}),composeTitle:(c,r)=>({name:"Colosse "+r.force})}),
+    ()=>({candidateFactor:()=>2}),
+    ()=>({sets:[["Épée longue","Écu"],[]],schools:["Eau","Vie"]}),()=>({total:0}),
+    ()=>{},(m,o)=>{ cards.push(o); return ""; },()=>"",x=>String(x??""),n=>String(n),
+    {firstName:m=>m.name.split(" ")[0]},()=>{});
+  api.openRecruitTalk(7);
+  const t=game.recruitTalk,q=dialogueCopy.questions;
+  const keys=()=>api.recruitChoices(t).map(c=>c.key);
+  const lastSay=()=>t.lines.at(-1).text;
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Puis-je en savoir plus sur vous ?","Quelles sont vos prétentions salariales ?","Partir"],"trois choix");
+  assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","armor","bonus","magic","mount","salary","set1","set2","tags","title"]);
+  api.recruitTalkChoice("about");
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
+    "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Retour"]);
+  api.recruitTalkChoice("title");
+  assert.deepEqual(t.lines.slice(-2).map(l=>l.who),["you","merc"]);
+  assert.equal(t.lines.at(-2).text,q.title);
+  assert.match(lastSay(),/Colosse 80/,"son titre, sur sa Force vantée (40 × 2)");
+  assert.equal(cards.at(-1).title,"Colosse 80");
+  api.recruitTalkChoice("set1");
+  assert.match(lastSay(),/l’épée longue et l’écu/i);
+  api.recruitTalkChoice("set2");
+  assert.ok(dialogueCopy.answers.set2_none.includes(lastSay()),"rien en set 2");
+  api.recruitTalkChoice("back");
+  assert.equal(t.mode,"choices");
+  api.recruitTalkChoice("about");
+  assert.deepEqual(keys(),["armor","magic","back"],"une question posée disparaît");
+  api.recruitTalkChoice("armor");
+  assert.match(lastSay(),/^Gambison\./);
+  api.recruitTalkChoice("magic");
+  assert.equal(t.lines.at(-2).text,"Connaissez-vous des sorts ?");
+  assert.match(lastSay(),/des sorts d’Eau et de Vie\./,"il liste ses écoles");
+  assert.equal(t.mode,"choices","plus rien à lui demander : retour au menu");
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Quelles sont vos prétentions salariales ?","Partir"]);
+  assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","bonus","mount","salary","tags"]);
+  api.recruitTalkChoice("salary");
+  assert.equal(t.lines.at(-2).text,"Quelles sont vos prétentions salariales ?");
+  assert.match(lastSay(),/12 PO par jour et 30 PO par mission/);
+  assert.deepEqual(keys(),["negotiate","sign","leave"]);
+  assert.deepEqual([cards.at(-1).salary,cards.at(-1).bonus,cards.at(-1).unknown.has("salary")],[12,30,false],"le salaire et la prime sur sa fiche");
+  // Le tavernier a parlé : son titre passe devant (Idan, 2026-11-22 : « priorité au tavernier »). Rouvrir la fenêtre : la
+  // fiche garde ce qu'on a appris.
+  dialogue.known(candidate).keeperTitle="Chair à canon";
+  api.openRecruitTalk(7);
+  assert.deepEqual(api.recruitChoices(game.recruitTalk).map(c=>c.key),["negotiate","sign","leave"]);
+  assert.equal(cards.at(-1).title,"Chair à canon");
+}
 
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.
 const extract=(start,end)=>js.slice(js.indexOf(start),js.indexOf(end));

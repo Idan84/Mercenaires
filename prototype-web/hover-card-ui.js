@@ -31,9 +31,6 @@ function originPhrase({people="",culture="",ascendance=""}={}){
   return (ascendance?`${phrase} au ${lower(ascendance)}`:phrase).trim();
 }
 
-// Les tags de la fiche au survol (Idan, 2026-11-16 : « On va limiter le nombre. On met que la catégorie la plus basse. On
-// met uniquement les tags missions et rôle au combat ») : les missions (camps, chasses, garde du corps) et le rôle au combat.
-const HOVER_TAG_BRANCHES=["occupation/mission","occupation/garde-du-corps","role"];
 // Les plaques des tags (Idan, 2026-11-16 : « on va en mettre jusqu'à 5 en quinconce. S'il existe 6 tags ou plus on marque
 // dans le dernier x autres rôles ») : au plus 5, trois en haut et deux décalés dessous, chaque rangée centrée ; à partir de
 // 6, les 4 premiers et une plaque « N autres rôles ». col : la colonne où commence la plaque, sur une grille de 6 (chaque
@@ -56,23 +53,16 @@ function hoverTagFullName(parent,name){
   return `${parent} ${low}${plural?"s":""}`;
 }
 // Ce que la fiche montre, sans HTML (tests, portage).
-function mercenaryHoverData(c,{missionTag=null}={}){
+function mercenaryHoverData(c){
   const reference=game.referenceData||{};
-  const rules=typeof tagRules==="function"?tagRules():null;
-  // Les tags allumés, seulement les plus précis (aucun de leurs sous-tags n'est allumé) ; celui de la mission d'abord.
-  const lit=rules?rules.litIds(c):[];
-  const precise=lit.filter(id=>!lit.some(other=>other.startsWith(id+"/")))
-    .filter(id=>HOVER_TAG_BRANCHES.some(branch=>id===branch||id.startsWith(branch+"/")));
-  const toneOf=id=>rules?.columns.find(col=>col.code===String(id).split("/")[0])?.teinte||"";
-  const isMission=id=>Boolean(missionTag)&&(id===missionTag||id.startsWith(missionTag+"/"));
-  const tags=precise.map(id=>({id,name:rules?.node(id)?.nom||id,tone:toneOf(id),mission:isMission(id)}))
-    .sort((a,b)=>Number(b.mission)-Number(a.mission));
+  // Les tags (Idan, 2026-11-22 ; doc 20 §12 : « sur la fiche au survol, ça remplace les tags actuels ») : ceux de l'atelier
+  // des tags, calculés sur ce que l'intendant voit de lui (mercenaryTagList, ui.js), en bleu comme le rôle au combat ;
+  // déjà les plus précis (le plus bas de chaque branche).
+  const tags=(typeof mercenaryTagList==="function"?mercenaryTagList(c):[]).map(t=>({id:t.id,name:t.name,parent:t.parent,tone:"bleu",mission:false}));
   for(const tag of tags){
-    if(tags.filter(other=>other.name===tag.name).length<2) continue;
-    const parent=rules?.node(tag.id.split("/").slice(0,-1).join("/"))?.nom;
-    if(parent) tag.fullName=hoverTagFullName(parent,tag.name);
+    if(tags.filter(other=>other.name===tag.name).length>1&&tag.parent) tag.fullName=hoverTagFullName(tag.parent,tag.name);
   }
-  for(const tag of tags) if(tag.fullName){ tag.name=tag.fullName; delete tag.fullName; }
+  for(const tag of tags){ if(tag.fullName){ tag.name=tag.fullName; delete tag.fullName; } delete tag.parent; }
   // Les objets portés.
   const slots=c.equipment?.slots||{},items=c.items||[];
   const itemIn=slot=>slots[slot]==null?null:items.find(item=>String(item.id)===String(slots[slot]))||null;
@@ -175,6 +165,13 @@ const HOVER_KIT_ANGLES={
   bd:{sx:1,sy:1,miroir:["scale(-1,-1)",(x,y)=>[-x,-y]],rotation:["rotate(180deg)",(x,y)=>[-x,-y]]},
   bg:{sx:-1,sy:1,miroir:["scaleY(-1)",(x,y)=>[x,-y]],rotation:["rotate(270deg)",(x,y)=>[y,-x]]}};
 const hcPx=n=>`${+(+n).toFixed(2)}px`;
+// Un ornement de coin dont l'image a grandi après coup (data/reference/culture-kits.json, geometrie.ornementsCoinDebord :
+// la part de sa largeur ajoutée en haut, au-delà de l'ancien bord) : ce morceau déborde du coin, et la pièce reste où
+// Idan l'a réglée. Le décalage suit le sens de la pièce (miroir ou rotation). t : la taille de l'ornement à l'écran.
+function hoverKitOrnamentShift(G,o,A,t){
+  const debord=Number(G.ornementsCoinDebord?.[o.modele])||0;
+  return debord?A[o.sens][1](0,-debord*t):[0,0];
+}
 // Une pièce à sa place exacte : le navigateur arrondit au pixel la place d'un élément (left, top), pas une translation ;
 // la partie entière en left / top, le reste en translation (sinon les raccords se décalent d'un demi-pixel).
 const hcPose=(x,y)=>{const ix=Math.floor(x+1e-6),iy=Math.floor(y+1e-6);return `left:${ix}px;top:${iy}px;translate:${hcPx(x-ix)} ${hcPx(y-iy)}`;};
@@ -261,7 +258,8 @@ function hoverKitFrame(kit){
   }
   for(const [a,A] of Object.entries(HOVER_KIT_ANGLES)){
     const o=F.ornementsCoin[a];if(!o||o.modele==="aucun"||!G.ornementsCoin[o.modele])continue;
-    const x=(A.sx<0?B.x0:B.x1-o.taille)+o.dx,y=(A.sy<0?B.y0:B.y1-o.taille)+o.dy;
+    const [sx,sy]=hoverKitOrnamentShift(G,o,A,o.taille);
+    const x=(A.sx<0?B.x0:B.x1-o.taille)+o.dx+sx,y=(A.sy<0?B.y0:B.y1-o.taille)+o.dy+sy;
     out.push(`<img src="${dir}/${G.ornementsCoin[o.modele]}" alt="" style="left:${hcPx(x)};top:${hcPx(y)};width:${hcPx(o.taille)};height:${hcPx(o.taille)};object-fit:contain;object-position:0 0;transform:${A[o.sens][0]}">`);
   }
   const su=F.suspendu,SG=G.suspendu;
@@ -317,8 +315,18 @@ function hoverWeapons(names){
 function hoverHearts(filled){
   return Array.from({length:10},(_,i)=>`<i class="hc-heart${i<filled?" is-full":""}"></i>`).join("");
 }
-function renderMercenaryHoverCard(c,{missionTag=null}={}){
-  const d=mercenaryHoverData(c,{missionTag});
+// La fiche du candidat (Idan, 2026-11-22 : « la fiche au survol avec des ? quand on ne connait pas les infos ») :
+// - unknown : les cases qu'on ne connaît pas encore, « ? » à la place : title, affinity, bonus, salary, tags, set1, set2,
+//   armor (kit : les trois), magic (les écoles pas encore demandées ; sans la monture) ; mount : pas de monture montrée ;
+// - ce qu'on a appris (doc 14 §6 bis) : title (le titre entendu, du candidat ou du tavernier), affinityWord (le mot du
+//   tavernier à la place des cœurs), bonus et salary (sa demande, puis la négociation ; la ligne Salaire n'existe que sur
+//   la fiche du candidat).
+const hoverUnknown=`<span class="hc-unknown">?</span>`;
+function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=null,affinityWord=null}={}){
+  const d=mercenaryHoverData(c);
+  const hidden=key=>Boolean(unknown&&unknown.has(key));
+  if(bonus!=null) d.bonus=bonus;
+  if(title!=null) d.title=title;
   const frame=hoverCultureFrame(d.culture);
   // Le nom en grand (Idan, 2026-11-15 : « on reste pour que 20 caractères rentrent dans le cartouche. On réduira auto pour
   // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il
@@ -327,24 +335,29 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   // Zone 2, les origines : les deux ou trois pictos (peuple, culture, ascendance), puis la phrase d'origine.
   const emblems=["people","culture","ascendance"].filter(kind=>d[kind])
     .map(kind=>`<span class="hc-emblem">${renderPicto(kind,d[kind],{size:"md"})}</span>`).join("");
-  const affinity=d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
+  const affinity=hidden("affinity")?`<div class="hc-stat"><span class="hc-label">Affinité</span>${hoverUnknown}</div>`
+    :affinityWord?`<div class="hc-stat"><span class="hc-label">Affinité</span><b class="hc-affinity-word">${esc(affinityWord)}</b></div>`
+    :d.affinity?`<div class="hc-stat"><span class="hc-label">Affinité</span><span class="hc-hearts" title="${esc(d.affinity.phrase)}">${hoverHearts(d.affinity.filled)}</span></div>`:"";
   // L'équipement en trois colonnes (Idan, 2026-11-16) : les armes du set 1 (« épée longue et écu »), celles du set 2, l'armure ;
   // les noms seuls (« pas besoin de mettre set 1 ou set 2 », « pas besoin de mettre armure également »).
-  const kit=[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"]
+  const kitValues=[hoverWeapons(d.sets[0])||"Mains nues",hoverWeapons(d.sets[1])||"—",d.armor||"Sans armure"];
+  const kit=["set1","set2","armor"].map((key,i)=>hidden("kit")||hidden(key)?"?":kitValues[i])
     .map(value=>`<span class="hc-kit-item"><i>${esc(value)}</i></span>`).join("");
   // Dessous, deux colonnes (Idan, 2026-11-16 : « Les pictos d'écoles de magie à gauche, l'avatar de la monture à droite ») ;
   // seule, l'une ou l'autre se centre. Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp), sans plaque « Écoles
   // de magie » (Idan, 2026-11-16 : « Retire le école de magie ») ni nom : « Pictos seuls en 48 px avec la possibilité de les
   // rétrécir pour tout rentrer » (une seule ligne, styles.css).
   const school=name=>`<span class="hc-school" role="img" aria-label="${esc(name)}">${renderPicto("school",name,{size:"md"})}</span>`;
-  const rows=hoverSchoolRows(d.schools,Boolean(d.mount));
-  const magic=rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
-  const steed=d.mount?hoverMountPortrait(d.mount):"";
+  const showSteed=Boolean(d.mount)&&!hidden("magic")&&!hidden("mount");
+  const rows=hoverSchoolRows(d.schools,showSteed);
+  const magic=hidden("magic")?`<div class="hc-magic">${hoverUnknown}</div>`
+    :rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
+  const steed=showSteed?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
-  const tags=hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
+  const tags=hidden("tags")?`<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3/span 2">?</li>`:hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
-    <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
+    <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title||hidden("title")?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(hidden("title")?"?":d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
       <div class="hc-head">
         <section class="hc-origins" aria-label="Origines"><div class="hc-emblems">${emblems}</div><p class="hc-origin">${esc(d.origin)}</p></section>
@@ -352,7 +365,8 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
         <div class="hc-stats">
           <div class="hc-stat"><span class="hc-label">Réputation</span>${renderReputationStars(c)}</div>
           ${affinity}
-          <div class="hc-stat hc-stat--bonus"><span class="hc-label" title="Prime de mission">Prime</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span></div>
+          ${salary!=null||hidden("salary")?`<div class="hc-stat hc-stat--salary"><span class="hc-label" title="Salaire journalier">Salaire</span>${hidden("salary")?hoverUnknown:`<span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(salary))} PO</b></span>`}</div>`:""}
+          <div class="hc-stat hc-stat--bonus"><span class="hc-label" title="Prime de mission">Prime</span>${hidden("bonus")?hoverUnknown:`<span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b></span>`}</div>
         </div>
       </div>
       <i class="hc-sep" aria-hidden="true"></i>

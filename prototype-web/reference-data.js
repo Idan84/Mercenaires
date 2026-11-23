@@ -80,8 +80,6 @@ const REFERENCE_FILES = {
   merchants: "merchants.json",
   mercenaryProfile: "mercenary-profile.json",
   mercenaryTitles: "mercenary-titles.json",
-  mercenaryTags: "mercenary-tags.json",
-  stewardTags: "steward-tags.json",
   oldSteward: "old-steward.json",
   dayNews: "day-news.json",
   spells: "spells.json",
@@ -89,7 +87,8 @@ const REFERENCE_FILES = {
   itemTitles: "item-titles.json",
   renamedNames: "renamed-names.json",
   cultureColors: "culture-colors.json",
-  cultureKits: "culture-kits.json"
+  cultureKits: "culture-kits.json",
+  tagWorkshop: "tag-workshop.json"
 };
 
 async function loadReferenceData(base = "/data/") {
@@ -99,8 +98,8 @@ async function loadReferenceData(base = "/data/") {
     return [key, await response.json()];
   }));
   const data = Object.fromEntries(entries);
-  [data.avatars, data.equipmentSilhouettes, data.cultureKits] = await Promise.all([loadAvatarCatalog(data, base), loadSilhouetteCatalog(data),
-    loadCultureSettings(data.cultureKits)]);
+  [data.avatars, data.equipmentSilhouettes, data.cultureKits, data.tagWorkshop] = await Promise.all([loadAvatarCatalog(data, base),
+    loadSilhouetteCatalog(data), loadCultureSettings(data.cultureKits), loadTagWorkshop(data.tagWorkshop)]);
   return data;
 }
 
@@ -148,6 +147,21 @@ async function loadCultureSettings(cultureKits) {
     return applyCultureSettings(cultureKits, await response.json());
   } catch {
     return cultureKits;
+  }
+}
+
+// L'atelier des tags en direct (Idan, 2026-11-22 : « je veux que le jeu lise les datas de l'atelier ») : la dernière version
+// enregistrée dans le Design Lab (design/atelier/ → media/atelier/actuel.json ; doc 20 §12). Sans elle (serveur local,
+// tests, réseau), la copie du dépôt (data/reference/tag-workshop.json).
+async function loadTagWorkshop(workshop) {
+  try {
+    const response = await fetch("/media/atelier/actuel.json?t=" + Date.now(), { cache: "no-store" });
+    if (!response.ok || !/json/i.test(response.headers.get("content-type") || "")) return workshop;
+    const live = await response.json();
+    const doc = live?.doc;
+    return doc && Array.isArray(doc.tags) && Array.isArray(doc.tests) ? { ...doc, version: live.version, date: live.date } : workshop;
+  } catch {
+    return workshop;
   }
 }
 

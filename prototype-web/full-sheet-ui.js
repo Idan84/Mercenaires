@@ -100,7 +100,8 @@ function fullSheetFrame(kit,L){
   for(const [a,A] of Object.entries(HOVER_KIT_ANGLES)){
     const orn=P.ornementsCoin?.[a];
     if(!orn||orn.modele==="aucun"||!G.ornementsCoin[orn.modele]) continue;
-    const t=orn.taille*s,x=(A.sx<0?B.x0:B.x1-t)+orn.dx*s,y=(A.sy<0?B.y0:B.y1-t)+orn.dy*s;
+    const t=orn.taille*s,[ox,oy]=hoverKitOrnamentShift(G,orn,A,t);
+    const x=(A.sx<0?B.x0:B.x1-t)+orn.dx*s+ox,y=(A.sy<0?B.y0:B.y1-t)+orn.dy*s+oy;
     out.push(`<img src="${dir}/${G.ornementsCoin[orn.modele]}" alt="" style="left:${hcPx(x)};top:${hcPx(y)};width:${hcPx(t)};height:${hcPx(t)};object-fit:contain;object-position:0 0;transform:${A[orn.sens][0]}">`);
   }
   const su=P.suspendu,SG=G.suspendu;

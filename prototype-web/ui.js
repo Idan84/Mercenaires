@@ -851,12 +851,11 @@ const SHEET_TABS = [
   ["skills", "Compétences"],
   ["magic", "Magie"],
   ["camp", "Camp"],
-  ["history", "Historique"],
-  ["tags", "Rôle et occupations"]
+  ["history", "Historique"]
 ];
-// Les onglets d'une fiche : Rôle et occupations (les tags, Idan, 2026-11-12) pour ceux de la compagnie seulement (Idan, 2026-11-12 : « retrouver rapidement, dans
-// sa compagnie, qui doit faire quoi »).
-const sheetTabsFor = c => SHEET_TABS.filter(([key]) => key !== "tags" || renamable(c));
+// L'onglet Rôle et occupations (les tags) est retiré (Idan, 2026-11-22 : « On retire l'onglet de Role et formation dans la
+// fiche complete et tous les boutons de demande de tags ») : les tags sont calculés et s'affichent sur la fiche au survol.
+const sheetTabsFor = () => SHEET_TABS;
 
 // Situation dans la compagnie : rôle, contrat, indisponibilité.
 function renderSituation(c) {
@@ -1623,109 +1622,52 @@ function renderSheetTab(c, tab) {
   if (tab === "history") return renderHistoryTab(c);
   if (tab === "equipment") return renderEquipment(c);
   if (tab === "magic") return renderMagicTab(c);
-  if (tab === "tags") return renderTagsTab(c);
   return renderProfileTab(c);
 }
 
-// Onglet Rôle et occupations (les tags) (Idan, 2026-11-12 ; doc 20) : une phrase qui dit à quoi servent les tags ; trois
-// colonnes en accordéon (Occupations principales en rouge, Équipement en vert, Rôle au combat en bleu) ; « Pas de case à
-// cocher. Des tags grisés ou pas grisés » ; « Une petite flèche à droite du tag pour ouvrir la sous-catégorie » ; tous se
-// cochent : le clic allume ou éteint, sans niveau (Idan, 2026-11-20) ; un point sur ceux de l'intendant. Les règles :
-// game-core/mercenary-tags.js. Ce qui est ouvert le reste d'une fiche à l'autre, pendant la partie.
-const TAGS_OPEN = new Set();
-function tagRules() {
+// Les tags (Idan, 2026-11-22 ; doc 20 §12 : « le tagging est fait automatiquement à chaque update du mercenaire ») : les
+// tests de l'atelier des tags (le Design Lab, sinon la copie du dépôt ; game-core/tag-engine.js), recalculés à chaque
+// affichage sur ce que l'intendant voit de chacun (game-core/company-tags.js : son biais, gardé sur le mercenaire). Plus
+// d'onglet ni de demande à l'intendant : ils s'affichent sur la fiche au survol.
+function companyTagRules() {
   const reference = game.referenceData;
-  if (!reference || !globalThis.MercenairesTags) return null;
-  if (game.tagRulesFor !== reference) { game.tagRules = MercenairesTags.createTagRules({reference}); game.tagRulesFor = reference; }
-  return game.tagRules;
-}
-// L'intendant qui tague (doc 20 §5 à §8 ; game-core/steward-tags.js) : il compare toujours à la bande.
-function stewardTagRules() {
-  const reference = game.referenceData, rules = tagRules(), profile = profileRules();
-  if (!reference?.stewardTags || !rules || !profile || typeof MercenairesStewardTags === "undefined") return null;
-  if (game.stewardTagRulesFor !== reference) {
-    game.stewardTagRules = MercenairesStewardTags.createStewardTags({reference, engine: combatEngine(), magic: magicRules(), profile,
-      missions: missionRules(), tags: rules, stars: starRules(), campPosts: MercenairesCampPosts,
-      lieutenants: typeof lieutenantRules === "function" ? lieutenantRules() : null,
-      armorPorts: MercenairesArmorPorts.createArmorPorts(reference)});
-    game.stewardTagRulesFor = reference;
+  if (!reference?.tagWorkshop || typeof MercenairesCompanyTags === "undefined" || typeof MercenairesTagEngine === "undefined") return null;
+  if (game.companyTagRulesFor !== reference) {
+    game.companyTagRules = MercenairesCompanyTags.createCompanyTags({reference, workshop: reference.tagWorkshop,
+      variables: MercenairesTagEngine.createTagVariables({reference, engine: combatEngine(), gear: equipmentEffectRules(), magic: magicRules(),
+        stars: starRules(), profile: profileRules()}),
+      stars: starRules(), affinity: affinityRules()});
+    game.companyTagRulesFor = reference;
   }
-  return game.stewardTagRules;
+  return game.companyTagRules;
 }
-// Y a-t-il un intendant (un mercenaire nommé, ou Cruxor, l'ancien) ?
-const hasSteward = () => Boolean(game.campaign && typeof stewardRules === "function" && stewardRules().personOf(game.campaign));
-// L'intendant tague un mercenaire (ids) ou toute la compagnie : il ne remplace que ses propres tags.
-function stewardRetag(ids = null) {
-  const steward = stewardTagRules(), rules = tagRules(), c = game.campaign;
-  if (!steward || !rules || !hasSteward()) return 0;
-  const out = steward.evaluate(c, {level: campaignRules().companyRenownLevel(c)});
-  let count = 0;
-  for (const m of c.company.roster) {
-    if (ids && !ids.includes(m.id)) continue;
-    const found = out.get(m.id);
-    if (!found) continue;
-    rules.setSteward(m, found.tags);
-    count++;
+// La compagnie telle que l'intendant la voit : le capitaine et les mercenaires, l'intendant (le nommé, sinon Cruxor ;
+// aucun : aucun tag), les étoiles de la compagnie ; view : ce qu'il voit de chacun, calculé une fois.
+function companyTagContext() {
+  const rules = companyTagRules(), c = game.campaign;
+  if (!rules) return null;
+  const members = teamCharacters();
+  const steward = c && typeof stewardRules === "function" ? stewardRules().personOf(c) : null;
+  const companyStars = c && typeof campaignRules === "function" ? campaignRules().companyRenownLevel(c) : 1;
+  // Sa place : capitaine, lieutenant ou rien (l'aura d'officier, Commandement).
+  const company = c?.company;
+  const roleOf = m => company && m.id === company.captainId ? "capitaine" : (company?.lieutenantIds || []).includes(m.id) ? "lieutenant" : "";
+  return {rules, members, steward, companyStars, roleOf, view: rules.company({members, steward, companyStars, roleOf})};
+}
+// Les tags affichés de chaque membre de la compagnie : Map membre → [{id, name, parent}] (hors de la compagnie : rien ; une
+// copie d'un membre, comme l'aperçu du mode dieu : ceux du membre).
+function mercenaryTagLists(list, ctx = companyTagContext()) {
+  const out = new Map();
+  if (!ctx) return out;
+  for (const c of list) {
+    const member = ctx.members.includes(c) ? c : ctx.members.find(m => c?.id != null && m.id === c.id);
+    if (!member) { out.set(c, []); continue; }
+    out.set(c, ctx.rules.tagsOf(member, ctx).affiches.map(t => ({id: t.id, name: t.nom.trim(),
+      parent: t.parents.length ? ctx.rules.tree.nomTag(t.parents[0]).trim() : ""})));
   }
-  saveGame();
-  return count;
+  return out;
 }
-function tagNodeHtml(node, shown, depth) {
-  const lit = shown[node.id], kids = node.enfants.length > 0, open = kids && TAGS_OPEN.has(node.id);
-  const listId = "tags-" + node.id.replace(/[^a-z0-9]+/gi, "-");
-  const opener = kids
-    ? `<button type="button" class="tag-open" data-tag-open="${esc(node.id)}" aria-expanded="${open}"${open ? ` aria-controls="${listId}"` : ""} aria-label="${open ? "Fermer" : "Ouvrir"} ${esc(node.nom)}" title="${open ? "Fermer" : "Ouvrir"}">▸</button>`
-    : "";
-  const tip = lit?.steward ? "Proposé par l’intendant" : "";
-  return `<li class="tag-item tag-depth-${Math.min(depth, 4)}${open ? " is-open" : ""}"><span class="tag-row">`
-    + `<button type="button" class="tag-pill${lit ? " is-on" : ""}${lit?.steward ? " is-steward" : ""}" data-tag-toggle="${esc(node.id)}" aria-pressed="${Boolean(lit)}"${tip ? ` title="${esc(tip)}" aria-label="${esc(node.nom)} (${esc(tip)})"` : ""}>${esc(node.nom)}</button>${opener}</span>`
-    + (open ? `<ul class="tag-list" id="${listId}">${node.enfants.map(child => tagNodeHtml(child, shown, depth + 1)).join("")}</ul>` : "")
-    + `</li>`;
-}
-function renderTagsTab(c) {
-  const rules = tagRules();
-  if (!rules) return `<p class="muted">Tags indisponibles.</p>`;
-  const shown = rules.view(c);
-  const company = game.campaign?.company, inCompany = Boolean(company?.roster?.some(m => m.id === c.id));
-  const ask = !inCompany || !stewardTagRules() ? ""
-    : hasSteward()
-      ? `<button type="button" class="talk-offer-btn" data-tag-steward="${esc(c.id)}" title="L’intendant propose ses tags (il ne touche pas aux vôtres)">Demander à l’intendant</button>`
-      : `<small class="muted">Nommez un intendant : il proposera ses tags.</small>`;
-  return `<div class="sheet-tags-head">${rules.intro ? `<p class="sheet-tags-intro">${esc(rules.intro)}</p>` : ""}${ask}</div>`
-    + `<div class="sheet-tags">${rules.columns.map(col =>
-    `<section class="tags-col tags-col--${esc(col.teinte)}" aria-label="${esc(col.nom)}"><h4>${esc(col.nom)}</h4>`
-    + `<ul class="tag-list tag-root">${col.tags.map(node => tagNodeHtml(node, shown, 1)).join("")}</ul></section>`
-  ).join("")}</div>`;
-}
-// Cocher, décocher, ouvrir, fermer : la fiche se redessine et garde le focus sur le même bouton.
-function refocusTag(kind, id) {
-  const key = {open: "tagOpen", toggle: "tagToggle", steward: "tagSteward"}[kind];
-  const target = [...$("dialog-content").querySelectorAll(`[data-tag-${kind}]`)].find(el => el.dataset[key] === id);
-  target?.focus({preventScroll: true});
-}
-function onTagClick(event) {
-  const toggle = event.target.closest("[data-tag-toggle]"), opener = event.target.closest("[data-tag-open]"), ask = event.target.closest("[data-tag-steward]");
-  if (!toggle && !opener && !ask) return;
-  const c = game.sheetCharacter, rules = tagRules();
-  if (!c || !rules) return;
-  if (ask) {
-    stewardRetag([c.id]);
-    renderSheet();
-    refocusTag("steward", ask.dataset.tagSteward);
-    return;
-  }
-  if (toggle) {
-    if (!rules.toggle(c, toggle.dataset.tagToggle).ok) return;
-    saveGame();
-    renderSheet();
-    refocusTag("toggle", toggle.dataset.tagToggle);
-    return;
-  }
-  const id = opener.dataset.tagOpen;
-  if (TAGS_OPEN.has(id)) TAGS_OPEN.delete(id); else TAGS_OPEN.add(id);
-  renderSheet();
-  refocusTag("open", id);
-}
+const mercenaryTagList = c => mercenaryTagLists([c]).get(c) || [];
 
 function renderSheet() {
   const c = game.sheetCharacter;
@@ -1958,7 +1900,6 @@ async function init() {
       const open = event.target.closest?.("[data-skill-open]");
       if (open) { event.preventDefault(); open.click(); }
     });
-    $("dialog-content").addEventListener("click", onTagClick);
     // Portrait du min ou du max d'une caractéristique : on passe à sa fiche, sur le même onglet.
     $("dialog-content").addEventListener("click", event => {
       const btn = event.target.closest("[data-sheet-open]");

@@ -1401,6 +1401,22 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
   .talk-dialog--recruit>:not(.talk-head){grid-column:1}
   .talk-dialog--recruit .avatar-frame--talk{width:100%;height:auto;max-height:calc(42 * var(--vh));aspect-ratio:1}
 }
+/* La fiche du candidat (Idan, 2026-11-22 : « reprendre le contenu de la fiche au survol, d'ajouter son portrait, une boite
+   de dialogue et de mettre un fond noir et flou pour cacher le reste ») : la fiche au survol (son portrait en pied
+   compris), la discussion à côté, à la même hauteur ; derrière, un fond noir flou. Mise en page simple, à reprendre
+   (« on fera une mise en page pour la boîte de dialogue ensuite »). */
+.talk-dialog--fiche{width:fit-content;height:fit-content;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.talk-dialog--fiche[open]{display:flex;align-items:stretch;gap:24px;height:fit-content}
+.talk-dialog--fiche::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.talk-dialog--fiche>.recruit-fiche{flex:none;width:860px;height:565px}
+.talk-dialog--fiche>.recruit-talk-box{display:flex;flex-direction:column;width:560px;height:565px;max-height:none;overflow:hidden;border:1px solid #b58a45;border-radius:14px;background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
+.recruit-talk-box .talk-head{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.recruit-talk-box>.talk-log{flex:1;align-content:start;max-height:none}
+.recruit-talk-box>#recruit-talk-choices{flex:none;max-height:260px;overflow-y:auto}
+.hc-unknown{font:700 22px/1 var(--police-texte);color:var(--encre);opacity:.7}
+.hc-magic>.hc-unknown{display:block;text-align:center}
+.hc-affinity-word{font:700 18px/1 var(--police-texte);color:var(--encre)}
+.hc-tag--unknown{text-align:center}
 .talk-face{flex:none}
 .avatar-frame--talk{width:96px;aspect-ratio:1;margin:0;border:2px solid #c9a461;border-radius:10px;box-shadow:0 4px 14px #000a}
 .avatar-frame--talk .avatar-fallback{padding:6px}

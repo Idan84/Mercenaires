@@ -1,7 +1,7 @@
 "use strict";
 
 // Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12) : « un vieux qui était intendant avant le nouveau capitaine,
-// qui veut juste partir à la retraite, et qui demande en permanence à être remplacé. Il a 10 d'intendance et il est là
+// qui veut juste partir à la retraite, et qui demande en permanence à être remplacé. Il a 30 d'intendance (Idan, 2026-11-22 ; 10 avant) et il est là
 // par défaut. »
 // - Il fait tout ce que fait un intendant (estimations à la Taverne, appui des échanges et des apprentissages, prix des
 //   marchands, tags), avec son Intendance (old-steward.json, intendance).
@@ -34,7 +34,7 @@
     function person(state){
       if(!present(state)) return null;
       return {id:ID,npc:true,name:D.nom||"Cruxor Limortel",sex:D.sexe||"M",portrait:D.portrait||null,
-        skills:{camp:{Intendance:num(D.intendance,10)}},stats:{},resistances:{}};
+        skills:{camp:{Intendance:num(D.intendance,30)}},stats:{},resistances:{}};
     }
     // L'intendant de la compagnie : le mercenaire nommé, sinon lui.
     function stewardOf(state){

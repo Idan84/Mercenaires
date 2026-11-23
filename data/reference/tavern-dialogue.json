@@ -1,16 +1,18 @@
 {
   "schema_version": 1,
   "name": "tavern-dialogue",
-  "purpose": "Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; textes rédigés par JC, à retoucher librement). Le candidat salue selon son affinité avec le capitaine (20 tranches de 10 points, de −100 à +100), répond sincèrement aux questions (arme, style, tir, magie, origine, prétentions salariales), puis négocie. Gabarits : {arme} / {Arme} (avec article, colonne weapons), {origine}, {salaire}, {prime}, {prenom}, {compagnie} ; {masculin|féminin} selon le sexe du mercenaire. Plusieurs variantes par réplique : le jeu en choisit une, toujours la même pour un mercenaire donné. Tavernier (tavernkeeper) : accueil, options, conseils payants sur un candidat ; la réponse rapporte ce que le candidat dit de lui-même, situé dans la compagnie (tiers : top, well_above, above, average, below, well_below, bottom), avec un adjectif par caractéristique (adjectives : nom, homme, femme).",
+  "purpose": "Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; refonte doc 14 §6 bis, 2026-11-19 et 2026-11-22 ; textes rédigés par JC, à retoucher librement). Le candidat salue selon son affinité avec le capitaine (20 tranches de 10 points, de −100 à +100). On ne lui pose que des questions qui remplissent une case de sa fiche, regroupées sous « Puis-je en savoir plus sur vous ? » (titre, set 1, set 2, armure, magie : il répond en listant ses écoles), puis « Quelles sont vos prétentions salariales ? » et la négociation. Le capitaine vouvoie les candidats (Idan, 2026-11-22 : « on a un langage décalé presque corporate ») ; le tavernier et lui se tutoient. Gabarits : {titre}, {armes} / {Armes} (avec article, colonne weapons), {armure} / {Armure}, {ecoles} (« d’Eau, de Feu et de Vie »), {salaire}, {prime}, {prenom}, {compagnie} ; {masculin|féminin} selon le sexe du mercenaire. Plusieurs variantes par réplique : le jeu en choisit une, toujours la même pour un mercenaire donné. Tavernier (tavernkeeper) : accueil, options, et deux questions payantes sur un candidat (questions, answers) : son titre (estimé à ±10 %) et son affinité avec le capitaine, en un mot (Hostile, Neutre, Amical). Les groupes de caractéristiques (groups) servent encore à l’Intendant, laissé de côté (doc 14 §7).",
   "questions": {
-    "weapon": "Quelle est votre arme de prédilection ?",
-    "style": "Quel est votre style de combat préféré ?",
-    "ranged": "Quelle est votre arme de tir de prédilection ?",
-    "magic": "Quelle est votre magie de prédilection ?",
-    "origin": "Que faisiez-vous avant d’être mercenaire ?",
+    "about": "Puis-je en savoir plus sur vous ?",
+    "title": "Comment vous appelle-t-on, dans le métier ?",
+    "set1": "Quelle arme de corps à corps maniez-vous ?",
+    "set2": "Quelle arme de tir avez-vous ?",
+    "armor": "Quelle armure portez-vous ?",
+    "magic": "Connaissez-vous des sorts ?",
     "salary": "Quelles sont vos prétentions salariales ?",
     "negotiate": "Négocier",
     "sign": "Signer",
+    "back": "Retour",
     "leave": "Partir"
   },
   "greetings": [
@@ -116,78 +118,43 @@
     }
   ],
   "answers": {
-    "weapon": [
-      "Je manie parfaitement {arme}.",
-      "{Arme}. Mettez-moi ça entre les mains et regardez.",
-      "Avec {arme}, je ne crains personne."
+    "title": [
+      "Dans le métier, on m’appelle {titre}.",
+      "On me connaît comme {titre}. Demandez autour de vous."
     ],
-    "no_weapon": [
-      "Je me débrouille avec ce qui me tombe sous la main."
+    "no_title": [
+      "Je n’ai pas encore de nom dans le métier."
     ],
-    "style": {
-      "Combat à mains nues": [
-        "Mes poings. Pas besoin d’arme pour casser des dents.",
-        "À mains nues. Rien ne vaut le contact."
-      ],
-      "Combat à une main": [
-        "Une seule lame, et la main libre. Je ne suis jamais là où on frappe.",
-        "Une arme, pas de bouclier : on esquive, on pique, on recommence."
-      ],
-      "Combat à deux armes": [
-        "Une arme dans chaque main. Deux fois plus de chances de toucher.",
-        "Deux lames : deux fois plus de soucis pour l’ennemi."
-      ],
-      "Combat à deux mains": [
-        "Une arme lourde, tenue à deux mains. Un seul coup suffit.",
-        "À deux mains, de toutes mes forces. Ça règle vite les discussions."
-      ],
-      "Boucliers": [
-        "Le bouclier d’abord. Je tiens la ligne, les autres frappent.",
-        "Derrière mon bouclier, rien ne passe."
-      ]
-    },
-    "ranged": [
-      "Au tir, je ne jure que par {arme}.",
-      "De loin ? {Arme}, et je rate rarement."
+    "set1": [
+      "Je me bats avec {armes}.",
+      "{Armes}. Mettez-moi ça entre les mains et regardez."
     ],
-    "no_ranged": [
-      "Le tir, ce n’est pas pour moi. Je préfère voir le blanc de leurs yeux."
+    "set1_none": [
+      "À mains nues. Ça surprend toujours."
     ],
-    "magic": {
-      "Eau": [
-        "L’Eau. Elle coule, elle gèle, elle noie. Patiente, comme moi."
-      ],
-      "Feu": [
-        "Le Feu, évidemment. Rien ne réchauffe comme un ennemi qui brûle."
-      ],
-      "Foudre": [
-        "La Foudre. Rapide, bruyante, et on ne l’oublie jamais."
-      ],
-      "Vie": [
-        "La magie de Vie. Il faut bien que quelqu’un recouse les autres."
-      ],
-      "Nécromancie": [
-        "La Nécromancie… Les morts obéissent mieux que les vivants."
-      ],
-      "Illusion": [
-        "L’Illusion. Ce que vous croyez voir n’est jamais tout à fait là."
-      ],
-      "Invocation": [
-        "L’Invocation. Pourquoi se battre quand on peut appeler de l’aide ?"
-      ],
-      "Transmutation": [
-        "La Transmutation. Tout peut devenir autre chose, avec un peu de volonté."
-      ],
-      "Télékinésie": [
-        "La Télékinésie. Je n’ai pas besoin de toucher les choses pour les déplacer."
-      ]
-    },
+    "set2": [
+      "J’ai aussi {armes}, au cas où.",
+      "{Armes}, quand il faut."
+    ],
+    "set2_none": [
+      "Rien d’autre. Je préfère voir le blanc de leurs yeux."
+    ],
+    "armor": [
+      "{Armure}. Ça m’a sauvé la peau plus d’une fois."
+    ],
+    "armor_clothes": [
+      "Juste mes vêtements. Je compte sur mes jambes."
+    ],
+    "armor_none": [
+      "Aucune. Je compte sur mes jambes."
+    ],
+    "magic": [
+      "Oui, des sorts {ecoles}.",
+      "Tout à fait : des sorts {ecoles}. Références sur demande."
+    ],
     "no_magic": [
-      "La magie ? Très peu pour moi. Je fais confiance à l’acier."
-    ],
-    "origin": [
-      "Avant ? J’étais {origine}. Puis j’ai compris que l’épée payait mieux.",
-      "J’étais {origine}. Une autre vie, déjà."
+      "Aucun. La magie, très peu pour moi.",
+      "Non. Ce n’est pas dans mes compétences."
     ]
   },
   "lines": {
@@ -410,145 +377,26 @@
         "label": "Sa magie"
       }
     ],
-    "tiers": {
-      "top": [
-        "{prenom} ? D’après {lui|elle}, {il|elle} serait plus {adj} que n’importe qui chez toi. Même {nom_max} ne lui arrive pas à la cheville !"
-      ],
-      "well_above": [
-        "{prenom} ? D’après {lui|elle}, {il|elle} serait bien plus {adj} que {nom_median}."
-      ],
-      "above": [
-        "{prenom} ? D’après {lui|elle}, {il|elle} serait plus {adj} que la moitié de ta compagnie."
-      ],
-      "average": [
-        "{prenom} ? D’après {lui|elle}, {il|elle} serait dans la moyenne de ta compagnie."
-      ],
-      "below": [
-        "{prenom} ? D’après {lui|elle}, {il|elle} serait moins {adj} que la moitié de ta compagnie."
-      ],
-      "well_below": [
-        "{prenom} ? Même d’après {lui|elle}, {il|elle} serait bien moins {adj} que {nom_median}."
-      ],
-      "bottom": [
-        "{prenom} ? Même d’après {lui|elle}, {il|elle} serait {le moins|la moins} {adj} de tous. {nom_min} ferait mieux."
-      ]
+    "questions": {
+      "title": "Qu’est-ce qu’on dit {de lui|d’elle} ?",
+      "affinity": "{Il|Elle} m’apprécierait, à ton avis ?"
     },
-    "adjectives": [
-      {
-        "nom": "Points de vie",
-        "homme": "coriace",
-        "femme": "coriace"
-      },
-      {
-        "nom": "Initiative",
-        "homme": "prompt à frapper",
-        "femme": "prompte à frapper"
-      },
-      {
-        "nom": "Force",
-        "homme": "fort",
-        "femme": "forte"
-      },
-      {
-        "nom": "Constitution",
-        "homme": "robuste",
-        "femme": "robuste"
-      },
-      {
-        "nom": "Dextérité",
-        "homme": "adroit",
-        "femme": "adroite"
-      },
-      {
-        "nom": "Vitesse",
-        "homme": "rapide",
-        "femme": "rapide"
-      },
-      {
-        "nom": "Endurance",
-        "homme": "endurant",
-        "femme": "endurante"
-      },
-      {
-        "nom": "Esquive",
-        "homme": "insaisissable",
-        "femme": "insaisissable"
-      },
-      {
-        "nom": "Régénération",
-        "homme": "prompt à guérir",
-        "femme": "prompte à guérir"
-      },
-      {
-        "nom": "Intelligence",
-        "homme": "intelligent",
-        "femme": "intelligente"
-      },
-      {
-        "nom": "Volonté",
-        "homme": "déterminé",
-        "femme": "déterminée"
-      },
-      {
-        "nom": "Courage",
-        "homme": "courageux",
-        "femme": "courageuse"
-      },
-      {
-        "nom": "Charisme",
-        "homme": "charismatique",
-        "femme": "charismatique"
-      },
-      {
-        "nom": "Perception",
-        "homme": "observateur",
-        "femme": "observatrice"
-      },
-      {
-        "nom": "Chance",
-        "homme": "chanceux",
-        "femme": "chanceuse"
-      },
-      {
-        "nom": "Intimidation",
-        "homme": "intimidant",
-        "femme": "intimidante"
-      },
-      {
-        "nom": "Résistance physique",
-        "homme": "dur au mal",
-        "femme": "dure au mal"
-      },
-      {
-        "nom": "Résistance au feu",
-        "homme": "résistant au feu",
-        "femme": "résistante au feu"
-      },
-      {
-        "nom": "Résistance au froid",
-        "homme": "résistant au froid",
-        "femme": "résistante au froid"
-      },
-      {
-        "nom": "Résistance à la foudre",
-        "homme": "résistant à la foudre",
-        "femme": "résistante à la foudre"
-      },
-      {
-        "nom": "Résistance au poison",
-        "homme": "résistant au poison",
-        "femme": "résistante au poison"
-      },
-      {
-        "nom": "Puissance magique",
-        "homme": "puissant en magie",
-        "femme": "puissante en magie"
-      },
-      {
-        "nom": "Réserve de mana",
-        "homme": "riche en mana",
-        "femme": "riche en mana"
-      }
-    ]
+    "answers": {
+      "title": [
+        "{Prenom} ? On l’appelle {titre}, à ce qu’on raconte."
+      ],
+      "no_title": [
+        "{Prenom} ? On ne lui connaît pas encore de nom dans le métier."
+      ],
+      "Hostile": [
+        "{Prenom} ? Méfie-toi : {il|elle} ne t’aime pas, ça se voit."
+      ],
+      "Neutre": [
+        "{Prenom} ? Ni chaud ni froid, je dirais."
+      ],
+      "Amical": [
+        "{Prenom} ? {Il|Elle} t’aime bien, ça se voit."
+      ]
+    }
   }
 }

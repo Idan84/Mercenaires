@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "name": "old-steward",
-  "description": "Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12) : un vieux qui était intendant avant le nouveau capitaine et qui veut juste partir à la retraite. Il est là par défaut au début de la partie, avec 10 d'Intendance, et fait tout ce que fait un intendant. Ce n'est pas un mercenaire : ni salaire, ni place au dortoir, ni fiche. Les mercenaires l'apprécient exactement comme ils apprécient le capitaine (Idan : « B »). Il ne demande à partir que quand on lui parle, à demi-mot, en fin de phrase (« il veut partir, mais il n'ose pas de lui-même ») : talk.greetings + talk.endings. Dès qu'un mercenaire devient intendant, il part pour de bon (talk.farewell ; {intendant} : le prénom du nouveau). Plus tard : on pourra lui parler à la Taverne. portrait : l'image d'Idan (chemin sur le site), null en attendant. Code : game-core/old-steward.js ; écran : prototype-web/steward-ui.js.",
+  "description": "Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12) : un vieux qui était intendant avant le nouveau capitaine et qui veut juste partir à la retraite. Il est là par défaut au début de la partie, avec 30 d'Intendance (10 jusqu'au 2026-11-22), et fait tout ce que fait un intendant. Ce n'est pas un mercenaire : ni salaire, ni place au dortoir, ni fiche. Les mercenaires l'apprécient exactement comme ils apprécient le capitaine (Idan : « B »). Il ne demande à partir que quand on lui parle, à demi-mot, en fin de phrase (« il veut partir, mais il n'ose pas de lui-même ») : talk.greetings + talk.endings. Dès qu'un mercenaire devient intendant, il part pour de bon (talk.farewell ; {intendant} : le prénom du nouveau). Plus tard : on pourra lui parler à la Taverne. portrait : l'image d'Idan (chemin sur le site), null en attendant. Code : game-core/old-steward.js ; écran : prototype-web/steward-ui.js.",
   "code": "cruxor",
   "nom": "Cruxor Limortel",
   "sexe": "M",
-  "intendance": 10,
+  "intendance": 30,
   "portrait": null,
   "panel": {
     "detail": "Intendance {intendance} · Il était là bien avant vous."

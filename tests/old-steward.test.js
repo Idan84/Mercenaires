@@ -20,7 +20,7 @@ const R=file=>require(path.join(ROOT,"game-core",file));
 // Les données.
 const D=reference.oldSteward;
 assert.equal(D.nom,"Cruxor Limortel");
-assert.equal(D.intendance,10,"10 d'Intendance");
+assert.equal(D.intendance,30,"30 d'Intendance (Idan, 2026-11-22)");
 assert.ok(D.talk.greetings.length>=6&&D.talk.endings.length>=12,"de quoi varier");
 assert.ok(D.talk.stay.length>=3&&D.talk.farewell.length>=2);
 assert.equal(D.talk.options.stay,"Vous comptez rester encore longtemps ?");
@@ -40,7 +40,7 @@ const state={day:3,company:{captainId:1,intendantId:null,roster,oldSteward:old.s
 // Là par défaut : l'intendant, sans être un mercenaire.
 assert.equal(old.present(state),true);
 const cruxor=steward.personOf(state);
-assert.deepEqual([cruxor.id,cruxor.name,cruxor.npc,cruxor.skills.camp.Intendance],[ID,"Cruxor Limortel",true,10]);
+assert.deepEqual([cruxor.id,cruxor.name,cruxor.npc,cruxor.skills.camp.Intendance],[ID,"Cruxor Limortel",true,30]);
 assert.equal(steward.stewardOf(state),null,"aucun mercenaire n'est intendant");
 assert.ok(!roster.some(m=>m.id===ID),"il n'est pas dans la compagnie : ni salaire, ni place au dortoir");
 
@@ -49,17 +49,17 @@ const m=roster[1];
 m.affinityAcquired=12;
 assert.equal(old.feeling(state,cruxor,m,affinity),Number(affinity.memberAffinity(captain,m).total));
 
-// Il estime les candidats de la Taverne, avec son Intendance (erreur jusqu'à 18 %).
+// Il estime les candidats de la Taverne, avec son Intendance (30 : erreur jusqu'à 14 %).
 const candidate={};
 const estimate=steward.estimate(state,candidate,"Force",100);
 assert.ok(estimate.ok&&estimate.steward.id===ID);
-assert.ok(Math.abs(estimate.maxError-0.18)<1e-9);
+assert.ok(Math.abs(estimate.maxError-0.14)<1e-9);
 
-// Il appuie les échanges d'équipement : 0,2 × 10 + 0,25 × l'affinité du mercenaire pour le capitaine.
+// Il appuie les échanges d'équipement : 0,2 × 30 + 0,25 × l'affinité du mercenaire pour le capitaine.
 const deals=R("equipment-deals.js").createEquipmentDeals({reference,affinityRules:affinity});
 const help=deals.stewardHelp(state,m);
 assert.equal(help.steward.id,ID);
-assert.ok(Math.abs(help.bonus-(0.2*10+0.25*Number(affinity.memberAffinity(captain,m).total)))<1e-9);
+assert.ok(Math.abs(help.bonus-(0.2*30+0.25*Number(affinity.memberAffinity(captain,m).total)))<1e-9);
 
 // Remplacé : il part pour de bon.
 const result=steward.offer(state,m.id);

@@ -449,6 +449,7 @@
           "jonction": {"f": "jonction.webp", "w": 210, "h": 81, "y0": 46, "barre": 87, "tige": 120, "cx": 105}
         },
         "ornementsCoin": {"riche": "coin-orne-riche.webp", "leger": "coin-orne-leger.webp", "courbe": "coin-orne-courbe.webp"},
+        "ornementsCoinDebord": {"leger": 0.0901},
         "poses": {
           "accelerateur": {"f": "pose-accelerateur.webp", "w": 700, "h": 167, "base": 0.2}
         },

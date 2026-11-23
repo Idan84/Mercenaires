@@ -80,15 +80,19 @@ button.mini:hover,button.mini:focus-visible{color:var(--danger);outline:1px soli
 .vide{color:var(--ink-2);font-style:italic;padding:6px 4px}
 .aide{font-size:14.5px;color:var(--ink-2);margin:0}
 .liste-tests{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.liste-tests>li>button{all:unset;cursor:pointer;display:grid;gap:3px;width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
-.liste-tests>li>button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
-.liste-tests>li.choisi>button{background:var(--gold-soft);border-color:var(--gold)}
+.test-ligne{display:flex;gap:2px;align-items:flex-start}
+.test-ligne .pli{margin-top:6px}
+.liste-tests .test-ligne>.carte{all:unset;cursor:pointer;display:grid;gap:3px;width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.liste-tests .test-ligne>.carte:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.liste-tests>li.choisi>.test-ligne>.carte{background:var(--gold-soft);border-color:var(--gold)}
 .liste-tests .q{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .liste-tests .q b{font-weight:600}
 .num{font:700 14px/1 var(--font-display);color:var(--gold);font-variant-numeric:tabular-nums}
 .elim{font-size:14.5px;color:var(--ink)} .elim em{color:var(--ink-2)}
 .branche{margin:6px 0 0 14px;padding-left:10px;border-left:2px solid var(--line);display:grid;gap:6px}
 .branche-l{font-size:14.5px;color:var(--t-palier);font-style:italic}
+.replie{all:unset;cursor:pointer;margin:4px 0 0 34px;font-size:14.5px;color:var(--ink-2);font-style:italic}
+.replie:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .suite{display:grid;gap:4px;justify-items:start}
 button.lien{all:unset;cursor:pointer;color:var(--t-test);font-size:15.5px;text-decoration:underline;text-underline-offset:2px}
 button.lien:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
@@ -129,6 +133,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 <div class="wrap">
   <header>
     <div>
+      <a id="retour-lab" class="sub" href="../" hidden>← Design Lab</a>
       <h1>Atelier des tags</h1>
       <p class="sub">Tous les tags qu'un mercenaire peut avoir, les tests qui en éliminent, puis un essai sur une recrue tirée par le générateur du jeu.</p>
     </div>
@@ -161,6 +166,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
       <div id="tag-champs" hidden style="display:grid;gap:12px">
         <div class="champ"><label for="tag-nom">Nom</label><input id="tag-nom" type="text" autocomplete="off"></div>
         <label class="case"><input type="checkbox" id="tag-groupe"> Catégorie seulement (sert à ranger, jamais posé comme tag)</label>
+        <label class="case"><input type="checkbox" id="tag-inactif"> Inactif : pas encore dans le jeu, éliminé d'office, sans test (ses enfants aussi)</label>
         <div class="champ" id="tag-garder-champ" hidden><label for="tag-garder">Tags affichés au plus dans cette catégorie</label>
           <input id="tag-garder" type="number" min="1" step="1" placeholder="Vide : pas de limite">
           <p class="aide">Rempli, seuls les X tags de plus haut rang qui restent s'affichent (à rang égal, l'ordre de la liste). Vide : le tag le plus bas de chaque branche.</p></div>
@@ -229,7 +235,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
           <select id="f-domaine" aria-label="Domaine"><option value="">Tous domaines</option><option value="contact">Contact</option><option value="distance">Distance</option><option value="magie">Magie</option></select>
           <select id="f-peuple" aria-label="Peuple"><option value="">Tous peuples</option></select>
           <label class="case"><input type="checkbox" id="f-asc"> Ascendance niveau 3</label>
-          <label class="case">Étoiles de la compagnie <input type="number" id="f-etoiles" min="0" max="20" step="1" value="1" style="width:64px"></label>
+          <label class="case">Étoiles de la compagnie <input type="number" id="f-etoiles" min="1" max="15" step="1" value="1" style="width:64px"></label>
           <label class="case">Taille de la compagnie <input type="number" id="f-taille" min="1" max="60" step="1" value="10" style="width:64px"></label>
           <button type="button" class="btn" id="autre-compagnie">Autre compagnie</button>
           <button type="button" class="btn principal" id="generer">Générer un profil</button>
@@ -257,8 +263,14 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 </div>
 
 <script type="application/json" id="profils">@@PROFILS@@</script>
+<script>@@MOTEUR@@</script>
 <script>
 "use strict";
+// Le moteur des tags du jeu (game-core/tag-engine.js), inséré par construit.js.
+const E=MercenairesTagEngine;
+// Où l'atelier est enregistré (construit.js) : « artefact » (la base de l'artefact claude.ai) ou « site » (la Design Lab,
+// sur Hostinger : media/atelier/, que le jeu lit aussi ; Idan, 2026-11-22).
+const HEBERGEMENT="@@HEBERGEMENT@@";
 const $=id=>document.getElementById(id);
 const el=(tag,props={},...kids)=>{ const e=document.createElement(tag); for(const [k,v] of Object.entries(props)){ if(k==="class") e.className=v; else if(k==="text") e.textContent=v; else if(k.startsWith("on")) e[k]=v; else if(v!==false&&v!=null) e.setAttribute(k,v===true?"":v); } for(const x of kids) if(x!=null) e.append(x); return e; };
 const uid=()=>Math.random().toString(36).slice(2,10);
@@ -267,31 +279,15 @@ const chevron='<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true
 
 // ---------- Données ----------
 let doc={tags:[],tests:[],constantes:[]};
-let tagChoisi=null, testChoisi=null, peutEcrire=true, ref=null, sale=false, enCours=false, encore=false, minuteur=null;
+let tagChoisi=null, testChoisi=null, peutEcrire=true, stockage=null, sale=false, enCours=false, encore=false, minuteur=null;
 const memo=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
 const fermes=new Set(memo("atelier-fermes")||[]);
 const memoFermes=()=>memo("atelier-fermes",[...fermes]);
+// Les sous-questions repliées dans l'onglet Tests (Idan, 2026-11-21 : « replier les sous questions de test »).
+const testsFermes=new Set(memo("atelier-tests-fermes")||[]);
+const memoTestsFermes=()=>memo("atelier-tests-fermes",[...testsFermes]);
 
-function propre(d){
-  const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||uid()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
-    rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null}));
-  const ids=new Set(tags.map(t=>t.id));
-  for(const t of tags) t.parents=[...new Set(t.parents.filter(p=>ids.has(p)&&p!==t.id))];
-  const liste=a=>Array.isArray(a)?[...new Set(a.map(String).filter(x=>ids.has(x)))]:[];
-  const tests=(Array.isArray(d?.tests)?d.tests:[]).map(x=>({id:String(x.id||uid()),nom:String(x.nom||"Nouveau test"),type:x.type==="niveau"?"niveau":"binaire",
-    formule:String(x.formule||""),calcul:String(x.calcul||""),aReecrire:Boolean(x.aReecrire),oui:liste(x.oui),non:liste(x.non),
-    paliers:(Array.isArray(x.paliers)?x.paliers:[]).map((p,i)=>({id:String(p.id||uid()),de:i===0||p.de===""||p.de==null||!Number.isFinite(Number(p.de))?null:Number(p.de),nom:String(p.nom||""),elimine:liste(p.elimine)})),
-    si:x.si&&x.si.test?{test:String(x.si.test),rep:String(x.si.rep??"oui")}:null}));
-  for(const x of tests) if(x.type==="niveau"&&!x.paliers.length) x.paliers=[{id:uid(),de:null,nom:"Bas",elimine:[]},{id:uid(),de:50,nom:"Haut",elimine:[]}];
-  // Condition : un test posé seulement si un autre a donné telle réponse (jamais en boucle).
-  const parId=new Map(tests.map(x=>[x.id,x]));
-  for(const x of tests){ const m=x.si&&parId.get(x.si.test); if(!m||m===x){ x.si=null; continue; }
-    if(m.type==="binaire"&&x.si.rep!=="oui"&&x.si.rep!=="non") x.si.rep="oui";
-    if(m.type==="niveau"&&!m.paliers.some(q=>q.id===x.si.rep)) x.si.rep=m.paliers[0].id; }
-  for(const x of tests){ const vus=new Set([x.id]); let y=x; while(y.si){ if(vus.has(y.si.test)){ x.si=null; break; } vus.add(y.si.test); y=parId.get(y.si.test); } }
-  const constantes=(Array.isArray(d?.constantes)?d.constantes:[]).map(c=>({id:String(c.id||uid()),nom:String(c.nom||""),valeur:Number.isFinite(Number(c.valeur))?Number(c.valeur):0,note:String(c.note||"")}));
-  return {tags,tests,constantes};
-}
+const propre=d=>E.clean(d,{uid});
 const tagPar=id=>doc.tags.find(t=>t.id===id);
 const nomTag=id=>tagPar(id)?.nom||"?";
 const enfants=id=>doc.tags.filter(t=>t.parents.includes(id));
@@ -314,15 +310,18 @@ const numeros=()=>new Map(ordreTests().map(o=>[o.x.id,o.num]));
 function descendantsTest(id,acc=new Set()){ for(const c of doc.tests.filter(t=>t.si?.test===id)) if(!acc.has(c.id)){ acc.add(c.id); descendantsTest(c.id,acc); } return acc; }
 
 function etat(texte,ok){ const e=$("etat"); e.textContent=texte; e.dataset.ok=String(ok); }
-function change(){ sale=true; majCompteurs(); if(!ref){ etat(peutEcrire?"Modifications non enregistrées (hors de claude.ai)":"Lecture seule",2); return; }
-  etat("Modifications en attente…",2); clearTimeout(minuteur); minuteur=setTimeout(enregistre,700); }
+// stockage : {delai (ms avant d'enregistrer), ecrire(doc) → Promise, libelle()} ; branché en bas de la page.
+function change(){ sale=true; majCompteurs(); if(!stockage){ etat(peutEcrire?"Modifications non enregistrées (hors de claude.ai)":"Lecture seule",2); return; }
+  etat("Modifications en attente…",2); clearTimeout(minuteur); minuteur=setTimeout(enregistre,stockage.delai); }
 async function enregistre(){
-  if(!ref||!peutEcrire) return;
+  if(!stockage||!peutEcrire) return;
   if(enCours){ encore=true; return; }
   enCours=true; etat("Enregistrement…",2);
-  try{ await ref.set(JSON.parse(JSON.stringify(doc))); sale=false; etat("Enregistré",1); }
+  try{ await stockage.ecrire(JSON.parse(JSON.stringify(doc))); sale=false; etat("Enregistré"+(stockage.libelle?stockage.libelle():""),1); }
   catch(e){
-    if(e?.code==="invalid_argument"||e?.code==="permission_denied"){ peutEcrire=false; etat("Lecture seule : vous ne pouvez pas modifier l'atelier",0); rendreTout(); }
+    if(e?.code==="invalid_argument"||e?.code==="permission_denied"){ peutEcrire=false; etat("Lecture seule : vous ne pouvez pas modifier l'atelier"+(e.message?" ("+e.message+")":""),0); rendreTout(); }
+    else if(e?.code==="conflict"){ peutEcrire=false; memo("atelier-conflit",{date:new Date().toISOString(),doc});
+      etat("L'atelier a été modifié ailleurs (version "+(e.version??"?")+") : recharge la page. Tes dernières modifications sont gardées dans ce navigateur (atelier-conflit).",0); rendreTout(); }
     else if(e?.code==="unavailable"){ etat("Réseau indisponible, nouvel essai…",2); setTimeout(enregistre,1500+Math.random()*1000); }
     else etat("Enregistrement impossible ("+(e?.code||"erreur")+")",0);
   }
@@ -333,89 +332,23 @@ async function enregistre(){
 const POOL=JSON.parse($("profils").textContent);
 // La compagnie (Idan, 2026-11-21 : « avoir la meilleure stat de la compagnie ») : des recrues tirées au hasard, lui compris ;
 // pour chaque caractéristique, compétence et résistance, compagnie.max.<variable> est la meilleure valeur parmi elles.
-const COMPARABLES=POOL.vars.filter(v=>v.type==="nombre"&&/^(carac|res|comp)\./.test(v.k));
+const COMPARABLES=POOL.vars.filter(v=>v.type==="nombre"&&E.comparableKey(v.k));
 const VARS=[...POOL.vars,{k:"compagnie.etoiles",label:"Étoiles de la compagnie (réglées dans « Essayer »)",groupe:"Compagnie",type:"nombre"},
   {k:"compagnie.taille",label:"Taille de la compagnie, lui compris (réglée dans « Essayer »)",groupe:"Compagnie",type:"nombre"},
   ...COMPARABLES.map(v=>({k:"compagnie.max."+v.k,label:"Meilleure valeur de la compagnie : "+v.label,groupe:"Compagnie",type:"nombre"}))]; const VAR_IDX=new Map(VARS.map((v,i)=>[v.k,i]));
 // Constantes : un nom lisible par les calculs (« seuil soin » → seuil_soin).
 const cle=n=>norm(n).replace(/[^a-z0-9_.]+/g,"_").replace(/^_+|_+$/g,"");
 const constante=n=>(doc.constantes||[]).find(c=>cle(c.nom)===n);
-const MOTS={et:"et",and:"et",ou:"ou",or:"ou",non:"non",not:"non",vrai:"vrai",true:"vrai",oui:"vrai",faux:"faux",false:"faux",contient:"contient"};
-const FONCTIONS={max:(...a)=>Math.max(...a.map(nombre)),min:(...a)=>Math.min(...a.map(nombre)),abs:a=>Math.abs(nombre(a)),arrondi:a=>Math.round(nombre(a)),
-  nombre:a=>Array.isArray(a)?a.length:typeof a==="string"?(a?1:0):nombre(a),somme:(...a)=>a.reduce((s,x)=>s+nombre(x),0)};
-class ErreurCalcul extends Error{}
-function nombre(x){ if(typeof x==="number") return x; if(typeof x==="boolean") return x?1:0; if(Array.isArray(x)) return x.length; const n=Number(String(x).replace(",",".")); if(Number.isFinite(n)&&String(x).trim()!=="") return n; throw new ErreurCalcul("« "+x+" » n'est pas un nombre"); }
-function vrai(x){ return Array.isArray(x)?x.length>0:typeof x==="string"?x!=="":Boolean(x); }
-function lexer(src){
-  const toks=[]; let i=0;
-  while(i<src.length){
-    const c=src[i];
-    if(/\s/.test(c)){ i++; continue; }
-    if(/[0-9]/.test(c)){ let j=i; while(j<src.length&&/[0-9.]/.test(src[j])) j++; toks.push({t:"nb",v:parseFloat(src.slice(i,j))}); i=j; continue; }
-    if(c==='"'||c==="'"||c==="«"||c==="“"){ const fin=c==="«"?"»":c==="“"?"”":c; const j=src.indexOf(fin,i+1); if(j<0) throw new ErreurCalcul("guillemet non fermé"); toks.push({t:"txt",v:src.slice(i+1,j).trim()}); i=j+1; continue; }
-    if(/[\p{L}_]/u.test(c)){ let j=i; while(j<src.length&&/[\p{L}\p{N}_.]/u.test(src[j])) j++; const w=src.slice(i,j); const m=MOTS[w.toLowerCase()]; toks.push(m?{t:"mot",v:m}:{t:"id",v:w}); i=j; continue; }
-    const deux=src.slice(i,i+2);
-    const OPS2={"<=":"<=",">=":">=","!=":"!=","<>":"!=","==":"=","&&":"et","||":"ou"};
-    if(OPS2[deux]){ const v=OPS2[deux]; toks.push({t:["et","ou"].includes(v)?"mot":"op",v}); i+=2; continue; }
-    if("+-*/()<>=,".includes(c)){ toks.push({t:"op",v:c}); i++; continue; }
-    if(c==="!"){ toks.push({t:"mot",v:"non"}); i++; continue; }
-    throw new ErreurCalcul("caractère inattendu « "+c+" »");
-  }
-  return toks;
-}
-function analyse(src){
-  const toks=lexer(src); let i=0;
-  const voit=(t,v)=>toks[i]&&toks[i].t===t&&(v===undefined||toks[i].v===v);
-  const prend=(t,v)=>{ if(!voit(t,v)) throw new ErreurCalcul(v?"« "+v+" » attendu":"calcul incomplet"); return toks[i++]; };
-  const ou=()=>{ let a=et(); while(voit("mot","ou")){ i++; a={k:"ou",a,b:et()}; } return a; };
-  const et=()=>{ let a=non(); while(voit("mot","et")){ i++; a={k:"et",a,b:non()}; } return a; };
-  const non=()=>{ if(voit("mot","non")){ i++; return {k:"non",a:non()}; } return cmp(); };
-  const cmp=()=>{ const a=add(); for(const op of ["<=",">=","!=","<",">","="]) if(voit("op",op)){ i++; return {k:"cmp",op,a,b:add()}; }
-    if(voit("mot","contient")){ i++; return {k:"contient",a,b:add()}; } return a; };
-  const add=()=>{ let a=mul(); while(voit("op","+")||voit("op","-")){ const op=toks[i++].v; a={k:"arith",op,a,b:mul()}; } return a; };
-  const mul=()=>{ let a=un(); while(voit("op","*")||voit("op","/")){ const op=toks[i++].v; a={k:"arith",op,a,b:un()}; } return a; };
-  const un=()=>{ if(voit("op","-")){ i++; return {k:"neg",a:un()}; } return prim(); };
-  const prim=()=>{
-    const t=toks[i]; if(!t) throw new ErreurCalcul("calcul incomplet");
-    if(t.t==="nb"){ i++; return {k:"val",v:t.v}; }
-    if(t.t==="txt"){ i++; return {k:"val",v:t.v}; }
-    if(t.t==="mot"&&(t.v==="vrai"||t.v==="faux")){ i++; return {k:"val",v:t.v==="vrai"}; }
-    if(t.t==="op"&&t.v==="("){ i++; const e=ou(); prend("op",")"); return e; }
-    if(t.t==="id"){ i++;
-      if(voit("op","(")){ i++; const f=t.v.toLowerCase(); if(!FONCTIONS[f]) throw new ErreurCalcul("fonction inconnue « "+t.v+" »"); const args=[];
-        if(!voit("op",")")){ args.push(ou()); while(voit("op",",")){ i++; args.push(ou()); } } prend("op",")"); return {k:"appel",f,args}; }
-      return {k:"var",n:t.v}; }
-    throw new ErreurCalcul("« "+t.v+" » inattendu");
-  };
-  if(!toks.length) throw new ErreurCalcul("calcul vide");
-  const ast=ou(); if(i<toks.length) throw new ErreurCalcul("« "+toks[i].v+" » en trop");
-  return ast;
-}
-function variablesDe(ast,out=new Set()){ if(!ast) return out; if(ast.k==="var") out.add(ast.n); for(const x of [ast.a,ast.b,...(ast.args||[])]) variablesDe(x,out); return out; }
+// Le langage des calculs : celui du moteur des tags du jeu (game-core/tag-engine.js, Idan, 2026-11-22 : « que le jeu lise
+// les datas de l'atelier »), le même pour l'atelier et pour le jeu.
+const {ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe}=E;
 function proche(n){ const m=norm(n); let best=null,bs=0; for(const v of VARS){ const k=v.k; let s=0; const a=m.split(/[._]/),b=k.split(/[._]/); for(const x of a) if(x&&b.some(y=>y.startsWith(x)||x.startsWith(y))) s++; if(s>bs){ bs=s; best=k; } } return best; }
 function controle(src){
   const ast=analyse(src);
   for(const n of variablesDe(ast)) if(!VAR_IDX.has(n)&&!constante(n)){ const p=proche(n); throw new ErreurCalcul("variable inconnue « "+n+" »"+(p?" (vouliez-vous « "+p+" » ?)":"")); }
   return ast;
 }
-function evalue(ast,p){
-  switch(ast.k){
-    case "val": return ast.v;
-    case "var": return VAR_IDX.has(ast.n)?p[ast.n]:constante(ast.n)?.valeur;
-    case "non": return !vrai(evalue(ast.a,p));
-    case "et": return vrai(evalue(ast.a,p))&&vrai(evalue(ast.b,p));
-    case "ou": return vrai(evalue(ast.a,p))||vrai(evalue(ast.b,p));
-    case "neg": return -nombre(evalue(ast.a,p));
-    case "arith": { const a=nombre(evalue(ast.a,p)),b=nombre(evalue(ast.b,p)); return ast.op==="+"?a+b:ast.op==="-"?a-b:ast.op==="*"?a*b:(b===0?0:a/b); }
-    case "contient": { const a=evalue(ast.a,p),b=norm(evalue(ast.b,p)); return Array.isArray(a)?a.some(x=>norm(x)===b):norm(a).includes(b); }
-    case "cmp": { const a=evalue(ast.a,p),b=evalue(ast.b,p);
-      const num=x=>typeof x==="number"||typeof x==="boolean";
-      if(ast.op==="="||ast.op==="!="){ const eg=num(a)&&num(b)?nombre(a)===nombre(b):norm(a)===norm(b); return ast.op==="="?eg:!eg; }
-      const x=nombre(a),y=nombre(b); return ast.op==="<"?x<y:ast.op==="<="?x<=y:ast.op===">"?x>y:x>=y; }
-    case "appel": return FONCTIONS[ast.f](...ast.args.map(x=>evalue(x,p)));
-  }
-  throw new ErreurCalcul("calcul illisible");
-}
+function evalue(ast,p){ return E.evalue(ast,n=>VAR_IDX.has(n)?p[n]:constante(n)?.valeur); }
 const affiche=v=>typeof v==="boolean"?(v?"vrai":"faux"):Array.isArray(v)?(v.length?v.join(", "):"aucun"):typeof v==="number"?String(Math.round(v*100)/100).replace(".",","):(v===""?"(vide)":String(v));
 
 // ---------- Onglets ----------
@@ -441,6 +374,7 @@ function liTag(t,parentId,chemin){
   else pli.setAttribute("aria-hidden","true");
   const l=el("span",{class:"nom-l"},el("b",{text:t.nom}));
   if(t.groupe) l.append(el("span",{class:"puce p-cat",text:"Catégorie"}));
+  if(t.inactif) l.append(el("span",{class:"puce p-off",text:"Inactif"}));
   if(t.groupe&&t.garder) l.append(el("span",{class:"puce p-palier",text:"garde "+t.garder}));
   if(!t.groupe&&t.rang!=null) l.append(el("span",{class:"puce p-palier",text:"rang "+String(t.rang).replace(".",",")}));
   const autres=t.parents.filter(p=>p!==parentId);
@@ -472,7 +406,7 @@ function rendrePanneauTag(){
   $("tag-vide").hidden=Boolean(t); $("tag-champs").hidden=!t; if(!t) return;
   if(document.activeElement!==$("tag-nom")) $("tag-nom").value=t.nom;
   if(document.activeElement!==$("tag-note")) $("tag-note").value=t.note;
-  $("tag-groupe").checked=t.groupe;
+  $("tag-groupe").checked=t.groupe; $("tag-inactif").checked=t.inactif;
   $("tag-garder-champ").hidden=!t.groupe; $("tag-rang-champ").hidden=t.groupe;
   if(document.activeElement!==$("tag-garder")) $("tag-garder").value=t.garder??"";
   if(document.activeElement!==$("tag-rang")) $("tag-rang").value=t.rang??"";
@@ -484,17 +418,19 @@ function rendrePanneauTag(){
   const sel=$("tag-parent-ajout"); sel.replaceChildren(el("option",{value:"",text:"Ajouter un parent…"}));
   doc.tags.filter(x=>!interdit.has(x.id)&&!t.parents.includes(x.id)).map(x=>({x,c:chemin(x)})).sort((a,b)=>a.c.localeCompare(b.c,"fr")).forEach(({x,c})=>sel.append(el("option",{value:x.id,text:c})));
   sel.disabled=!peutEcrire;
-  const par=testsQuiEliminent(t.id); $("tag-par").textContent=par.length?par.join(" · "):"Aucun test pour l'instant.";
+  const par=testsQuiEliminent(t.id); $("tag-par").textContent=(t.inactif?"Inactif : éliminé d'office. ":"")+(par.length?par.join(" · "):"Aucun test pour l'instant.");
   const b=$("tag-suppr"); b.textContent="Supprimer"; b.dataset.arme="";
-  for(const x of ["tag-nom","tag-note","tag-groupe","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
+  for(const x of ["tag-nom","tag-note","tag-groupe","tag-inactif","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
 }
 $("tag-nom").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.nom=e.target.value; change(); rendreTags(); };
 $("tag-note").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.note=e.target.value; change(); rendreTags(); };
 $("tag-groupe").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.groupe=e.target.checked; change(); rendreTags(); rendrePanneauTag(); };
+// Un tag inactif (Idan, 2026-11-21 : « désactiver automatiquement un tag sans test… pour l'implémenter plus tard (comme pour les pièges) »).
+$("tag-inactif").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.inactif=e.target.checked; change(); rendreTags(); rendrePanneauTag(); if(profil) rendreResultats(); };
 $("tag-garder").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=Number(e.target.value); t.garder=e.target.value.trim()!==""&&v>=1?Math.floor(v):null; change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-rang").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=e.target.value.trim(); t.rang=v===""||!Number.isFinite(Number(v))?null:Number(v); change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-parent-ajout").onchange=e=>{ const t=tagPar(tagChoisi); const p=e.target.value; if(!t||!p) return; t.parents.push(p); fermes.delete(p); memoFermes(); change(); rendreTags(); rendrePanneauTag(); };
-function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:""};
+function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:"",inactif:false};
   const apres=parent?doc.tags.map(x=>x.parents.includes(parent)||x.id===parent).lastIndexOf(true):doc.tags.length-1;
   doc.tags.splice(apres+1,0,t); if(parent){ fermes.delete(parent); memoFermes(); } tagChoisi=t.id; change(); rendreTags(); rendrePanneauTag(); $("tag-nom").select(); $("tag-nom").focus(); }
 $("tag-ajout").onclick=()=>nouveauTag(null);
@@ -538,10 +474,18 @@ function rendreTests(){
     vus.add(x.id);
     const ec=etatCalcul(x);
     const q=el("span",{class:"q"},el("span",{class:"num",text:nums.get(x.id)}),el("b",{text:x.nom}),el("span",{class:"puce p-test",text:x.type==="binaire"?"Oui / non":"Par niveau"}),el("span",{class:"puce "+ec.c,text:ec.t}));
-    const b=el("button",{type:"button",onclick:()=>{ testChoisi=x.id; rendreTests(); rendrePanneauTest(); $("test-nom").focus(); }},q);
+    const b=el("button",{type:"button",class:"carte",onclick:()=>{ testChoisi=x.id; rendreTests(); rendrePanneauTest(); $("test-nom").focus(); }},q);
     if(x.formule) b.append(el("span",{class:"petit",text:x.formule}));
     b.append(el("span",{class:"elim",text:resume(x)}));
-    const li=el("li",{class:x.id===testChoisi?"choisi":""},b);
+    const aSous=branches(x).some(r=>suivants(x.id,r).some(c=>!vus.has(c.id))), ouvert=!testsFermes.has(x.id);
+    const bascule=()=>{ ouvert?testsFermes.add(x.id):testsFermes.delete(x.id); memoTestsFermes(); rendreTests(); };
+    const pli=el("button",{type:"button",class:"pli"}); pli.innerHTML=chevron;
+    if(aSous){ pli.setAttribute("aria-expanded",String(ouvert)); pli.setAttribute("aria-label",(ouvert?"Replier ":"Déplier ")+"les sous-questions de « "+x.nom+" »"); pli.onclick=bascule; }
+    else pli.setAttribute("aria-hidden","true");
+    const li=el("li",{class:x.id===testChoisi?"choisi":""},el("div",{class:"test-ligne"},pli,b));
+    if(aSous&&!ouvert){ const n=descendantsTest(x.id).size;
+      li.append(el("button",{type:"button",class:"replie",onclick:bascule,text:n+" sous-question"+(n>1?"s":"")+" repliée"+(n>1?"s":"")+" · déplier"}));
+      return li; }
     for(const r of branches(x)){ const cs=suivants(x.id,r).filter(c=>!vus.has(c.id)); if(!cs.length) continue;
       const sous=el("ol",{class:"liste-tests"}); cs.forEach(c=>sous.append(faire(c)));
       li.append(el("div",{class:"branche"},el("span",{class:"branche-l",text:"Si "+libRep(x,r)+", on pose ensuite :"}),sous)); }
@@ -622,11 +566,12 @@ $("test-type").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; const a
   for(const c of doc.tests) if(c.si?.test===x.id&&avant!==x.type)
     c.si.rep=x.type==="niveau"?(c.si.rep==="oui"?x.paliers[x.paliers.length-1]:x.paliers[0]).id:(x.paliers.findIndex(q=>q.id===c.si.rep)>0?"oui":"non");
   change(); rendreTests(); rendrePanneauTest(); };
-function nouveauTest(si){ if(!peutEcrire) return; const x={id:uid(),nom:"Nouveau test",type:"binaire",formule:"",calcul:"",oui:[],non:[],paliers:[],si:si||null};
+function nouveauTest(si){ if(!peutEcrire) return; if(si){ testsFermes.delete(si.test); memoTestsFermes(); } const x={id:uid(),nom:"Nouveau test",type:"binaire",formule:"",calcul:"",oui:[],non:[],paliers:[],si:si||null};
   doc.tests.push(x); testChoisi=x.id; change(); rendreTests(); rendrePanneauTest(); $("test-nom").select(); $("test-nom").focus(); }
 $("test-ajout").onclick=()=>nouveauTest(null);
 $("test-si").onchange=e=>{ const x=testPar(testChoisi); if(!x) return; const v=e.target.value;
   x.si=v?{test:v.slice(0,v.indexOf("|")),rep:v.slice(v.indexOf("|")+1)}:null;
+  if(x.si){ testsFermes.delete(x.si.test); memoTestsFermes(); }
   doc.tests.splice(doc.tests.indexOf(x),1); doc.tests.push(x); change(); rendreTests(); rendrePanneauTest(); };
 // Monter / descendre parmi les tests de la même branche.
 function deplaceTest(s){ const x=testPar(testChoisi); if(!x||!peutEcrire) return;
@@ -670,7 +615,7 @@ function rendreAideVars(){
 
 // ---------- 3. Essayer ----------
 let profilIdx=null, profil=null, forces={};
-const etoilesCompagnie=()=>{ const v=Number($("f-etoiles").value); return Number.isFinite(v)?v:1; };
+const etoilesCompagnie=()=>{ const v=Number($("f-etoiles").value); return Number.isFinite(v)?Math.min(15,Math.max(1,v)):1; };
 const versObjet=i=>({...Object.fromEntries(POOL.vars.map((v,j)=>[v.k,Array.isArray(POOL.profils[i][j])?[...POOL.profils[i][j]]:POOL.profils[i][j]])),"compagnie.etoiles":etoilesCompagnie()});
 $("f-etoiles").oninput=()=>{ memo("atelier-etoiles",etoilesCompagnie()); if(profil){ profil["compagnie.etoiles"]=etoilesCompagnie(); rendreResultats(); } };
 let autres=[]; // les autres membres de la compagnie (indices dans POOL.profils)
@@ -707,26 +652,7 @@ function reponseAuto(x){
 }
 function resultats(){
   majCompagnie();
-  const direct=new Map(); const reps=[]; const vus=new Set();
-  // On suit l'arbre : un test n'est posé que si la réponse au-dessus de lui est sortie.
-  const visite=(x,num,prof,saute)=>{
-    if(vus.has(x.id)) return; vus.add(x.id);
-    if(saute){ reps.push({x,num,prof,saute});
-      let k=0; for(const b of branches(x)) for(const c of suivants(x.id,b)) visite(c,num+"."+(++k),prof+1,"la question "+num+" n'est pas posée"); return; }
-    const a=reponseAuto(x); const f=forces[x.id]; const rep=f!==undefined?f:a.rep;
-    let ids=[], libelle="sans réponse", branche=null;
-    if(rep!==undefined){ if(x.type==="binaire"){ ids=rep?x.oui:x.non; libelle=rep?"oui":"non"; branche=libelle; } else { const p=x.paliers[rep]; ids=p?.elimine||[]; libelle=p?.nom||("palier "+(rep+1)); branche=p?.id; } }
-    for(const id of ids){ if(!direct.has(id)) direct.set(id,[]); direct.get(id).push(num+". "+x.nom+" → "+libelle); }
-    reps.push({x,num,prof,a,rep,force:f!==undefined,libelle,ids});
-    let k=0; for(const b of branches(x)) for(const c of suivants(x.id,b)){ const n=num+"."+(++k);
-      visite(c,n,prof+1,branche===b?null:rep===undefined?"la question "+num+" attend sa réponse":"posé seulement si « "+x.nom+" » → "+libRep(x,b)); }
-  };
-  doc.tests.filter(t=>!t.si).forEach((t,i)=>visite(t,String(i+1),0,null));
-  // Un tag tombe si un test l'élimine, ou si l'un de ses parents tombe (jusqu'à ce que plus rien ne change).
-  const motif=new Map([...direct].map(([id,r])=>[id,r.join(" ; ")]));
-  for(let encore=true;encore;){ encore=false;
-    for(const t of doc.tags) if(!motif.has(t.id)){ const p=t.parents.find(x=>motif.has(x)); if(p){ motif.set(t.id,"son parent « "+nomTag(p)+" » est éliminé"); encore=true; } } }
-  return {reps,motif};
+  return E.createTagTree(doc).solve(x=>{ const a=reponseAuto(x), f=forces[x.id]; return {a,rep:f!==undefined?f:a.rep,force:f!==undefined}; });
 }
 function rendreFiche(){
   const p=profil, f=$("fiche"); f.replaceChildren();
@@ -780,20 +706,9 @@ function rendreResultats(){
   if(!profil) return;
   rendreFiche(); // la ligne « Compagnie » suit les changements du profil et de la compagnie
   const {reps,motif}=resultats();
-  const restent=doc.tags.filter(t=>!t.groupe&&!motif.has(t.id));
-  // Décision d'Idan : pour une branche, seul le tag le plus bas qui reste s'affiche.
-  const plusBas=t=>![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id); });
-  // Catégories limitées (Idan, 2026-11-20) : une catégorie peut ne garder que ses X tags de plus haut rang qui restent ;
-  // à rang égal, l'ordre de la liste. Ailleurs, le tag le plus bas de chaque branche.
-  const ancetres=(id,acc=new Set())=>{ for(const p of tagPar(id)?.parents||[]) if(!acc.has(p)){ acc.add(p); ancetres(p,acc); } return acc; };
-  const gardes=new Map();
-  for(const c of doc.tags.filter(c=>c.groupe&&c.garder)){
-    const cand=[...descendants(c.id)].map(tagPar).filter(d=>d&&!d.groupe&&!motif.has(d.id))
-      .sort((a,b)=>(b.rang??-Infinity)-(a.rang??-Infinity)||doc.tags.indexOf(a)-doc.tags.indexOf(b));
-    gardes.set(c.id,new Set(cand.slice(0,c.garder).map(d=>d.id)));
-  }
-  const limitees=t=>[...ancetres(t.id)].filter(id=>gardes.has(id));
-  const affiches=restent.filter(t=>{ const l=limitees(t); return l.length?l.every(id=>gardes.get(id).has(t.id)):plusBas(t); });
+  // Décision d'Idan : pour une branche, seul le tag le plus bas qui reste s'affiche ; une catégorie limitée (Idan,
+  // 2026-11-20) ne garde que ses X tags de plus haut rang (le moteur, game-core/tag-engine.js).
+  const {restent,affiches}=E.createTagTree(doc).displayed(motif);
   const r=$("restent"); r.replaceChildren();
   const tete=el("p",{style:"margin:0"},el("b",{text:affiches.length+" tag"+(affiches.length>1?"s":"")+" affiché"+(affiches.length>1?"s":"")}));
   if(affiches.length>4) tete.append(" ",el("span",{class:"trop",text:"(l'objectif est 3 ou 4 : il manque des tests)"}));
@@ -842,14 +757,53 @@ const dernier=memo("atelier-profil"); if(Number.isInteger(dernier)&&POOL.profils
   const c=memo("atelier-compagnie"); if(Array.isArray(c)&&c.every(i=>Number.isInteger(i)&&POOL.profils[i]&&i!==dernier)) autres=c; else tirerCompagnie(); }
 montreOnglet(["tags","tests","essai"].includes(onglet)?onglet:"tags"); rendreTout(); if(profil) rendreEssai(true);
 
+// ---------- Enregistrement sur Hostinger (la Design Lab, Idan, 2026-11-22) ----------
+// La dernière version : media/atelier/actuel.json (lue aussi par le jeu) ; sinon la copie du dépôt (data/tag-workshop.json),
+// et la première modification crée la version 1. Chaque version part de la précédente (design/api/atelier.php refuse
+// sinon : deux onglets ne s'écrasent pas).
+async function brancheSite(){
+  $("retour-lab").hidden=false;
+  const lire=async url=>{ const r=await fetch(url+"?t="+Date.now(),{cache:"no-store"});
+    return r.ok&&/json/.test(r.headers.get("content-type")||"")?r.json():null; };
+  const charge=x=>{ doc=propre(x); if(tagChoisi&&!tagPar(tagChoisi)) tagChoisi=null; if(testChoisi&&!testPar(testChoisi)) testChoisi=null;
+    rendreTout(); if(profil&&onglet==="essai") rendreResultats(); };
+  let version=0, actuel=null, copie=null;
+  try{ actuel=await lire("/media/atelier/actuel.json"); }catch(e){}
+  if(actuel&&Number.isInteger(actuel.version)&&actuel.doc){ version=actuel.version; charge(actuel.doc); }
+  else{ try{ copie=await lire("/data/tag-workshop.json"); }catch(e){} if(copie) charge(copie); }
+  if(!actuel&&!copie){ etat("Atelier introuvable : lecture seule",0); peutEcrire=false; rendreTout(); return; }
+  stockage={delai:2500,libelle:()=>" (version "+version+")",
+    async ecrire(d){
+      let r=null, x=null;
+      try{ r=await fetch("../api/atelier.php",{method:"POST",headers:{"Content-Type":"application/json","X-Depot":"1"},
+        body:JSON.stringify({version,doc:E.clean(d,{uid}),note:""})}); }catch(e){ throw {code:"unavailable"}; }
+      try{ x=await r.json(); }catch(e){}
+      if(r.status===409) throw {code:"conflict",version:x?.actuel?.version};
+      if(r.status===401||r.status===403) throw {code:"permission_denied",message:x?.erreur};
+      if(!r.ok||!x?.ok) throw {code:"erreur",message:x?.erreur||"HTTP "+r.status};
+      version=x.fiche.version;
+    }};
+  etat(version?"À jour (version "+version+")":"Copie du dépôt : ta première modification crée la version 1 sur Hostinger",1);
+  window.addEventListener("beforeunload",e=>{ if(sale&&peutEcrire){ e.preventDefault(); e.returnValue=""; } });
+  // Un autre onglet ou appareil a enregistré : on relit la dernière version toutes les 30 s (jamais par-dessus des
+  // modifications en cours).
+  setInterval(async()=>{
+    if(sale||enCours||document.hidden||!peutEcrire) return;
+    let a=null; try{ a=await lire("/media/atelier/actuel.json"); }catch(e){ return; }
+    if(a&&Number.isInteger(a.version)&&a.version>version&&!sale&&!enCours){ version=a.version; charge(a.doc); etat("Mis à jour (version "+version+")",1); }
+  },30000);
+}
+
 (async()=>{
+  if(HEBERGEMENT==="site"){ await brancheSite(); return; }
   const use=window.claude&&window.claude.use;
   if(!use){ etat("Hors de claude.ai : rien n'est enregistré",0); return; }
   const db=await window.claude.use("db");
   if(!db){ etat("Enregistrement indisponible ici : lecture seule",0); peutEcrire=false; rendreTout(); return; }
   const user=await window.claude.use("user");
   if(user){ try{ const c=await user.can("data.write"); if(c===false) peutEcrire=false; }catch(e){} }
-  ref=db.doc("atelier/principal");
+  const ref=db.doc("atelier/principal");
+  stockage={delai:700,ecrire:d=>ref.set(d)};
   const delai=setTimeout(()=>etat("L'atelier n'est pas encore joignable…",2),10000);
   ref.onSnapshot(snap=>{
     if(!snap.metadata.fromCache) clearTimeout(delai);

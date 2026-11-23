@@ -117,6 +117,7 @@ assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
   // Hauteur fixe (Idan, 2026-11-10) : le portrait ne zoome plus quand la conversation s'allonge.
   assert.match(css,/\.talk-dialog--recruit \.avatar-frame--talk\{width:400px;height:440px;min-height:0/);
   const html=fs.readFileSync(path.join(__dirname,"..","prototype-web","index.html"),"utf8");
-  for(const id of ["recruit","steward","deal"]) assert.match(html,new RegExp(`<dialog id="${id}-talk-dialog" class="talk-dialog talk-dialog--recruit"`));
+  // Le recrutement ajoute sa fiche (talk-dialog--fiche, Idan, 2026-11-22).
+  for(const id of ["recruit","steward","deal"]) assert.match(html,new RegExp(`<dialog id="${id}-talk-dialog" class="talk-dialog talk-dialog--recruit[" ]`));
 }
 console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques, des compétences et de la magie — OK");

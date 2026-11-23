@@ -27,6 +27,10 @@ cp charte/tokens.json charte/assets.json charte/README.md "$OUT/charte/"
 node scripts/build-charte.js --site "$OUT/charte/site" >/dev/null
 # L'inventaire des images, fichier par fichier, pour l'onglet Images de la Design Lab (scripts/build-images-index.js).
 node scripts/build-images-index.js "$OUT/data/images-fichiers.json" >/dev/null
+# L'atelier des tags de la Design Lab (design/atelier/, Idan, 2026-11-22) : la page, le moteur des tags et des recrues
+# tirées par le générateur du jeu ; enregistré sur Hostinger (media/atelier/, design/api/atelier.php).
+node scripts/atelier-tags/profils.js >/dev/null
+node scripts/atelier-tags/construit.js "$OUT/design/atelier/index.html" --site >/dev/null
 
 VERSION=$(git rev-parse --short HEAD 2>/dev/null || date -u +%Y%m%d%H%M%S)
 find "$OUT" -name "*.html" -print0 | xargs -0 perl -pi -e \

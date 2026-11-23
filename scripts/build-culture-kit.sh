@@ -154,8 +154,10 @@ for piece in coin-orne-riche coin-orne-courbe; do orn "$SRC/$piece.png" "$OUT/$p
 # détourage. Rogné tel quel, le voile passait pour le fond et la découpe tranchait le haut de l'équerre (Idan,
 # 2026-11-22 : « le bas est tronqué… une partie de l'ornement d'angle disparaît », le coin du bas étant ce coin retourné).
 # On efface le voile hors de la pièce (alpha au-dessus de 50 %, élargie de 3 px pour garder l'anticrénelage), puis on
-# découpe du haut au bas de la pièce sur toute la largeur du master, comme avant : la taille et la place réglées par Idan
-# ne bougent pas.
+# découpe du haut au bas de la pièce sur toute la largeur du master, comme avant : la taille réglée par Idan ne bouge pas.
+# Le morceau retrouvé en haut (lignes 70 à 183 du master, 0,0901 de sa largeur) est déclaré dans culture-kits.json
+# (geometrie.ornementsCoinDebord) : il déborde du coin, et la pièce reste à la place réglée (Idan, 2026-11-23 : « A
+# gauche c'est coupé, à droite c'est trop haut »).
 convert "$SRC/coin-orne-leger.png" -alpha extract "$tmp/la.png"
 convert "$tmp/la.png" -threshold 50% -morphology Dilate Disk:3 "$tmp/lm.png"
 convert "$tmp/la.png" "$tmp/lm.png" -compose multiply -composite "$tmp/la2.png"

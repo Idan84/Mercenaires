@@ -165,6 +165,13 @@ const HOVER_KIT_ANGLES={
   bd:{sx:1,sy:1,miroir:["scale(-1,-1)",(x,y)=>[-x,-y]],rotation:["rotate(180deg)",(x,y)=>[-x,-y]]},
   bg:{sx:-1,sy:1,miroir:["scaleY(-1)",(x,y)=>[x,-y]],rotation:["rotate(270deg)",(x,y)=>[y,-x]]}};
 const hcPx=n=>`${+(+n).toFixed(2)}px`;
+// Un ornement de coin dont l'image a grandi après coup (data/reference/culture-kits.json, geometrie.ornementsCoinDebord :
+// la part de sa largeur ajoutée en haut, au-delà de l'ancien bord) : ce morceau déborde du coin, et la pièce reste où
+// Idan l'a réglée. Le décalage suit le sens de la pièce (miroir ou rotation). t : la taille de l'ornement à l'écran.
+function hoverKitOrnamentShift(G,o,A,t){
+  const debord=Number(G.ornementsCoinDebord?.[o.modele])||0;
+  return debord?A[o.sens][1](0,-debord*t):[0,0];
+}
 // Une pièce à sa place exacte : le navigateur arrondit au pixel la place d'un élément (left, top), pas une translation ;
 // la partie entière en left / top, le reste en translation (sinon les raccords se décalent d'un demi-pixel).
 const hcPose=(x,y)=>{const ix=Math.floor(x+1e-6),iy=Math.floor(y+1e-6);return `left:${ix}px;top:${iy}px;translate:${hcPx(x-ix)} ${hcPx(y-iy)}`;};
@@ -251,7 +258,8 @@ function hoverKitFrame(kit){
   }
   for(const [a,A] of Object.entries(HOVER_KIT_ANGLES)){
     const o=F.ornementsCoin[a];if(!o||o.modele==="aucun"||!G.ornementsCoin[o.modele])continue;
-    const x=(A.sx<0?B.x0:B.x1-o.taille)+o.dx,y=(A.sy<0?B.y0:B.y1-o.taille)+o.dy;
+    const [sx,sy]=hoverKitOrnamentShift(G,o,A,o.taille);
+    const x=(A.sx<0?B.x0:B.x1-o.taille)+o.dx+sx,y=(A.sy<0?B.y0:B.y1-o.taille)+o.dy+sy;
     out.push(`<img src="${dir}/${G.ornementsCoin[o.modele]}" alt="" style="left:${hcPx(x)};top:${hcPx(y)};width:${hcPx(o.taille)};height:${hcPx(o.taille)};object-fit:contain;object-position:0 0;transform:${A[o.sens][0]}">`);
   }
   const su=F.suspendu,SG=G.suspendu;

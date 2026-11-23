@@ -114,6 +114,16 @@ Compétence martiale de 0 à l'infini, tirée à la fin de la création : **2D6*
 ennemis compris (Idan, 2026-11-09). Elle retire la moitié de sa valeur au malus magique de l'armure, du bouclier et du
 casque (doc 12) et gagne 80 XP par sort raté tant que l'équipement gêne (doc 08). Fiche : onglet Magie.
 
+## Fiche : la valeur des armes (Idan, 2026-11-23)
+
+« Le problème, c'est un problème de lecture […] on touche à rien, mais on affiche uniquement l'arme avec la valeur
+arme+cat. » Les règles ne changent pas : la catégorie et l'arme restent deux compétences, additionnées au combat
+(doc 04). Sur la fiche (onglet Compétences) :
+
+- une arme montre sa valeur au combat, **arme + catégorie** ; un bouclier, bouclier + Boucliers ;
+- une catégorie d'armes montre la valeur de sa **meilleure arme** et, dans sa fenêtre, plus de valeur à elle ;
+- les styles (une main, deux mains, deux armes, Boucliers) gardent leur valeur ; les animaux ne changent pas.
+
 ## Fiche : onglets Camp et Historique (Idan, 2026-10-24)
 
 - **Camp** : Transmission du savoir, Intendance, Médecine, et l'Artisanat avec ses huit métiers, du meilleur au moins

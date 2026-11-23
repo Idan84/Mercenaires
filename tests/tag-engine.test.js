@@ -171,6 +171,14 @@ for(const v of recrues){
   for(const e of ECOLES) if(v["moy.cout.ecole."+e]>0) assert.equal(v["lancers.ecole."+e],Math.floor(v["carac.reserve_de_mana"]/v["moy.cout.ecole."+e]));
 }
 assert.ok(recrues.some(v=>v.nb_ecoles_sorts>=1&&v["moy.chance.sorts"]>0),"des recrues qui lancent des sorts");
+// Les moyennes des soins pour chaque tag de sort (Idan, 2026-11-23 : sorts de soutien et entraves).
+for(const t of ["soutien.enchantements","entrave.immobilisation","entrave.affaiblissement","entrave.demoralisateur"])
+  for(const k of ["moy.chance.","moy.ecole.","lancers."]) assert.ok(VARS.has(k+t),k+t);
+for(const v of recrues) for(const t of ["soutien.enchantements","entrave.immobilisation"]){
+  if(!v["sorts."+t]){ assert.equal(v["lancers."+t],0); assert.equal(v["moy.chance."+t],0); continue; }
+  assert.equal(v["lancers."+t],Math.floor(v["carac.reserve_de_mana"]/v["moy.cout."+t]));
+  assert.ok(v["moy.chance."+t]>=0&&v["moy.chance."+t]<=v["chance."+t],"la moyenne ne dépasse pas la meilleure");
+}
 
 const donnees=E.clean(JSON.parse(read("data/reference/tag-workshop.json")));
 const arbre=E.createTagTree(donnees);

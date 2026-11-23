@@ -246,6 +246,12 @@
       }
       for(const r of spellRows.values()) for(const t of roleTags(r)) if(t!=="role/soin")
         v("moy.cout."+tagKey(t),"Coût moyen en mana de ses sorts « "+tagLabel(t)+" »","Sorts : coût en mana","nombre");
+      // Les moyennes des soins, pour chaque tag de sort (Idan, 2026-11-23 : sorts de soutien et entraves).
+      for(const r of spellRows.values()) for(const t of roleTags(r)) if(t!=="role/soin"){
+        v("moy.chance."+tagKey(t),"Réussite moyenne de ses sorts « "+tagLabel(t)+" » (%)","Sorts : moyennes par tag","nombre");
+        v("moy.ecole."+tagKey(t),"Niveau moyen des écoles de ses sorts « "+tagLabel(t)+" » (équipement compris)","Sorts : moyennes par tag","nombre");
+        v("lancers."+tagKey(t),"Nombre de sorts « "+tagLabel(t)+" » qu'il peut lancer avec sa réserve (coût moyen)","Sorts : moyennes par tag","nombre");
+      }
       // Le bonus des sorts qui en donnent un (Courage de masse : +20, +5 par pas de maîtrise ; magic.bonus).
       for(const r of spellRows.values()) if(r.bonus_base!=null) for(const t of roleTags(r))
         v("bonus."+tagKey(t),"Bonus de son meilleur sort « "+tagLabel(t)+" » (points)","Sorts : bonus","nombre");
@@ -369,6 +375,16 @@
       put("moy.ecole.soin","Niveau moyen des écoles de ses sorts de soin (équipement compris)","Sorts : moyennes des soins","nombre",r1(moy(sp=>Number(engine.statWithGear(unit,spellRows.get(sp.code).ecole))||0)));
       put("lancers.soin","Nombre de soins qu'il peut lancer avec sa réserve (coût moyen de ses soins)","Sorts : moyennes des soins","nombre",moyCout?Math.floor(reserve/moyCout):0);
       put("sorts.soin_rapide","Sorts de soin en action rapide","Sorts","nombre",soins.filter(sp=>spellRows.get(sp.code).action==="rapide").length);
+      // Les mêmes moyennes pour chaque autre tag de sort (Idan, 2026-11-23 : Enchanteur, Immobilisateur, Affaiblisseur,
+      // Démoralisateur) : réussite moyenne, niveau moyen de leurs écoles, et combien il peut en lancer avec sa réserve.
+      const parTag={};
+      for(const sp of known) for(const t of roleTags(spellRows.get(sp.code))) (parTag[t]||(parTag[t]=[])).push(sp);
+      for(const [t,liste] of Object.entries(parTag)) if(t!=="role/soin"){
+        const k=tagKey(t), m=f=>liste.reduce((x,sp)=>x+f(sp),0)/liste.length, cout=somme[t]/nb[t];
+        out["moy.chance."+k]=Math.round(m(sp=>Number(magic?.castChance(unit,sp.code)?.p)||0));
+        out["moy.ecole."+k]=r1(m(sp=>Number(engine.statWithGear(unit,spellRows.get(sp.code).ecole))||0));
+        out["lancers."+k]=cout?Math.floor(reserve/cout):0;
+      }
       // Par école, comme les soins (Idan, 2026-11-23 : tags des écoles, « Tu avais fait des seuils et des constantes pour
       // soin, tu peux te baser dessus ») : ses sorts de l'école, leur réussite moyenne, leur coût moyen, et combien il
       // peut en lancer avec sa réserve ; puis les mêmes sur tous ses sorts (Mage pluridisciplinaire et suivants).

@@ -292,10 +292,16 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
     au-delà, la police rapetisse un peu, toujours sur une ligne ; un mot qui ferait dépasser est sauté ; toutes les paires
     de tags tiennent (test) ;
   - **titres spéciaux**, écrits à la main, quand tous leurs tags sont là : leur titre s'ils contiennent le tag qui mène
-    (Veinard + Increvable : « Chat à neuf vies »), sinon leur mot court à la suite (« Archer à neuf vies »). 16 pour
+    (Veinard + Increvable : « Chat à neuf vies »), sinon leur mot court à la suite (« Archer à neuf vies »). 23 pour
     commencer : Chat à neuf vies, sans peur et sans malchance, Trompe-la-mort, Inusable, Courant d'air, Terreur des
     tavernes, Escroc de charme, Langue d'argent, Fin limier, Grande gueule, Sentinelle (« à l'œil de lynx »), Mur de
-    muscles, Faucon, Canard, Coupe-jarret, Coupe-gorge ;
+    muscles, Faucon, Canard, Coupe-jarret, Coupe-gorge ; puis (Idan, 2026-11-24) Grosse brute en fer (Grosse brute + Boîte
+    de conserve), Corps de fer dans une boîte en fer (Roc + Boîte de conserve), Fer à cheval (Veinard + Boîte de
+    conserve), Feu follet (Insaisissable + Éclaireur), Brute galonnée (Grosse brute + Commissaire du courage), Tête de mule
+    (Volonté de fer + Sans peur), Oiseau de bon augure (Vol + Veinard) ;
+  - **formes longues** quand il y a la place (Idan : « c'est parfait ! ») : Roc « solide comme un roc », Grosse brute
+    « bâti comme une armoire », Cerveau sur pattes « étonnamment malin », Bolide « vif comme l'éclair », Insaisissable
+    « glissant comme une anguille », Veinard « généralement veinard » ;
   - l'infobulle de la fiche : les notes des tags du titre. Sans tags (sans intendant) : le titre calculé (doc 19). La
     monture (« à cheval ») n'est plus ajoutée au titre tiré des tags.
   - **Banc d'essai** (3 200 recrues, équipement de départ et T4, compagnie à 1 et 5 étoiles) : 2 603 recrues à plusieurs

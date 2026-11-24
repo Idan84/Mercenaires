@@ -118,7 +118,7 @@
    "titre_fem": false
   },
   {
-   "court": "{costaud|costaude}",
+   "court": "{bâti|bâtie} comme une armoire / {costaud|costaude}",
    "court_fem": false,
    "garder": null,
    "groupe": false,
@@ -152,7 +152,7 @@
    "titre_fem": true
   },
   {
-   "court": "insaisissable",
+   "court": "{glissant|glissante} comme une anguille / insaisissable",
    "court_fem": false,
    "garder": null,
    "groupe": false,
@@ -186,7 +186,7 @@
    "titre_fem": false
   },
   {
-   "court": "{malin|maligne}",
+   "court": "étonnamment {malin|maligne} / {malin|maligne}",
    "court_fem": false,
    "garder": null,
    "groupe": false,
@@ -254,7 +254,7 @@
    "titre_fem": false
   },
   {
-   "court": "robuste",
+   "court": "solide comme un roc / robuste",
    "court_fem": false,
    "garder": null,
    "groupe": false,
@@ -271,7 +271,7 @@
    "titre_fem": false
   },
   {
-   "court": "rapide",
+   "court": "{vif|vive} comme l'éclair / rapide",
    "court_fem": false,
    "garder": null,
    "groupe": false,
@@ -5228,6 +5228,83 @@
      "r5i3na08"
     ],
     "titre": "Coupe-gorge",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-brute-fer",
+    "tags": [
+     "3eo3yjmy",
+     "protection-a-distance"
+    ],
+    "titre": "Grosse brute en fer",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-corps-fer",
+    "tags": [
+     "ojkh06zu",
+     "protection-a-distance"
+    ],
+    "titre": "Corps de fer dans une boîte en fer",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-fer-cheval",
+    "tags": [
+     "a6g49n26",
+     "protection-a-distance"
+    ],
+    "titre": "Fer à cheval",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-feu-follet",
+    "tags": [
+     "1b1t7f8y",
+     "eclaireur"
+    ],
+    "titre": "Feu follet",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-galonnee",
+    "tags": [
+     "cpvembb3",
+     "3eo3yjmy"
+    ],
+    "titre": "Brute galonnée",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-mule",
+    "tags": [
+     "02p1prii",
+     "ko8qpwk8"
+    ],
+    "titre": "Tête de mule",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-augure",
+    "tags": [
+     "vol",
+     "a6g49n26"
+    ],
+    "titre": "Oiseau de bon augure",
     "court": "",
     "titre_fem": false,
     "court_fem": false

@@ -249,7 +249,14 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 - Des **tests** éliminent des tags. Ils sont rangés en arbre (« posé seulement si ») : un test qui n'est pas posé
   n'élimine rien.
 - Seul le tag le plus bas de chaque branche s'affiche. Une catégorie peut ne garder que ses X tags de plus haut rang
-  (Soigneur : garde 1) ; à égalité, l'ordre de la liste.
+  (Soigneur : garde 1) ; à égalité, l'ordre de la liste. Un tag ne s'efface que devant un enfant **réellement
+  affiché** : un enfant écarté par une catégorie limitée ne cache pas son parent (Idan, 2026-11-24).
+- **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
+  bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
+  Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte
+  professionnel : deux tags du même nom, un seul s'affiche). Rangs des Armures : Ouvre-boîte et Écailleur 1,
+  Perce-armure 2, Bélier 3, professionnels 4, Bélier légendaire 5, Destructeur d'armure 6 ; un spécialiste plus haut
+  (Écailleur professionnel, Destructeur) fait s'effacer le Bélier, et la charge reste visible.
 - Les seuils suivent les **étoiles de la compagnie** (on juge un vétéran, pas une recrue) et sont des constantes
   réglables.
 - Les niveaux 1 / 2 / 3 des tags sont retirés du jeu (2026-11-20).

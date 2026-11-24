@@ -7,7 +7,7 @@
 // - les données de l'atelier (tags à plusieurs parents, tests rangés en arbre, constantes), nettoyées par clean ;
 // - la résolution : chaque test posé élimine des tags, un tag tombe avec l'un de ses parents, un tag inactif tombe
 //   d'office ; seuls s'affichent le tag le plus bas de chaque branche, ou les X tags de plus haut rang d'une catégorie
-//   qui « garde X » ;
+//   qui « garde X » ; un tag ne s'efface que devant un enfant réellement affiché ;
 // - les variables d'un mercenaire à l'instant T (équipement compris), lues par les calculs.
 // Pur : ni DOM, ni hasard (les biais viendront d'ailleurs, doc 20 §12).
 (function(root,factory){
@@ -179,7 +179,6 @@
     // catégorie qui « garde X » ne montre que ses X tags de plus haut rang qui restent (à rang égal, l'ordre de la liste).
     function displayed(motif){
       const restent=doc.tags.filter(t=>!t.groupe&&!motif.has(t.id));
-      const plusBas=t=>![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id); });
       const gardes=new Map();
       for(const c of doc.tags.filter(c=>c.groupe&&c.garder)){
         const cand=[...descendants(c.id)].map(tagPar).filter(d=>d&&!d.groupe&&!motif.has(d.id))
@@ -187,7 +186,18 @@
         gardes.set(c.id,new Set(cand.slice(0,c.garder).map(d=>d.id)));
       }
       const limitees=t=>[...ancetres(t.id)].filter(id=>gardes.has(id));
-      const affiches=restent.filter(t=>{ const l=limitees(t); return l.length?l.every(id=>gardes.get(id).has(t.id)):plusBas(t); });
+      // Un tag ne s'efface que devant un enfant réellement affiché (Idan, 2026-11-24, le Bélier : « je veux pas que ça
+      // bloque les spécialistes ») : un enfant écarté par une catégorie limitée ne cache pas son parent.
+      const memo=new Map();
+      const affiche=t=>{
+        if(memo.has(t.id)) return memo.get(t.id);
+        memo.set(t.id,false);
+        const l=limitees(t);
+        const r=l.length?l.every(id=>gardes.get(id).has(t.id))
+          :![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id)&&affiche(d); });
+        memo.set(t.id,r); return r;
+      };
+      const affiches=restent.filter(affiche);
       return {restent,affiches};
     }
     // Tout d'un coup, sur des valeurs : les tags affichés, ceux qui restent, les éliminés.

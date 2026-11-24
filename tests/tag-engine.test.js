@@ -124,6 +124,34 @@ assert.equal(r.motif.has("soin"),false);
 assert.equal(r.reps.find(x=>x.x.id==="t-soin").force,true);
 assert.equal(r.motif.get("reconnu"),"1.1. Reconnu ? → non");
 
+// ---- Les tags qui regroupent (Idan, 2026-11-24 : le Bélier) ----
+// Un tag ne s'efface que devant un enfant réellement affiché : un enfant écarté par une catégorie « garder 1 » ne cache
+// pas son parent. Bélier (Charge + Perce-armure) remplace les deux ; un spécialiste plus haut le fait s'effacer.
+{
+  const d=E.clean({tags:[
+    {id:"cac",nom:"CAC",groupe:true},
+    {id:"charge",nom:"Spécialiste de la charge",parents:["cac"]},
+    {id:"legende",nom:"Charge légendaire",parents:["charge"]},
+    {id:"armures",nom:"Armures",groupe:true,garder:1,parents:["cac"]},
+    {id:"perce",nom:"Perce-armure",parents:["armures"],rang:2},
+    {id:"pro",nom:"Ouvre-boîte professionnel",parents:["perce"],rang:4},
+    {id:"destructeur",nom:"Destructeur d'armure",parents:["pro"],rang:6},
+    {id:"belier",nom:"Bélier",parents:["perce","charge"],rang:3},
+    {id:"bl1",nom:"Bélier légendaire",parents:["belier","legende"],rang:5},
+    {id:"bl2",nom:"Bélier légendaire",parents:["belier","pro"],rang:5}]});
+  const t=E.createTagTree(d);
+  const vus=garde=>{ const motif=new Map(d.tags.filter(x=>!garde.includes(x.id)&&!x.groupe).map(x=>[x.id,"x"]));
+    for(let encore=true;encore;){ encore=false; for(const x of d.tags) if(!motif.has(x.id)&&x.parents.some(p=>motif.has(p))){ motif.set(x.id,"p"); encore=true; } }
+    return [...new Set(t.displayed(motif).affiches.map(x=>x.nom))].sort(); };
+  assert.deepEqual(vus(["charge","perce","belier"]),["Bélier"],"le Bélier remplace ses deux parents");
+  assert.deepEqual(vus(["charge","legende","perce","belier","bl1"]),["Bélier légendaire"]);
+  assert.deepEqual(vus(["charge","perce","pro","belier","bl2"]),["Bélier légendaire"],"Charge + Ouvre-boîte professionnel");
+  assert.deepEqual(vus(["charge","perce","pro","destructeur","belier","bl2"]),["Destructeur d'armure","Spécialiste de la charge"],
+    "le spécialiste plus haut n'est pas bloqué, et la charge reste visible");
+  assert.deepEqual(vus(["charge","legende","perce","pro","destructeur","belier","bl1","bl2"]),["Charge légendaire","Destructeur d'armure"]);
+  assert.deepEqual(vus(["charge"]),["Spécialiste de la charge"]);
+}
+
 // ---- La compagnie ----
 const comp=E.withCompany({"carac.force":50,"comp.haches":10,"nom":"A"},[{"carac.force":70},{"comp.haches":5}],3);
 assert.equal(comp["compagnie.etoiles"],3);

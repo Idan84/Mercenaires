@@ -1404,12 +1404,16 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* La fiche du candidat (Idan, 2026-11-22 : « reprendre le contenu de la fiche au survol, d'ajouter son portrait, une boite
    de dialogue et de mettre un fond noir et flou pour cacher le reste ») : la fiche au survol (son portrait en pied
    compris), la discussion à côté, à la même hauteur ; derrière, un fond noir flou. Mise en page simple, à reprendre
-   (« on fera une mise en page pour la boîte de dialogue ensuite »). */
-.talk-dialog--fiche{width:fit-content;height:fit-content;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
-.talk-dialog--fiche[open]{display:flex;align-items:stretch;gap:24px;height:fit-content}
+   (« on fera une mise en page pour la boîte de dialogue ensuite »).
+   Les volumes (Idan, 2026-11-24) : la fenêtre prend tout l'écran de référence (1920 × 1080, mis à l'échelle comme les
+   autres fenêtres). « On réduit environ la marge foncée à gauche de la moitié » : la fiche à --talk-marge du bord gauche,
+   centrée en hauteur ; « on reprend la même valeur en haut, en bas et à droite de la fenêtre de dialogue » ; « La fenêtre de
+   dialogue doit légèrement mordre sur la fiche au survol et elle pose une légère ombre portée dessus » (--talk-mord). */
+.talk-dialog--fiche{--talk-marge:104px;--talk-mord:24px;width:1920px;height:1080px;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.talk-dialog--fiche[open]{display:block;height:1080px}
 .talk-dialog--fiche::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.talk-dialog--fiche>.recruit-fiche{flex:none;width:860px;height:565px}
-.talk-dialog--fiche>.recruit-talk-box{display:flex;flex-direction:column;width:620px;height:565px;max-height:none;overflow:visible}
+.talk-dialog--fiche>.recruit-fiche{position:absolute;left:var(--talk-marge);top:calc(50% - 282.5px);width:860px;height:565px}
+.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:var(--talk-marge);right:var(--talk-marge);bottom:var(--talk-marge);left:calc(var(--talk-marge) + 860px - var(--talk-mord));display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:-14px 8px 24px rgba(0,0,0,.55),0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
 .recruit-talk-box .talk-head{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 /* La boîte de dialogue (Idan, 2026-11-24, d'après la maquette de Chatty : « Commence une vraie mise en page », avec les
    éléments existants) : un cadre sombre aux coins du menu ; en haut, la conversation sur le parchemin d'Idan (elle seule

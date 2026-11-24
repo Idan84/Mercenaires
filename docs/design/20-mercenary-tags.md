@@ -258,9 +258,33 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
   disparaît dès qu'il a un vrai tag. Sans intendant, toujours aucun tag.
 - **Un seul tag devient le titre** (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») : un mercenaire
   qui n'a qu'un tag affiché, tag de consolation compris, porte ce tag comme titre, sur la fiche (la note du tag en
-  infobulle), la fiche au survol et la fiche complète ; avec plusieurs tags, ou aucun (sans intendant), le titre calculé
-  (doc 19). Le candidat aussi (« oui, candidats aussi ») : son titre suit les tags qu'il annonce en se vantant, et celui
+  infobulle), la fiche au survol et la fiche complète ; avec plusieurs tags, le titre composé (ci-dessous) ; aucun (sans
+  intendant), le titre calculé (doc 19). Le candidat aussi (« oui, candidats aussi ») : son titre suit les tags qu'il annonce en se vantant, et celui
   que donne le tavernier, les tags sur ses estimations (`game-core/company-tags.js`, `titleTag`, `describedTags`).
+- **Plusieurs tags : un titre composé** (Idan, 2026-11-24 : « Construis la nouvelle structure multi tags pour les titres.
+  Fais une passe des plus fréquents […] Faut juste pas que le titre soit trop long… l'objectif, c'est qu'il rentre sur
+  une ligne dans la fiche au survol »). Plan de JC accepté (« je te fais confiance ») ; la règle est dans
+  `game-core/tag-engine.js` (`composeTitle`), les données dans l'atelier (onglet « 4. Les titres ») :
+  - chaque tag a un **titre** (quand il mène : « Arbalétrier », « Veinard ») et un **mot court** (quand il suit :
+    « arbalétrier », « chanceux ») ; un tag sans titre ne mène pas (« De loin et de près » : « polyvalent ») ;
+  - **qui mène** : ce qu'il fait avant ce qu'il est, dans l'ordre des familles (CAC, Tireur, Écoles de magie, Soigneur,
+    Tank, Commandement, Sorts de soutien, Éclaireur et contrôle du terrain, Ce qu'il est) ; dans une famille, le rang le
+    plus haut, puis l'ordre de l'atelier ; un tag sans titre suit avec ce qu'il est ;
+  - le titre du tag qui mène, puis **deux mots courts au plus**, « et » avant le dernier (« Arbalétrier éclaireur et
+    chanceux ») ; un complément (« à neuf vies », « à l'œil de lynx ») va à la fin ; un mot déjà dit n'est pas répété ;
+  - **36 caractères au plus** (mesuré : 38 tiennent sur une ligne de la fiche au survol, sans rapetisser) : un mot qui
+    ferait dépasser est sauté ; toutes les paires de tags tiennent (test) ;
+  - **titres spéciaux**, écrits à la main, quand tous leurs tags sont là : leur titre s'ils contiennent le tag qui mène
+    (Veinard + Increvable : « Chat à neuf vies »), sinon leur mot court à la suite (« Archer à neuf vies »). 17 pour
+    commencer : Chat à neuf vies, Trompe-la-mort, Inusable, Courant d'air, Ogre, Escroc de charme, Beau parleur, Fin
+    limier, Tribun, Guetteur (« à l'œil de lynx »), Mur de muscles, Faucon, Canard, Coupe-jarret, Coupe-gorge, Gros
+    veinard, Bourrin ;
+  - les titres restent au masculin ; l'infobulle de la fiche : les notes des tags du titre. Sans tags (sans intendant) :
+    le titre calculé (doc 19). La monture (« à cheval ») n'est plus ajoutée au titre tiré des tags.
+  - **Banc d'essai** (3 200 recrues, équipement de départ et T4, compagnie à 1 et 5 étoiles) : 2 603 recrues à plusieurs
+    tags à 1 étoile, 774 titres différents, aucun au-delà de 36 caractères ; les plus fréquents : Arbalétrier éclaireur,
+    Frondeur éclaireur, Éclaireur polyvalent, Archer éclaireur, Perce-armure robuste ; à 5 étoiles, Veinard sans peur,
+    Gros veinard, Trompe-la-mort, Mur de muscles.
 - **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
   bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
   Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte

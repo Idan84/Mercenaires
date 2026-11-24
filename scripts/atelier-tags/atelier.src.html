@@ -126,6 +126,23 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .restent ul.arbre{margin:2px 0}
 .trop{color:var(--danger);font-weight:600}
 .elimines li{font-size:15.5px}
+/* 4. Les titres (Idan, 2026-11-24) */
+.ti-ligne{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;padding:3px 0;border-bottom:1px dotted var(--line)}
+.ti-ligne input{padding:4px 6px;font-size:15.5px}
+.ti-ligne .lib{display:grid;line-height:1.2;min-width:0}
+.ti-ligne .lib b{font-weight:600;color:var(--t-tag);overflow-wrap:anywhere}
+.ti-ligne.vide-forme .lib b::after{content:" · à remplir";color:var(--danger);font-weight:500;font-size:14px}
+.ti-entete{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)}
+.ti-groupe{margin:10px 0 2px;font:600 13px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--t-cat)}
+.ti-special{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dotted var(--line)}
+.ti-special select{font-size:14.5px;padding:3px 4px}
+.ti-familles{margin:6px 0;padding-left:22px;display:grid;gap:2px}
+.ti-familles li{display:flex;align-items:center;gap:6px}
+.ti-resultat{display:grid;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.ti-titre{font:italic 500 24px/1.2 var(--font-body);color:var(--ink);overflow-wrap:anywhere}
+.ti-titre.trop-long{color:var(--danger)}
+.titre-recrue{margin:0;font-size:17px} .titre-recrue i{font-size:19px}
+@media (max-width:640px){.ti-ligne,.ti-special{grid-template-columns:minmax(0,1fr)}}
 [hidden]{display:none !important}
 @media (prefers-reduced-motion:reduce){.pli svg{transition:none}}
 </style>
@@ -144,6 +161,7 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
     <button type="button" role="tab" id="o-tags" aria-controls="v-tags" data-onglet="tags">1. Les tags<span class="n" id="n-tags"></span></button>
     <button type="button" role="tab" id="o-tests" aria-controls="v-tests" data-onglet="tests">2. Les tests<span class="n" id="n-tests"></span></button>
     <button type="button" role="tab" id="o-essai" aria-controls="v-essai" data-onglet="essai">3. Essayer</button>
+    <button type="button" role="tab" id="o-titres" aria-controls="v-titres" data-onglet="titres">4. Les titres<span class="n" id="n-titres"></span></button>
   </div>
 
   <!-- 1. Les tags -->
@@ -177,6 +195,8 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
           <div class="puces" id="tag-parents"></div>
           <select id="tag-parent-ajout" aria-label="Ajouter un parent"></select>
         </div>
+        <div class="duo" id="tag-formes"><div class="champ"><label for="tag-titre">Titre (quand il mène)</label><input id="tag-titre" type="text" autocomplete="off" placeholder="Ex. : Archer"></div>
+          <div class="champ"><label for="tag-court">Mot court (quand il suit)</label><input id="tag-court" type="text" autocomplete="off" placeholder="Ex. : chanceux"></div></div>
         <div class="champ"><label for="tag-note">Note</label><textarea id="tag-note" placeholder="Ce que ce tag veut dire, d'où il vient…"></textarea></div>
         <div class="champ"><span class="lab">Éliminé par</span><div id="tag-par" class="aide"></div></div>
         <div class="actions">
@@ -258,6 +278,37 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
         <div id="reponses" style="display:grid;gap:6px"></div>
         <details class="elimines"><summary id="elim-titre">Éliminés</summary><ul id="elimines"></ul></details>
       </div>
+    </aside>
+  </section>
+
+  <!-- 4. Les titres (Idan, 2026-11-24 : « Construis la nouvelle structure multi tags pour les titres ») -->
+  <section id="v-titres" role="tabpanel" aria-labelledby="o-titres" class="layout" hidden>
+    <div class="bloc">
+      <div class="tete"><h2>Les titres</h2></div>
+      <p class="aide">Un seul tag : son nom devient le titre. Plusieurs : le <b>titre</b> du tag qui mène, puis les <b>mots courts</b> des suivants, « et » avant le dernier (« Archer éclaireur et chanceux »). Un mot court qui commence par « à » ou « de » va à la fin (« Archer à neuf vies »). Un mot qui ferait dépasser la longueur est sauté.</p>
+      <div class="duo">
+        <div class="champ"><label for="ti-longueur">Longueur au plus (caractères)</label><input id="ti-longueur" type="number" min="10" max="200" step="1">
+          <p class="aide">36 : une ligne sur la fiche au survol.</p></div>
+        <div class="champ"><label for="ti-suivants">Mots courts au plus, après celui qui mène</label><input id="ti-suivants" type="number" min="0" max="5" step="1"></div>
+      </div>
+      <details class="sortie" open><summary><b>Qui mène</b> : ce qu'il fait avant ce qu'il est, dans cet ordre</summary>
+        <ol class="ti-familles" id="ti-familles"></ol>
+        <select id="ti-famille-ajout" aria-label="Ajouter une famille"></select>
+        <p class="aide">Un tag mène s'il a un titre. Dans une même famille : le rang le plus haut, puis l'ordre de la liste des tags. Un tag sans titre (« De loin et de près ») suit avec ce qu'il est.</p></details>
+      <details class="sortie" open><summary><b>Titres spéciaux</b> <span id="ti-n-speciaux"></span> : quand tous leurs tags sont là, ils passent devant</summary>
+        <p class="aide">Son titre, s'il contient le tag qui mène (« Chat à neuf vies ») ; sinon son mot court, à la suite (« Archer à neuf vies »). Laisser le mot court vide : il ne sert qu'en tête.</p>
+        <div id="ti-speciaux"></div>
+        <div class="actions" style="margin-top:6px"><button type="button" class="btn" id="ti-special-ajout">Nouveau titre spécial</button></div></details>
+      <div class="tete"><h3>Chaque tag</h3><input id="ti-cherche" type="search" placeholder="Chercher un tag" aria-label="Chercher un tag" style="max-width:240px"></div>
+      <div id="ti-tags"></div>
+    </div>
+    <aside class="bloc panneau" aria-labelledby="t-ti-essai">
+      <h2 id="t-ti-essai">Essayer</h2>
+      <p class="aide">Choisissez des tags (dans l'ordre que vous voulez) : le titre se compose.</p>
+      <div class="puces" id="ti-essai-tags"></div>
+      <select id="ti-essai-ajout" aria-label="Ajouter un tag à l'essai"></select>
+      <div class="ti-resultat" aria-live="polite"><span class="ti-titre" id="ti-titre"></span><span class="aide" id="ti-info"></span></div>
+      <div class="actions"><button type="button" class="btn" id="ti-essai-vider">Vider</button></div>
     </aside>
   </section>
 </div>
@@ -356,12 +407,14 @@ let onglet=memo("atelier-onglet")||"tags";
 function montreOnglet(o){
   onglet=o; memo("atelier-onglet",o);
   for(const b of document.querySelectorAll("[data-onglet]")){ const on=b.dataset.onglet===o; b.setAttribute("aria-selected",String(on)); b.tabIndex=on?0:-1; }
-  $("v-tags").hidden=o!=="tags"; $("v-tests").hidden=o!=="tests"; $("v-essai").hidden=o!=="essai";
+  $("v-tags").hidden=o!=="tags"; $("v-tests").hidden=o!=="tests"; $("v-essai").hidden=o!=="essai"; $("v-titres").hidden=o!=="titres";
   if(o==="essai") rendreEssai();
+  if(o==="titres") rendreTitres();
 }
 document.querySelectorAll("[data-onglet]").forEach((b,i,all)=>{ b.onclick=()=>montreOnglet(b.dataset.onglet);
   b.onkeydown=e=>{ if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ const n=all[(i+(e.key==="ArrowRight"?1:all.length-1))%all.length]; n.focus(); montreOnglet(n.dataset.onglet); } }; });
-function majCompteurs(){ $("n-tags").textContent="("+doc.tags.filter(t=>!t.groupe).length+")"; const r=doc.tests.filter(x=>x.aReecrire).length; $("n-tests").textContent="("+doc.tests.length+(r?" · "+r+" à réécrire":"")+")"; }
+function majCompteurs(){ $("n-tags").textContent="("+doc.tags.filter(t=>!t.groupe).length+")"; const r=doc.tests.filter(x=>x.aReecrire).length; $("n-tests").textContent="("+doc.tests.length+(r?" · "+r+" à réécrire":"")+")";
+  const v=sansForme().length; $("n-titres").textContent=v?"("+v+" à remplir)":""; }
 
 // ---------- 1. Les tags ----------
 function liTag(t,parentId,chemin){
@@ -406,6 +459,9 @@ function rendrePanneauTag(){
   $("tag-vide").hidden=Boolean(t); $("tag-champs").hidden=!t; if(!t) return;
   if(document.activeElement!==$("tag-nom")) $("tag-nom").value=t.nom;
   if(document.activeElement!==$("tag-note")) $("tag-note").value=t.note;
+  $("tag-formes").hidden=t.groupe;
+  if(document.activeElement!==$("tag-titre")) $("tag-titre").value=t.titre||"";
+  if(document.activeElement!==$("tag-court")) $("tag-court").value=t.court||"";
   $("tag-groupe").checked=t.groupe; $("tag-inactif").checked=t.inactif;
   $("tag-garder-champ").hidden=!t.groupe; $("tag-rang-champ").hidden=t.groupe;
   if(document.activeElement!==$("tag-garder")) $("tag-garder").value=t.garder??"";
@@ -420,8 +476,10 @@ function rendrePanneauTag(){
   sel.disabled=!peutEcrire;
   const par=testsQuiEliminent(t.id); $("tag-par").textContent=(t.inactif?"Inactif : éliminé d'office. ":"")+(par.length?par.join(" · "):"Aucun test pour l'instant.");
   const b=$("tag-suppr"); b.textContent="Supprimer"; b.dataset.arme="";
-  for(const x of ["tag-nom","tag-note","tag-groupe","tag-inactif","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
+  for(const x of ["tag-nom","tag-note","tag-titre","tag-court","tag-groupe","tag-inactif","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
 }
+$("tag-titre").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.titre=e.target.value; change(); majTitreEssai(); };
+$("tag-court").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.court=e.target.value; change(); majTitreEssai(); };
 $("tag-nom").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.nom=e.target.value; change(); rendreTags(); };
 $("tag-note").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.note=e.target.value; change(); rendreTags(); };
 $("tag-groupe").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.groupe=e.target.checked; change(); rendreTags(); rendrePanneauTag(); };
@@ -430,7 +488,7 @@ $("tag-inactif").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.inact
 $("tag-garder").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=Number(e.target.value); t.garder=e.target.value.trim()!==""&&v>=1?Math.floor(v):null; change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-rang").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=e.target.value.trim(); t.rang=v===""||!Number.isFinite(Number(v))?null:Number(v); change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-parent-ajout").onchange=e=>{ const t=tagPar(tagChoisi); const p=e.target.value; if(!t||!p) return; t.parents.push(p); fermes.delete(p); memoFermes(); change(); rendreTags(); rendrePanneauTag(); };
-function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:"",inactif:false};
+function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:"",inactif:false,titre:"",court:""};
   const apres=parent?doc.tags.map(x=>x.parents.includes(parent)||x.id===parent).lastIndexOf(true):doc.tags.length-1;
   doc.tags.splice(apres+1,0,t); if(parent){ fermes.delete(parent); memoFermes(); } tagChoisi=t.id; change(); rendreTags(); rendrePanneauTag(); $("tag-nom").select(); $("tag-nom").focus(); }
 $("tag-ajout").onclick=()=>nouveauTag(null);
@@ -716,6 +774,9 @@ function rendreResultats(){
   const puces=el("div",{class:"affiches"}); for(const t of affiches) puces.append(el("span",{class:"puce-tag",title:chemin(t),text:t.nom}));
   if(!affiches.length) puces.append(el("span",{class:"aide",text:"Aucun tag ne reste."}));
   r.append(puces);
+  // Son titre (Idan, 2026-11-24), composé comme dans le jeu (game-core/tag-engine.js, composeTitle).
+  const ti=E.composeTitle(doc,affiches);
+  if(ti) r.append(el("p",{class:"titre-recrue"},"Son titre : ",el("i",{text:ti.name})));
   if(doc.tags.some(t=>!motif.has(t.id))) r.append(el("details",{},el("summary",{text:"Tous les tags qui restent ("+restent.length+"), avec leurs parents"}),arbreRestant(motif)));
   const box=$("reponses"); box.replaceChildren();
   if(!reps.length) box.append(el("p",{class:"aide",text:"Aucun test pour l'instant."}));
@@ -747,15 +808,102 @@ function rendreEssai(complet){
   rendreResultats();
 }
 
+// ---------- 4. Les titres (Idan, 2026-11-24 : « Construis la nouvelle structure multi tags pour les titres […] il faut
+// juste pas que le titre soit trop long ») : le titre et le mot court de chaque tag, qui mène, les titres spéciaux, un essai.
+// La composition est celle du jeu (game-core/tag-engine.js, composeTitle). ----------
+const vraisTags=()=>doc.tags.filter(t=>!t.groupe);
+const sansForme=()=>vraisTags().filter(t=>!String(t.titre||"").trim()&&!String(t.court||"").trim());
+const titres=()=>doc.titres||(doc.titres={longueur_max:36,suivants_max:2,familles:[],speciaux:[]});
+let essaiTitre=(memo("atelier-essai-titre")||[]).filter(x=>typeof x==="string");
+function optionsTags(sel,libelle,exclus){
+  sel.replaceChildren(el("option",{value:"",text:libelle}));
+  vraisTags().filter(t=>!exclus.includes(t.id)).map(t=>({t,c:chemin(t)})).sort((a,b)=>a.c.localeCompare(b.c,"fr")).forEach(({t,c})=>sel.append(el("option",{value:t.id,text:c})));
+}
+function majTitreEssai(){
+  const ids=essaiTitre.filter(id=>tagPar(id)); const box=$("ti-essai-tags"); box.replaceChildren();
+  if(!ids.length) box.append(el("span",{class:"aide",text:"Aucun tag."}));
+  for(const id of ids) box.append(el("span",{class:"puce-tag"},nomTag(id),el("button",{type:"button",class:"mini","aria-label":"Retirer "+nomTag(id),text:"×",
+    onclick:()=>{ essaiTitre=essaiTitre.filter(x=>x!==id); memo("atelier-essai-titre",essaiTitre); majTitreEssai(); }})));
+  optionsTags($("ti-essai-ajout"),"Ajouter un tag…",ids);
+  const t=E.composeTitle(doc,ids.map(tagPar)), max=titres().longueur_max;
+  $("ti-titre").textContent=t?t.name:"—"; $("ti-titre").classList.toggle("trop-long",Boolean(t&&t.name.length>max));
+  const sp=t?.speciaux?.length?" · titre spécial":"";
+  $("ti-info").textContent=t?t.name.length+" / "+max+" caractères"+(t.name.length>max?" : le titre seul est trop long":"")+sp+(t.tags.length<ids.length?" · pas dans le titre : "+ids.filter(id=>!t.tags.some(x=>x.id===id)).map(nomTag).join(", "):""):"";
+}
+$("ti-essai-ajout").onchange=e=>{ const id=e.target.value; if(!id) return; essaiTitre.push(id); memo("atelier-essai-titre",essaiTitre); majTitreEssai(); };
+$("ti-essai-vider").onclick=()=>{ essaiTitre=[]; memo("atelier-essai-titre",essaiTitre); majTitreEssai(); };
+function rendreFamilles(){
+  const ti=titres(), ol=$("ti-familles"); ol.replaceChildren();
+  ti.familles.forEach((id,i)=>{
+    const bouge=s=>{ const j=i+s; if(j<0||j>=ti.familles.length) return; [ti.familles[i],ti.familles[j]]=[ti.familles[j],ti.familles[i]]; change(); rendreFamilles(); majTitreEssai(); };
+    ol.append(el("li",{},el("span",{text:nomTag(id)}),
+      el("button",{type:"button",class:"mini",text:"↑","aria-label":"Monter "+nomTag(id),disabled:!peutEcrire||i===0,onclick:()=>bouge(-1)}),
+      el("button",{type:"button",class:"mini",text:"↓","aria-label":"Descendre "+nomTag(id),disabled:!peutEcrire||i===ti.familles.length-1,onclick:()=>bouge(1)}),
+      el("button",{type:"button",class:"mini",text:"×","aria-label":"Retirer "+nomTag(id),disabled:!peutEcrire,onclick:()=>{ ti.familles.splice(i,1); change(); rendreFamilles(); majTitreEssai(); }})));
+  });
+  if(!ti.familles.length) ol.append(el("li",{class:"aide",text:"Aucune : l'ordre de la liste des tags."}));
+  const sel=$("ti-famille-ajout"); sel.replaceChildren(el("option",{value:"",text:"Ajouter une famille…"}));
+  doc.tags.filter(t=>t.groupe&&!ti.familles.includes(t.id)).map(t=>({t,c:chemin(t)})).sort((a,b)=>a.c.localeCompare(b.c,"fr")).forEach(({t,c})=>sel.append(el("option",{value:t.id,text:c})));
+  sel.disabled=!peutEcrire;
+}
+$("ti-famille-ajout").onchange=e=>{ const id=e.target.value; if(!id||!peutEcrire) return; titres().familles.push(id); change(); rendreFamilles(); majTitreEssai(); };
+function rendreSpeciaux(){
+  const ti=titres(), box=$("ti-speciaux"); box.replaceChildren();
+  $("ti-n-speciaux").textContent="("+ti.speciaux.length+")";
+  if(!ti.speciaux.length) box.append(el("p",{class:"aide",text:"Aucun titre spécial pour l'instant."}));
+  ti.speciaux.forEach((sp,i)=>{
+    const puces=el("div",{class:"puces"});
+    for(const id of sp.tags) puces.append(el("span",{class:"puce-tag"},nomTag(id),el("button",{type:"button",class:"mini",text:"×","aria-label":"Retirer "+nomTag(id),disabled:!peutEcrire,
+      onclick:()=>{ sp.tags=sp.tags.filter(x=>x!==id); change(); rendreSpeciaux(); majTitreEssai(); }})));
+    const sel=el("select",{"aria-label":"Ajouter un tag au titre spécial "+(i+1),disabled:!peutEcrire,onchange:e=>{ const id=e.target.value; if(!id) return; sp.tags.push(id); change(); rendreSpeciaux(); majTitreEssai(); }});
+    optionsTags(sel,sp.tags.length<2?"Ajouter un tag (au moins deux)…":"Ajouter un tag…",sp.tags); puces.append(sel);
+    const titre=el("input",{type:"text",value:sp.titre,placeholder:"Titre (en tête)","aria-label":"Titre du titre spécial "+(i+1),disabled:!peutEcrire,oninput:e=>{ sp.titre=e.target.value; change(); majTitreEssai(); }});
+    const court=el("input",{type:"text",value:sp.court,placeholder:"Mot court (à la suite)","aria-label":"Mot court du titre spécial "+(i+1),disabled:!peutEcrire,oninput:e=>{ sp.court=e.target.value; change(); majTitreEssai(); }});
+    const x=el("button",{type:"button",class:"mini",text:"×","aria-label":"Supprimer le titre spécial "+(sp.titre||i+1),disabled:!peutEcrire,onclick:()=>{ ti.speciaux.splice(i,1); change(); rendreSpeciaux(); majTitreEssai(); }});
+    box.append(el("div",{class:"ti-special"},puces,titre,court,x));
+  });
+  $("ti-special-ajout").disabled=!peutEcrire;
+}
+$("ti-special-ajout").onclick=()=>{ if(!peutEcrire) return; titres().speciaux.push({id:uid(),tags:[],titre:"",court:""}); change(); rendreSpeciaux(); };
+function rendreFormes(){
+  const box=$("ti-tags"); box.replaceChildren();
+  const q=norm($("ti-cherche").value);
+  box.append(el("div",{class:"ti-ligne ti-entete"},el("span",{text:"Tag"}),el("span",{text:"Titre (quand il mène)"}),el("span",{text:"Mot court (quand il suit)"})));
+  let groupe=null;
+  for(const t of vraisTags()){
+    if(q&&!norm(t.nom+" "+(t.titre||"")+" "+(t.court||"")).includes(q)) continue;
+    const g=t.parents.length?nomTag(t.parents[0]):"";
+    if(g!==groupe){ groupe=g; box.append(el("div",{class:"ti-groupe",text:g||"Sans parent"})); }
+    const ligne=el("div",{class:"ti-ligne"+(!String(t.titre||"").trim()&&!String(t.court||"").trim()?" vide-forme":"")});
+    const maj=()=>{ ligne.classList.toggle("vide-forme",!String(t.titre||"").trim()&&!String(t.court||"").trim()); change(); majTitreEssai(); if(tagChoisi===t.id) rendrePanneauTag(); };
+    ligne.append(el("span",{class:"lib"},el("b",{text:t.nom}),el("span",{class:"petit",text:chemin(t)})),
+      el("input",{type:"text",value:t.titre||"",placeholder:"Ne mène pas","aria-label":"Titre de "+t.nom,disabled:!peutEcrire,oninput:e=>{ t.titre=e.target.value; maj(); }}),
+      el("input",{type:"text",value:t.court||"",placeholder:"Ne suit pas","aria-label":"Mot court de "+t.nom,disabled:!peutEcrire,oninput:e=>{ t.court=e.target.value; maj(); }}));
+    box.append(ligne);
+  }
+  if(box.children.length===1) box.append(el("p",{class:"aide",text:"Aucun tag ne correspond."}));
+}
+$("ti-cherche").oninput=()=>rendreFormes();
+function rendreTitres(force=true){
+  const ti=titres();
+  if(!force&&$("v-titres").contains(document.activeElement)&&document.activeElement.matches("input,select")){ majTitreEssai(); return; }
+  $("ti-longueur").value=String(ti.longueur_max); $("ti-suivants").value=String(ti.suivants_max);
+  $("ti-longueur").disabled=$("ti-suivants").disabled=!peutEcrire;
+  rendreFamilles(); rendreSpeciaux(); rendreFormes(); majTitreEssai();
+}
+$("ti-longueur").oninput=e=>{ const v=Math.round(Number(e.target.value)); if(!(v>=10&&v<=200)) return; titres().longueur_max=v; change(); majTitreEssai(); };
+$("ti-suivants").oninput=e=>{ const v=Math.round(Number(e.target.value)); if(!(v>=0&&v<=5)) return; titres().suivants_max=v; change(); majTitreEssai(); };
+
 // ---------- Ensemble ----------
 function rendreTout(){ majCompteurs(); rendreConstantes(false); rendreTags(); rendrePanneauTag(); rendreTests(); rendrePanneauTest(); if(onglet==="essai") rendreEssai(false);
+  if(onglet==="titres") rendreTitres(false);
   for(const id of ["tag-ajout","test-ajout"]) $(id).disabled=!peutEcrire; }
 { const e=memo("atelier-etoiles"); if(Number.isFinite(e)) $("f-etoiles").value=String(e); }
 { const t=memo("atelier-taille"); if(Number.isFinite(t)) $("f-taille").value=String(t); }
 remplirFiltres(); rendreAideVars();
 const dernier=memo("atelier-profil"); if(Number.isInteger(dernier)&&POOL.profils[dernier]){ profilIdx=dernier; profil=versObjet(dernier);
   const c=memo("atelier-compagnie"); if(Array.isArray(c)&&c.every(i=>Number.isInteger(i)&&POOL.profils[i]&&i!==dernier)) autres=c; else tirerCompagnie(); }
-montreOnglet(["tags","tests","essai"].includes(onglet)?onglet:"tags"); rendreTout(); if(profil) rendreEssai(true);
+montreOnglet(["tags","tests","essai","titres"].includes(onglet)?onglet:"tags"); rendreTout(); if(profil) rendreEssai(true);
 
 // ---------- Enregistrement sur Hostinger (la Design Lab, Idan, 2026-11-22) ----------
 // La dernière version : media/atelier/actuel.json (lue aussi par le jeu) ; sinon la copie du dépôt (data/tag-workshop.json),

@@ -208,6 +208,12 @@ const atelier=read("scripts/atelier-tags/atelier.src.html");
 assert.ok(atelier.includes("<script>@@MOTEUR@@</script>")&&atelier.includes("const E=MercenairesTagEngine;"));
 assert.ok(!/function (lexer|analyse|propre)\(/.test(atelier)&&!/const (MOTS|FONCTIONS)=/.test(atelier),"pas de seconde copie du langage dans l'atelier");
 assert.ok(read("scripts/atelier-tags/construit.js").includes("game-core\",\"tag-engine.js\""));
+// L'onglet des titres (Idan, 2026-11-24) : la composition du jeu, les deux formes de chaque tag, les titres spéciaux.
+assert.ok(atelier.includes('data-onglet="titres"')&&atelier.includes('id="v-titres"'));
+assert.ok((atelier.match(/E\.composeTitle\(doc,/g)||[]).length>=2,"l'essai de l'onglet et celui de la recrue");
+assert.ok(atelier.includes('id="tag-titre"')&&atelier.includes('id="tag-court"'),"le tag choisi : son titre et son mot court");
+assert.ok(atelier.includes('inactif:false,titre:"",court:""'),"un nouveau tag a ses deux formes, vides");
+assert.ok(!/function composeTitle\(/.test(atelier),"pas de seconde copie de la composition");
 
 // ---- Les données de l'atelier sur des recrues du jeu ----
 const source=read("prototype-web/reference-data.js");

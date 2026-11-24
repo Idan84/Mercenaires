@@ -303,8 +303,10 @@ function hoverMountPortrait(mount){
   const label=[mount.name,mount.kind].filter(Boolean).join(", ");
   return `<figure class="hc-steed-portrait" data-mount="${esc(mount.code)}" aria-label="${esc(label)}"><span>${esc(mount.kind||mount.name)}</span></figure>`;
 }
-// Les armes d'un set, comme Idan les dit : « Épée longue et écu ».
+// Les armes d'un set, comme Idan les dit : « Épée longue et écu » ; deux armes identiques : « Épée courte × 2 » (Idan,
+// 2026-11-24).
 function hoverWeapons(names){
+  if(names.length===2&&names[0]===names[1]) return names[0]+" × 2";
   return names.map((name,i)=>i?name.charAt(0).toLocaleLowerCase("fr")+name.slice(1):name).join(" et ");
 }
 function hoverHearts(filled){

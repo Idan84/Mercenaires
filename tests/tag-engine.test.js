@@ -59,6 +59,48 @@ assert.equal(T("t5").si,null,"un test ne dépend pas de lui-même");
 assert.deepEqual(T("t5").oui,["a"]);
 assert.equal(sale.constantes[0].valeur,0);
 assert.equal(E.clean({tags:[{}]},{uid:()=>"u1"}).tags[0].id,"u1");
+assert.deepEqual(sale.tags.map(t=>[t.titre,t.court]),[["",""],["",""],["",""]],"pas encore de formes de titre");
+assert.deepEqual(sale.titres,{longueur_max:36,suivants_max:2,familles:[],speciaux:[]},"les réglages des titres par défaut");
+assert.deepEqual(E.clean({tags:[{id:"a"},{id:"b"}],titres:{longueur_max:"40",suivants_max:9,familles:["b","zz"],speciaux:[{id:"s",tags:["a","zz","b"],titre:"X"}]}}).titres,
+  {longueur_max:40,suivants_max:5,familles:["b"],speciaux:[{id:"s",tags:["a","b"],titre:"X",court:""}]},"bornés, tags inconnus retirés");
+
+// ---- Le titre (Idan, 2026-11-24) : un tag, son nom ; plusieurs, le titre du tag qui mène puis des mots courts ----
+{
+  const d=E.clean({tags:[
+    {id:"fait",groupe:true},{id:"est",groupe:true},{id:"tir",parents:["fait"],groupe:true},{id:"cac",parents:["fait"],groupe:true},
+    {id:"archer",nom:"Archer",parents:["tir"],titre:"Archer",court:"archer",rang:1},
+    {id:"perce",nom:"Perce-armure",parents:["cac"],titre:"Perce-armure",court:"perce-armure",rang:2},
+    {id:"loin",nom:"De loin et de près",parents:["cac","tir"],court:"polyvalent",rang:2},
+    {id:"veinard",nom:"Veinard",parents:["est"],titre:"Veinard",court:"chanceux"},
+    {id:"roc",nom:"Roc",parents:["est"],titre:"Roc",court:"robuste"},
+    {id:"peur",nom:"Sans peur",parents:["est"],titre:"Casse-cou",court:"sans peur"},
+    {id:"increvable",nom:"Increvable",parents:["est"],titre:"Increvable",court:"increvable"},
+    {id:"muet",nom:"Muet",parents:["est"]}],
+    titres:{familles:["cac","tir","est"],speciaux:[{id:"chat",tags:["veinard","increvable"],titre:"Chat à neuf vies",court:"à neuf vies"},
+      {id:"trompe",tags:["veinard","roc"],titre:"Trompe-la-mort"}]}});
+  const p=id=>d.tags.find(t=>t.id===id), titre=(...ids)=>E.composeTitle(d,ids.map(p))?.name??null;
+  assert.equal(titre(),null);
+  assert.equal(titre("loin"),"De loin et de près","un seul tag : son nom");
+  assert.equal(titre("veinard","archer"),"Archer chanceux","ce qu'il fait mène, ce qu'il est suit");
+  assert.equal(titre("archer","perce"),"Perce-armure archer","l'ordre des familles (CAC, puis tir)");
+  assert.equal(titre("veinard","peur","roc","archer"),"Archer chanceux et sans peur","« et » avant le dernier, deux mots au plus");
+  assert.equal(titre("loin","perce","veinard"),"Perce-armure chanceux et polyvalent","sans titre, il suit avec ce qu'il est");
+  assert.equal(titre("loin","veinard"),"Veinard polyvalent","sans titre, il ne mène pas");
+  assert.equal(titre("muet","veinard"),"Veinard","sans mot court, il ne suit pas");
+  assert.equal(titre("muet","loin"),"De loin et de près","personne n'a de titre : le premier (rang le plus haut), sous son nom");
+  assert.equal(titre("veinard","increvable"),"Chat à neuf vies","un titre spécial mène");
+  assert.equal(titre("archer","veinard","increvable","peur"),"Archer sans peur à neuf vies","ou suit, en complément à la fin");
+  assert.equal(titre("veinard","roc","archer"),"Archer chanceux et robuste","un titre spécial sans mot court ne suit pas : les tags suivent seuls");
+  assert.deepEqual(E.composeTitle(d,["veinard","increvable","peur"].map(p)).speciaux,["chat"]);
+  assert.deepEqual(E.composeTitle(d,["archer","veinard","muet"].map(p)).tags.map(t=>t.id),["archer","veinard"],"les tags du titre");
+  // Une ligne sur la fiche au survol : un mot qui fait dépasser longueur_max est sauté.
+  const court=E.clean({...d,titres:{...d.titres,longueur_max:24}});
+  const t2=(...ids)=>E.composeTitle(court,ids.map(id=>court.tags.find(t=>t.id===id))).name;
+  assert.equal(t2("perce","veinard","peur"),"Perce-armure chanceux","« Perce-armure chanceux et sans peur » (34) ne tient pas");
+  assert.equal(t2("perce","roc","peur"),"Perce-armure robuste");
+  const un=E.clean({...d,titres:{...d.titres,suivants_max:1}});
+  assert.equal(E.composeTitle(un,["archer","veinard","peur"].map(id=>un.tags.find(t=>t.id===id))).name,"Archer chanceux");
+}
 
 // ---- L'arbre des tests ----
 const doc=E.clean({
@@ -238,6 +280,17 @@ for(const v of recrues) for(const t of ["soutien.enchantements","entrave.immobil
 
 const donnees=E.clean(JSON.parse(read("data/reference/tag-workshop.json")));
 const arbre=E.createTagTree(donnees);
+// Les titres de l'atelier : chaque tag peut mener ou suivre ; deux tags, quels qu'ils soient, tiennent sur une ligne.
+{
+  const vrais=donnees.tags.filter(t=>!t.groupe);
+  for(const t of vrais) assert.ok(t.titre.trim()||t.court.trim(),"titre ou mot court : "+t.nom);
+  assert.ok(donnees.titres.familles.length>=8,"les familles : qui mène");
+  for(const s of donnees.titres.speciaux) assert.ok(s.tags.length>=2&&(s.titre.trim()||s.court.trim()),"titre spécial "+s.id);
+  for(const a of vrais) for(const b of vrais) if(a!==b){
+    const t=E.composeTitle(donnees,[a,b]);
+    assert.ok(t.name.length<=donnees.titres.longueur_max,a.nom+" + "+b.nom+" : "+t.name);
+  }
+}
 // Chaque calcul se lit, et ne parle que de variables du jeu, de la compagnie ou de constantes de l'atelier.
 for(const x of donnees.tests.filter(x=>x.calcul.trim())){
   const vars=E.variablesDe(E.analyse(x.calcul));

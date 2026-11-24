@@ -144,6 +144,13 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   api.recruitTalkChoice("about"); api.recruitTalkChoice("title");
   assert.equal(dialogue.known(candidate).title,"Veinard","un seul tag annoncé : son titre");
   annonce=[{nom:"Veinard"},{nom:"Roc"}];
+  // Plusieurs tags : le titre composé de ses tags (Idan, 2026-11-24 : « Construis la nouvelle structure multi tags »).
+  tagRules.tagTitle=res=>({name:res.affiches.length===2?"Trompe-la-mort":"?"});
+  delete dialogue.known(candidate).asked.title;
+  api.recruitTalkChoice("title");
+  assert.equal(dialogue.known(candidate).title,"Trompe-la-mort","plusieurs tags : le titre composé");
+  // Sans titre composé (anciennes règles) : le titre calculé, sur sa Force vantée.
+  delete tagRules.tagTitle;
   delete dialogue.known(candidate).asked.title;
   api.recruitTalkChoice("title");
   assert.equal(dialogue.known(candidate).title,"Colosse 80","plusieurs tags : le titre calculé, sur sa Force vantée");

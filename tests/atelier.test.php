@@ -18,10 +18,14 @@ function check(bool $ok, string $message): void
 $root = dirname(__DIR__);
 // La copie du dépôt (data/reference/tag-workshop.json) a la forme du moteur des tags : elle est acceptée telle quelle.
 $copie = json_decode((string) file_get_contents($root . '/data/reference/tag-workshop.json'), true);
-$doc = ['tags' => $copie['tags'], 'tests' => $copie['tests'], 'constantes' => $copie['constantes']];
+$doc = ['tags' => $copie['tags'], 'tests' => $copie['tests'], 'constantes' => $copie['constantes'], 'titres' => $copie['titres']];
 check(count($doc['tags']) > 50 && count($doc['tests']) > 20, 'la copie du dépôt');
 check(atelier_verifier($doc) === null, 'la copie du dépôt est acceptée : ' . (atelier_verifier($doc) ?? ''));
 check(atelier_verifier(['tags' => [], 'tests' => [], 'constantes' => []]) === null, 'un atelier vide');
+// Un atelier enregistré avant les titres (Idan, 2026-11-24) : ni titres, ni titre et mot court par tag.
+$ancien = ['tags' => array_map(function ($t) { unset($t['titre'], $t['court']); return $t; }, $copie['tags']), 'tests' => $copie['tests'], 'constantes' => $copie['constantes']];
+check(atelier_verifier($ancien) === null, 'un atelier d\'avant les titres : ' . (atelier_verifier($ancien) ?? ''));
+check(count($doc['titres']['speciaux']) > 5 && $doc['tags'][5]['titre'] !== '', 'les titres de la copie du dépôt');
 
 // Refusés : clés en trop ou manquantes, mauvais types, identifiants douteux, doublons, textes trop longs.
 $mauvais = function (callable $f) use ($doc): ?string {
@@ -44,6 +48,12 @@ check($mauvais(fn(&$d) => $d['tests'][0]['si'] = ['test' => 'x']) !== null, 'con
 check($mauvais(fn(&$d) => $d['tests'][0]['paliers'] = [['id' => 'p', 'de' => 'x', 'nom' => '', 'elimine' => []]]) !== null, 'palier invalide');
 check($mauvais(fn(&$d) => $d['constantes'][0]['valeur'] = INF) !== null, 'constante infinie');
 check($mauvais(fn(&$d) => $d['tags'] = ['a' => $d['tags'][0]]) !== null, 'tags : un objet');
+check($mauvais(function (&$d) { unset($d['tags'][3]['court']); }) !== null, 'un titre sans mot court');
+check($mauvais(fn(&$d) => $d['tags'][3]['titre'] = 3) !== null, 'titre en nombre');
+check($mauvais(fn(&$d) => $d['titres']['longueur_max'] = 5000) !== null, 'longueur des titres hors bornes');
+check($mauvais(fn(&$d) => $d['titres']['familles'] = ['<x>']) !== null, 'famille douteuse');
+check($mauvais(fn(&$d) => $d['titres']['speciaux'][0]['html'] = '<b>') !== null, 'clé inconnue dans un titre spécial');
+check($mauvais(fn(&$d) => $d['titres']['speciaux'][0]['tags'] = 'a') !== null, 'titre spécial : tags en texte');
 check(atelier_verifier('x') !== null && atelier_verifier(null) !== null, 'pas un objet');
 
 // Le rangement : media/atelier/, protégé ; les versions se suivent ; une version partie d'une ancienne est refusée.

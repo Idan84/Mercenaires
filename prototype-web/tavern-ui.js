@@ -268,6 +268,7 @@ function companyPhrase(){
 // précision du tavernier), au masculin comme tous les titres. Un candidat n'est ni capitaine ni lieutenant. Un seul tag sur
 // ces mêmes capacités devient son titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; « oui,
 // candidats aussi ») : tags, ses tags tels qu'on les décrit (sinon calculés ici) ; candidate garde son tag de consolation.
+// Plusieurs tags : le titre composé de ces tags (tagTitle).
 function describedTitle(m,estimate,candidate=null,tags=null){
   const rules=profileRules();
   if(!rules) return "";
@@ -275,8 +276,12 @@ function describedTitle(m,estimate,candidate=null,tags=null){
   const tagRules=typeof companyTagRules==="function"?companyTagRules():null;
   const ctx=typeof companyTagContext==="function"?companyTagContext():null;
   if(candidate&&tagRules?.titleTag&&(tags||ctx&&tagRules.describedTags)){
-    const one=tagRules.titleTag(tags||tagRules.describedTags(copy,candidate,ctx));
+    const res=tags||tagRules.describedTags(copy,candidate,ctx);
+    const one=tagRules.titleTag(res);
     if(one) return one.nom.trim();
+    // Plusieurs tags : le titre composé (Idan, 2026-11-24).
+    const composed=tagRules.tagTitle?.(res);
+    if(composed?.name) return composed.name;
   }
   const result=rules.evaluate(copy,context);
   return result&&rules.composeTitle?.(copy,result,context)?.name||"";

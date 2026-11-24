@@ -195,6 +195,12 @@ assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses v
   assert.equal(titleTag({affiches:[{nom:"Veinard"},{nom:"Roc"}]}),null,"plusieurs tags : le titre calculé");
   assert.equal(titleTag({affiches:[{nom:"Veinard"}]}).nom,"Veinard","un seul tag : son titre");
   assert.equal(tags.titleTag,titleTag);
+  // Plusieurs tags : le titre composé (tag-engine.js, composeTitle), sur les données de l'atelier.
+  const id=nom=>tags.doc.tags.find(t=>t.nom.trim()===nom).id;
+  assert.equal(tags.tagTitle([id("Arbalétrier"),id("Éclaireur"),id("Veinard")]).name,"Arbalétrier éclaireur et chanceux");
+  assert.equal(tags.tagTitle({affiches:[id("Veinard"),id("Roc")].map(x=>tags.doc.tags.find(t=>t.id===x))}).name,"Trompe-la-mort","un titre spécial");
+  assert.equal(tags.tagTitle([]),null);
+  assert.equal(tags.tagTitle([{id:"consolation-x",nom:"Stagiaire de la mort"}]).name,"Stagiaire de la mort","un tag de consolation");
   // Un seul tag, tag de consolation compris (« oui, titre = consolation »).
   const seul=members.map(x=>tags.tagsOf(x,{members,steward:cruxor,companyStars:1,view})).find(r=>r.affiches.length===1&&r.affiches[0].consolation);
   if(seul) assert.equal(titleTag(seul).consolation,true);
@@ -205,6 +211,8 @@ assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses v
   else assert.equal(decrit.affiches[0].id,"consolation-"+reference.tagConsolation.rows[candidat.tagConsolation].code,"sa consolation, gardée sur le candidat");
   const sheet=read("prototype-web/ui.js"), hover=read("prototype-web/hover-card-ui.js"), tavern=read("prototype-web/tavern-ui.js");
   assert.match(sheet,/if\(tags\.length===1\) return \{name:tags\[0\]\.name,lines:tags\[0\]\.note\?\[tags\[0\]\.note\]:\[\],tag:tags\[0\]\};/,"fiche : le tag et sa note en infobulle");
+  assert.match(sheet,/companyTagRules\(\)\?\.tagTitle\?\.\(tags\.map\(t=>t\.id\)\)/,"fiche : plusieurs tags, le titre composé");
+  assert.match(tavern,/const composed=tagRules\.tagTitle\?\.\(res\);/,"la taverne : le titre composé");
   assert.match(hover,/characterTitle\(c\)\?\.name/,"fiche au survol : le même titre");
   assert.match(tavern,/tagRules\.candidateTags\(candidate,ctx\)/,"le candidat : ses tags annoncés");
   assert.match(tavern,/describedTitle\(m,value=>value\*draw\(\),candidate\)/,"le tavernier : les tags sur ses estimations");

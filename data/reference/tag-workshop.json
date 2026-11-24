@@ -1,6 +1,6 @@
 {
  "description": "L’atelier des tags (Idan ; doc 20 §11 et §12) : tags, tests et constantes. Copie de secours du dépôt : le jeu et la Design Lab lisent d’abord la dernière version sur Hostinger (media/atelier/actuel.json), puis celle-ci si Hostinger n’en a pas.",
- "date": "2026-11-23",
+ "date": "2026-11-24",
  "tags": [
   {
    "garder": null,
@@ -48,23 +48,11 @@
   },
   {
    "garder": null,
-   "groupe": true,
-   "id": "pou5c9pp",
-   "inactif": false,
-   "nom": "CAC",
-   "note": "",
-   "parents": [
-    "ka5k6bo1"
-   ],
-   "rang": null
-  },
-  {
-   "garder": null,
    "groupe": false,
    "id": "vol",
    "inactif": false,
    "nom": "Vol",
-   "note": "",
+   "note": "Il vole, de ses propres ailes ou sur une monture volante. Les murs et les fossés ne sont plus vraiment son problème.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -76,7 +64,7 @@
    "id": "regeneration",
    "inactif": false,
    "nom": "Régénération",
-   "note": "",
+   "note": "Ses blessures se referment d'elles-mêmes en plein combat. Pratique, et un peu inquiétant.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -88,7 +76,7 @@
    "id": "amphibie",
    "inactif": false,
    "nom": "Amphibie",
-   "note": "Respiration aquatique.",
+   "note": "Il respire sous l'eau et traverse les eaux profondes où les autres se noient.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -100,7 +88,7 @@
    "id": "3eo3yjmy",
    "inactif": false,
    "nom": "Grosse Brute",
-   "note": "Force exceptionnelle",
+   "note": "D'une force exceptionnelle. Il frappe plus fort que tout le monde et porte ce que les autres traînent.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -112,7 +100,7 @@
    "id": "03tml0iu",
    "inactif": false,
    "nom": "Force de la nature",
-   "note": "",
+   "note": "La plus grande force de la compagnie, et de loin. Il ouvre les portes sans s'embêter avec les poignées.",
    "parents": [
     "3eo3yjmy"
    ],
@@ -124,7 +112,7 @@
    "id": "1b1t7f8y",
    "inactif": false,
    "nom": "Insaisissable",
-   "note": "Esquive exceptionnelle",
+   "note": "D'une esquive exceptionnelle. Les coups passent à côté de lui comme s'il n'était pas vraiment là.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -136,7 +124,7 @@
    "id": "r8fjoadk",
    "inactif": false,
    "nom": "Roi de l'esquive",
-   "note": "",
+   "note": "L'esquive la plus insolente de la compagnie. Le toucher relève du miracle.",
    "parents": [
     "1b1t7f8y"
    ],
@@ -148,7 +136,7 @@
    "id": "6zp3q2r1",
    "inactif": false,
    "nom": "Cerveau sur pattes",
-   "note": "Intelligence exceptionnelle",
+   "note": "D'une intelligence exceptionnelle. Il comprend vite, apprend vite, et tient à ce que ça se sache.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -160,7 +148,7 @@
    "id": "r5i3na08",
    "inactif": false,
    "nom": "Doigts agiles",
-   "note": "Dexterité exceptionnelle",
+   "note": "D'une dextérité exceptionnelle. Ses mains sont rapides, précises… et parfois dans la poche des autres.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -172,7 +160,7 @@
    "id": "8a91th6k",
    "inactif": false,
    "nom": "6ème sens",
-   "note": "Perception exceptionnelle",
+   "note": "D'une perception exceptionnelle. Il voit l'embuscade avant qu'on ait fini de la tendre.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -184,7 +172,7 @@
    "id": "a6g49n26",
    "inactif": false,
    "nom": "Veinard",
-   "note": "Chance exceptionnelle",
+   "note": "D'une chance exceptionnelle. Ses coups trouvent souvent le défaut de la cuirasse.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -196,7 +184,7 @@
    "id": "ojkh06zu",
    "inactif": false,
    "nom": "Roc",
-   "note": "Constitution ou Endurance ou Résistance physique exceptionnelle",
+   "note": "D'une solidité exceptionnelle. Il encaisse des coups qui en coucheraient d'autres.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -208,7 +196,7 @@
    "id": "mzc3vqjp",
    "inactif": false,
    "nom": "Bolide",
-   "note": "Vitesse exceptionnelle",
+   "note": "D'une vitesse exceptionnelle. Il arrive le premier, et il repart aussi le premier.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -220,7 +208,7 @@
    "id": "ko8qpwk8",
    "inactif": false,
    "nom": "Sans peur",
-   "note": "Courage exceptionnel",
+   "note": "D'un courage exceptionnel. Il tient bon quand les autres reculent.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -232,7 +220,7 @@
    "id": "02p1prii",
    "inactif": false,
    "nom": "Volonté de Fer",
-   "note": "Volonté exceptionnelle",
+   "note": "D'une volonté exceptionnelle. Difficile de le faire plier, par la magie comme par les mots.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -244,7 +232,7 @@
    "id": "i2f9v5k9",
    "inactif": false,
    "nom": "Effrayant",
-   "note": "Intimidation exceptionnelle",
+   "note": "Il intimide comme personne. Ses ennemis hésitent avant de s'approcher.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -256,7 +244,7 @@
    "id": "481drl5g",
    "inactif": false,
    "nom": "Séducteur",
-   "note": "Charisme exceptionnel",
+   "note": "D'un charisme exceptionnel. On l'écoute, on le suit, on lui prête même de l'argent.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -267,8 +255,8 @@
    "groupe": false,
    "id": "q78i7tqj",
    "inactif": false,
-   "nom": "Ignifugé ",
-   "note": "Résistance au feu",
+   "nom": "Ignifugé",
+   "note": "Le feu ne lui fait rien. Mieux : les flammes finissent par le soigner.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -279,8 +267,8 @@
    "groupe": false,
    "id": "swux6jo4",
    "inactif": false,
-   "nom": "Paratonerre",
-   "note": "Résistance à la foudre",
+   "nom": "Paratonnerre",
+   "note": "La foudre ne lui fait rien. Mieux : elle le requinque.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -291,8 +279,8 @@
    "groupe": false,
    "id": "ellzzuqw",
    "inactif": false,
-   "nom": "Frigorifugé ",
-   "note": "Résistance au froid",
+   "nom": "Frigorifugé",
+   "note": "Le froid ne lui fait rien. Mieux : il s'en soigne. L'hiver est sa saison.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -303,8 +291,8 @@
    "groupe": false,
    "id": "9rvmbh6e",
    "inactif": false,
-   "nom": "Mithridatisé ",
-   "note": "Résistance Poison",
+   "nom": "Mithridatisé",
+   "note": "Le poison ne lui fait rien. À force d'en goûter, il s'en soigne.",
    "parents": [
     "ce-qu-il-est"
    ],
@@ -315,8 +303,8 @@
    "groupe": false,
    "id": "8dgq82ry",
    "inactif": false,
-   "nom": "Irresistible",
-   "note": "",
+   "nom": "Irrésistible",
+   "note": "Le plus charismatique de la compagnie. Même ses ennemis le trouvent sympathique.",
    "parents": [
     "481drl5g"
    ],
@@ -328,7 +316,7 @@
    "id": "0d9asz97",
    "inactif": false,
    "nom": "Terrorisant",
-   "note": "",
+   "note": "Le plus terrifiant de la compagnie. Un regard, et l'ennemi se demande s'il est vraiment payé assez.",
    "parents": [
     "i2f9v5k9"
    ],
@@ -340,7 +328,7 @@
    "id": "mlw1nq8u",
    "inactif": false,
    "nom": "Volonté de diamant",
-   "note": "",
+   "note": "La volonté la plus inébranlable de la compagnie. Rien ni personne ne le fait céder.",
    "parents": [
     "02p1prii"
    ],
@@ -351,8 +339,8 @@
    "groupe": false,
    "id": "rz4rh0b8",
    "inactif": false,
-   "nom": "Tête brulée",
-   "note": "",
+   "nom": "Tête brûlée",
+   "note": "Le plus courageux de la compagnie. Il ne connaît pas la peur, ni, parfois, la prudence.",
    "parents": [
     "ko8qpwk8"
    ],
@@ -364,7 +352,7 @@
    "id": "mugvslw0",
    "inactif": false,
    "nom": "Flash",
-   "note": "",
+   "note": "Le plus rapide de la compagnie. Le temps de cligner des yeux, il est déjà ailleurs.",
    "parents": [
     "mzc3vqjp"
    ],
@@ -376,7 +364,7 @@
    "id": "haiegjex",
    "inactif": false,
    "nom": "Increvable",
-   "note": "",
+   "note": "Le plus solide de la compagnie. On l'a déjà enterré deux fois ; il est revenu pour le dîner.",
    "parents": [
     "ojkh06zu"
    ],
@@ -388,7 +376,7 @@
    "id": "25ww25fb",
    "inactif": false,
    "nom": "Béni des dieux",
-   "note": "",
+   "note": "La chance la plus insolente de la compagnie. Les dieux l'aiment bien, personne ne sait pourquoi.",
    "parents": [
     "a6g49n26"
    ],
@@ -400,7 +388,7 @@
    "id": "3u2qr4la",
    "inactif": false,
    "nom": "Oracle",
-   "note": "",
+   "note": "La perception la plus aiguë de la compagnie. On jurerait qu'il sait ce qui va arriver.",
    "parents": [
     "8a91th6k"
    ],
@@ -412,7 +400,7 @@
    "id": "00vdecdw",
    "inactif": false,
    "nom": "Aux mains d'argent",
-   "note": "",
+   "note": "Les mains les plus habiles de la compagnie. Aucune serrure, aucun nœud, aucune bourse ne lui résiste.",
    "parents": [
     "r5i3na08"
    ],
@@ -424,7 +412,7 @@
    "id": "rgftfjcu",
    "inactif": false,
    "nom": "Le génie",
-   "note": "",
+   "note": "L'esprit le plus brillant de la compagnie. Il a toujours trois coups d'avance, et il s'ennuie un peu.",
    "parents": [
     "6zp3q2r1"
    ],
@@ -459,7 +447,7 @@
    "id": "soin-de-zone",
    "inactif": false,
    "nom": "Soigneur des masses",
-   "note": "",
+   "note": "Il sait soigner plusieurs alliés d'un seul sort.",
    "parents": [
     "p98pjt14"
    ],
@@ -471,7 +459,7 @@
    "id": "soin-duree",
    "inactif": false,
    "nom": "Soigneur dans la durée",
-   "note": "",
+   "note": "Il connaît des soins qui agissent sur plusieurs tours.",
    "parents": [
     "p98pjt14"
    ],
@@ -483,7 +471,7 @@
    "id": "5av4i928",
    "inactif": false,
    "nom": "Soigneur complet",
-   "note": "",
+   "note": "Il soigne en groupe, sur la durée, et sait parer au plus pressé : un poison à purger, un soin à lancer en vitesse.",
    "parents": [
     "soin-duree",
     "soin-de-zone"
@@ -496,7 +484,7 @@
    "id": "6n4899ab",
    "inactif": false,
    "nom": "Grand Maître du soin",
-   "note": "",
+   "note": "Le soin sous toutes ses formes, au plus haut niveau. Tant qu'il est là, la mort doit prendre un ticket.",
    "parents": [
     "5av4i928",
     "tnvt6pos",
@@ -511,7 +499,7 @@
    "id": "ehfdxqs9",
    "inactif": false,
    "nom": "Grand soigneur dans la durée",
-   "note": "",
+   "note": "Des soins puissants et fiables qui agissent longtemps. Il soigne les blessures avant même qu'elles saignent.",
    "parents": [
     "soin-duree"
    ],
@@ -523,7 +511,7 @@
    "id": "p98pjt14",
    "inactif": false,
    "nom": "Soigneur occasionnel",
-   "note": "",
+   "note": "Il connaît des sorts de soin et les réussit assez souvent pour remettre un allié debout de temps en temps.",
    "parents": [
     "soin"
    ],
@@ -535,7 +523,7 @@
    "id": "lyfdowvc",
    "inactif": false,
    "nom": "Soigneur reconnu",
-   "note": "",
+   "note": "Ses soins sont puissants et réussissent presque à coup sûr.",
    "parents": [
     "p98pjt14"
    ],
@@ -547,7 +535,7 @@
    "id": "tnvt6pos",
    "inactif": false,
    "nom": "Un hôpital sur le champ de bataille",
-   "note": "",
+   "note": "Il soigne beaucoup, bien et vite. À lui seul, une infirmerie de campagne.",
    "parents": [
     "lyfdowvc"
    ],
@@ -558,7 +546,7 @@
    "groupe": true,
    "id": "controle-du-terrain",
    "inactif": false,
-   "nom": "Eclaireur et contrôle du terrain",
+   "nom": "Éclaireur et contrôle du terrain",
    "note": "",
    "parents": [
     "roles"
@@ -583,7 +571,7 @@
    "id": "ma5720wh",
    "inactif": false,
    "nom": "Motivateur",
-   "note": "",
+   "note": "Sa présence donne du courage à ses alliés proches.",
    "parents": [
     "commandement"
    ],
@@ -595,7 +583,7 @@
    "id": "cpvembb3",
    "inactif": false,
    "nom": "Commissaire du courage",
-   "note": "",
+   "note": "Son aura donne un vrai coup de fouet au courage de ses alliés.",
    "parents": [
     "ma5720wh"
    ],
@@ -607,21 +595,9 @@
    "id": "b30ullkw",
    "inactif": false,
    "nom": "Paragon d'Espoir",
-   "note": "",
+   "note": "L'aura de courage la plus puissante de la compagnie. Avec lui, même les lâches chargent.",
    "parents": [
     "cpvembb3"
-   ],
-   "rang": null
-  },
-  {
-   "garder": null,
-   "groupe": true,
-   "id": "soutien-enchantements",
-   "inactif": false,
-   "nom": "Enchanteur",
-   "note": "",
-   "parents": [
-    "magie"
    ],
    "rang": null
   },
@@ -631,9 +607,9 @@
    "id": "abjr58ik",
    "inactif": false,
    "nom": "Enchanteur amateur",
-   "note": "",
+   "note": "Il connaît des sorts qui renforcent ses alliés et les réussit assez souvent pour rendre service.",
    "parents": [
-    "soutien-enchantements"
+    "entrave"
    ],
    "rang": null
   },
@@ -643,7 +619,7 @@
    "id": "hf7jj0yb",
    "inactif": false,
    "nom": "Soutien incontournable",
-   "note": "",
+   "note": "Il renforce ses alliés avec de nombreux sorts, puissants et fiables. On ne part plus en mission sans lui.",
    "parents": [
     "abjr58ik"
    ],
@@ -655,7 +631,7 @@
    "id": "0vy9k8bh",
    "inactif": false,
    "nom": "Enchanteur indispensable",
-   "note": "",
+   "note": "Une vraie bibliothèque de sorts de renforcement. Avec lui, tout le monde se sent plus fort.",
    "parents": [
     "hf7jj0yb"
    ],
@@ -664,10 +640,23 @@
   {
    "garder": null,
    "groupe": false,
+   "id": "c6d60cb9",
+   "inactif": false,
+   "nom": "Soutien universel",
+   "note": "Il renforce ses alliés, et ralentit, affaiblit et démoralise ses ennemis. Le combat est joué avant le premier coup.",
+   "parents": [
+    "0vy9k8bh",
+    "vy0i017l"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": true,
    "id": "protection",
-   "inactif": true,
-   "nom": "Protection",
-   "note": "",
+   "inactif": false,
+   "nom": "Tank",
+   "note": "Test pour la catégorie : \n- Les des trois (Constitution, Endurance et Résistance physique) > 40 + étoiles de la compagnie (équipement compris).\net\n  - L'une des trois (Constitution, Endurance ou Résistance physique) > 70 + étoiles de la compagnie (équipement compris).\net\n-  Porte une armure intermédiaire ou lourde",
    "parents": [
     "roles"
    ],
@@ -676,10 +665,10 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "protection-elementaire",
+   "id": "protection-a-distance",
    "inactif": false,
-   "nom": "Protection élémentaire",
-   "note": "",
+   "nom": "Boîte de conserve",
+   "note": "Un combattant solide en armure lourde. Il fait du bruit en marchant, mais il encaisse.",
    "parents": [
     "protection"
    ],
@@ -688,12 +677,90 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "protection-a-distance",
+   "id": "q20vtkiw",
    "inactif": false,
-   "nom": "Protection à distance",
-   "note": "",
+   "nom": "Mur à pointes",
+   "note": "Armure lourde et arme d'hast : il tient la ligne et embroche ceux qui s'en approchent.",
+   "parents": [
+    "protection-a-distance",
+    "6c4s5pyw"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "6c4s5pyw",
+   "inactif": false,
+   "nom": "Gardien de la ligne",
+   "note": "Il manie une arme d'hast avec talent et tient l'ennemi à bonne distance.",
    "parents": [
     "protection"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "dg5ybvw7",
+   "inactif": false,
+   "nom": "Porte Bouclier",
+   "note": "Il manie le bouclier avec talent. Les coups glissent dessus.",
+   "parents": [
+    "protection"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "ih0ttxy3",
+   "inactif": false,
+   "nom": "Rempart",
+   "note": "Bouclier et armure lourde : un mur derrière lequel on aime se cacher.",
+   "parents": [
+    "dg5ybvw7",
+    "protection-a-distance"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "z76exrem",
+   "inactif": false,
+   "nom": "Spécialiste du contre",
+   "note": "Bouclier et arme d'hast : il bloque, puis il riposte.",
+   "parents": [
+    "dg5ybvw7",
+    "6c4s5pyw"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "qg7xl92m",
+   "inactif": false,
+   "nom": "Rempart de contre",
+   "note": "Bouclier, armure lourde et arme d'hast : il tient la ligne et punit chaque attaque.",
+   "parents": [
+    "ih0ttxy3",
+    "q20vtkiw",
+    "z76exrem"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "siksg1ll",
+   "inactif": false,
+   "nom": "Enfant de Cruxor Limortel",
+   "note": "Bouclier, armure lourde, riposte à chaque coup, et il refuse de mourir. Cruxor Limortel aurait été fier.",
+   "parents": [
+    "qg7xl92m",
+    "haiegjex"
    ],
    "rang": null
   },
@@ -703,7 +770,7 @@
    "id": "entrave-immobilisation",
    "inactif": false,
    "nom": "Immobilisateur",
-   "note": "",
+   "note": "Il connaît des sorts qui clouent l'ennemi sur place, et il les réussit bien.",
    "parents": [
     "entrave"
    ],
@@ -715,7 +782,7 @@
    "id": "entrave-affaiblissement",
    "inactif": false,
    "nom": "Affaiblisseur",
-   "note": "",
+   "note": "Il connaît des sorts qui affaiblissent l'ennemi, et il les réussit bien.",
    "parents": [
     "entrave"
    ],
@@ -727,7 +794,7 @@
    "id": "entrave-demoralisateur",
    "inactif": false,
    "nom": "Démoralisateur",
-   "note": "",
+   "note": "Il connaît des sorts qui sapent le moral de l'ennemi. Les fuyards le remercient.",
    "parents": [
     "entrave"
    ],
@@ -739,7 +806,7 @@
    "id": "vy0i017l",
    "inactif": false,
    "nom": "Roi de l'entrave",
-   "note": "",
+   "note": "Il ralentit, affaiblit et démoralise l'ennemi à volonté. Ceux d'en face se battent à moitié.",
    "parents": [
     "entrave-demoralisateur",
     "entrave-affaiblissement",
@@ -753,7 +820,7 @@
    "id": "ypsqnotc",
    "inactif": false,
    "nom": "Contrôleur du terrain",
-   "note": "Sait utiliser des sorts de d'altération du terrain ou de déplacement des personnages",
+   "note": "Ses sorts modifient le terrain ou déplacent les combattants. Le champ de bataille devient le sien.",
    "parents": [
     "controle-du-terrain"
    ],
@@ -764,8 +831,8 @@
    "groupe": false,
    "id": "sxp05nhd",
    "inactif": false,
-   "nom": "Maitre du champ de bataille",
-   "note": "Maitrise supérieure à Contrôleur du terrain",
+   "nom": "Maître du champ de bataille",
+   "note": "Il maîtrise de nombreux sorts de terrain et peut les lancer souvent. Il redessine la carte à sa guise.",
    "parents": [
     "ypsqnotc"
    ],
@@ -777,7 +844,7 @@
    "id": "pv521ntp",
    "inactif": false,
    "nom": "Architecte de l'enfer",
-   "note": "",
+   "note": "Ses sorts et ses pièges transforment le terrain en traquenard géant. Chaque pas est un mauvais choix.",
    "parents": [
     "sxp05nhd",
     "6mdxudep"
@@ -790,7 +857,7 @@
    "id": "eclaireur",
    "inactif": false,
    "nom": "Éclaireur",
-   "note": "Est doué pour faire des repérages avant la bataille mais également pendant.",
+   "note": "Il est doué pour repérer l'ennemi, avant la bataille comme pendant. Avec lui, on sait où on met les pieds.",
    "parents": [
     "controle-du-terrain"
    ],
@@ -802,7 +869,7 @@
    "id": "yt48k9y9",
    "inactif": true,
    "nom": "Poseur de pièges",
-   "note": "Pieges pas encore implémenté.  - Tag doit rester avec un test forcément éliminatoire pour l'instant",
+   "note": "Il sait poser des pièges. Regardez où vous marchez.",
    "parents": [
     "controle-du-terrain"
    ],
@@ -814,7 +881,7 @@
    "id": "6mdxudep",
    "inactif": false,
    "nom": "Poseur de pièges émérite",
-   "note": "",
+   "note": "Un poseur de pièges redoutable. Le sol devient son meilleur allié.",
    "parents": [
     "yt48k9y9"
    ],
@@ -826,7 +893,7 @@
    "id": "ivtpihp7",
    "inactif": true,
    "nom": "Démineur",
-   "note": "Pieges pas encore implémenté.  - Tag doit rester avec un test forcément éliminatoire pour l'instant",
+   "note": "Il sait repérer et désamorcer les pièges. Il passe en premier, et tout le monde le remercie.",
    "parents": [
     "controle-du-terrain"
    ],
@@ -838,7 +905,7 @@
    "id": "ql2dvl0b",
    "inactif": false,
    "nom": "Démineur émérite",
-   "note": "",
+   "note": "Aucun piège ne lui résiste. Il désamorce plus vite que l'ennemi ne pose.",
    "parents": [
     "ivtpihp7"
    ],
@@ -850,7 +917,7 @@
    "id": "8ssf9csv",
    "inactif": false,
    "nom": "Créateur de voie royale",
-   "note": "",
+   "note": "Il repère, désamorce et piège : il ouvre la route aux siens et la ferme aux autres.",
    "parents": [
     "ql2dvl0b",
     "yanyx0p4",
@@ -863,8 +930,8 @@
    "groupe": false,
    "id": "yanyx0p4",
    "inactif": false,
-   "nom": "Eclaireur vétéran",
-   "note": "Niveau supérieur à éclaireur",
+   "nom": "Éclaireur vétéran",
+   "note": "Un éclaireur aguerri : rien n'échappe à ses yeux, et personne ne le voit venir.",
    "parents": [
     "eclaireur"
    ],
@@ -875,8 +942,8 @@
    "groupe": false,
    "id": "x5vamdd5",
    "inactif": false,
-   "nom": "Grand maitre du contrôle et de l'information",
-   "note": "",
+   "nom": "Grand maître du contrôle et de l'information",
+   "note": "Il voit tout avant tout le monde et modèle le terrain à sa guise. La bataille est gagnée avant de commencer.",
    "parents": [
     "yanyx0p4",
     "sxp05nhd"
@@ -885,11 +952,11 @@
   },
   {
    "garder": null,
-   "groupe": false,
+   "groupe": true,
    "id": "degats",
-   "inactif": true,
-   "nom": "Dégâts",
-   "note": "",
+   "inactif": false,
+   "nom": "CAC",
+   "note": "On fait un test de carac minimales pour rentrer dans la catégorie dégats. Test relatif au niveau de la compagnie.",
    "parents": [
     "roles"
    ],
@@ -900,7 +967,7 @@
    "groupe": true,
    "id": "entrave",
    "inactif": false,
-   "nom": "Entrave",
+   "nom": "Sorts de soutien",
    "note": "",
    "parents": [
     "magie"
@@ -913,7 +980,7 @@
    "id": "ecole-eau",
    "inactif": false,
    "nom": "Apprenti mage de l'eau",
-   "note": "",
+   "note": "Il connaît quelques sorts de l'Eau et les lance sans trop se mouiller.",
    "parents": [
     "c3w01hat"
    ],
@@ -925,7 +992,7 @@
    "id": "cem6qrt9",
    "inactif": false,
    "nom": "Hydromage",
-   "note": "",
+   "note": "Un vrai mage de l'Eau : plusieurs sorts, bien maîtrisés, et assez de mana pour en abuser.",
    "parents": [
     "ecole-eau"
    ],
@@ -936,8 +1003,8 @@
    "groupe": false,
    "id": "e3jb7qiv",
    "inactif": false,
-   "nom": "Maitre de l'eau",
-   "note": "",
+   "nom": "Maître de l'eau",
+   "note": "Un maître de l'Eau, au vaste répertoire. Les rivières lui demandent la permission avant de couler.",
    "parents": [
     "cem6qrt9"
    ],
@@ -949,7 +1016,7 @@
    "id": "ecole-feu",
    "inactif": false,
    "nom": "Apprenti mage du feu",
-   "note": "",
+   "note": "Il connaît quelques sorts du Feu et les lance sans (trop) se brûler.",
    "parents": [
     "c3w01hat"
    ],
@@ -961,7 +1028,7 @@
    "id": "5ipfcvyl",
    "inactif": false,
    "nom": "Sorcier du feu",
-   "note": "",
+   "note": "Un vrai mage du Feu : plusieurs sorts, bien maîtrisés, et assez de mana pour tout embraser.",
    "parents": [
     "ecole-feu"
    ],
@@ -972,8 +1039,8 @@
    "groupe": false,
    "id": "icn4qiwo",
    "inactif": false,
-   "nom": "Maitre du feu",
-   "note": "",
+   "nom": "Maître du feu",
+   "note": "Un maître du Feu, au vaste répertoire. Évitez de l'énerver près de la poudre.",
    "parents": [
     "5ipfcvyl"
    ],
@@ -985,7 +1052,7 @@
    "id": "ecole-foudre",
    "inactif": false,
    "nom": "Apprenti mage de la foudre",
-   "note": "",
+   "note": "Il connaît quelques sorts de la Foudre et les lance sans finir les cheveux dressés.",
    "parents": [
     "c3w01hat"
    ],
@@ -997,7 +1064,7 @@
    "id": "8r60hfuf",
    "inactif": false,
    "nom": "Contrôleur de la foudre",
-   "note": "",
+   "note": "Un vrai mage de la Foudre : plusieurs sorts, bien maîtrisés, et assez de mana pour faire gronder le ciel.",
    "parents": [
     "ecole-foudre"
    ],
@@ -1008,8 +1075,8 @@
    "groupe": false,
    "id": "fwhxfkei",
    "inactif": false,
-   "nom": "Maitre de la foudre",
-   "note": "",
+   "nom": "Maître de la foudre",
+   "note": "Un maître de la Foudre, au vaste répertoire. L'orage, c'est lui qui le commande.",
    "parents": [
     "8r60hfuf"
    ],
@@ -1020,8 +1087,8 @@
    "groupe": false,
    "id": "ecole-illusion",
    "inactif": false,
-   "nom": "Apprenti illusioniste",
-   "note": "",
+   "nom": "Apprenti illusionniste",
+   "note": "Il connaît quelques sorts de l'Illusion et les lance correctement. Enfin, c'est ce qu'il vous fait croire.",
    "parents": [
     "c3w01hat"
    ],
@@ -1032,8 +1099,8 @@
    "groupe": false,
    "id": "ltrdb20m",
    "inactif": false,
-   "nom": "Illusioniste",
-   "note": "",
+   "nom": "Illusionniste",
+   "note": "Un vrai mage de l'Illusion : plusieurs sorts, bien maîtrisés, et assez de mana pour embrouiller toute une armée.",
    "parents": [
     "ecole-illusion"
    ],
@@ -1045,7 +1112,7 @@
    "id": "nm0qhghl",
    "inactif": false,
    "nom": "Créateur de mondes parallèles",
-   "note": "",
+   "note": "Un maître de l'Illusion, au vaste répertoire. Ce que vous voyez est peut-être vrai. Peut-être.",
    "parents": [
     "ltrdb20m"
    ],
@@ -1057,7 +1124,7 @@
    "id": "ecole-invocation",
    "inactif": false,
    "nom": "Apprenti invocateur",
-   "note": "",
+   "note": "Il connaît quelques sorts de l'Invocation, et ce qu'il appelle répond, la plupart du temps.",
    "parents": [
     "c3w01hat"
    ],
@@ -1069,7 +1136,7 @@
    "id": "ckhkgxou",
    "inactif": false,
    "nom": "Invocateur",
-   "note": "",
+   "note": "Un vrai invocateur : plusieurs sorts, bien maîtrisés, et assez de mana pour ne jamais se battre seul.",
    "parents": [
     "ecole-invocation"
    ],
@@ -1081,7 +1148,7 @@
    "id": "8n29g0cb",
    "inactif": false,
    "nom": "Créateur d'armée",
-   "note": "",
+   "note": "Un maître de l'Invocation, au vaste répertoire. Il recrute plus vite que vous, et sans payer de solde.",
    "parents": [
     "ckhkgxou"
    ],
@@ -1092,8 +1159,8 @@
    "groupe": false,
    "id": "ecole-necromancie",
    "inactif": false,
-   "nom": "Apprenti Nécromancien",
-   "note": "",
+   "nom": "Apprenti nécromancien",
+   "note": "Il connaît quelques sorts de la Nécromancie. Les morts l'écoutent… parfois.",
    "parents": [
     "c3w01hat"
    ],
@@ -1105,7 +1172,7 @@
    "id": "fs3zfsh6",
    "inactif": false,
    "nom": "Nécromancien",
-   "note": "",
+   "note": "Un vrai nécromancien : plusieurs sorts, bien maîtrisés, et assez de mana pour réveiller le cimetière.",
    "parents": [
     "ecole-necromancie"
    ],
@@ -1116,8 +1183,8 @@
    "groupe": false,
    "id": "5k5yjfkz",
    "inactif": false,
-   "nom": "Maitre des morts",
-   "note": "",
+   "nom": "Maître des morts",
+   "note": "Un maître de la Nécromancie, au vaste répertoire. Pour lui, l'ennemi tombé n'est qu'une recrue de plus.",
    "parents": [
     "fs3zfsh6"
    ],
@@ -1129,7 +1196,7 @@
    "id": "ecole-telekinesie",
    "inactif": false,
    "nom": "Apprenti télékinésiste",
-   "note": "",
+   "note": "Il connaît quelques sorts de la Télékinésie et déplace les choses sans les toucher. Les petites, surtout.",
    "parents": [
     "c3w01hat"
    ],
@@ -1141,7 +1208,7 @@
    "id": "onoalvwc",
    "inactif": false,
    "nom": "Télékinésiste",
-   "note": "",
+   "note": "Un vrai télékinésiste : plusieurs sorts, bien maîtrisés, et assez de mana pour envoyer valser ce qui le gêne.",
    "parents": [
     "ecole-telekinesie"
    ],
@@ -1153,7 +1220,7 @@
    "id": "mp2i4ulf",
    "inactif": false,
    "nom": "Destructeur de la gravité",
-   "note": "",
+   "note": "Un maître de la Télékinésie, au vaste répertoire. Pour lui, la gravité n'est qu'une suggestion.",
    "parents": [
     "onoalvwc"
    ],
@@ -1165,7 +1232,7 @@
    "id": "ecole-transmutation",
    "inactif": false,
    "nom": "Apprenti transmutateur",
-   "note": "",
+   "note": "Il connaît quelques sorts de la Transmutation et change un peu la matière autour de lui.",
    "parents": [
     "c3w01hat"
    ],
@@ -1177,7 +1244,7 @@
    "id": "k14b87z7",
    "inactif": false,
    "nom": "Transmutateur",
-   "note": "",
+   "note": "Un vrai transmutateur : plusieurs sorts, bien maîtrisés, et assez de mana pour changer le plomb en ennuis pour l'ennemi.",
    "parents": [
     "ecole-transmutation"
    ],
@@ -1188,8 +1255,8 @@
    "groupe": false,
    "id": "813naqrr",
    "inactif": false,
-   "nom": "Maitre de la matière",
-   "note": "",
+   "nom": "Maître de la matière",
+   "note": "Un maître de la Transmutation, au vaste répertoire. Pierre, fer ou chair : tout se plie à sa volonté.",
    "parents": [
     "k14b87z7"
    ],
@@ -1201,7 +1268,7 @@
    "id": "ecole-vie",
    "inactif": false,
    "nom": "Apprenti mage de la vie",
-   "note": "",
+   "note": "Il connaît quelques sorts de la Vie et les lance correctement.",
    "parents": [
     "c3w01hat"
    ],
@@ -1211,8 +1278,8 @@
    "garder": null,
    "groupe": true,
    "id": "c3w01hat",
-   "inactif": true,
-   "nom": "Ecoles de magie",
+   "inactif": false,
+   "nom": "Écoles de magie",
    "note": "",
    "parents": [
     "magie"
@@ -1225,7 +1292,7 @@
    "id": "uh97ke34",
    "inactif": false,
    "nom": "Mage pluridisciplinaire",
-   "note": "",
+   "note": "Il pioche ses sorts dans plusieurs écoles de magie et les réussit plutôt bien.",
    "parents": [
     "c3w01hat"
    ],
@@ -1237,7 +1304,7 @@
    "id": "whynrd78",
    "inactif": false,
    "nom": "Connaisseur des arcanes",
-   "note": "",
+   "note": "De nombreux sorts, venus de plusieurs écoles qu'il maîtrise toutes. Il a lu les livres que personne ne lit.",
    "parents": [
     "uh97ke34"
    ],
@@ -1249,7 +1316,7 @@
    "id": "o9iz2r92",
    "inactif": false,
    "nom": "Encyclopédie de la magie",
-   "note": "",
+   "note": "Des sorts de presque toutes les écoles. Quelle que soit la question, il a un sort pour ça.",
    "parents": [
     "whynrd78"
    ],
@@ -1261,7 +1328,7 @@
    "id": "5kss9csj",
    "inactif": false,
    "nom": "Mage de la vie",
-   "note": "",
+   "note": "Un vrai mage de la Vie : plusieurs sorts, bien maîtrisés, et assez de mana pour tenir tout le monde debout.",
    "parents": [
     "ecole-vie"
    ],
@@ -1273,7 +1340,7 @@
    "id": "nbxzre4q",
    "inactif": false,
    "nom": "Régisseur de la vie",
-   "note": "",
+   "note": "Un maître de la Vie, au vaste répertoire. Il décide un peu de qui reste debout.",
    "parents": [
     "5kss9csj"
    ],
@@ -1285,7 +1352,7 @@
    "id": "degats-a-distance",
    "inactif": false,
    "nom": "Archer",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "note": "Il est doué pour tirer à l'arc, son arme de prédilection.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1297,7 +1364,7 @@
    "id": "674uapot",
    "inactif": false,
    "nom": "Arbalétrier",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "note": "Il est doué pour tirer à l'arbalète, son arme de prédilection.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1309,7 +1376,7 @@
    "id": "emzk3ewz",
    "inactif": false,
    "nom": "Frondeur",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "note": "Il est doué pour tirer à la fronde. Ne riez pas : un caillou bien lancé a déjà couché des géants.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1320,8 +1387,8 @@
    "groupe": false,
    "id": "7tb8bw9s",
    "inactif": false,
-   "nom": "Sarbacanier ",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "nom": "Sarbacanier",
+   "note": "Il est doué pour tirer à la sarbacane. Petit dard, grosses conséquences.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1333,7 +1400,7 @@
    "id": "hi6gkpzw",
    "inactif": false,
    "nom": "Arquebusier",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "note": "Il est doué pour tirer à l'arquebuse. Bruyant, fumant, efficace.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1344,8 +1411,8 @@
    "groupe": false,
    "id": "4f29dawl",
    "inactif": false,
-   "nom": "Canonier",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "nom": "Canonnier",
+   "note": "Il est doué pour tirer au canon à main. Les oreilles de ses voisins, beaucoup moins.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1356,8 +1423,8 @@
    "groupe": false,
    "id": "usfefo5q",
    "inactif": false,
-   "nom": "Tromblonnier ",
-   "note": "A un certain niveau dans l'arme et cet arme est celle avec laquelle il est le plus efficace",
+   "nom": "Tromblonnier",
+   "note": "Il est doué pour tirer au tromblon. Il ne vise pas vraiment : il arrose.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1369,7 +1436,7 @@
    "id": "vhl8stgh",
    "inactif": false,
    "nom": "Sniper",
-   "note": "Tire très bien et a une bonne discrétion pour rester embusqué après avoir tiré",
+   "note": "Un tireur d'élite, précis et discret. Il tire, puis disparaît avant qu'on le repère.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1380,8 +1447,8 @@
    "groupe": false,
    "id": "ijxps20b",
    "inactif": false,
-   "nom": "Maitre sniper",
-   "note": "",
+   "nom": "Maître sniper",
+   "note": "Précis, discret et rapide : il enchaîne les tirs depuis sa cachette sans jamais se montrer.",
    "parents": [
     "vhl8stgh",
     "rha264n3"
@@ -1394,7 +1461,7 @@
    "id": "n1yv29qr",
    "inactif": false,
    "nom": "Sniper tacticien",
-   "note": "",
+   "note": "Précis, discret et mobile : il tire, change de place, et tire encore d'ailleurs.",
    "parents": [
     "vhl8stgh",
     "pso4am5x"
@@ -1407,7 +1474,7 @@
    "id": "o969o3js",
    "inactif": false,
    "nom": "Grand maître du combat à distance",
-   "note": "",
+   "note": "Précis, discret, rapide et mobile : tout ce qu'un tireur peut rêver d'être, en une seule personne.",
    "parents": [
     "vhl8stgh",
     "pso4am5x",
@@ -1420,8 +1487,8 @@
    "groupe": false,
    "id": "rha264n3",
    "inactif": false,
-   "nom": "Maitre de la salve",
-   "note": "Tire très bien et est assez rapide pour enchainer les tires",
+   "nom": "Maître de la salve",
+   "note": "Un tireur d'élite qui enchaîne les tirs à une vitesse folle. Il pleut des projectiles.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1433,7 +1500,7 @@
    "id": "6r545ray",
    "inactif": false,
    "nom": "Maître harceleur",
-   "note": "",
+   "note": "Il enchaîne les tirs tout en courant. L'ennemi ne sait plus où regarder.",
    "parents": [
     "rha264n3",
     "pso4am5x"
@@ -1446,7 +1513,7 @@
    "id": "pso4am5x",
    "inactif": false,
    "nom": "Tireur d'escarmouche",
-   "note": "Tire très bien et se déplace rapidement",
+   "note": "Un tireur d'élite très mobile : il tire, recule et recommence.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1457,8 +1524,8 @@
    "groupe": false,
    "id": "8xuypvlj",
    "inactif": false,
-   "nom": "Maitre de la poudre noire",
-   "note": "A un certain niveau dans deux armes à feu et est équipé en set1 et en set 2 d'une arme à feu différente (inclus le pistolet",
+   "nom": "Maître de la poudre noire",
+   "note": "Un tireur d'élite armé de deux armes à feu différentes. On le sent à dix pas : ça sent la poudre.",
    "parents": [
     "z2qn61fz"
    ],
@@ -1469,8 +1536,8 @@
    "groupe": false,
    "id": "p0waxc9s",
    "inactif": false,
-   "nom": "Tromblonnier  d'élite",
-   "note": "",
+   "nom": "Tromblonnier d'élite",
+   "note": "Un tromblonnier d'élite : précis, puissant et rapide. En face de son canon évasé, personne ne fait le malin.",
    "parents": [
     "usfefo5q"
    ],
@@ -1481,8 +1548,8 @@
    "groupe": false,
    "id": "o11g5hjd",
    "inactif": false,
-   "nom": "Canonier d'élite",
-   "note": "",
+   "nom": "Canonnier d'élite",
+   "note": "Un canonnier d'élite : précis, puissant et rapide. Ce qu'il vise disparaît dans un nuage de fumée.",
    "parents": [
     "4f29dawl"
    ],
@@ -1494,7 +1561,7 @@
    "id": "qj1zxb19",
    "inactif": false,
    "nom": "Arquebusier d'élite",
-   "note": "",
+   "note": "Un arquebusier d'élite : précis, puissant et rapide. Quand il tire, ça compte.",
    "parents": [
     "hi6gkpzw"
    ],
@@ -1505,8 +1572,8 @@
    "groupe": false,
    "id": "iz9tsjqq",
    "inactif": false,
-   "nom": "Sarbacanier  d'éli",
-   "note": "",
+   "nom": "Sarbacanier d'élite",
+   "note": "Un sarbacanier d'élite : précis, puissant et rapide. On ne l'entend pas venir, on le sent passer.",
    "parents": [
     "7tb8bw9s"
    ],
@@ -1518,7 +1585,7 @@
    "id": "l7b25hu3",
    "inactif": false,
    "nom": "Frondeur d'élite",
-   "note": "",
+   "note": "Un frondeur d'élite : précis, puissant et rapide. Entre ses mains, un caillou devient une arme de guerre.",
    "parents": [
     "emzk3ewz"
    ],
@@ -1530,7 +1597,7 @@
    "id": "rt333lv6",
    "inactif": false,
    "nom": "Arbalétrier d'élite",
-   "note": "",
+   "note": "Un arbalétrier d'élite : précis, puissant et rapide. Chaque carreau trouve sa cible.",
    "parents": [
     "674uapot"
    ],
@@ -1542,7 +1609,7 @@
    "id": "maztg4cg",
    "inactif": false,
    "nom": "Archer d'élite",
-   "note": "",
+   "note": "Un archer d'élite : précis, puissant et rapide. Ses flèches ne se perdent pas.",
    "parents": [
     "degats-a-distance"
    ],
@@ -1551,22 +1618,10 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-de-zone",
-   "inactif": false,
-   "nom": "De zone",
-   "note": "",
-   "parents": [
-    "degats"
-   ],
-   "rang": null
-  },
-  {
-   "garder": null,
-   "groupe": false,
    "id": "degats-charge",
    "inactif": false,
-   "nom": "Charge",
-   "note": "",
+   "nom": "Spécialiste de la charge",
+   "note": "Il est doué pour charger l'ennemi avec une arme faite pour ça. Le premier choc fait très mal.",
    "parents": [
     "degats"
    ],
@@ -1575,22 +1630,22 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-tranchant",
+   "id": "z72t6w01",
    "inactif": false,
-   "nom": "Tranchant",
-   "note": "",
+   "nom": "Charge légendaire",
+   "note": "Une charge dévastatrice. Ceux qui l'ont vue arriver s'en souviennent ; les autres ne se souviennent de rien.",
    "parents": [
-    "degats"
+    "degats-charge"
    ],
    "rang": null
   },
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-perforant",
+   "id": "gzyrdx8t",
    "inactif": false,
-   "nom": "Perforant",
-   "note": "",
+   "nom": "Guerrier furtif",
+   "note": "Discret, deux armes en main et de la chance : il frappe là où ça fait mal, quand on ne l'attend pas.",
    "parents": [
     "degats"
    ],
@@ -1599,69 +1654,161 @@
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-contondant",
+   "id": "0ok4m47m",
    "inactif": false,
-   "nom": "Contondant",
-   "note": "",
+   "nom": "Assassin",
+   "note": "Encore plus discret, encore plus chanceux. Sa cible ne le voit jamais venir, ni repartir.",
    "parents": [
-    "degats"
+    "gzyrdx8t"
    ],
    "rang": null
   },
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-corrosif",
+   "id": "g9srqifh",
    "inactif": false,
-   "nom": "Corrosif",
-   "note": "",
+   "nom": "Ouvre-boîte",
+   "note": "Il sait passer les armures de plates. L'ennemi en conserve est son plat préféré.",
    "parents": [
-    "degats"
+    "vlsvf4a9"
    ],
-   "rang": null
+   "rang": 1
   },
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-poison",
+   "id": "luidfx03",
    "inactif": false,
-   "nom": "Poison",
-   "note": "",
+   "nom": "Ouvre-boîte professionnel",
+   "note": "Les armures de plates ne lui résistent plus. Il les ouvre comme des boîtes de sardines.",
    "parents": [
-    "degats"
+    "g9srqifh"
    ],
-   "rang": null
+   "rang": 4
   },
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-necrotique",
+   "id": "bceiw1zl",
    "inactif": false,
-   "nom": "Nécrotique",
-   "note": "",
+   "nom": "Perce-armure",
+   "note": "Il passe les armures de plates comme celles d'écailles. Se cacher derrière du métal ne suffit plus.",
    "parents": [
-    "degats"
+    "g9srqifh",
+    "6k8hvhgx"
    ],
-   "rang": null
+   "rang": 2
   },
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-anti-morts-vivants",
+   "id": "zza20xzh",
    "inactif": false,
-   "nom": "Anti morts-vivants",
-   "note": "",
+   "nom": "Destructeur d'armure",
+   "note": "Plates, écailles, peu importe : aucune armure ne lui résiste.",
    "parents": [
-    "degats"
+    "bceiw1zl",
+    "mjts24w5",
+    "luidfx03"
    ],
-   "rang": null
+   "rang": 6
   },
   {
    "garder": null,
    "groupe": false,
-   "id": "degats-anti-invocations",
-   "inactif": true,
-   "nom": "Anti invocations",
+   "id": "belier",
+   "inactif": false,
+   "nom": "Bélier",
+   "note": "Il charge et enfonce les armures. Porte, bouclier ou chevalier : même traitement.",
+   "parents": [
+    "bceiw1zl",
+    "degats-charge"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "broyeur",
+   "inactif": false,
+   "nom": "Broyeur",
+   "note": "Une force exceptionnelle qui traverse les armures comme du parchemin. Ce qu'il frappe ne se relève pas en bon état.",
+   "parents": [
+    "3eo3yjmy",
+    "bceiw1zl"
+   ],
+   "rang": 3
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "belier-leg-charge",
+   "inactif": false,
+   "nom": "Bélier légendaire",
+   "note": "Une charge légendaire qui traverse les armures les plus épaisses. Il ne s'arrête pas : il traverse.",
+   "parents": [
+    "belier",
+    "z72t6w01"
+   ],
+   "rang": 5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "belier-leg-pro",
+   "inactif": false,
+   "nom": "Bélier légendaire",
+   "note": "Une charge légendaire qui traverse les armures les plus épaisses. Il ne s'arrête pas : il traverse.",
+   "parents": [
+    "belier",
+    "luidfx03"
+   ],
+   "rang": 5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "6k8hvhgx",
+   "inactif": false,
+   "nom": "Écailleur",
+   "note": "Il sait passer les armures d'écailles.",
+   "parents": [
+    "vlsvf4a9"
+   ],
+   "rang": 1
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "mjts24w5",
+   "inactif": false,
+   "nom": "Écailleur professionnel",
+   "note": "Les armures d'écailles ne lui résistent plus. Il écaille l'ennemi comme un poisson au marché.",
+   "parents": [
+    "6k8hvhgx"
+   ],
+   "rang": 4
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "tpvoweqh",
+   "inactif": false,
+   "nom": "De loin et de près",
+   "note": "Aussi à l'aise au contact qu'à distance. Il n'existe pas de bonne distance pour lui échapper.",
+   "parents": [
+    "degats",
+    "z2qn61fz"
+   ],
+   "rang": 2
+  },
+  {
+   "garder": 1,
+   "groupe": true,
+   "id": "vlsvf4a9",
+   "inactif": false,
+   "nom": "Armures",
    "note": "",
    "parents": [
     "degats"
@@ -1674,11 +1821,141 @@
    "id": "8za94vzc",
    "inactif": false,
    "nom": "Grand soigneur des masses",
-   "note": "",
+   "note": "Des soins de groupe puissants et fiables, qu'il peut lancer souvent. Toute la ligne se relève.",
    "parents": [
     "soin-de-zone"
    ],
    "rang": 6
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "chevalier",
+   "inactif": false,
+   "nom": "Chevalier",
+   "note": "Bouclier, armure lourde et charge dévastatrice : le chevalier classique. Le cheval est en option.",
+   "parents": [
+    "ih0ttxy3",
+    "degats-charge"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "chevalier-leg",
+   "inactif": false,
+   "nom": "Chevalier légendaire",
+   "note": "Un chevalier à la charge légendaire. Les ballades parleront de lui ; les survivants aussi.",
+   "parents": [
+    "chevalier",
+    "z72t6w01"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "chevalier-contre",
+   "inactif": false,
+   "nom": "Chevalier de contre",
+   "note": "Un chevalier qui charge, tient la ligne et punit chaque attaque.",
+   "parents": [
+    "chevalier",
+    "qg7xl92m"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "chevalier-leg-contre",
+   "inactif": false,
+   "nom": "Chevalier légendaire de contre",
+   "note": "Une charge légendaire, un bouclier, une armure lourde et une riposte pour chaque coup. Le chevalier ultime.",
+   "parents": [
+    "chevalier-leg",
+    "chevalier-contre"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "fer-de-lance",
+   "inactif": false,
+   "nom": "Fer de lance",
+   "note": "Il est doué pour charger l'ennemi et motiver ses alliés. Il ouvre la voie, les autres suivent.",
+   "parents": [
+    "ma5720wh",
+    "degats-charge"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "fer-de-lance-leg",
+   "inactif": false,
+   "nom": "Fer de lance légendaire",
+   "note": "Une charge légendaire, et toute la compagnie dans son sillage.",
+   "parents": [
+    "fer-de-lance",
+    "z72t6w01"
+   ],
+   "rang": null
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "mastodonte",
+   "inactif": false,
+   "nom": "Mastodonte",
+   "note": "Une force brute qui charge et enfonce tout sur son passage, armures comprises. Mieux vaut ne pas être devant.",
+   "parents": [
+    "belier",
+    "broyeur"
+   ],
+   "rang": 3.5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "mastodonte-leg-charge",
+   "inactif": false,
+   "nom": "Mastodonte légendaire",
+   "note": "Une force hors du commun et une charge légendaire : il enfonce les lignes, les armures, et parfois les murs.",
+   "parents": [
+    "mastodonte",
+    "belier-leg-charge"
+   ],
+   "rang": 5.5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "mastodonte-leg-pro",
+   "inactif": false,
+   "nom": "Mastodonte légendaire",
+   "note": "Une force hors du commun et une charge légendaire : il enfonce les lignes, les armures, et parfois les murs.",
+   "parents": [
+    "mastodonte",
+    "belier-leg-pro"
+   ],
+   "rang": 5.5
+  },
+  {
+   "garder": null,
+   "groupe": false,
+   "id": "aumonier-de-guerre",
+   "inactif": false,
+   "nom": "Aumônier de guerre",
+   "note": "Il soigne ses alliés en armure lourde, au cœur de la mêlée. Il prie, il soigne, et il cogne si besoin.",
+   "parents": [
+    "lyfdowvc",
+    "protection-a-distance"
+   ],
+   "rang": 4.5
   }
  ],
  "tests": [
@@ -1991,7 +2268,7 @@
    "calcul": "carac.courage > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.courage >= compagnie.max.carac.courage",
    "formule": "Courage > (100 + étoiles de la compagnie) × 1,5, et le meilleur Courage de la compagnie (ex æquo compris).",
    "id": "xdbi6p16",
-   "nom": "Tête brulée : Courage hors norme et le meilleur de la compagnie ?",
+   "nom": "Tête brûlée : Courage hors norme et le meilleur de la compagnie ?",
    "non": [
     "rz4rh0b8"
    ],
@@ -2084,7 +2361,7 @@
    "calcul": "carac.charisme > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.charisme >= compagnie.max.carac.charisme",
    "formule": "Charisme > (100 + étoiles de la compagnie) × 1,5, et le meilleur Charisme de la compagnie (ex æquo compris).",
    "id": "hzsdw8aq",
-   "nom": "Irresistible : Charisme hors norme et le meilleur de la compagnie ?",
+   "nom": "Irrésistible : Charisme hors norme et le meilleur de la compagnie ?",
    "non": [
     "8dgq82ry"
    ],
@@ -2115,7 +2392,7 @@
    "calcul": "res.foudre > base_resistance_exceptionnelle + compagnie.etoiles",
    "formule": "Protection contre la foudre (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe la foudre et se soigne de ce qui dépasse.",
    "id": "s54w2lov",
-   "nom": "Paratonerre : Résistance à la foudre exceptionnelle ?",
+   "nom": "Paratonnerre : Résistance à la foudre exceptionnelle ?",
    "non": [
     "swux6jo4"
    ],
@@ -2199,11 +2476,13 @@
   },
   {
    "aReecrire": false,
-   "calcul": "",
+   "calcul": "sorts.soutien.enchantements > 0",
    "formule": "Tout sort qui cible un allié et qui augmente leur caractéristiques",
    "id": "ti1hjns0",
    "nom": "Connaît-il un sort de soutien ?",
-   "non": [],
+   "non": [
+    "abjr58ik"
+   ],
    "oui": [],
    "paliers": [],
    "si": {
@@ -2214,12 +2493,14 @@
   },
   {
    "aReecrire": false,
-   "calcul": "",
+   "calcul": "sorts.entrave > 0",
    "formule": "Tout sort qui cible un ennemi et qui reduit les carac",
    "id": "opckbax6",
    "nom": "Connait il un sort d'entrave ?",
    "non": [
-    "entrave"
+    "entrave-immobilisation",
+    "entrave-affaiblissement",
+    "entrave-demoralisateur"
    ],
    "oui": [],
    "paliers": [],
@@ -2271,7 +2552,7 @@
    "calcul": "sorts.soin.de_zone > 0",
    "formule": "",
    "id": "wc3phdwm",
-   "nom": "Connait il un sort de soin de zone ",
+   "nom": "Connait il un sort de soin de zone",
    "non": [
     "soin-de-zone"
    ],
@@ -2717,7 +2998,7 @@
    "calcul": "aura.officier >= base_aura_importante + aura_par_etoile * compagnie.etoiles ou aura.fouet >= fouet_fort ou (bonus.commandement >= base_aura_importante + aura_par_etoile * compagnie.etoiles et chance.commandement > seuil_sort_commandement et carac.reserve_de_mana >= moy.cout.commandement * 2 * compagnie.etoiles)",
    "formule": "Une aura qui donne un boost conséquent ?\nPeut il lancer le sort de façon régulière?",
    "id": "x6kpeeod",
-   "nom": "L'aura a-t-elle un niveau important  ",
+   "nom": "L'aura a-t-elle un niveau important",
    "non": [
     "cpvembb3"
    ],
@@ -2734,7 +3015,7 @@
    "calcul": "aura.courage >= base_aura_paragon + aura_par_etoile * compagnie.etoiles et aura.courage >= compagnie.max.aura.courage",
    "formule": "",
    "id": "f9f2nrc5",
-   "nom": "Vraiment conséquent et le plus de la compagnie ",
+   "nom": "Vraiment conséquent et le plus de la compagnie",
    "non": [
     "b30ullkw"
    ],
@@ -2745,19 +3026,846 @@
     "test": "x6kpeeod"
    },
    "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.eau >= sorts_ecole_rang_1 et moy.chance.ecole.eau >= seuil_soin + compagnie.etoiles et lancers.ecole.eau >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de l'Eau. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-eau-1",
+   "nom": "Apprenti mage de l'eau : connaît-il des sorts de l'Eau, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-eau"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.eau >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.eau >= base_grand_soin + compagnie.etoiles et lancers.ecole.eau >= lancers_rang_2 + compagnie.etoiles et ecole.eau >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de l'Eau. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de l'Eau.",
+   "id": "t-ecole-eau-2",
+   "nom": "Hydromage : plus de sorts de l'Eau, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "cem6qrt9"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-eau-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.eau >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.eau >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de l'Eau. A au moins 70 + étoiles dans l'école de l'Eau.",
+   "id": "t-ecole-eau-3",
+   "nom": "Maître de l'eau : beaucoup de sorts de l'Eau et une école très forte ?",
+   "non": [
+    "e3jb7qiv"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-eau-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.feu >= sorts_ecole_rang_1 et moy.chance.ecole.feu >= seuil_soin + compagnie.etoiles et lancers.ecole.feu >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts du Feu. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-feu-1",
+   "nom": "Apprenti mage du feu : connaît-il des sorts du Feu, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-feu"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.feu >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.feu >= base_grand_soin + compagnie.etoiles et lancers.ecole.feu >= lancers_rang_2 + compagnie.etoiles et ecole.feu >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts du Feu. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école du Feu.",
+   "id": "t-ecole-feu-2",
+   "nom": "Sorcier du feu : plus de sorts du Feu, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "5ipfcvyl"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-feu-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.feu >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.feu >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts du Feu. A au moins 70 + étoiles dans l'école du Feu.",
+   "id": "t-ecole-feu-3",
+   "nom": "Maître du feu : beaucoup de sorts du Feu et une école très forte ?",
+   "non": [
+    "icn4qiwo"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-feu-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.foudre >= sorts_ecole_rang_1 et moy.chance.ecole.foudre >= seuil_soin + compagnie.etoiles et lancers.ecole.foudre >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de la Foudre. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-foudre-1",
+   "nom": "Apprenti mage de la foudre : connaît-il des sorts de la Foudre, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-foudre"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.foudre >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.foudre >= base_grand_soin + compagnie.etoiles et lancers.ecole.foudre >= lancers_rang_2 + compagnie.etoiles et ecole.foudre >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Foudre. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de la Foudre.",
+   "id": "t-ecole-foudre-2",
+   "nom": "Contrôleur de la foudre : plus de sorts de la Foudre, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "8r60hfuf"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-foudre-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.foudre >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.foudre >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Foudre. A au moins 70 + étoiles dans l'école de la Foudre.",
+   "id": "t-ecole-foudre-3",
+   "nom": "Maître de la foudre : beaucoup de sorts de la Foudre et une école très forte ?",
+   "non": [
+    "fwhxfkei"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-foudre-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.illusion >= sorts_ecole_rang_1 et moy.chance.ecole.illusion >= seuil_soin + compagnie.etoiles et lancers.ecole.illusion >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de l'Illusion. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-illusion-1",
+   "nom": "Apprenti illusionniste : connaît-il des sorts de l'Illusion, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-illusion"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.illusion >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.illusion >= base_grand_soin + compagnie.etoiles et lancers.ecole.illusion >= lancers_rang_2 + compagnie.etoiles et ecole.illusion >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de l'Illusion. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de l'Illusion.",
+   "id": "t-ecole-illusion-2",
+   "nom": "Illusionniste : plus de sorts de l'Illusion, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "ltrdb20m"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-illusion-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.illusion >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.illusion >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de l'Illusion. A au moins 70 + étoiles dans l'école de l'Illusion.",
+   "id": "t-ecole-illusion-3",
+   "nom": "Créateur de mondes parallèles : beaucoup de sorts de l'Illusion et une école très forte ?",
+   "non": [
+    "nm0qhghl"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-illusion-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.invocation >= sorts_ecole_rang_1 et moy.chance.ecole.invocation >= seuil_soin + compagnie.etoiles et lancers.ecole.invocation >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de l'Invocation. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-invocation-1",
+   "nom": "Apprenti invocateur : connaît-il des sorts de l'Invocation, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-invocation"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.invocation >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.invocation >= base_grand_soin + compagnie.etoiles et lancers.ecole.invocation >= lancers_rang_2 + compagnie.etoiles et ecole.invocation >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de l'Invocation. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de l'Invocation.",
+   "id": "t-ecole-invocation-2",
+   "nom": "Invocateur : plus de sorts de l'Invocation, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "ckhkgxou"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-invocation-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.invocation >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.invocation >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de l'Invocation. A au moins 70 + étoiles dans l'école de l'Invocation.",
+   "id": "t-ecole-invocation-3",
+   "nom": "Créateur d'armée : beaucoup de sorts de l'Invocation et une école très forte ?",
+   "non": [
+    "8n29g0cb"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-invocation-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.necromancie >= sorts_ecole_rang_1 et moy.chance.ecole.necromancie >= seuil_soin + compagnie.etoiles et lancers.ecole.necromancie >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de la Nécromancie. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-necromancie-1",
+   "nom": "Apprenti nécromancien : connaît-il des sorts de la Nécromancie, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-necromancie"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.necromancie >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.necromancie >= base_grand_soin + compagnie.etoiles et lancers.ecole.necromancie >= lancers_rang_2 + compagnie.etoiles et ecole.necromancie >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Nécromancie. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de la Nécromancie.",
+   "id": "t-ecole-necromancie-2",
+   "nom": "Nécromancien : plus de sorts de la Nécromancie, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "fs3zfsh6"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-necromancie-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.necromancie >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.necromancie >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Nécromancie. A au moins 70 + étoiles dans l'école de la Nécromancie.",
+   "id": "t-ecole-necromancie-3",
+   "nom": "Maître des morts : beaucoup de sorts de la Nécromancie et une école très forte ?",
+   "non": [
+    "5k5yjfkz"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-necromancie-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.telekinesie >= sorts_ecole_rang_1 et moy.chance.ecole.telekinesie >= seuil_soin + compagnie.etoiles et lancers.ecole.telekinesie >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de la Télékinésie. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-telekinesie-1",
+   "nom": "Apprenti télékinésiste : connaît-il des sorts de la Télékinésie, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-telekinesie"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.telekinesie >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.telekinesie >= base_grand_soin + compagnie.etoiles et lancers.ecole.telekinesie >= lancers_rang_2 + compagnie.etoiles et ecole.telekinesie >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Télékinésie. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de la Télékinésie.",
+   "id": "t-ecole-telekinesie-2",
+   "nom": "Télékinésiste : plus de sorts de la Télékinésie, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "onoalvwc"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-telekinesie-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.telekinesie >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.telekinesie >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Télékinésie. A au moins 70 + étoiles dans l'école de la Télékinésie.",
+   "id": "t-ecole-telekinesie-3",
+   "nom": "Destructeur de la gravité : beaucoup de sorts de la Télékinésie et une école très forte ?",
+   "non": [
+    "mp2i4ulf"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-telekinesie-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.transmutation >= sorts_ecole_rang_1 et moy.chance.ecole.transmutation >= seuil_soin + compagnie.etoiles et lancers.ecole.transmutation >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de la Transmutation. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-transmutation-1",
+   "nom": "Apprenti transmutateur : connaît-il des sorts de la Transmutation, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-transmutation"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.transmutation >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.transmutation >= base_grand_soin + compagnie.etoiles et lancers.ecole.transmutation >= lancers_rang_2 + compagnie.etoiles et ecole.transmutation >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Transmutation. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de la Transmutation.",
+   "id": "t-ecole-transmutation-2",
+   "nom": "Transmutateur : plus de sorts de la Transmutation, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "k14b87z7"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-transmutation-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.transmutation >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.transmutation >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Transmutation. A au moins 70 + étoiles dans l'école de la Transmutation.",
+   "id": "t-ecole-transmutation-3",
+   "nom": "Maître de la matière : beaucoup de sorts de la Transmutation et une école très forte ?",
+   "non": [
+    "813naqrr"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-transmutation-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.vie >= sorts_ecole_rang_1 et moy.chance.ecole.vie >= seuil_soin + compagnie.etoiles et lancers.ecole.vie >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts de la Vie. Les réussit en moyenne à 70 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-ecole-vie-1",
+   "nom": "Apprenti mage de la vie : connaît-il des sorts de la Vie, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "ecole-vie"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.vie >= sorts_ecole_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et moy.chance.ecole.vie >= base_grand_soin + compagnie.etoiles et lancers.ecole.vie >= lancers_rang_2 + compagnie.etoiles et ecole.vie >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Vie. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de la Vie.",
+   "id": "t-ecole-vie-2",
+   "nom": "Mage de la vie : plus de sorts de la Vie, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "5kss9csj"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-vie-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.ecole.vie >= sorts_ecole_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et ecole.vie >= niveau_ecole_rang_3 + compagnie.etoiles",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts de la Vie. A au moins 70 + étoiles dans l'école de la Vie.",
+   "id": "t-ecole-vie-3",
+   "nom": "Régisseur de la vie : beaucoup de sorts de la Vie et une école très forte ?",
+   "non": [
+    "nbxzre4q"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-ecole-vie-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "nb_sorts >= sorts_pluri_rang_1 et nb_ecoles_sorts >= ecoles_pluri_rang_1 et moy.chance.sorts >= seuil_pluri + compagnie.etoiles et lancers.sorts >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 3 sorts, venus d'au moins 3 écoles différentes. Les réussit en moyenne (tous ses sorts) à 60 + étoiles de la compagnie (%). A assez de mana pour en lancer (coût moyen) 2 + étoiles pendant une bataille.",
+   "id": "t-pluri-1",
+   "nom": "Mage pluridisciplinaire : des sorts de plusieurs écoles, réussis, avec assez de mana ?",
+   "non": [
+    "uh97ke34"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ad0vqpzs"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "nb_sorts >= sorts_pluri_rang_2 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et nb_ecoles_sorts >= ecoles_pluri_rang_2 et moy.chance.sorts >= base_grand_soin + compagnie.etoiles et lancers.sorts >= lancers_rang_2 + compagnie.etoiles et somme(ecole.eau >= niveau_ecoles_pluri + compagnie.etoiles, ecole.feu >= niveau_ecoles_pluri + compagnie.etoiles, ecole.foudre >= niveau_ecoles_pluri + compagnie.etoiles, ecole.illusion >= niveau_ecoles_pluri + compagnie.etoiles, ecole.invocation >= niveau_ecoles_pluri + compagnie.etoiles, ecole.necromancie >= niveau_ecoles_pluri + compagnie.etoiles, ecole.telekinesie >= niveau_ecoles_pluri + compagnie.etoiles, ecole.transmutation >= niveau_ecoles_pluri + compagnie.etoiles, ecole.vie >= niveau_ecoles_pluri + compagnie.etoiles) >= ecoles_pluri_rang_2",
+   "formule": "Connaît au moins 6 + arrondi supérieur (étoiles de la compagnie / 5) sorts, venus d'au moins 3 écoles différentes. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer 4 + étoiles pendant une bataille. A au moins 70 + étoiles dans 3 écoles.",
+   "id": "t-pluri-2",
+   "nom": "Connaisseur des arcanes : plus de sorts, mieux réussis, et trois écoles très fortes ?",
+   "non": [
+    "whynrd78"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-pluri-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "nb_sorts >= sorts_pluri_rang_3 + arrondi_sup(compagnie.etoiles / etoiles_par_sort_en_plus) et nb_ecoles_sorts >= ecoles_pluri_rang_3",
+   "formule": "Connaît au moins 12 + arrondi supérieur (étoiles de la compagnie / 5) sorts, venus d'au moins 6 écoles différentes.",
+   "id": "t-pluri-3",
+   "nom": "Encyclopédie de la magie : beaucoup de sorts, venus de beaucoup d'écoles ?",
+   "non": [
+    "o9iz2r92"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-pluri-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.soutien.enchantements >= sorts_soutien_rang_1 et moy.chance.soutien.enchantements >= seuil_soin + compagnie.etoiles et lancers.soutien.enchantements >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts qui boostent les alliés (famille « enchantements »), les réussit en moyenne à 70 + étoiles de la compagnie (%), et a assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-soutien-1",
+   "nom": "Enchanteur amateur : connaît-il des sorts qui boostent les alliés, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "abjr58ik"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "ti1hjns0"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.soutien.enchantements >= sorts_soutien_rang_2 et moy.chance.soutien.enchantements >= base_grand_soin + compagnie.etoiles et lancers.soutien.enchantements >= lancers_rang_2 + compagnie.etoiles et moy.ecole.soutien.enchantements >= niveau_ecole_rang_2 + compagnie.etoiles",
+   "formule": "Connaît au moins 4 sorts de buff. Les réussit en moyenne à 79 + étoiles (%). A assez de mana pour en lancer (coût moyen) 4 + étoiles pendant une bataille. A au moins 50 + étoiles dans l'école de ses sorts de buff (la moyenne de leurs écoles, équipement compris).",
+   "id": "t-soutien-2",
+   "nom": "Soutien incontournable : plus de sorts de buff, mieux réussis, plus de mana et une école forte ?",
+   "non": [
+    "hf7jj0yb"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soutien-1"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.soutien.enchantements >= sorts_soutien_rang_3",
+   "formule": "Connaît au moins 6 sorts de buff.",
+   "id": "t-soutien-3",
+   "nom": "Enchanteur indispensable : connaît-il beaucoup de sorts de buff ?",
+   "non": [
+    "0vy9k8bh"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-soutien-2"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.entrave.immobilisation >= sorts_entrave et moy.chance.entrave.immobilisation >= seuil_soin + compagnie.etoiles et lancers.entrave.immobilisation >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts qui limitent les déplacements ennemis, les réussit en moyenne à 70 + étoiles de la compagnie (%), et a assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-entrave-immobilisation",
+   "nom": "Immobilisateur : connaît-il des sorts qui limitent les déplacements ennemis, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "entrave-immobilisation"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "opckbax6"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.entrave.affaiblissement >= sorts_entrave et moy.chance.entrave.affaiblissement >= seuil_soin + compagnie.etoiles et lancers.entrave.affaiblissement >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts qui diminuent les caractéristiques ennemies, les réussit en moyenne à 70 + étoiles de la compagnie (%), et a assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-entrave-affaiblissement",
+   "nom": "Affaiblisseur : connaît-il des sorts qui diminuent les caractéristiques ennemies, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "entrave-affaiblissement"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "opckbax6"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "sorts.entrave.demoralisateur >= sorts_entrave et moy.chance.entrave.demoralisateur >= seuil_soin + compagnie.etoiles et lancers.entrave.demoralisateur >= lancers_rang_1 + compagnie.etoiles",
+   "formule": "Connaît au moins 2 sorts qui font baisser le moral, les réussit en moyenne à 70 + étoiles de la compagnie (%), et a assez de mana pour en lancer (coût moyen) 2 + étoiles de la compagnie pendant une bataille.",
+   "id": "t-entrave-demoralisateur",
+   "nom": "Démoralisateur : connaît-il des sorts qui font baisser le moral, les réussit-il, a-t-il assez de mana ?",
+   "non": [
+    "entrave-demoralisateur"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "opckbax6"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "carac.constitution > base_tank + compagnie.etoiles et carac.endurance > base_tank + compagnie.etoiles et res.physique > base_tank_resistance + compagnie.etoiles et (carac.constitution > point_fort_tank + compagnie.etoiles ou carac.endurance > point_fort_tank + compagnie.etoiles ou res.physique > point_fort_tank + compagnie.etoiles) et (armure.classe = \"Intermédiaire\" ou armure.classe = \"Lourde\")",
+   "formule": "Constitution et Endurance > 40 + étoiles de la compagnie, et Résistance physique > 10 + étoiles (équipement compris) ; l'une des trois > 70 + étoiles ; il porte une armure intermédiaire ou lourde.",
+   "id": "t-tank",
+   "nom": "Tank : solide partout, très solide quelque part, en armure intermédiaire ou lourde ?",
+   "non": [
+    "protection"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "armure.classe = \"Lourde\"",
+   "formule": "Porte une armure lourde.",
+   "id": "t-tank-boite",
+   "nom": "Boîte de conserve : porte-t-il une armure lourde ?",
+   "non": [
+    "protection-a-distance"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tank"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "(arme1.categorie = \"Armes d’hast\" et arme1.maitrise > maitrise_tank + compagnie.etoiles) ou (arme2.categorie = \"Armes d’hast\" et arme2.maitrise > maitrise_tank + compagnie.etoiles)",
+   "formule": "Porte une arme d'hast (set 1 ou set 2), avec arme portée + sa catégorie > 100 + étoiles de la compagnie.",
+   "id": "t-tank-ligne",
+   "nom": "Gardien de la ligne : une arme d'hast bien maîtrisée en main ?",
+   "non": [
+    "6c4s5pyw"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tank"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "(arme1.bouclier et arme1.bouclier.maitrise > maitrise_tank + compagnie.etoiles) ou (arme2.bouclier et arme2.bouclier.maitrise > maitrise_tank + compagnie.etoiles)",
+   "formule": "Porte un bouclier (set 1 ou set 2), avec bouclier porté + Boucliers > 100 + étoiles de la compagnie.",
+   "id": "t-tank-bouclier",
+   "nom": "Porte Bouclier : un bouclier bien maîtrisé en main ?",
+   "non": [
+    "dg5ybvw7"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-tank"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.puissance > base_contact + contact_par_etoile * compagnie.etoiles et contact.precision > base_contact + contact_par_etoile * compagnie.etoiles",
+   "formule": "Une arme de contact en main ; puissance au contact (Force + 1/5 des maîtrises) et précision au contact (Dextérité + 1/5 des maîtrises, de la Perception et de la Vitesse) au-dessus de 60 + 10 × étoiles de la compagnie, comme le Tireur de rang 1.",
+   "id": "t-cac",
+   "nom": "CAC : frappe-t-il assez fort et assez juste pour le niveau de la compagnie ?",
+   "non": [
+    "degats"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": null,
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.bonus_charge >= bonus_charge_minimal et pm > pm_charge et contact.force_charge > base_charge + contact_par_etoile * compagnie.etoiles",
+   "formule": "Force de charge à pleine course (puissance + 2 × déplacement × bonus de charge de l'arme ; + moitié de la Force de la monture ; × 1,2 en charge aérienne) au-dessus de 100 + 10 × étoiles, avec une arme de bonus de charge 2 au moins. Et plus de 5 PM (cases de déplacement ; à cheval, ceux de la monture).",
+   "id": "t-cac-charge",
+   "nom": "Spécialiste de la charge : une arme de charge et une charge qui frappe fort ?",
+   "non": [
+    "degats-charge"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.force_charge > base_charge_legendaire + contact_par_etoile * compagnie.etoiles",
+   "formule": "Force de charge au-dessus de 170 + 10 × étoiles.",
+   "id": "t-cac-charge-legendaire",
+   "nom": "Charge légendaire : une charge dévastatrice ?",
+   "non": [
+    "z72t6w01"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac-charge"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.deux_armes et comp.discretion_effective > base_furtif_discretion + compagnie.etoiles et carac.chance > base_furtif_chance + compagnie.etoiles",
+   "formule": "Deux armes en main (pas de bouclier), Discrétion (armure comprise) au-dessus de 35 + étoiles, Chance au-dessus de 60 + étoiles (les critiques).",
+   "id": "t-cac-furtif",
+   "nom": "Guerrier furtif : discret, à deux armes, et des critiques ?",
+   "non": [
+    "gzyrdx8t"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "comp.discretion_effective > base_assassin_discretion + compagnie.etoiles et carac.chance > base_assassin_chance + compagnie.etoiles",
+   "formule": "Discrétion au-dessus de 50 + étoiles, Chance au-dessus de 75 + étoiles.",
+   "id": "t-cac-assassin",
+   "nom": "Assassin : encore plus discret, encore plus de critiques ?",
+   "non": [
+    "0ok4m47m"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac-furtif"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.percee_plates > base_ouvre_boite + contact_par_etoile * compagnie.etoiles ou (contact.fleau et contact.percee_plates > base_ouvre_boite - reduction_fleau + contact_par_etoile * compagnie.etoiles)",
+   "formule": "Percée contre les plates au-dessus de 90 + 10 × étoiles ; ou, avec un fléau d'armes en main, au-dessus de 60 + 10 × étoiles.",
+   "id": "t-cac-ouvre-boite",
+   "nom": "Ouvre-boîte : passe-t-il les armures de plates (ou les boucliers, avec un fléau) ?",
+   "non": [
+    "g9srqifh"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.percee_plates > base_ouvre_boite_pro + contact_par_etoile * compagnie.etoiles ou (contact.fleau et contact.percee_plates > base_ouvre_boite_pro - reduction_fleau + contact_par_etoile * compagnie.etoiles)",
+   "formule": "Percée contre les plates au-dessus de 150 + 10 × étoiles ; ou, avec un fléau d'armes, au-dessus de 120 + 10 × étoiles.",
+   "id": "t-cac-ouvre-boite-pro",
+   "nom": "Ouvre-boîte professionnel : les plates ne lui résistent plus ?",
+   "non": [
+    "luidfx03"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac-ouvre-boite"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.percee_ecailles > base_ecailleur + contact_par_etoile * compagnie.etoiles",
+   "formule": "Percée contre les écailles au-dessus de 100 + 10 × étoiles.",
+   "id": "t-cac-ecailleur",
+   "nom": "Écailleur : passe-t-il les armures d'écailles ?",
+   "non": [
+    "6k8hvhgx"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac"
+   },
+   "type": "binaire"
+  },
+  {
+   "aReecrire": false,
+   "calcul": "contact.percee_ecailles > base_ecailleur_pro + contact_par_etoile * compagnie.etoiles",
+   "formule": "Percée contre les écailles au-dessus de 160 + 10 × étoiles.",
+   "id": "t-cac-ecailleur-pro",
+   "nom": "Écailleur professionnel : les écailles ne lui résistent plus ?",
+   "non": [
+    "mjts24w5"
+   ],
+   "oui": [],
+   "paliers": [],
+   "si": {
+    "rep": "oui",
+    "test": "t-cac-ecailleur"
+   },
+   "type": "binaire"
   }
  ],
  "constantes": [
   {
    "id": "c-seuil-soin",
    "nom": "seuil soin",
-   "note": "Réussite du meilleur soin pour Soigneur reconnu, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 70 + étoiles »).",
+   "note": "Réussite du meilleur soin pour Soigneur reconnu, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 70 + étoiles »). Sert aussi au rang 1 des écoles de magie (Apprenti mage de l'eau… : réussite moyenne de ses sorts de l'école ; Idan, 2026-11-23 : « tu peux te baser dessus »). Et au premier rang des sorts de soutien et des entraves.",
    "valeur": 70
   },
   {
    "id": "c-base-grand-soin",
    "nom": "base grand soin",
-   "note": "Réussite pour les « Grand » soigneurs et l'hôpital, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 79 + étoiles »).",
+   "note": "Réussite pour les « Grand » soigneurs et l'hôpital, en % : seuil = cette base + étoiles de la compagnie (Idan, 2026-11-21 : « 79 + étoiles »). Sert aussi au rang 2 des écoles de magie (Hydromage…) et au Connaisseur des arcanes (réussite moyenne de leurs sorts ; Idan, 2026-11-23 : « tu peux te baser dessus »). Et au Soutien incontournable.",
    "valeur": 79
   },
   {
@@ -2897,6 +4005,240 @@
    "nom": "fouet fort",
    "note": "Commandement (test 24.1) : un fouet T3 (15 %) ou T4 (20 %).",
    "valeur": 15
+  },
+  {
+   "id": "c-ecole-sorts-1",
+   "nom": "sorts école rang 1",
+   "note": "Rang 1 d'une école (Apprenti mage de l'eau…) : nombre minimum de sorts connus de l'école (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 2
+  },
+  {
+   "id": "c-ecole-sorts-2",
+   "nom": "sorts école rang 2",
+   "note": "Rang 2 d'une école (Hydromage…) : sorts de l'école au moins cette base + arrondi supérieur (étoiles de la compagnie / « étoiles par sort en plus ») (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 3
+  },
+  {
+   "id": "c-ecole-sorts-3",
+   "nom": "sorts école rang 3",
+   "note": "Rang 3 d'une école (Maître de l'eau…) : sorts de l'école au moins cette base + arrondi supérieur (étoiles de la compagnie / « étoiles par sort en plus ») (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 6
+  },
+  {
+   "id": "c-etoiles-par-sort",
+   "nom": "étoiles par sort en plus",
+   "note": "Un sort de plus exigé toutes les X étoiles de la compagnie, arrondi au-dessus (« arr sup (nombre d'étoiles de la compagnie/5) ») (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 5
+  },
+  {
+   "id": "c-lancers-1",
+   "nom": "lancers rang 1",
+   "note": "Rang 1 (Apprenti d'une école, Mage pluridisciplinaire) : sa réserve de mana lance au moins cette base + étoiles de la compagnie de ses sorts (coût moyen) dans une bataille (Idan, 2026-11-23, tags des écoles de magie). Sert aussi aux sorts de soutien et aux entraves.",
+   "valeur": 2
+  },
+  {
+   "id": "c-lancers-2",
+   "nom": "lancers rang 2",
+   "note": "Rang 2 (Hydromage…, Connaisseur des arcanes) : sa réserve de mana lance au moins cette base + étoiles de la compagnie de ses sorts (coût moyen) dans une bataille (Idan, 2026-11-23, tags des écoles de magie). Sert aussi aux sorts de soutien et aux entraves.",
+   "valeur": 4
+  },
+  {
+   "id": "c-niveau-ecole-2",
+   "nom": "niveau école rang 2",
+   "note": "Rang 2 d'une école : niveau dans l'école (équipement compris) au moins cette base + étoiles de la compagnie (Idan, 2026-11-23, tags des écoles de magie). Sert aussi au Soutien incontournable (niveau moyen des écoles de ses sorts de buff).",
+   "valeur": 50
+  },
+  {
+   "id": "c-niveau-ecole-3",
+   "nom": "niveau école rang 3",
+   "note": "Rang 3 d'une école : niveau dans l'école (équipement compris) au moins cette base + étoiles de la compagnie (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 70
+  },
+  {
+   "id": "c-seuil-pluri",
+   "nom": "seuil pluri",
+   "note": "Mage pluridisciplinaire : réussite moyenne de tous ses sorts, en %, au moins cette base + étoiles de la compagnie (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 60
+  },
+  {
+   "id": "c-pluri-sorts-1",
+   "nom": "sorts pluri rang 1",
+   "note": "Mage pluridisciplinaire : nombre minimum de sorts connus (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 3
+  },
+  {
+   "id": "c-pluri-ecoles-1",
+   "nom": "écoles pluri rang 1",
+   "note": "Mage pluridisciplinaire : ses sorts viennent d'au moins ce nombre d'écoles différentes (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 3
+  },
+  {
+   "id": "c-pluri-sorts-2",
+   "nom": "sorts pluri rang 2",
+   "note": "Connaisseur des arcanes : sorts connus au moins cette base + arrondi supérieur (étoiles / « étoiles par sort en plus ») (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 6
+  },
+  {
+   "id": "c-pluri-ecoles-2",
+   "nom": "écoles pluri rang 2",
+   "note": "Connaisseur des arcanes : ses sorts viennent d'au moins ce nombre d'écoles, et autant d'écoles au niveau « niveau écoles pluri » (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 3
+  },
+  {
+   "id": "c-pluri-niveau",
+   "nom": "niveau écoles pluri",
+   "note": "Connaisseur des arcanes : niveau (équipement compris) au moins cette base + étoiles de la compagnie dans « écoles pluri rang 2 » écoles (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 70
+  },
+  {
+   "id": "c-pluri-sorts-3",
+   "nom": "sorts pluri rang 3",
+   "note": "Encyclopédie de la magie : sorts connus au moins cette base + arrondi supérieur (étoiles / « étoiles par sort en plus ») (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 12
+  },
+  {
+   "id": "c-pluri-ecoles-3",
+   "nom": "écoles pluri rang 3",
+   "note": "Encyclopédie de la magie : ses sorts viennent d'au moins ce nombre d'écoles différentes (Idan, 2026-11-23, tags des écoles de magie).",
+   "valeur": 6
+  },
+  {
+   "id": "c-soutien-sorts-1",
+   "nom": "sorts soutien rang 1",
+   "note": "Enchanteur amateur : nombre minimum de sorts qui boostent les alliés (famille « enchantements ») (Idan, 2026-11-23, sorts de soutien).",
+   "valeur": 2
+  },
+  {
+   "id": "c-soutien-sorts-2",
+   "nom": "sorts soutien rang 2",
+   "note": "Soutien incontournable : nombre minimum de sorts de buff (Idan, 2026-11-23, sorts de soutien).",
+   "valeur": 4
+  },
+  {
+   "id": "c-soutien-sorts-3",
+   "nom": "sorts soutien rang 3",
+   "note": "Enchanteur indispensable : nombre minimum de sorts de buff (Idan, 2026-11-23, sorts de soutien).",
+   "valeur": 6
+  },
+  {
+   "id": "c-entrave-sorts",
+   "nom": "sorts entrave",
+   "note": "Immobilisateur, Affaiblisseur, Démoralisateur : nombre minimum de sorts de leur famille (Idan, 2026-11-23, sorts de soutien).",
+   "valeur": 2
+  },
+  {
+   "id": "c-base-tank",
+   "nom": "base tank",
+   "note": "Tank : Constitution et Endurance (équipement compris) au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, tags du Tank).",
+   "valeur": 40
+  },
+  {
+   "id": "c-base-tank-res",
+   "nom": "base tank résistance",
+   "note": "Tank : Résistance physique (équipement compris) au-dessus de cette base + étoiles de la compagnie ; plus bas que les autres, la Résistance physique des recrues va de 0 à 37 (Idan, 2026-11-24 : « 10 + étoiles »).",
+   "valeur": 10
+  },
+  {
+   "id": "c-point-fort-tank",
+   "nom": "point fort tank",
+   "note": "Tank : l'une des trois (Constitution, Endurance ou Résistance physique) au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, tags du Tank).",
+   "valeur": 70
+  },
+  {
+   "id": "c-maitrise-tank",
+   "nom": "maîtrise tank",
+   "note": "Gardien de la ligne, Porte-bouclier : maîtrise de l'arme d'hast ou du bouclier portés (arme + catégorie, équipement compris) au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, tags du Tank).",
+   "valeur": 100
+  },
+  {
+   "id": "c-base-contact",
+   "nom": "base contact",
+   "note": "CAC : puissance et précision au contact au-dessus de cette base + « contact par étoile » × étoiles de la compagnie (comme le Tireur de rang 1) (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 60
+  },
+  {
+   "id": "c-contact-etoile",
+   "nom": "contact par étoile",
+   "note": "Ce qu'ajoute chaque étoile de la compagnie aux seuils du corps à corps (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 10
+  },
+  {
+   "id": "c-base-charge",
+   "nom": "base charge",
+   "note": "Spécialiste de la charge : force de charge au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 100
+  },
+  {
+   "id": "c-bonus-charge-min",
+   "nom": "bonus charge minimal",
+   "note": "Spécialiste de la charge : l'arme de sa meilleure charge a au moins ce bonus de charge (2 : armes d'hast, armes à deux mains) (Idan, 2026-11-24, catégorie CAC) : « on ajoute la présence d'une arme avec un bonus de charge minimal »).",
+   "valeur": 2
+  },
+  {
+   "id": "c-pm-charge",
+   "nom": "pm charge",
+   "note": "Spécialiste de la charge : PM (cases de déplacement ; à cheval, ceux de la monture) au-dessus de cette valeur (Idan, 2026-11-24 : « ajoute à la charge la condition PM > 5 ; je pense qu'on a trop de chargeurs »).",
+   "valeur": 5
+  },
+  {
+   "id": "c-base-charge-legendaire",
+   "nom": "base charge légendaire",
+   "note": "Charge légendaire : force de charge au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC) : « Passe à 160 - 180 »).",
+   "valeur": 170
+  },
+  {
+   "id": "c-furtif-discretion",
+   "nom": "base furtif discrétion",
+   "note": "Guerrier furtif : Discrétion (armure comprise) au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 35
+  },
+  {
+   "id": "c-furtif-chance",
+   "nom": "base furtif chance",
+   "note": "Guerrier furtif : Chance (les critiques) au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 60
+  },
+  {
+   "id": "c-assassin-discretion",
+   "nom": "base assassin discrétion",
+   "note": "Assassin : Discrétion (armure comprise) au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 50
+  },
+  {
+   "id": "c-assassin-chance",
+   "nom": "base assassin chance",
+   "note": "Assassin : Chance au-dessus de cette base + étoiles de la compagnie (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 75
+  },
+  {
+   "id": "c-base-ouvre-boite",
+   "nom": "base ouvre-boîte",
+   "note": "Ouvre-boîte : percée contre l'armure de plates au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 90
+  },
+  {
+   "id": "c-base-ouvre-boite-pro",
+   "nom": "base ouvre-boîte pro",
+   "note": "Ouvre-boîte professionnel : percée contre les plates au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC) : « monte »).",
+   "valeur": 150
+  },
+  {
+   "id": "c-reduction-fleau",
+   "nom": "réduction fléau",
+   "note": "Ouvre-boîte : avec un fléau d'armes en main (il divise par deux le blocage des boucliers), le seuil de percée baisse de cette valeur (Idan, 2026-11-24, catégorie CAC) : « Si le guerrier a un fléau, on baisse les exigences avec un test en OU »).",
+   "valeur": 30
+  },
+  {
+   "id": "c-base-ecailleur",
+   "nom": "base écailleur",
+   "note": "Écailleur : percée contre l'armure d'écailles au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC).",
+   "valeur": 100
+  },
+  {
+   "id": "c-base-ecailleur-pro",
+   "nom": "base écailleur pro",
+   "note": "Écailleur professionnel : percée contre les écailles au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC) : « monte »).",
+   "valeur": 160
   }
  ]
 }

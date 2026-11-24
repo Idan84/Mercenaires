@@ -378,7 +378,7 @@ function recruitAnswer(candidate,key){
   if(key==="set1"||key==="set2"){
     k.asked[key]=true;
     const names=mercenaryHoverData(m).sets[key==="set1"?0:1];
-    return names.length?d.answer(key,m,{armes:d.withArticles(names)}):d.answer(key+"_none",m);
+    return names.length?d.answer(key,m,{armes:d.withArticles(names,m)}):d.answer(key+"_none",m);
   }
   if(key==="armor"){
     k.asked.armor=true;

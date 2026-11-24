@@ -73,13 +73,29 @@ const reference=Object.fromEntries(Object.entries(files).map(([key,f])=>[key,rea
 let seed=42;
 const generator=createGenerator(reference,{random:()=>((seed=(seed*1103515245+12345)%2147483648)/2147483648),nameGenerator:(p,id)=>"Aldo "+p+id});
 const article=new Map(copy.weapons.map(r=>[r.nom,r.avec_article]));
+// Deux armes identiques (Idan, 2026-11-24) : « deux nunchakus » ou « un nunchaku dans chaque main », une chance sur deux,
+// toujours la même pour un même mercenaire ; chaque arme a ses deux formes.
+for(const r of copy.weapons) assert.ok(/^deux /.test(r.deux)&&/^une? .+ dans chaque main$/.test(r.chaque_main),r.nom);
+{
+  const vu=new Set();
+  for(let id=1;id<=40;id++){
+    const phrase=dialogue.withArticles(["Nunchaku","Nunchaku"],{id});
+    assert.ok(["deux nunchakus","un nunchaku dans chaque main"].includes(phrase),phrase);
+    assert.equal(dialogue.withArticles(["Nunchaku","Nunchaku"],{id}),phrase,"stable pour un même mercenaire");
+    vu.add(phrase);
+  }
+  assert.equal(vu.size,2,"les deux tournures sortent");
+  assert.equal(dialogue.withArticles(["Épée longue","Écu"],{id:1}),"l’épée longue et l’écu");
+}
 const noTemplate=text=>text&&!/[{}]/.test(text);
 for(let i=0;i<60;i++){
   const m=generator.createMercenary();
   const slot=name=>(m.items||[]).find(item=>String(item.id)===String(m.equipment?.slots?.[name]));
   const names=[slot("weapon_set_1_main"),slot("weapon_set_1_off")].filter(Boolean).map(item=>item.name);
-  const phrase=dialogue.withArticles(names);
-  for(const name of names) assert.ok(phrase.includes(article.get(name)),"l’article de "+name);
+  const phrase=dialogue.withArticles(names,m);
+  const pair=copy.weapons.find(r=>names.length===2&&names[0]===names[1]&&r.nom===names[0]);
+  if(pair) assert.ok([pair.deux,pair.chaque_main].includes(phrase),"deux armes identiques : "+phrase);
+  else for(const name of names) assert.ok(phrase.includes(article.get(name)),"l’article de "+name);
   const text=dialogue.answer("set1",m,{armes:phrase});
   assert.ok(noTemplate(text)&&text.toLowerCase().includes(phrase.toLowerCase()),`set 1 : « ${text} »`);
   assert.equal(dialogue.answer("set1",m,{armes:phrase}),text,"toujours la même réponse");

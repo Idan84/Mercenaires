@@ -180,6 +180,25 @@ for(const k of ["arme1.maitrise","arme2.maitrise","arme1.bouclier.maitrise","arm
   for(const r of recrues){ if(!r["arme1.bouclier"]) assert.equal(r["arme1.bouclier.maitrise"],0); if(!r.arme1) assert.equal(r["arme1.maitrise"],0); }
   assert.ok(recrues.some(r=>r["arme1.maitrise"]>0),"des recrues armées");
 }
+// Le corps à corps (Idan, 2026-11-24 : tags de la catégorie CAC) : les valeurs du combat, au meilleur set de contact.
+{
+  const K=["contact.puissance","contact.precision","contact.force_charge","contact.bonus_charge","contact.percee_plates","contact.percee_ecailles","contact.deux_armes","contact.fleau"];
+  for(const k of K) assert.ok(VARS.has(k),k);
+  const engine=R("combat-engine.js").createCombatEngine(reference,{});
+  let vus=0;
+  for(let i=0;i<30;i++){
+    const c=gen.createMercenary({id:950+i,captain}), v=tagVars.of(c);
+    const sets=[1,2].map(set=>({set,u:{character:c,activeSet:set}})).filter(x=>{ const it=engine.activeWeaponItem(x.u); return it&&engine.weaponTemplate(it)&&it.combatFamily!=="ranged"; });
+    if(!sets.length){ assert.equal(v["contact.puissance"],0); assert.equal(v["contact.force_charge"],0); continue; }
+    vus++;
+    const best=Math.max(...sets.map(x=>engine.attackPower(x.u,"melee")));
+    assert.ok(Math.abs(v["contact.puissance"]-best)<0.06,"puissance au contact = celle du combat");
+    assert.ok(v["contact.force_charge"]>v["contact.puissance"],"la charge ajoute à la puissance");
+    assert.ok(v["contact.percee_ecailles"]>=v["contact.percee_plates"],"les écailles se passent mieux que les plates");
+    assert.ok([1,2].includes(v["contact.bonus_charge"]));
+  }
+  assert.ok(vus>10,"des recrues armées pour le contact");
+}
 // Les moyennes des soins pour chaque tag de sort (Idan, 2026-11-23 : sorts de soutien et entraves).
 for(const t of ["soutien.enchantements","entrave.immobilisation","entrave.affaiblissement","entrave.demoralisateur"])
   for(const k of ["moy.chance.","moy.ecole.","lancers."]) assert.ok(VARS.has(k+t),k+t);

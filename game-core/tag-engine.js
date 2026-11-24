@@ -319,7 +319,13 @@
         put("arme"+n+".famille","Set "+n+" : contact ou distance","Équipement porté","texte",fam(m));
         put("arme"+n+".prise","Set "+n+" : prise","Équipement porté","texte",m?.grip||"");
         put("arme"+n+".main_gauche","Set "+n+" : main gauche","Équipement porté","texte",o?.name||"");
-        put("arme"+n+".bouclier","Set "+n+" : bouclier","Équipement porté","oui/non",Boolean(o&&(o.category==="Boucliers"||weaponRows.get(o.name)?.categorie==="Boucliers")));
+        const bouclier=Boolean(o&&(o.category==="Boucliers"||weaponRows.get(o.name)?.categorie==="Boucliers"));
+        put("arme"+n+".bouclier","Set "+n+" : bouclier","Équipement porté","oui/non",bouclier);
+        // La maîtrise de l'arme portée, arme + catégorie (comme la fiche, Idan, 2026-11-23 ; tags du Tank, 2026-11-24 :
+        // « l'arme portée + carac de la catégorie », « le bouclier porté + carac du bouclier »), équipement compris.
+        const maitrise=nom=>{ if(!nom) return 0; const x=Number(engine.statWithGear(unit,nom)); return Number.isFinite(x)&&x?x:Number(mart[nom])||0; };
+        put("arme"+n+".maitrise","Set "+n+" : maîtrise de l'arme (arme + catégorie, équipement compris)","Équipement porté","nombre",m?r1(maitrise(m.name)+maitrise(m.category)):0);
+        put("arme"+n+".bouclier.maitrise","Set "+n+" : maîtrise du bouclier (bouclier + Boucliers, équipement compris)","Équipement porté","nombre",bouclier?r1(maitrise(o.name)+maitrise("Boucliers")):0);
       }
       // Le tir (Idan, 2026-11-22 : tags du Tireur) : son set de tir le plus efficace (dégâts par tour contre l'étalon en
       // gambison, comme les titres), sans le pistolet (« particulier »), et les valeurs du moteur avec ce set en main.

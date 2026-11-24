@@ -171,6 +171,15 @@ for(const v of recrues){
   for(const e of ECOLES) if(v["moy.cout.ecole."+e]>0) assert.equal(v["lancers.ecole."+e],Math.floor(v["carac.reserve_de_mana"]/v["moy.cout.ecole."+e]));
 }
 assert.ok(recrues.some(v=>v.nb_ecoles_sorts>=1&&v["moy.chance.sorts"]>0),"des recrues qui lancent des sorts");
+// La maîtrise de l'arme et du bouclier portés, arme + catégorie (Idan, 2026-11-24 : tags du Tank).
+for(const k of ["arme1.maitrise","arme2.maitrise","arme1.bouclier.maitrise","arme2.bouclier.maitrise"]) assert.ok(VARS.has(k),k);
+{
+  const c=gen.createMercenary({id:900,captain}), v=tagVars.of(c), mk=c.skills.martial;
+  const items=new Map(c.items.map(it=>[it.id,it])), main=items.get(c.equipment.slots.weapon_set_1_main);
+  if(main) assert.ok(Math.abs(v["arme1.maitrise"]-((Number(mk[main.name])||0)+(Number(mk[main.category])||0)))<0.11,"arme + catégorie");
+  for(const r of recrues){ if(!r["arme1.bouclier"]) assert.equal(r["arme1.bouclier.maitrise"],0); if(!r.arme1) assert.equal(r["arme1.maitrise"],0); }
+  assert.ok(recrues.some(r=>r["arme1.maitrise"]>0),"des recrues armées");
+}
 // Les moyennes des soins pour chaque tag de sort (Idan, 2026-11-23 : sorts de soutien et entraves).
 for(const t of ["soutien.enchantements","entrave.immobilisation","entrave.affaiblissement","entrave.demoralisateur"])
   for(const k of ["moy.chance.","moy.ecole.","lancers."]) assert.ok(VARS.has(k+t),k+t);

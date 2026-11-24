@@ -6,7 +6,7 @@ Design Lab, `design/atelier/` (ses données sont sur Hostinger, `media/atelier/`
 La copie des données du dépôt : `data/reference/tag-workshop.json`.
 
 - `atelier.src.html` : la page (catalogue des tags à plusieurs parents, tests rangés en arbre, constantes, essai sur une
-  recrue). Le langage des calculs, l'arbre et les tags affichés sont ceux du moteur des tags du jeu
+  recrue, titres : le titre et le mot court de chaque tag, qui mène, les titres spéciaux et un essai). Le langage des calculs, l'arbre et les tags affichés sont ceux du moteur des tags du jeu
   (`game-core/tag-engine.js`, le même que le jeu) : un petit langage sûr (aucun code exécuté) : variables du profil,
   constantes, `et`, `ou`, `non`, comparaisons, `+ - * /`, `contient`, `max`, `min`, `abs`, `arrondi`, `arrondi_sup`, `arrondi_inf`, `nombre`, `somme`.
 - `profils.js` : tire des recrues avec le vrai générateur du jeu (`game-core`) et les aplatit en variables.

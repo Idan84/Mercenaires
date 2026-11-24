@@ -268,6 +268,7 @@ function companyPhrase(){
 // précision du tavernier), au masculin comme tous les titres. Un candidat n'est ni capitaine ni lieutenant. Un seul tag sur
 // ces mêmes capacités devient son titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; « oui,
 // candidats aussi ») : tags, ses tags tels qu'on les décrit (sinon calculés ici) ; candidate garde son tag de consolation.
+// Plusieurs tags : le titre composé de ces tags (tagTitle).
 function describedTitle(m,estimate,candidate=null,tags=null){
   const rules=profileRules();
   if(!rules) return "";
@@ -275,8 +276,12 @@ function describedTitle(m,estimate,candidate=null,tags=null){
   const tagRules=typeof companyTagRules==="function"?companyTagRules():null;
   const ctx=typeof companyTagContext==="function"?companyTagContext():null;
   if(candidate&&tagRules?.titleTag&&(tags||ctx&&tagRules.describedTags)){
-    const one=tagRules.titleTag(tags||tagRules.describedTags(copy,candidate,ctx));
+    const res=tags||tagRules.describedTags(copy,candidate,ctx);
+    const one=tagRules.titleTag(res);
     if(one) return one.nom.trim();
+    // Plusieurs tags : le titre composé (Idan, 2026-11-24).
+    const composed=tagRules.tagTitle?.(res);
+    if(composed?.name) return composed.name;
   }
   const result=rules.evaluate(copy,context);
   return result&&rules.composeTitle?.(copy,result,context)?.name||"";
@@ -316,6 +321,7 @@ function recruitChoices(t){
   const k=candidate?d.known(candidate):{asked:{}};
   if(t.mode==="about") return [...d.aboutLeft(k).map(key=>({key,label:q[key]})),{key:"back",label:q.back}];
   const list=d.aboutLeft(k).length?[{key:"about",label:q.about}]:[];
+  if(!k.asked.steward&&tavernSteward()&&d.stewardOption?.()) list.push({key:"steward",label:d.stewardOption()});
   if(k.salary) list.push({key:"negotiate",label:q.negotiate},{key:"sign",label:q.sign});
   else list.push({key:"salary",label:q.salary});
   list.push({key:"leave",label:q.leave});
@@ -327,12 +333,14 @@ function recruitChoices(t){
 // réponses (doc 14 §6 bis). Le salaire et la prime suivent la négociation (sa demande, puis ses contre-propositions).
 function recruitCardOptions(candidate){
   const d=recruitDialogue(),k=d.known(candidate),n=tavernRules().negotiationState(candidate),terms=n.agreed||n;
-  const unknown=new Set(["tags","mount"]),title=d.shownTitle(k);
+  const unknown=new Set(["mount"]),title=d.shownTitle(k),shown=d.shownTags?.(k)||null;
+  if(!shown) unknown.add("tags");
   if(title==null) unknown.add("title");
   if(k.affinity==null) unknown.add("affinity");
   if(!k.salary){ unknown.add("salary"); unknown.add("bonus"); }
   for(const key of ["set1","set2","armor","magic"]) if(!k.asked[key]) unknown.add(key);
-  return {unknown,salary:terms.salary,bonus:terms.bonus,title,affinityWord:k.affinity!=null?d.affinityWord(k.affinity):null};
+  return {unknown,salary:terms.salary,bonus:terms.bonus,title,affinityWord:k.affinity!=null?d.affinityWord(k.affinity):null,
+    knownTags:shown?shown.names:null,tagSource:shown?d.tagSourceLabel(shown.source,candidate.mercenary):null};
 }
 
 function renderRecruitTalk(){
@@ -350,7 +358,7 @@ function renderRecruitTalk(){
   const log=$("recruit-talk-log");
   log.innerHTML=t.lines.map(line=>line.who==="note"
     ?`<p class="talk-note">${esc(line.text)}</p>`
-    :`<p class="talk-say talk-say--${line.who}"><b>${line.who==="you"?"Vous":esc(first)}</b><span>«\u00a0${esc(line.text)}\u00a0»</span></p>`).join("");
+    :`<p class="talk-say talk-say--${line.who}"><b>${line.who==="you"?"Vous":esc(line.name||first)}</b><span>«\u00a0${esc(line.text)}\u00a0»</span></p>`).join("");
   log.scrollTop=log.scrollHeight;
   if(t.mode==="negotiate"&&candidate){
     const n=tavernRules().negotiationState(candidate);
@@ -366,7 +374,24 @@ function renderRecruitTalk(){
     `<li><button type="button" data-talk="${choice.key}">${esc(choice.label)}</button></li>`).join("")}</ol>`;
 }
 
-// Sa réponse à une question sur lui (title, set1, set2, armor, magic) ; elle remplit sa case et la question disparaît.
+// Les tags d'un candidat, en noms (game-core/company-tags.js ; Idan, 2026-11-24 : « tes suggestions sont parfaites ») : tels
+// qu'il les annonce (candidate, sa vantardise), tels que le tavernier les estime (keeper, draw : ses estimations à ±10 %),
+// tels que l'intendant les voit (steward, son biais). null sans les règles des tags.
+function candidateTagNames(candidate,source,draw=null){
+  const rules=typeof companyTagRules==="function"?companyTagRules():null;
+  const ctx=typeof companyTagContext==="function"?companyTagContext():null;
+  if(!rules||!ctx) return null;
+  const res=source==="steward"?rules.stewardCandidateTags?.(candidate,ctx)
+    :source==="keeper"?rules.describedTags?.(recruitDialogue().described(candidate.mercenary,value=>value*draw()),candidate,ctx)
+    :rules.candidateTags?.(candidate,ctx);
+  return res?res.affiches.map(t=>t.nom.trim()):null;
+}
+// L'intendant de la compagnie (le nommé, sinon Cruxor) ; aucun : pas d'avis.
+function tavernSteward(){
+  return typeof companyTagContext==="function"?companyTagContext()?.steward||null:null;
+}
+
+// Sa réponse à une question sur lui (title, tags, set1, set2, armor, magic) ; elle remplit sa case et la question disparaît.
 function recruitAnswer(candidate,key){
   const d=recruitDialogue(),m=candidate.mercenary,k=d.known(candidate);
   if(key==="title"){
@@ -374,6 +399,12 @@ function recruitAnswer(candidate,key){
     k.asked.title=true;
     k.title=title;
     return title?d.answer("title",m,{titre:title}):d.answer("no_title",m);
+  }
+  if(key==="tags"){
+    k.asked.tags=true;
+    const names=candidateTagNames(candidate,"candidate")||[];
+    k.tags=names;
+    return names.length?d.answer("tags",m,{tags:d.listNames(names)}):d.answer("tags_none",m);
   }
   if(key==="set1"||key==="set2"){
     k.asked[key]=true;
@@ -406,7 +437,16 @@ function recruitTalkChoice(key){
   if(!candidate) return;
   const d=recruitDialogue(),m=t.mercenary,k=d.known(candidate);
   const n=tavernRules().negotiationState(candidate);
-  if(d.aboutQuestions.includes(key)){
+  if(key==="steward"){
+    const steward=tavernSteward();
+    if(!steward) return;
+    const names=candidateTagNames(candidate,"steward")||[];
+    k.asked.steward=true;
+    k.stewardTags=names;
+    t.lines.push({who:"you",text:d.stewardAsk(steward)},
+      {who:"merc",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names)});
+    saveGame();
+  }else if(d.aboutQuestions.includes(key)){
     const answer=recruitAnswer(candidate,key);
     if(!answer) return;
     t.lines.push({who:"you",text:d.questions[key]},{who:"merc",text:answer});
@@ -530,7 +570,7 @@ function tavernTalkOptions(t){
   if(t.view==="who") return [...(game.campaign?.tavern.candidates||[]).map(c=>({key:"who",arg:c.mercenary.id,label:MercenairesRecruitDialogue.firstName(c.mercenary)})),back];
   if(t.view==="what"){
     const m=tavernCandidate(t.candidateId)?.mercenary||null;
-    return [...["title","affinity"].map(kind=>({key:"ask",arg:kind,label:d.keeperQuestion(kind,m)})),back];
+    return [...["title","tags","affinity"].map(kind=>({key:"ask",arg:kind,label:d.keeperQuestion(kind,m)})),back];
   }
   // L'usurier (Idan, 2026-11-11 ; usurer-ui.js) : la petite avance de trésorerie, ou son remboursement.
   const usurer=typeof usurerTavernOptions==="function"?usurerTavernOptions():[];
@@ -579,10 +619,11 @@ function tavernTalk(choice,arg){
 function askTavernAbout(kind){
   const t=game.tavernTalk,d=recruitDialogue();
   const candidate=tavernCandidate(t.candidateId);
-  if(!candidate||!["title","affinity"].includes(kind)){ t.view="who"; t.line=tavernTalkLine(t); return; }
+  if(!candidate||!["title","tags","affinity"].includes(kind)){ t.view="who"; t.line=tavernTalkLine(t); return; }
   const m=candidate.mercenary;
   const compute=kind==="title"
     ?draw=>describedTitle(m,value=>value*draw(),candidate)
+    :kind==="tags"?draw=>candidateTagNames(candidate,"keeper",draw)||[]
     :draw=>Math.round((Number(captainAffinity(m)?.total)||0)*draw());
   const result=campaignRules().askTavernkeeper(game.campaign,m.id,kind,compute);
   if(!result.ok){ t.line=result.reason==="gold"?d.keeperLine("no_gold"):result.reason; return; }
@@ -590,6 +631,9 @@ function askTavernAbout(kind){
   if(kind==="title"){
     k.keeperTitle=result.answer;
     t.line=d.keeperAnswer(result.answer?"title":"no_title",m,{titre:result.answer});
+  }else if(kind==="tags"){
+    k.keeperTags=result.answer;
+    t.line=d.keeperAnswer(result.answer.length?"tags":"no_tags",m,{tags:d.listNames(result.answer)});
   }else{
     k.affinity=result.answer;
     t.line=d.keeperAnswer(d.affinityWord(result.answer),m);

@@ -8,7 +8,8 @@
 // - la résolution : chaque test posé élimine des tags, un tag tombe avec l'un de ses parents, un tag inactif tombe
 //   d'office ; seuls s'affichent le tag le plus bas de chaque branche, ou les X tags de plus haut rang d'une catégorie
 //   qui « garde X » ; un tag ne s'efface que devant un enfant réellement affiché ;
-// - les variables d'un mercenaire à l'instant T (équipement compris), lues par les calculs.
+// - les variables d'un mercenaire à l'instant T (équipement compris), lues par les calculs ;
+// - son titre, composé à partir de ses tags affichés (composeTitle ; Idan, 2026-11-24).
 // Pur : ni DOM, ni hasard (les biais viendront d'ailleurs, doc 20 §12).
 (function(root,factory){
   const api=factory();
@@ -106,7 +107,8 @@
   function clean(d,{uid}={}){
     let n=0; const id=uid||(()=>"x"+(++n));
     const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||id()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
-      rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null,inactif:Boolean(t.inactif)}));
+      rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null,inactif:Boolean(t.inactif),
+      titre:String(t.titre||""),court:String(t.court||""),titre_fem:Boolean(t.titre_fem),court_fem:Boolean(t.court_fem),seul:Boolean(t.seul)}));
     const ids=new Set(tags.map(t=>t.id));
     for(const t of tags) t.parents=[...new Set(t.parents.filter(p=>ids.has(p)&&p!==t.id))];
     const liste=a=>Array.isArray(a)?[...new Set(a.map(String).filter(x=>ids.has(x)))]:[];
@@ -122,7 +124,95 @@
       if(m.type==="niveau"&&!m.paliers.some(q=>q.id===x.si.rep)) x.si.rep=m.paliers[0].id; }
     for(const x of tests){ const vus=new Set([x.id]); let y=x; while(y.si){ if(vus.has(y.si.test)){ x.si=null; break; } vus.add(y.si.test); y=parId.get(y.si.test); } }
     const constantes=(Array.isArray(d?.constantes)?d.constantes:[]).map(c=>({id:String(c.id||id()),nom:String(c.nom||""),valeur:Number.isFinite(Number(c.valeur))?Number(c.valeur):0,note:String(c.note||"")}));
-    return {tags,tests,constantes};
+    // Les titres (Idan, 2026-11-24) : la longueur d'un titre (une ligne sur la fiche au survol), le nombre de mots courts
+    // après le tag qui mène, l'ordre des familles (qui mène) et les titres spéciaux (au moins deux tags).
+    const ti=d?.titres||{}, entier=(v,def,min,max)=>Number.isFinite(Number(v))?Math.min(max,Math.max(min,Math.round(Number(v)))):def;
+    const titres={longueur_max:entier(ti.longueur_max,TITRE_LONGUEUR,10,200),suivants_max:entier(ti.suivants_max,TITRE_SUIVANTS,0,5),familles:liste(ti.familles),
+      speciaux:(Array.isArray(ti.speciaux)?ti.speciaux:[]).map(x=>({id:String(x?.id||id()),tags:liste(x?.tags),titre:String(x?.titre||""),court:String(x?.court||""),
+        titre_fem:Boolean(x?.titre_fem),court_fem:Boolean(x?.court_fem)}))};
+    return {tags,tests,constantes,titres};
+  }
+  const TITRE_LONGUEUR=40, TITRE_SUIVANTS=2;
+
+  // ---- Le titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; puis « Construis la nouvelle
+  // structure multi tags pour les titres […] il faut juste pas que le titre soit trop long ») ----
+  // shown : ses tags affichés (ceux de doc.tags, ou un tag de consolation), dans l'ordre de l'atelier. Un seul tag : son nom.
+  // Plusieurs : le « titre » du tag qui mène (ce qu'il fait avant ce qu'il est : l'ordre de doc.titres.familles, puis le
+  // rang le plus haut, puis le tag le plus précis, puis l'ordre de l'atelier), puis les « mots courts » des suivants dans
+  // le même ordre, au plus suivants_max, sans dépasser longueur_max caractères. Idan, 2026-11-24 (« Eclaireur à l'arc
+  // généralement veinard », « Eclaireur à l'arbalète chanceuse », « Perce-armure sans peur et sans malchance », « Hopital
+  // ambulant (simplement) », « Grosse brute marche pour les H & F ») :
+  // - après le titre : ce qu'il fait (« Meneur éclaireur »), puis les compléments (« à l'arbalète »), puis ce qu'il est
+  //   (la dernière famille, et les tags sans titre) : « Meneur éclaireur à l'arbalète », « Éclaireur à l'arbalète
+  //   chanceuse » ; « et » avant le dernier mot ;
+  // - ce qu'il fait s'accorde avec le titre, ce qu'il est avec le dernier nom (titre ou complément ; titre_fem, court_fem) :
+  //   « {chanceux|chanceuse} » ;
+  // - un mot court peut avoir des variantes, « généralement {veinard|veinarde} / {chanceux|chanceuse} » : la première qui
+  //   tient ; aucune : le tag ne suit pas ;
+  // - un tag « seul » mène sans rien après (« Hôpital ambulant ») ;
+  // - un tag sans titre ne mène pas (il suit avec ce qu'il est) ; sans mot court, il ne suit pas ;
+  // - un titre spécial (tous ses tags affichés) passe devant : son titre s'il contient le tag qui mène, sinon son mot court
+  //   à la suite.
+  // → {name, tags (ceux du titre), speciaux (ids)} ou null.
+  function composeTitle(doc,shown){
+    const list=(Array.isArray(shown)?shown:[]).filter(Boolean);
+    if(!list.length) return null;
+    const txt=v=>String(v??"").trim();
+    if(list.length===1) return {name:txt(list[0].nom),tags:[list[0]],speciaux:[]};
+    const cfg=doc?.titres||{}, fam=Array.isArray(cfg.familles)?cfg.familles:[];
+    const max=Number(cfg.longueur_max)>0?Number(cfg.longueur_max):TITRE_LONGUEUR;
+    const nmax=Number.isInteger(cfg.suivants_max)?cfg.suivants_max:TITRE_SUIVANTS;
+    const parId=new Map((doc?.tags||[]).map(t=>[t.id,t]));
+    const lignee=id=>{ const acc=new Set([id]),pile=[id]; while(pile.length) for(const p of parId.get(pile.pop())?.parents||[]) if(!acc.has(p)){ acc.add(p); pile.push(p); } return acc; };
+    // Un tag sans titre (un qualificatif, comme « De loin et de près ») se range avec ce qu'il est, après ce qu'il fait.
+    const famille=t=>{ if(!txt(t.titre)) return fam.length; const a=lignee(t.id),i=fam.findIndex(f=>a.has(f)); return i<0?fam.length:i; };
+    // Ce qu'il est : la dernière famille de la liste (« Ce qu'il est »), un tag hors des familles ou sans titre.
+    const qualite=t=>famille(t)>=Math.max(0,fam.length-1);
+    // À rang égal, le tag le plus précis (le plus bas dans l'arbre : « Increvable » avant « Veinard »).
+    const ordre=list.map((t,i)=>({t,i,f:famille(t),r:Number.isFinite(t.rang)?t.rang:0,p:lignee(t.id).size})).sort((a,b)=>a.f-b.f||b.r-a.r||b.p-a.p||a.i-b.i).map(x=>x.t);
+    const ids=new Set(ordre.map(t=>t.id));
+    const speciaux=(Array.isArray(cfg.speciaux)?cfg.speciaux:[]).filter(s=>Array.isArray(s?.tags)&&s.tags.length>=2&&s.tags.every(id=>ids.has(id)))
+      .map((s,i)=>({s,i})).sort((a,b)=>b.s.tags.length-a.s.tags.length||a.i-b.i).map(x=>x.s);
+    const pris=new Set(), sp=[], deSes=s=>ordre.filter(t=>s.tags.includes(t.id));
+    // « {chanceux|chanceuse} » : la forme qui s'accorde ; « a / b » : les variantes, la première qui tient.
+    const accord=(v,fem)=>txt(String(v??"").replace(/\{([^{}|]*)\|([^{}]*)\}/g,(m,a,b)=>fem?b:a));
+    const variantes=v=>String(v??"").split(/\s+\/\s+/).map(x=>x.trim()).filter(Boolean);
+    let tete, teteFem, teteTags, seul=false;
+    const meneur=ordre.find(t=>txt(t.titre))||null;
+    const special=meneur&&speciaux.find(s=>txt(s.titre)&&s.tags.includes(meneur.id));
+    if(special){ teteFem=Boolean(special.titre_fem); tete=accord(special.titre,teteFem); teteTags=deSes(special); sp.push(special); }
+    else if(meneur){ teteFem=Boolean(meneur.titre_fem); tete=accord(meneur.titre,teteFem); teteTags=[meneur]; seul=Boolean(meneur.seul); }
+    else{ teteFem=false; tete=txt(ordre[0].nom); teteTags=[ordre[0]]; }
+    for(const t of teteTags) pris.add(t.id);
+    // Les compléments d'abord (« Éclaireur à l'arc »), puis les autres mots, « et » avant le dernier ; ils s'accordent avec
+    // le dernier nom (« Éclaireur à l'arbalète chanceuse »).
+    const complement=t=>/^(à|au|aux|de|du|des|d['’])(\s|$)|^d['’]/i.test(t);
+    const et=l=>l.length<2?l.join(""):l.slice(0,-1).join(", ")+" et "+l[l.length-1];
+    const phrase=s=>{
+      const compl=s.filter(x=>complement(x.texte)),fait=s.filter(x=>!complement(x.texte)&&!x.qualite),est=s.filter(x=>!complement(x.texte)&&x.qualite);
+      const fem=compl.length?compl[compl.length-1].fem:teteFem;
+      const faits=fait.map(x=>accord(x.texte,teteFem)),ests=est.map(x=>accord(x.texte,fem)),compls=compl.map(x=>accord(x.texte,x.fem));
+      // Sans complément, un seul groupe : « Perce-armure cuirassé et chanceux ».
+      if(!compl.length) return [tete,et([...faits,...ests])].filter(Boolean).join(" ");
+      return [tete,et(faits),et(compls),et(ests)].filter(Boolean).join(" "); };
+    const dit=(s,piece)=>{ const p=" "+phrase(s).toLowerCase()+" "; return [false,true].some(f=>{ const m=accord(piece.texte,f).toLowerCase(); return m&&p.includes(" "+m+" "); }); };
+    const suivants=[];
+    for(const t of ordre){
+      if(seul||suivants.length>=nmax) break;
+      if(pris.has(t.id)) continue;
+      const s=speciaux.find(x=>!sp.includes(x)&&txt(x.court)&&x.tags.includes(t.id)&&x.tags.every(id=>!pris.has(id)));
+      const base=s?{source:s.court,fem:Boolean(s.court_fem),tags:deSes(s),s}:txt(t.court)?{source:t.court,fem:Boolean(t.court_fem),tags:[t],s:null}:null;
+      if(base) base.qualite=base.tags.every(qualite);
+      if(!base) continue;
+      const essais=variantes(base.source).map(texte=>({...base,texte}));
+      if(essais.some(x=>dit(suivants,x))){ for(const x of base.tags) pris.add(x.id); continue; }
+      const piece=essais.find(x=>phrase([...suivants,x]).length<=max);
+      if(!piece) continue;
+      suivants.push(piece);
+      for(const x of piece.tags) pris.add(x.id);
+      if(piece.s) sp.push(piece.s);
+    }
+    return {name:phrase(suivants),tags:[...teteTags,...suivants.flatMap(x=>x.tags)],speciaux:sp.map(s=>s.id)};
   }
 
   // ---- La résolution ----
@@ -488,5 +578,5 @@
     return {of,vars:()=>VARS};
   }
 
-  return {norm,cle,ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe,evalue,clean,createTagTree,withCompany,comparableKey,createTagVariables};
+  return {norm,cle,ErreurCalcul,nombre,vrai,lexer,analyse,variablesDe,evalue,clean,composeTitle,createTagTree,withCompany,comparableKey,createTagVariables};
 });

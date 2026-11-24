@@ -110,7 +110,8 @@ l'aubergiste.
 - **La salutation** reste : 20 phrases selon l'affinité avec le capitaine, de franchement hostile (−100) à admirative
   (+100), une par tranche de 10 points. Ce n'est qu'un indice.
 - **On ne pose que des questions dont la réponse remplit une case de la fiche.** La fiche garde ce qu'on a appris.
-- **Deux sources** : le **candidat** et l'**aubergiste**. L'Intendant est laissé de côté (§7).
+- **Deux sources** : le **candidat** et l'**aubergiste**. L'Intendant est laissé de côté (§7), sauf pour les tags
+  (Idan, 2026-11-24 : une option du dialogue, ci-dessous).
 - Le candidat répond à toutes les questions, sans limite ; une question posée disparaît. L'aubergiste : **1 PO** la
   question (rien n'est gratuit dans ce bas monde), sans limite.
 - Une réponse reste figée : reposer la question redonne la même réponse (chez l'aubergiste, elle se paie encore).
@@ -127,7 +128,9 @@ l'aubergiste.
 | Set 2 | vide | « Quelle arme de tir avez-vous ? » | Candidat | l'arme de tir qu'il porte | aucun |
 | Armure | vide | « Quelle armure portez-vous ? » | Candidat | son armure | aucun |
 | Magie | vide | « Connaissez-vous des sorts ? » | Candidat | il liste ses écoles : leurs pictos s'affichent | aucun : réponse exacte |
-| Tags | vides | à définir avec la refonte des tags (doc 20) | — | — | biais de niveau et de précision |
+| Tags | « ? » | « Quels sont vos points forts ? » | Candidat | les tags qu'il annonce | vantardise (doc 20 §12) |
+| Tags | « ? » | « Il est doué pour quoi ? » | Aubergiste | ses tags | précision de l'aubergiste, comme pour le titre |
+| Tags | « ? » | « Demander l'avis de l'intendant » | Intendant | ses tags | biais de l'intendant (doc 20 §12) |
 
 Le capitaine **vouvoie** les candidats (Idan, 2026-11-22 : « on a un langage décalé presque corporate ») ; le tavernier
 et lui se tutoient. **Le ton** (Idan, 2026-11-22) : « le capitaine est corporate... les mercenaires pas trop ! » ; les
@@ -138,7 +141,8 @@ tavernier** (Idan, 2026-11-22) ; sinon celui que le candidat se donne.
 
 **La fiche du candidat** (Idan, 2026-11-22) : « C'est normalement la fiche au survol avec des ? quand on ne connait pas
 les infos. En lui parlant, en parlant à l'aubergiste ou à l'intendant, on doit remplir les cases... » Ses tags, tels qu'il
-se décrit, sont calculés par le jeu (doc 20 §12, `candidateTags`) ; ce que chaque source remplit reste à décider.
+se décrit, sont calculés par le jeu (doc 20 §12, `candidateTags`) ; ce que chaque source remplit : ci-dessous
+(Idan, 2026-11-24).
 
 **Fait (2026-11-22, pas encore en ligne)** : « Aller lui parler » ouvre sa fiche (la fiche au survol, son portrait en pied
 compris) à côté de la discussion, sur un fond noir flou (Idan : « reprendre le contenu de la fiche au survol, d'ajouter son
@@ -166,6 +170,18 @@ en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ».
   « Il m'apprécierait, à ton avis ? »), 1 PO chacune, réponse figée. Le titre : recalculé sur ses capacités estimées une à
   une à ±10 %. L'affinité : estimée à ±10 %, puis le mot. Ses réponses vont sur la fiche du candidat ; son titre passe
   devant celui du candidat.
+- **Ses tags** (Idan, 2026-11-24 : « tes suggestions sont parfaites. Pour l'intendant, branche le comme une option de
+  dialogue pour l'instant, mais je pense que j'ai une idée avec l'intendant pour après ») : trois sources.
+  - **Le candidat** : « Quels sont vos points forts ? » (dans « Puis-je en savoir plus sur vous ? ») ; il liste les tags
+    qu'il annonce en se vantant (`candidateTags`).
+  - **Le tavernier** : « Il est doué pour quoi ? » (1 PO, réponse figée) ; ses tags sur ses capacités estimées une à une à
+    ±10 % (`describedTags`), comme son titre.
+  - **L'intendant** : « Demander l'avis de l'intendant » au menu du candidat, une fois ; il répond dans la discussion
+    (« Cruxor, qu'en pensez-vous ? ») avec son biais, comme pour nos mercenaires (`stewardCandidateTags`). Sans intendant,
+    pas d'option.
+  - **Sur la fiche**, les tags de la source la plus fiable : l'intendant, puis le tavernier, puis le candidat (même une
+    liste vide : sa consolation, doc 20 §11). La source s'affiche au survol des plaques (« D'après le tavernier ») ; une
+    mention visible attend le choix d'Idan.
 - **Ce qu'on a appris reste sur le candidat** tant qu'il est à la taverne : on peut fermer la fenêtre et revenir.
 - Les anciennes questions et les conseils du tavernier sur les caractéristiques sont retirés du jeu. Les groupes de
   caractéristiques restent pour l'Intendant (laissé de côté, §7).

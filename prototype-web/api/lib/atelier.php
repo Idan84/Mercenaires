@@ -11,7 +11,7 @@
 declare(strict_types=1);
 
 const ATELIER_MAX_OCTETS = 2 * 1024 * 1024;
-const ATELIER_MAX = ['tags' => 3000, 'tests' => 3000, 'constantes' => 1000, 'liens' => 500];
+const ATELIER_MAX = ['tags' => 3000, 'tests' => 3000, 'constantes' => 1000, 'liens' => 500, 'speciaux' => 2000];
 const ATELIER_TEXTE_COURT = 300;
 const ATELIER_TEXTE_LONG = 8000;
 // L'historique : les 200 dernières versions, puis la dernière de chaque jour.
@@ -63,11 +63,12 @@ function atelier_cles(mixed $v, array $cles): bool
     return $a === $cles;
 }
 
-// Vérifie un atelier : {tags, tests, constantes}, chacun de la forme de clean (game-core/tag-engine.js).
+// Vérifie un atelier : {tags, tests, constantes, titres}, chacun de la forme de clean (game-core/tag-engine.js). Les
+// titres (Idan, 2026-11-24) : un atelier enregistré avant eux n'en a pas (ni de titre, ni de mot court par tag).
 // Renvoie l'erreur ou null.
 function atelier_verifier(mixed $doc): ?string
 {
-    if (!atelier_cles($doc, ['tags', 'tests', 'constantes'])) {
+    if (!atelier_cles($doc, ['tags', 'tests', 'constantes']) && !atelier_cles($doc, ['tags', 'tests', 'constantes', 'titres'])) {
         return 'Atelier mal formé : tags, tests et constantes attendus.';
     }
     foreach (['tags', 'tests', 'constantes'] as $cle) {
@@ -78,8 +79,13 @@ function atelier_verifier(mixed $doc): ?string
     $ids = [];
     foreach ($doc['tags'] as $i => $t) {
         $ici = 'tag ' . ($i + 1);
-        if (!atelier_cles($t, ['id', 'nom', 'parents', 'groupe', 'note', 'rang', 'garder', 'inactif'])) {
+        $base = ['id', 'nom', 'parents', 'groupe', 'note', 'rang', 'garder', 'inactif'];
+        if (!atelier_cles($t, $base) && !atelier_cles($t, array_merge($base, ['titre', 'court', 'titre_fem', 'court_fem', 'seul']))) {
             return $ici . ' : mal formé.';
+        }
+        if (array_key_exists('titre', $t) && (!atelier_texte($t['titre'], ATELIER_TEXTE_COURT) || !atelier_texte($t['court'], ATELIER_TEXTE_COURT)
+            || !is_bool($t['titre_fem']) || !is_bool($t['court_fem']) || !is_bool($t['seul']))) {
+            return $ici . ' : titre ou mot court invalide.';
         }
         if (!atelier_id_valide($t['id']) || isset($ids[$t['id']])) {
             return $ici . ' : identifiant invalide ou en double.';
@@ -122,6 +128,23 @@ function atelier_verifier(mixed $doc): ?string
         if (!atelier_cles($c, ['id', 'nom', 'valeur', 'note']) || !atelier_id_valide($c['id']) || !atelier_texte($c['nom'], ATELIER_TEXTE_COURT)
             || !atelier_nombre($c['valeur']) || !atelier_texte($c['note'], ATELIER_TEXTE_LONG)) {
             return 'constante ' . ($i + 1) . ' : valeur invalide.';
+        }
+    }
+    if (array_key_exists('titres', $doc)) {
+        $ti = $doc['titres'];
+        if (!atelier_cles($ti, ['longueur_max', 'suivants_max', 'familles', 'speciaux'])
+            || !is_int($ti['longueur_max']) || $ti['longueur_max'] < 10 || $ti['longueur_max'] > 200
+            || !is_int($ti['suivants_max']) || $ti['suivants_max'] < 0 || $ti['suivants_max'] > 5
+            || !atelier_liste_ids($ti['familles']) || !is_array($ti['speciaux']) || !atelier_est_liste($ti['speciaux'])
+            || count($ti['speciaux']) > ATELIER_MAX['speciaux']) {
+            return 'Titres mal formés.';
+        }
+        foreach ($ti['speciaux'] as $i => $sp) {
+            if (!atelier_cles($sp, ['id', 'tags', 'titre', 'court', 'titre_fem', 'court_fem']) || !atelier_id_valide($sp['id']) || !atelier_liste_ids($sp['tags'])
+                || !atelier_texte($sp['titre'], ATELIER_TEXTE_COURT) || !atelier_texte($sp['court'], ATELIER_TEXTE_COURT)
+                || !is_bool($sp['titre_fem']) || !is_bool($sp['court_fem'])) {
+                return 'titre spécial ' . ($i + 1) . ' : valeur invalide.';
+            }
         }
     }
     return null;

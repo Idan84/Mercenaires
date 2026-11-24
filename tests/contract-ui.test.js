@@ -583,7 +583,19 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   // La fenêtre du candidat (Idan, 2026-11-22) : sa fiche à côté de la discussion, un fond noir flou derrière.
   {
     const tavernJs = fs.readFileSync(path.join(root, "prototype-web/tavern-ui.js"), "utf8");
-    assert.match(html, /<dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit talk-dialog--fiche" aria-labelledby="recruit-talk-name">\s*<div id="recruit-talk-card" class="recruit-fiche"><\/div>\s*<div class="recruit-talk-box">/);
+    assert.match(html, /<dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit talk-dialog--fiche" aria-labelledby="recruit-talk-name">\s*<div id="recruit-talk-card" class="recruit-fiche"><\/div>\s*<div class="recruit-talk-box conv">/);
+    // La boîte de dialogue (Idan, 2026-11-24, d'après la maquette de Chatty) : une croix pour fermer, la conversation sur le
+    // parchemin (elle seule défile), les réponses en dessous.
+    assert.match(html, /<button type="button" class="conv-close" data-talk="leave" aria-label="Fermer"[^>]*>✕<\/button>\s*<div class="conv-page"><div id="recruit-talk-log" class="talk-log" aria-live="polite"><\/div><\/div>\s*<div id="recruit-talk-choices"><\/div>/);
+    // Chaque réplique : la vignette et le nom de qui parle, la réplique dans une bulle ; le récit sans bulle.
+    const lines = new Function("esc", "mercenaryAvatarUrl", "avatarInitials",
+      tavernJs.slice(tavernJs.indexOf("function talkMini(person){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return renderTalkLines;")(
+      x => String(x), p => p.portrait, p => p.name.slice(0, 2).toUpperCase());
+    const said = lines([{who: "merc", text: "Bonjour"}, {who: "you", text: "Salut"}, {who: "note", text: "Il part."}],
+      line => line.who === "you" ? {name: "Bob", portrait: "bob.webp"} : {name: "Zora"}, "Zora");
+    assert.match(said, /^<div class="talk-say talk-say--merc"><span class="talk-mini" aria-hidden="true"><i>ZO<\/i><\/span><div class="talk-say-body"><b>Zora<\/b><span>«\u00a0Bonjour\u00a0»<\/span><\/div><\/div>/);
+    assert.match(said, /<div class="talk-say talk-say--you"><span class="talk-mini" aria-hidden="true"><i>BO<\/i><img src="bob\.webp" alt=""[^>]*><\/span><div class="talk-say-body"><b>Vous<\/b>/);
+    assert.match(said, /<p class="talk-note">Il part\.<\/p>$/);
     assert.match(tavernJs, /\$\("recruit-talk-card"\)\.innerHTML=renderMercenaryHoverCard\(m,recruitCardOptions\(candidate\)\);/);
     // Les cases : ce qu'on a appris (recruitDialogue().known) ; le salaire et la prime, une fois ses prétentions dites, suivent
     // la négociation.

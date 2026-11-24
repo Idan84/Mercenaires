@@ -343,6 +343,24 @@ function recruitCardOptions(candidate){
     knownTags:shown?shown.names:null,tagSource:shown?d.tagSourceLabel(shown.source,candidate.mercenary):null};
 }
 
+// Les répliques d'une discussion (Idan, 2026-11-24, d'après la maquette de Chatty) : la vignette et le nom de qui parle,
+// sa réplique dans une bulle (les autres à gauche, le capitaine à droite : « Vous ») ; le récit, centré, sans bulle.
+// speaker(line) : la personne qui parle (sa vignette) ; first : le nom par défaut des autres.
+function talkCaptain(){
+  const company=game.campaign?.company;
+  return company?.roster.find(m=>m.id===company.captainId)||game.captain||null;
+}
+function talkMini(person){
+  const src=person&&typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(person,"portrait"):null;
+  const initials=person&&typeof avatarInitials==="function"?avatarInitials(person):"?";
+  return `<span class="talk-mini" aria-hidden="true"><i>${esc(initials)}</i>${src?`<img src="${esc(src)}" alt="" decoding="async" onerror="this.remove()">`:""}</span>`;
+}
+function renderTalkLines(lines,speaker,first){
+  return lines.map(line=>line.who==="note"
+    ?`<p class="talk-note">${esc(line.text)}</p>`
+    :`<div class="talk-say talk-say--${line.who}">${talkMini(speaker(line))}<div class="talk-say-body"><b>${line.who==="you"?"Vous":esc(line.name||first)}</b><span>« ${esc(line.text)} »</span></div></div>`).join("");
+}
+
 function renderRecruitTalk(){
   const t=game.recruitTalk;
   if(!t) return;
@@ -356,10 +374,11 @@ function renderRecruitTalk(){
   $("recruit-talk-name").textContent=m.name;
   $("recruit-talk-origin").innerHTML=`${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}`;
   const log=$("recruit-talk-log");
-  log.innerHTML=t.lines.map(line=>line.who==="note"
-    ?`<p class="talk-note">${esc(line.text)}</p>`
-    :`<p class="talk-say talk-say--${line.who}"><b>${line.who==="you"?"Vous":esc(line.name||first)}</b><span>«\u00a0${esc(line.text)}\u00a0»</span></p>`).join("");
+  const steward=t.lines.some(line=>line.face==="steward")?tavernSteward():null;
+  log.innerHTML=renderTalkLines(t.lines,line=>line.who==="you"?talkCaptain():line.face==="steward"?steward:m,first);
+  // La dernière réplique toujours visible, une fois les réponses posées en dessous (elles changent la hauteur).
   log.scrollTop=log.scrollHeight;
+  requestAnimationFrame(()=>{ log.scrollTop=log.scrollHeight; });
   if(t.mode==="negotiate"&&candidate){
     const n=tavernRules().negotiationState(candidate);
     $("recruit-talk-choices").innerHTML=`<form id="recruit-offer" class="talk-offer">
@@ -444,7 +463,7 @@ function recruitTalkChoice(key){
     k.asked.steward=true;
     k.stewardTags=names;
     t.lines.push({who:"you",text:d.stewardAsk(steward)},
-      {who:"merc",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names)});
+      {who:"merc",face:"steward",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names)});
     saveGame();
   }else if(d.aboutQuestions.includes(key)){
     const answer=recruitAnswer(candidate,key);

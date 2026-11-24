@@ -477,11 +477,12 @@
        discussion à côté, un fond noir flou derrière. -->
   <dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit talk-dialog--fiche" aria-labelledby="recruit-talk-name">
     <div id="recruit-talk-card" class="recruit-fiche"></div>
-    <div class="recruit-talk-box">
+    <div class="recruit-talk-box conv">
       <header class="talk-head">
         <div><p id="recruit-talk-origin" class="eyebrow"></p><h2 id="recruit-talk-name"></h2></div>
       </header>
-      <div id="recruit-talk-log" class="talk-log" aria-live="polite"></div>
+      <button type="button" class="conv-close" data-talk="leave" aria-label="Fermer" title="Fermer">✕</button>
+      <div class="conv-page"><div id="recruit-talk-log" class="talk-log" aria-live="polite"></div></div>
       <div id="recruit-talk-choices"></div>
     </div>
   </dialog>

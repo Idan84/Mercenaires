@@ -151,6 +151,15 @@ réputation ; sa prime une fois ses prétentions dites (la dernière demande). L
 armes et armure, magie ; la monture n'est pas montrée). Les questions du tableau ci-dessus remplissent les cases (fait le
 même jour, ci-dessous). La mise en page de la boîte de dialogue viendra ensuite (Idan : « On fait simple »).
 
+**La boîte de dialogue, première mise en page (Idan, 2026-11-24, d'après une maquette de Chatty : « Commence une vraie
+mise en page », avec les éléments existants ; pas encore en ligne)** : la discussion à côté de la fiche, à la même hauteur,
+dans un cadre sombre aux coins du menu, une croix pour fermer. En haut, la conversation sur le parchemin d'Idan, et elle
+seule défile : devant chaque réplique, la vignette et le nom de qui parle (le candidat, l'intendant ; à droite, le
+capitaine, « Vous », avec son portrait), la réplique dans une bulle ; le récit, centré, sans bulle. En bas, les réponses,
+sans barre de défilement : quand il y en a trop, un tiroir, comme « Puis-je en savoir plus sur vous ? » (Idan : « on peut
+faire du tiroir comme on fait maintenant ») ; la réponse survolée prend le bouton d'Idan. Les éléments graphiques propres
+à la boîte (cadre, bulle, cartouche du nom, bouton de réponse, croix) pourront venir d'Idan ensuite.
+
 **Fait (2026-11-22, pas encore en ligne) : les questions du tableau.** Idan : « fais les questions du tableau et il faut
 ajouter absolument le salaire dans cette fiche. On va regrouper toutes les questions pour mieux le comprendre comme Puis-je
 en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ».

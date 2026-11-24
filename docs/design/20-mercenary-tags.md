@@ -258,9 +258,56 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
   disparaît dès qu'il a un vrai tag. Sans intendant, toujours aucun tag.
 - **Un seul tag devient le titre** (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») : un mercenaire
   qui n'a qu'un tag affiché, tag de consolation compris, porte ce tag comme titre, sur la fiche (la note du tag en
-  infobulle), la fiche au survol et la fiche complète ; avec plusieurs tags, ou aucun (sans intendant), le titre calculé
-  (doc 19). Le candidat aussi (« oui, candidats aussi ») : son titre suit les tags qu'il annonce en se vantant, et celui
+  infobulle), la fiche au survol et la fiche complète ; avec plusieurs tags, le titre composé (ci-dessous) ; aucun (sans
+  intendant), le titre calculé (doc 19). Le candidat aussi (« oui, candidats aussi ») : son titre suit les tags qu'il annonce en se vantant, et celui
   que donne le tavernier, les tags sur ses estimations (`game-core/company-tags.js`, `titleTag`, `describedTags`).
+- **Plusieurs tags : un titre composé** (Idan, 2026-11-24 : « Construis la nouvelle structure multi tags pour les titres.
+  Fais une passe des plus fréquents […] Faut juste pas que le titre soit trop long… l'objectif, c'est qu'il rentre sur
+  une ligne dans la fiche au survol »). Plan de JC accepté (« je te fais confiance ») ; la règle est dans
+  `game-core/tag-engine.js` (`composeTitle`), les données dans l'atelier (onglet « 4. Les titres ») :
+  - chaque tag a un **titre** (quand il mène : « Éclaireur », « Grosse brute ») et un **mot court** (quand il suit :
+    « à l'arc », « {chanceux|chanceuse} ») ; un tag sans titre ne mène pas (« De loin et de près » : « polyvalent ») ;
+  - **qui mène** : ce qu'il fait, puis comment il le fait, puis ce qu'il est, dans l'ordre des familles (CAC, Soigneur,
+    Tank, Commandement, Éclaireur et contrôle du terrain, Tireur, Écoles de magie, Sorts de soutien, Ce qu'il est) ; dans
+    une famille, le rang le plus haut, puis le tag le plus précis (« Increvable » avant « Veinard »), puis l'ordre de
+    l'atelier ; un tag sans titre suit avec ce qu'il est ;
+  - le titre du tag qui mène, puis **deux mots courts au plus** : ce qu'il fait (accordé avec le titre), puis les
+    compléments (« à l'arc », « à neuf vies »), puis ce qu'il est (la dernière famille, et les tags sans titre ; accordé
+    avec le dernier nom) : « Meneur éclaireur à l'arbalète », « Éclaireur à l'arbalète chanceuse » ; sans complément, un
+    seul groupe, « et » avant le dernier ; un mot déjà dit n'est pas répété ;
+  - retours d'Idan (2026-11-24) : « Eclaireur à l'arc généralement veinard », « Eclaireur à l'arbalète chanceuse »,
+    « Perce-armure sans peur et sans malchance », « Hopital ambulant (simplement, c'est mieux…) », « Grosse brute marche
+    pour les H & F alors que Cogneur, ça marche moins bien et faudrait mettre Cogneuse… Idem pour boîte de conserve ». D'où :
+    - **le tireur dit comment il le fait** : son mot court est son arme (« à l'arc », « à l'arbalète », « à la fronde »,
+      « au canon »…) ; le rôle mène (« Éclaireur à l'arc ») ;
+    - **les accords** : un mot s'accorde avec le dernier nom, titre ou complément (« fém. » dans l'atelier ; les deux
+      formes entre accolades, `{chanceux|chanceuse}`) : « Éclaireur à l'arbalète chanceuse », « Grosse brute
+      généralement veinarde » ; les mots qui marchent pour les hommes et les femmes reviennent en tête (Grosse brute, Boîte
+      de conserve, Force de la nature, Salamandre…) ;
+    - **les variantes** d'un mot court, séparées par « / » : la première qui tient (Veinard : « généralement
+      {veinard|veinarde} / {chanceux|chanceuse} ») ;
+    - **titre seul** : rien après (Hôpital ambulant) ;
+    - Veinard + Sans peur à la suite : « sans peur et sans malchance » (titre spécial) ;
+  - **40 caractères au plus** (Idan : « qu'il rentre sur une ligne dans la fiche au survol ») : jusqu'à 38, taille normale ;
+    au-delà, la police rapetisse un peu, toujours sur une ligne ; un mot qui ferait dépasser est sauté ; toutes les paires
+    de tags tiennent (test) ;
+  - **titres spéciaux**, écrits à la main, quand tous leurs tags sont là : leur titre s'ils contiennent le tag qui mène
+    (Veinard + Increvable : « Chat à neuf vies »), sinon leur mot court à la suite (« Archer à neuf vies »). 23 pour
+    commencer : Chat à neuf vies, sans peur et sans malchance, Trompe-la-mort, Inusable, Courant d'air, Terreur des
+    tavernes, Escroc de charme, Langue d'argent, Fin limier, Grande gueule, Sentinelle (« à l'œil de lynx »), Mur de
+    muscles, Faucon, Canard, Coupe-jarret, Coupe-gorge ; puis (Idan, 2026-11-24) Grosse brute en fer (Grosse brute + Boîte
+    de conserve), Corps de fer dans une boîte en fer (Roc + Boîte de conserve), Fer à cheval (Veinard + Boîte de
+    conserve), Feu follet (Insaisissable + Éclaireur), Brute galonnée (Grosse brute + Commissaire du courage), Tête de mule
+    (Volonté de fer + Sans peur), Oiseau de bon augure (Vol + Veinard) ;
+  - **formes longues** quand il y a la place (Idan : « c'est parfait ! ») : Roc « solide comme un roc », Grosse brute
+    « bâti comme une armoire », Cerveau sur pattes « étonnamment malin », Bolide « vif comme l'éclair », Insaisissable
+    « glissant comme une anguille », Veinard « généralement veinard » ;
+  - l'infobulle de la fiche : les notes des tags du titre. Sans tags (sans intendant) : le titre calculé (doc 19). La
+    monture (« à cheval ») n'est plus ajoutée au titre tiré des tags.
+  - **Banc d'essai** (3 200 recrues, équipement de départ et T4, compagnie à 1 et 5 étoiles) : 2 603 recrues à plusieurs
+    tags à 1 étoile, 775 titres différents, aucun au-delà de 40 caractères ; les plus fréquents : Éclaireur à l'arbalète,
+    Éclaireur à la fronde, Éclaireur à l'arc, Éclaireur polyvalent, Hôpital ambulant ; à 5 étoiles, Veinard sans peur,
+    Grosse brute généralement veinarde, Trompe-la-mort, Mur de muscles.
 - **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
   bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
   Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte
@@ -582,7 +629,8 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
 Les mêmes tests de l'atelier, sur des valeurs vues à travers un **biais** :
 
 - **Le candidat**, avant son recrutement, se décrit lui-même : il se vante (doc 14 §7). Toutes ses valeurs × un même
-  tirage entre **1,10 et 3,00**, une fois par candidat. Ses tags s'affichent sur sa fiche à la Taverne (la case « Tags »).
+  tirage entre **1,10 et 3,00**, une fois par candidat. Ses tags s'affichent sur sa fiche à la Taverne (la case « Tags »),
+  avec ceux du tavernier (ses estimations à ±10 %) et ceux de l'intendant (son biais, une option du dialogue) : doc 14 §6 bis.
 - **L'intendant** décrit nos mercenaires (Cruxor Limortel, ou celui qu'on a nommé) :
 
 ```
@@ -625,8 +673,9 @@ ValeurVue  = Valeur × (1 + Biais)
 - **Les écoles de magie** comptent comme des compétences (elles reçoivent le biais). **La réserve de mana** aussi
   (« mana » et `carac.reserve_de_mana`) ; le nombre de soins qu'il peut lancer (`lancers.soin`) suit sa réserve vue.
 - **Le candidat** compare ses valeurs annoncées à la compagnie telle que l'intendant la voit. Son tirage est gardé sur
-  lui (`tagSelfBias`). Ses tags sont calculés (`candidateTags`) mais **pas encore affichés** : la fiche du candidat à la
-  Taverne, avec sa case « Tags » (doc 14 §6), reste à faire avec le dialogue de recrutement.
+  lui (`tagSelfBias`). Ses tags (`candidateTags`) s'affichent quand on lui demande ses points forts (doc 14 §6 bis,
+  2026-11-24). L'intendant voit un candidat comme nos mercenaires : un tirage pour le couple, gardé sur lui (`tagBias`,
+  `stewardCandidateTags`).
 - **Le choix de l'escouade** : les onglets de filtre prennent les nouveaux tags (« Tous », puis les tags que portent les
   mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres compétences », Idan, 2026-11-22) ; l'onglet du tag de la
   mission (camp, chasse, garde du corps) disparaît : l'atelier n'a pas de tags de mission.

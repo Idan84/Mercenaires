@@ -12,7 +12,7 @@
   root.MercenairesRecruitDialogue=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   // Les questions sur lui (« Puis-je en savoir plus sur vous ? »), dans l'ordre du menu.
-  const ABOUT_QUESTIONS=["title","set1","set2","armor","magic"];
+  const ABOUT_QUESTIONS=["title","tags","set1","set2","armor","magic"];
 
   function isFemale(m){
     return String(m?.sex||"").trim().toLowerCase().startsWith("f");
@@ -108,8 +108,9 @@
 
     // Ce qu'on sait d'un candidat (tavern.candidates[] : {mercenary, …}), gardé sur lui tant qu'il est à la taverne : la
     // fiche garde ce qu'on a appris, une question posée disparaît, une réponse reste figée (doc 14 §6 bis).
-    // {asked: {title, set1, set2, armor, magic} (ce qu'on lui a demandé), salary (il a dit ses prétentions), title (le
-    // titre qu'il se donne), keeperTitle (celui que donne le tavernier), affinity (l'estimation du tavernier)}
+    // {asked: {title, tags, set1, set2, armor, magic, steward} (ce qu'on lui a demandé), salary (il a dit ses prétentions), title (le
+    // titre qu'il se donne), keeperTitle (celui que donne le tavernier), affinity (l'estimation du tavernier), tags,
+    // keeperTags, stewardTags (les noms de ses tags : ce qu'il annonce, ce que dit le tavernier, ce que voit l'intendant)}
     function known(candidate){
       const k=candidate.recruitKnown||(candidate.recruitKnown={});
       k.asked=k.asked||{};
@@ -123,6 +124,29 @@
     // null tant qu'on ne sait rien.
     function shownTitle(k){
       return k.keeperTitle??k.title??null;
+    }
+    // Ses tags sur sa fiche (Idan, 2026-11-24 : « tes suggestions sont parfaites ») : la source la plus fiable qu'on ait,
+    // l'intendant, puis le tavernier, puis ce qu'il annonce lui-même ; {source, names}, ou null tant qu'on ne sait rien.
+    function shownTags(k){
+      for(const [source,names] of [["steward",k.stewardTags],["keeper",k.keeperTags],["candidate",k.tags]])
+        if(Array.isArray(names)) return {source,names};
+      return null;
+    }
+    // D'où viennent ses tags, en quelques mots (« D'après le tavernier »).
+    function tagSourceLabel(source,m){
+      return fill(copy.tag_sources?.[source],{},isFemale(m));
+    }
+    // Une liste de tags dite à voix haute : « Veinard, Roc et Éclaireur ».
+    function listNames(names){
+      const list=(names||[]).filter(Boolean);
+      return list.length>1?list.slice(0,-1).join(", ")+" et "+list.at(-1):list[0]||"";
+    }
+    // L'intendant donne son avis sur un candidat : l'option du menu, sa question, sa réponse.
+    function stewardOption(){ return copy.steward?.option||""; }
+    function stewardAsk(steward){ return fill(copy.steward?.ask,{intendant:firstName(steward)}); }
+    function stewardAnswer(steward,m,names){
+      return names.length?say(copy.steward?.answers,m,"steward|"+(steward?.id??steward?.name),{tags:listNames(names)})
+        :say(copy.steward?.none,m,"steward-none");
     }
 
     // L'affinité en un mot, chacun pour un tiers de l'échelle (doc 14 §7) : Hostile, Neutre, Amical.
@@ -168,6 +192,12 @@
       known,
       aboutLeft,
       shownTitle,
+      shownTags,
+      tagSourceLabel,
+      listNames,
+      stewardOption,
+      stewardAsk,
+      stewardAnswer,
       affinityWord,
       described
     };

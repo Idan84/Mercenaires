@@ -3,6 +3,8 @@
  "date": "2026-11-24",
  "tags": [
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "ce-qu-il-est",
@@ -10,9 +12,14 @@
    "nom": "Ce qu'il est",
    "note": "Passe 1 de ton arbre : ce que le mercenaire est, oui ou non.",
    "parents": [],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "ka5k6bo1",
@@ -20,9 +27,14 @@
    "nom": "Comment il le fait",
    "note": "",
    "parents": [],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "magie",
@@ -32,9 +44,14 @@
    "parents": [
     "ka5k6bo1"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": 1,
    "groupe": true,
    "id": "z2qn61fz",
@@ -44,9 +61,14 @@
    "parents": [
     "ka5k6bo1"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "{ailé|ailée}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "vol",
@@ -56,9 +78,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Oiseau de proie",
+   "titre_fem": false
   },
   {
+   "court": "{régénérant|régénérante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "regeneration",
@@ -68,9 +95,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Phénix",
+   "titre_fem": false
   },
   {
+   "court": "amphibie",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "amphibie",
@@ -80,9 +112,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Amphibie",
+   "titre_fem": false
   },
   {
+   "court": "{bâti|bâtie} comme une armoire / {costaud|costaude}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "3eo3yjmy",
@@ -92,9 +129,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Grosse brute",
+   "titre_fem": true
   },
   {
+   "court": "{colossal|colossale}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "03tml0iu",
@@ -104,9 +146,14 @@
    "parents": [
     "3eo3yjmy"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Force de la nature",
+   "titre_fem": true
   },
   {
+   "court": "{glissant|glissante} comme une anguille / insaisissable",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "1b1t7f8y",
@@ -116,9 +163,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Insaisissable",
+   "titre_fem": false
   },
   {
+   "court": "intouchable",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "r8fjoadk",
@@ -128,9 +180,14 @@
    "parents": [
     "1b1t7f8y"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Roi de l'esquive",
+   "titre_fem": false
   },
   {
+   "court": "étonnamment {malin|maligne} / {malin|maligne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "6zp3q2r1",
@@ -140,9 +197,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Cerveau sur pattes",
+   "titre_fem": false
   },
   {
+   "court": "{adroit|adroite}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "r5i3na08",
@@ -152,9 +214,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Pickpocket",
+   "titre_fem": false
   },
   {
+   "court": "{vigilant|vigilante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "8a91th6k",
@@ -164,9 +231,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Œil de lynx",
+   "titre_fem": false
   },
   {
+   "court": "généralement {veinard|veinarde} / {chanceux|chanceuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "a6g49n26",
@@ -176,9 +248,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Veinard",
+   "titre_fem": false
   },
   {
+   "court": "solide comme un roc / robuste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ojkh06zu",
@@ -188,9 +265,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Roc",
+   "titre_fem": false
   },
   {
+   "court": "{vif|vive} comme l'éclair / rapide",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mzc3vqjp",
@@ -200,9 +282,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Bolide",
+   "titre_fem": false
   },
   {
+   "court": "sans peur",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ko8qpwk8",
@@ -212,9 +299,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Casse-cou",
+   "titre_fem": false
   },
   {
+   "court": "{têtu|têtue}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "02p1prii",
@@ -224,9 +316,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Indomptable",
+   "titre_fem": false
   },
   {
+   "court": "{intimidant|intimidante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "i2f9v5k9",
@@ -236,9 +333,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Épouvantail",
+   "titre_fem": false
   },
   {
+   "court": "{charmeur|charmeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "481drl5g",
@@ -248,9 +350,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Séducteur",
+   "titre_fem": false
   },
   {
+   "court": "{ignifugé|ignifugée}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "q78i7tqj",
@@ -260,9 +367,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Salamandre",
+   "titre_fem": true
   },
   {
+   "court": "paratonnerre",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "swux6jo4",
@@ -272,9 +384,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Paratonnerre",
+   "titre_fem": false
   },
   {
+   "court": "{frigorifugé|frigorifugée}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ellzzuqw",
@@ -284,9 +401,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Yéti",
+   "titre_fem": false
   },
   {
+   "court": "{immunisé|immunisée}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "9rvmbh6e",
@@ -296,9 +418,14 @@
    "parents": [
     "ce-qu-il-est"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Estomac blindé",
+   "titre_fem": false
   },
   {
+   "court": "irrésistible",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "8dgq82ry",
@@ -308,9 +435,14 @@
    "parents": [
     "481drl5g"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Bourreau des cœurs",
+   "titre_fem": false
   },
   {
+   "court": "{terrifiant|terrifiante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "0d9asz97",
@@ -320,9 +452,14 @@
    "parents": [
     "i2f9v5k9"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Croque-mitaine",
+   "titre_fem": false
   },
   {
+   "court": "inébranlable",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mlw1nq8u",
@@ -332,9 +469,14 @@
    "parents": [
     "02p1prii"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Inébranlable",
+   "titre_fem": false
   },
   {
+   "court": "téméraire",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "rz4rh0b8",
@@ -344,9 +486,14 @@
    "parents": [
     "ko8qpwk8"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Tête brûlée",
+   "titre_fem": true
   },
   {
+   "court": "{fulgurant|fulgurante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mugvslw0",
@@ -356,9 +503,14 @@
    "parents": [
     "mzc3vqjp"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Éclair",
+   "titre_fem": false
   },
   {
+   "court": "increvable",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "haiegjex",
@@ -368,9 +520,14 @@
    "parents": [
     "ojkh06zu"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Increvable",
+   "titre_fem": false
   },
   {
+   "court": "{béni|bénie}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "25ww25fb",
@@ -380,9 +537,14 @@
    "parents": [
     "a6g49n26"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Béni des dieux",
+   "titre_fem": false
   },
   {
+   "court": "{clairvoyant|clairvoyante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "3u2qr4la",
@@ -392,9 +554,14 @@
    "parents": [
     "8a91th6k"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Oracle",
+   "titre_fem": false
   },
   {
+   "court": "virtuose",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "00vdecdw",
@@ -404,9 +571,14 @@
    "parents": [
     "r5i3na08"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Monte-en-l'air",
+   "titre_fem": false
   },
   {
+   "court": "{génial|géniale}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "rgftfjcu",
@@ -416,9 +588,14 @@
    "parents": [
     "6zp3q2r1"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Génie",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "roles",
@@ -426,9 +603,14 @@
    "nom": "Rôles",
    "note": "Passe 2 de ton arbre : on élimine les rôles qu'il ne peut pas remplir en l'état. S'il ne reste aucun rôle : Dégâts ou Polyvalent.",
    "parents": [],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": 1,
    "groupe": true,
    "id": "soin",
@@ -439,9 +621,14 @@
     "roles",
     "magie"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "{soigneur|soigneuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "soin-de-zone",
@@ -451,9 +638,14 @@
    "parents": [
     "p98pjt14"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Soigneur",
+   "titre_fem": false
   },
   {
+   "court": "{soigneur|soigneuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "soin-duree",
@@ -463,9 +655,14 @@
    "parents": [
     "p98pjt14"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Soigneur",
+   "titre_fem": false
   },
   {
+   "court": "{guérisseur|guérisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "5av4i928",
@@ -476,9 +673,14 @@
     "soin-duree",
     "soin-de-zone"
    ],
-   "rang": 7
+   "rang": 7,
+   "seul": false,
+   "titre": "Grand guérisseur",
+   "titre_fem": false
   },
   {
+   "court": "{guérisseur|guérisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "6n4899ab",
@@ -491,9 +693,14 @@
     "8za94vzc",
     "ehfdxqs9"
    ],
-   "rang": 9
+   "rang": 9,
+   "seul": false,
+   "titre": "Faiseur de miracles",
+   "titre_fem": false
   },
   {
+   "court": "{guérisseur|guérisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ehfdxqs9",
@@ -503,9 +710,14 @@
    "parents": [
     "soin-duree"
    ],
-   "rang": 5
+   "rang": 5,
+   "seul": false,
+   "titre": "Guérisseur",
+   "titre_fem": false
   },
   {
+   "court": "{rebouteux|rebouteuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "p98pjt14",
@@ -515,9 +727,14 @@
    "parents": [
     "soin"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Rebouteux",
+   "titre_fem": false
   },
   {
+   "court": "{guérisseur|guérisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "lyfdowvc",
@@ -527,9 +744,14 @@
    "parents": [
     "p98pjt14"
    ],
-   "rang": 4
+   "rang": 4,
+   "seul": false,
+   "titre": "Guérisseur",
+   "titre_fem": false
   },
   {
+   "court": "{guérisseur|guérisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "tnvt6pos",
@@ -539,9 +761,14 @@
    "parents": [
     "lyfdowvc"
    ],
-   "rang": 8
+   "rang": 8,
+   "seul": true,
+   "titre": "Hôpital ambulant",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": 1,
    "groupe": true,
    "id": "controle-du-terrain",
@@ -551,9 +778,14 @@
    "parents": [
     "roles"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "commandement",
@@ -563,9 +795,14 @@
    "parents": [
     "roles"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "{meneur|meneuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ma5720wh",
@@ -575,9 +812,14 @@
    "parents": [
     "commandement"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Meneur",
+   "titre_fem": false
   },
   {
+   "court": "{galvaniseur|galvaniseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "cpvembb3",
@@ -587,9 +829,14 @@
    "parents": [
     "ma5720wh"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Chef de guerre",
+   "titre_fem": false
   },
   {
+   "court": "héroïque",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "b30ullkw",
@@ -599,9 +846,14 @@
    "parents": [
     "cpvembb3"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Paragon d'espoir",
+   "titre_fem": false
   },
   {
+   "court": "{enchanteur|enchanteresse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "abjr58ik",
@@ -611,9 +863,14 @@
    "parents": [
     "entrave"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Enchanteur",
+   "titre_fem": false
   },
   {
+   "court": "{renforceur|renforceuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "hf7jj0yb",
@@ -623,9 +880,14 @@
    "parents": [
     "abjr58ik"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Renforceur",
+   "titre_fem": false
   },
   {
+   "court": "{enchanteur|enchanteresse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "0vy9k8bh",
@@ -635,9 +897,14 @@
    "parents": [
     "hf7jj0yb"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Grand enchanteur",
+   "titre_fem": false
   },
   {
+   "court": "{enchanteur|enchanteresse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "c6d60cb9",
@@ -648,9 +915,14 @@
     "0vy9k8bh",
     "vy0i017l"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Soutien universel",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "protection",
@@ -660,9 +932,14 @@
    "parents": [
     "roles"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "{cuirassé|cuirassée}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "protection-a-distance",
@@ -672,9 +949,14 @@
    "parents": [
     "protection"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Boîte de conserve",
+   "titre_fem": true
   },
   {
+   "court": "{hérissé|hérissée}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "q20vtkiw",
@@ -685,9 +967,14 @@
     "protection-a-distance",
     "6c4s5pyw"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Mur à pointes",
+   "titre_fem": false
   },
   {
+   "court": "{piquier|piquière}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "6c4s5pyw",
@@ -697,9 +984,14 @@
    "parents": [
     "protection"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Piquier",
+   "titre_fem": false
   },
   {
+   "court": "porte-bouclier",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "dg5ybvw7",
@@ -709,9 +1001,14 @@
    "parents": [
     "protection"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Porte-bouclier",
+   "titre_fem": false
   },
   {
+   "court": "rempart",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ih0ttxy3",
@@ -722,9 +1019,14 @@
     "dg5ybvw7",
     "protection-a-distance"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Rempart",
+   "titre_fem": false
   },
   {
+   "court": "{riposteur|riposteuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "z76exrem",
@@ -735,9 +1037,14 @@
     "dg5ybvw7",
     "6c4s5pyw"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Riposteur",
+   "titre_fem": false
   },
   {
+   "court": "imprenable",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "qg7xl92m",
@@ -749,9 +1056,14 @@
     "q20vtkiw",
     "z76exrem"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Hérisson",
+   "titre_fem": false
   },
   {
+   "court": "{invaincu|invaincue}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "siksg1ll",
@@ -762,9 +1074,14 @@
     "qg7xl92m",
     "haiegjex"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Enfant de Cruxor",
+   "titre_fem": false
   },
   {
+   "court": "{entraveur|entraveuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "entrave-immobilisation",
@@ -774,9 +1091,14 @@
    "parents": [
     "entrave"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Entraveur",
+   "titre_fem": false
   },
   {
+   "court": "{flétrisseur|flétrisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "entrave-affaiblissement",
@@ -786,9 +1108,14 @@
    "parents": [
     "entrave"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Flétrisseur",
+   "titre_fem": false
   },
   {
+   "court": "{démoralisant|démoralisante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "entrave-demoralisateur",
@@ -798,9 +1125,14 @@
    "parents": [
     "entrave"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Démoralisateur",
+   "titre_fem": false
   },
   {
+   "court": "{entraveur|entraveuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "vy0i017l",
@@ -812,9 +1144,14 @@
     "entrave-affaiblissement",
     "entrave-immobilisation"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Roi de l'entrave",
+   "titre_fem": false
   },
   {
+   "court": "{tacticien|tacticienne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ypsqnotc",
@@ -824,9 +1161,14 @@
    "parents": [
     "controle-du-terrain"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Tacticien",
+   "titre_fem": false
   },
   {
+   "court": "stratège",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "sxp05nhd",
@@ -836,9 +1178,14 @@
    "parents": [
     "ypsqnotc"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître du terrain",
+   "titre_fem": false
   },
   {
+   "court": "{infernal|infernale}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "pv521ntp",
@@ -849,9 +1196,14 @@
     "sxp05nhd",
     "6mdxudep"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Architecte de l'enfer",
+   "titre_fem": false
   },
   {
+   "court": "{éclaireur|éclaireuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "eclaireur",
@@ -861,9 +1213,14 @@
    "parents": [
     "controle-du-terrain"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Éclaireur",
+   "titre_fem": false
   },
   {
+   "court": "{trappeur|trappeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "yt48k9y9",
@@ -873,9 +1230,14 @@
    "parents": [
     "controle-du-terrain"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Trappeur",
+   "titre_fem": false
   },
   {
+   "court": "{trappeur|trappeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "6mdxudep",
@@ -885,9 +1247,14 @@
    "parents": [
     "yt48k9y9"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître trappeur",
+   "titre_fem": false
   },
   {
+   "court": "{démineur|démineuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ivtpihp7",
@@ -897,9 +1264,14 @@
    "parents": [
     "controle-du-terrain"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Démineur",
+   "titre_fem": false
   },
   {
+   "court": "{démineur|démineuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ql2dvl0b",
@@ -909,9 +1281,14 @@
    "parents": [
     "ivtpihp7"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître démineur",
+   "titre_fem": false
   },
   {
+   "court": "{pisteur|pisteuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "8ssf9csv",
@@ -923,9 +1300,14 @@
     "yanyx0p4",
     "6mdxudep"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Ouvreur de voie",
+   "titre_fem": false
   },
   {
+   "court": "{rôdeur|rôdeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "yanyx0p4",
@@ -935,9 +1317,14 @@
    "parents": [
     "eclaireur"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Rôdeur",
+   "titre_fem": false
   },
   {
+   "court": "{espion|espionne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "x5vamdd5",
@@ -948,9 +1335,14 @@
     "yanyx0p4",
     "sxp05nhd"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître espion",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "degats",
@@ -960,9 +1352,14 @@
    "parents": [
     "roles"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "entrave",
@@ -972,9 +1369,14 @@
    "parents": [
     "magie"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "hydromage",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-eau",
@@ -984,9 +1386,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti hydromage",
+   "titre_fem": false
   },
   {
+   "court": "hydromage",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "cem6qrt9",
@@ -996,9 +1403,14 @@
    "parents": [
     "ecole-eau"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Hydromage",
+   "titre_fem": false
   },
   {
+   "court": "hydromage",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "e3jb7qiv",
@@ -1008,9 +1420,14 @@
    "parents": [
     "cem6qrt9"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître de l'eau",
+   "titre_fem": false
   },
   {
+   "court": "pyromane",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-feu",
@@ -1020,9 +1437,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti pyromane",
+   "titre_fem": false
   },
   {
+   "court": "{pyromancien|pyromancienne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "5ipfcvyl",
@@ -1032,9 +1454,14 @@
    "parents": [
     "ecole-feu"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Sorcier du feu",
+   "titre_fem": false
   },
   {
+   "court": "{pyromancien|pyromancienne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "icn4qiwo",
@@ -1044,9 +1471,14 @@
    "parents": [
     "5ipfcvyl"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître du feu",
+   "titre_fem": false
   },
   {
+   "court": "{foudroyeur|foudroyeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-foudre",
@@ -1056,9 +1488,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti foudroyeur",
+   "titre_fem": false
   },
   {
+   "court": "{foudroyeur|foudroyeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "8r60hfuf",
@@ -1068,9 +1505,14 @@
    "parents": [
     "ecole-foudre"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Foudroyeur",
+   "titre_fem": false
   },
   {
+   "court": "{foudroyeur|foudroyeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "fwhxfkei",
@@ -1080,9 +1522,14 @@
    "parents": [
     "8r60hfuf"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître de la foudre",
+   "titre_fem": false
   },
   {
+   "court": "{bonimenteur|bonimenteuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-illusion",
@@ -1092,9 +1539,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Bonimenteur",
+   "titre_fem": false
   },
   {
+   "court": "illusionniste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ltrdb20m",
@@ -1104,9 +1556,14 @@
    "parents": [
     "ecole-illusion"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Illusionniste",
+   "titre_fem": false
   },
   {
+   "court": "illusionniste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "nm0qhghl",
@@ -1116,9 +1573,14 @@
    "parents": [
     "ltrdb20m"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître illusionniste",
+   "titre_fem": false
   },
   {
+   "court": "{invocateur|invocatrice}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-invocation",
@@ -1128,9 +1590,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti invocateur",
+   "titre_fem": false
   },
   {
+   "court": "{invocateur|invocatrice}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ckhkgxou",
@@ -1140,9 +1607,14 @@
    "parents": [
     "ecole-invocation"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Invocateur",
+   "titre_fem": false
   },
   {
+   "court": "{invocateur|invocatrice}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "8n29g0cb",
@@ -1152,9 +1624,14 @@
    "parents": [
     "ckhkgxou"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Créateur d'armée",
+   "titre_fem": false
   },
   {
+   "court": "{nécromant|nécromante}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-necromancie",
@@ -1164,9 +1641,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti nécromant",
+   "titre_fem": false
   },
   {
+   "court": "{nécromancien|nécromancienne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "fs3zfsh6",
@@ -1176,9 +1658,14 @@
    "parents": [
     "ecole-necromancie"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Nécromancien",
+   "titre_fem": false
   },
   {
+   "court": "{nécromancien|nécromancienne}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "5k5yjfkz",
@@ -1188,9 +1675,14 @@
    "parents": [
     "fs3zfsh6"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître des morts",
+   "titre_fem": false
   },
   {
+   "court": "télékinésiste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-telekinesie",
@@ -1200,9 +1692,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti télékinésiste",
+   "titre_fem": false
   },
   {
+   "court": "télékinésiste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "onoalvwc",
@@ -1212,9 +1709,14 @@
    "parents": [
     "ecole-telekinesie"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Télékinésiste",
+   "titre_fem": false
   },
   {
+   "court": "télékinésiste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mp2i4ulf",
@@ -1224,9 +1726,14 @@
    "parents": [
     "onoalvwc"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître de la gravité",
+   "titre_fem": false
   },
   {
+   "court": "alchimiste",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-transmutation",
@@ -1236,9 +1743,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti alchimiste",
+   "titre_fem": false
   },
   {
+   "court": "{transmutateur|transmutatrice}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "k14b87z7",
@@ -1248,9 +1760,14 @@
    "parents": [
     "ecole-transmutation"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Transmutateur",
+   "titre_fem": false
   },
   {
+   "court": "{transmutateur|transmutatrice}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "813naqrr",
@@ -1260,9 +1777,14 @@
    "parents": [
     "k14b87z7"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Maître de la matière",
+   "titre_fem": false
   },
   {
+   "court": "mage de vie",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ecole-vie",
@@ -1272,9 +1794,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Apprenti mage de vie",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": null,
    "groupe": true,
    "id": "c3w01hat",
@@ -1284,9 +1811,14 @@
    "parents": [
     "magie"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "touche-à-tout",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "uh97ke34",
@@ -1296,9 +1828,14 @@
    "parents": [
     "c3w01hat"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Mage touche-à-tout",
+   "titre_fem": false
   },
   {
+   "court": "{érudit|érudite}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "whynrd78",
@@ -1308,9 +1845,14 @@
    "parents": [
     "uh97ke34"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Érudit des arcanes",
+   "titre_fem": false
   },
   {
+   "court": "archimage",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "o9iz2r92",
@@ -1320,9 +1862,14 @@
    "parents": [
     "whynrd78"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Archimage",
+   "titre_fem": false
   },
   {
+   "court": "mage de vie",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "5kss9csj",
@@ -1332,9 +1879,14 @@
    "parents": [
     "ecole-vie"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Mage de vie",
+   "titre_fem": false
   },
   {
+   "court": "mage de vie",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "nbxzre4q",
@@ -1344,9 +1896,14 @@
    "parents": [
     "5kss9csj"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Régisseur de la vie",
+   "titre_fem": false
   },
   {
+   "court": "à l'arc",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "degats-a-distance",
@@ -1356,9 +1913,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Archer",
+   "titre_fem": false
   },
   {
+   "court": "à l'arbalète",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "674uapot",
@@ -1368,9 +1930,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Arbalétrier",
+   "titre_fem": false
   },
   {
+   "court": "à la fronde",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "emzk3ewz",
@@ -1380,9 +1947,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Frondeur",
+   "titre_fem": false
   },
   {
+   "court": "à la sarbacane",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "7tb8bw9s",
@@ -1392,9 +1964,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Sarbacanier",
+   "titre_fem": false
   },
   {
+   "court": "à l'arquebuse",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "hi6gkpzw",
@@ -1404,9 +1981,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Arquebusier",
+   "titre_fem": false
   },
   {
+   "court": "au canon",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "4f29dawl",
@@ -1416,9 +1998,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Canonnier",
+   "titre_fem": false
   },
   {
+   "court": "au tromblon",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "usfefo5q",
@@ -1428,9 +2015,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Tromblonnier",
+   "titre_fem": false
   },
   {
+   "court": "sniper",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "vhl8stgh",
@@ -1440,9 +2032,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Sniper",
+   "titre_fem": false
   },
   {
+   "court": "sniper",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "ijxps20b",
@@ -1453,9 +2050,14 @@
     "vhl8stgh",
     "rha264n3"
    ],
-   "rang": 4
+   "rang": 4,
+   "seul": false,
+   "titre": "Maître sniper",
+   "titre_fem": false
   },
   {
+   "court": "sniper",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "n1yv29qr",
@@ -1466,9 +2068,14 @@
     "vhl8stgh",
     "pso4am5x"
    ],
-   "rang": 4
+   "rang": 4,
+   "seul": false,
+   "titre": "Sniper tacticien",
+   "titre_fem": false
   },
   {
+   "court": "sniper",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "o969o3js",
@@ -1480,9 +2087,14 @@
     "pso4am5x",
     "rha264n3"
    ],
-   "rang": 5
+   "rang": 5,
+   "seul": false,
+   "titre": "Tireur légendaire",
+   "titre_fem": false
   },
   {
+   "court": "{tireur|tireuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "rha264n3",
@@ -1492,9 +2104,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Maître de la salve",
+   "titre_fem": false
   },
   {
+   "court": "{harceleur|harceleuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "6r545ray",
@@ -1505,9 +2122,14 @@
     "rha264n3",
     "pso4am5x"
    ],
-   "rang": 4
+   "rang": 4,
+   "seul": false,
+   "titre": "Maître harceleur",
+   "titre_fem": false
   },
   {
+   "court": "{escarmoucheur|escarmoucheuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "pso4am5x",
@@ -1517,9 +2139,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Escarmoucheur",
+   "titre_fem": false
   },
   {
+   "court": "à la poudre noire",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "8xuypvlj",
@@ -1529,9 +2156,14 @@
    "parents": [
     "z2qn61fz"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Artificier",
+   "titre_fem": false
   },
   {
+   "court": "au tromblon",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "p0waxc9s",
@@ -1541,9 +2173,14 @@
    "parents": [
     "usfefo5q"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Tromblonnier d'élite",
+   "titre_fem": false
   },
   {
+   "court": "au canon",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "o11g5hjd",
@@ -1553,9 +2190,14 @@
    "parents": [
     "4f29dawl"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Canonnier d'élite",
+   "titre_fem": false
   },
   {
+   "court": "à l'arquebuse",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "qj1zxb19",
@@ -1565,9 +2207,14 @@
    "parents": [
     "hi6gkpzw"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Arquebusier d'élite",
+   "titre_fem": false
   },
   {
+   "court": "à la sarbacane",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "iz9tsjqq",
@@ -1577,9 +2224,14 @@
    "parents": [
     "7tb8bw9s"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Sarbacanier d'élite",
+   "titre_fem": false
   },
   {
+   "court": "à la fronde",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "l7b25hu3",
@@ -1589,9 +2241,14 @@
    "parents": [
     "emzk3ewz"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Frondeur d'élite",
+   "titre_fem": false
   },
   {
+   "court": "à l'arbalète",
+   "court_fem": true,
    "garder": null,
    "groupe": false,
    "id": "rt333lv6",
@@ -1601,9 +2258,14 @@
    "parents": [
     "674uapot"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Arbalétrier d'élite",
+   "titre_fem": false
   },
   {
+   "court": "à l'arc",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "maztg4cg",
@@ -1613,9 +2275,14 @@
    "parents": [
     "degats-a-distance"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Archer d'élite",
+   "titre_fem": false
   },
   {
+   "court": "{fonceur|fonceuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "degats-charge",
@@ -1625,9 +2292,14 @@
    "parents": [
     "degats"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Fonceur",
+   "titre_fem": false
   },
   {
+   "court": "{fonceur|fonceuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "z72t6w01",
@@ -1637,9 +2309,14 @@
    "parents": [
     "degats-charge"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Fonceur légendaire",
+   "titre_fem": false
   },
   {
+   "court": "{furtif|furtive}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "gzyrdx8t",
@@ -1649,9 +2326,14 @@
    "parents": [
     "degats"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Guerrier furtif",
+   "titre_fem": false
   },
   {
+   "court": "assassin",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "0ok4m47m",
@@ -1661,9 +2343,14 @@
    "parents": [
     "gzyrdx8t"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Assassin",
+   "titre_fem": false
   },
   {
+   "court": "ouvre-boîte",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "g9srqifh",
@@ -1673,9 +2360,14 @@
    "parents": [
     "vlsvf4a9"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Ouvre-boîte",
+   "titre_fem": false
   },
   {
+   "court": "ouvre-boîte",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "luidfx03",
@@ -1685,9 +2377,14 @@
    "parents": [
     "g9srqifh"
    ],
-   "rang": 4
+   "rang": 4,
+   "seul": false,
+   "titre": "Maître ouvre-boîte",
+   "titre_fem": false
   },
   {
+   "court": "perce-armure",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "bceiw1zl",
@@ -1698,9 +2395,14 @@
     "g9srqifh",
     "6k8hvhgx"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "Perce-armure",
+   "titre_fem": false
   },
   {
+   "court": "perce-armure",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "zza20xzh",
@@ -1712,9 +2414,14 @@
     "mjts24w5",
     "luidfx03"
    ],
-   "rang": 6
+   "rang": 6,
+   "seul": false,
+   "titre": "Destructeur d'armure",
+   "titre_fem": false
   },
   {
+   "court": "bélier",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "belier",
@@ -1725,9 +2432,14 @@
     "bceiw1zl",
     "degats-charge"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Bélier",
+   "titre_fem": false
   },
   {
+   "court": "{broyeur|broyeuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "broyeur",
@@ -1738,9 +2450,14 @@
     "3eo3yjmy",
     "bceiw1zl"
    ],
-   "rang": 3
+   "rang": 3,
+   "seul": false,
+   "titre": "Broyeur",
+   "titre_fem": false
   },
   {
+   "court": "bélier",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "belier-leg-charge",
@@ -1751,9 +2468,14 @@
     "belier",
     "z72t6w01"
    ],
-   "rang": 5
+   "rang": 5,
+   "seul": false,
+   "titre": "Bélier légendaire",
+   "titre_fem": false
   },
   {
+   "court": "bélier",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "belier-leg-pro",
@@ -1764,9 +2486,14 @@
     "belier",
     "luidfx03"
    ],
-   "rang": 5
+   "rang": 5,
+   "seul": false,
+   "titre": "Bélier légendaire",
+   "titre_fem": false
   },
   {
+   "court": "{écailleur|écailleuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "6k8hvhgx",
@@ -1776,9 +2503,14 @@
    "parents": [
     "vlsvf4a9"
    ],
-   "rang": 1
+   "rang": 1,
+   "seul": false,
+   "titre": "Écailleur",
+   "titre_fem": false
   },
   {
+   "court": "{écailleur|écailleuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mjts24w5",
@@ -1788,9 +2520,14 @@
    "parents": [
     "6k8hvhgx"
    ],
-   "rang": 4
+   "rang": 4,
+   "seul": false,
+   "titre": "Maître écailleur",
+   "titre_fem": false
   },
   {
+   "court": "{polyvalent|polyvalente}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "tpvoweqh",
@@ -1801,9 +2538,14 @@
     "degats",
     "z2qn61fz"
    ],
-   "rang": 2
+   "rang": 2,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "",
+   "court_fem": false,
    "garder": 1,
    "groupe": true,
    "id": "vlsvf4a9",
@@ -1813,9 +2555,14 @@
    "parents": [
     "degats"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "",
+   "titre_fem": false
   },
   {
+   "court": "{guérisseur|guérisseuse}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "8za94vzc",
@@ -1825,9 +2572,14 @@
    "parents": [
     "soin-de-zone"
    ],
-   "rang": 6
+   "rang": 6,
+   "seul": false,
+   "titre": "Grand guérisseur",
+   "titre_fem": false
   },
   {
+   "court": "{chevalier|chevalière}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "chevalier",
@@ -1838,9 +2590,14 @@
     "ih0ttxy3",
     "degats-charge"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Chevalier",
+   "titre_fem": false
   },
   {
+   "court": "{chevalier|chevalière}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "chevalier-leg",
@@ -1851,9 +2608,14 @@
     "chevalier",
     "z72t6w01"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Chevalier légendaire",
+   "titre_fem": false
   },
   {
+   "court": "{chevalier|chevalière}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "chevalier-contre",
@@ -1864,9 +2626,14 @@
     "chevalier",
     "qg7xl92m"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Chevalier de contre",
+   "titre_fem": false
   },
   {
+   "court": "{chevalier|chevalière}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "chevalier-leg-contre",
@@ -1877,9 +2644,14 @@
     "chevalier-leg",
     "chevalier-contre"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Chevalier légendaire",
+   "titre_fem": false
   },
   {
+   "court": "fer de lance",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "fer-de-lance",
@@ -1890,9 +2662,14 @@
     "ma5720wh",
     "degats-charge"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Fer de lance",
+   "titre_fem": false
   },
   {
+   "court": "fer de lance",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "fer-de-lance-leg",
@@ -1903,9 +2680,14 @@
     "fer-de-lance",
     "z72t6w01"
    ],
-   "rang": null
+   "rang": null,
+   "seul": false,
+   "titre": "Fer de lance légendaire",
+   "titre_fem": false
   },
   {
+   "court": "mastodonte",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mastodonte",
@@ -1916,9 +2698,14 @@
     "belier",
     "broyeur"
    ],
-   "rang": 3.5
+   "rang": 3.5,
+   "seul": false,
+   "titre": "Mastodonte",
+   "titre_fem": false
   },
   {
+   "court": "mastodonte",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mastodonte-leg-charge",
@@ -1929,9 +2716,14 @@
     "mastodonte",
     "belier-leg-charge"
    ],
-   "rang": 5.5
+   "rang": 5.5,
+   "seul": false,
+   "titre": "Mastodonte légendaire",
+   "titre_fem": false
   },
   {
+   "court": "mastodonte",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "mastodonte-leg-pro",
@@ -1942,9 +2734,14 @@
     "mastodonte",
     "belier-leg-pro"
    ],
-   "rang": 5.5
+   "rang": 5.5,
+   "seul": false,
+   "titre": "Mastodonte légendaire",
+   "titre_fem": false
   },
   {
+   "court": "{aumônier|aumônière}",
+   "court_fem": false,
    "garder": null,
    "groupe": false,
    "id": "aumonier-de-guerre",
@@ -1955,7 +2752,10 @@
     "lyfdowvc",
     "protection-a-distance"
    ],
-   "rang": 4.5
+   "rang": 4.5,
+   "seul": false,
+   "titre": "Aumônier de guerre",
+   "titre_fem": false
   }
  ],
  "tests": [
@@ -4240,5 +5040,275 @@
    "note": "Écailleur professionnel : percée contre les écailles au-dessus de cette base + 10 × étoiles (Idan, 2026-11-24, catégorie CAC) : « monte »).",
    "valeur": 160
   }
- ]
+ ],
+ "titres": {
+  "longueur_max": 40,
+  "suivants_max": 2,
+  "familles": [
+   "degats",
+   "soin",
+   "protection",
+   "commandement",
+   "controle-du-terrain",
+   "z2qn61fz",
+   "c3w01hat",
+   "entrave",
+   "ce-qu-il-est"
+  ],
+  "speciaux": [
+   {
+    "id": "sp-chat",
+    "tags": [
+     "a6g49n26",
+     "haiegjex"
+    ],
+    "titre": "Chat à neuf vies",
+    "court": "à neuf vies",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-bayard",
+    "tags": [
+     "a6g49n26",
+     "ko8qpwk8"
+    ],
+    "titre": "",
+    "court": "sans peur et sans malchance",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-trompe",
+    "tags": [
+     "a6g49n26",
+     "ojkh06zu"
+    ],
+    "titre": "Trompe-la-mort",
+    "court": "trompe-la-mort",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-inusable",
+    "tags": [
+     "regeneration",
+     "ojkh06zu"
+    ],
+    "titre": "Inusable",
+    "court": "inusable",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-courant",
+    "tags": [
+     "1b1t7f8y",
+     "mzc3vqjp"
+    ],
+    "titre": "Courant d'air",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-terreur",
+    "tags": [
+     "i2f9v5k9",
+     "3eo3yjmy"
+    ],
+    "titre": "Terreur des tavernes",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-escroc",
+    "tags": [
+     "481drl5g",
+     "r5i3na08"
+    ],
+    "titre": "Escroc de charme",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-langue",
+    "tags": [
+     "481drl5g",
+     "6zp3q2r1"
+    ],
+    "titre": "Langue d'argent",
+    "court": "à la langue d'argent",
+    "titre_fem": true,
+    "court_fem": true
+   },
+   {
+    "id": "sp-limier",
+    "tags": [
+     "6zp3q2r1",
+     "8a91th6k"
+    ],
+    "titre": "Fin limier",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-gueule",
+    "tags": [
+     "ma5720wh",
+     "481drl5g"
+    ],
+    "titre": "Grande gueule",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-lynx",
+    "tags": [
+     "eclaireur",
+     "8a91th6k"
+    ],
+    "titre": "Sentinelle",
+    "court": "à l'œil de lynx",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-muscles",
+    "tags": [
+     "3eo3yjmy",
+     "ojkh06zu"
+    ],
+    "titre": "Mur de muscles",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-faucon",
+    "tags": [
+     "vol",
+     "mzc3vqjp"
+    ],
+    "titre": "Faucon",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-canard",
+    "tags": [
+     "amphibie",
+     "vol"
+    ],
+    "titre": "Canard",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-jarret",
+    "tags": [
+     "gzyrdx8t",
+     "r5i3na08"
+    ],
+    "titre": "Coupe-jarret",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-gorge",
+    "tags": [
+     "0ok4m47m",
+     "r5i3na08"
+    ],
+    "titre": "Coupe-gorge",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-brute-fer",
+    "tags": [
+     "3eo3yjmy",
+     "protection-a-distance"
+    ],
+    "titre": "Grosse brute en fer",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-corps-fer",
+    "tags": [
+     "ojkh06zu",
+     "protection-a-distance"
+    ],
+    "titre": "Corps de fer dans une boîte en fer",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-fer-cheval",
+    "tags": [
+     "a6g49n26",
+     "protection-a-distance"
+    ],
+    "titre": "Fer à cheval",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-feu-follet",
+    "tags": [
+     "1b1t7f8y",
+     "eclaireur"
+    ],
+    "titre": "Feu follet",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   },
+   {
+    "id": "sp-galonnee",
+    "tags": [
+     "cpvembb3",
+     "3eo3yjmy"
+    ],
+    "titre": "Brute galonnée",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-mule",
+    "tags": [
+     "02p1prii",
+     "ko8qpwk8"
+    ],
+    "titre": "Tête de mule",
+    "court": "",
+    "titre_fem": true,
+    "court_fem": false
+   },
+   {
+    "id": "sp-augure",
+    "tags": [
+     "vol",
+     "a6g49n26"
+    ],
+    "titre": "Oiseau de bon augure",
+    "court": "",
+    "titre_fem": false,
+    "court_fem": false
+   }
+  ]
+ }
 }

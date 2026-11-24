@@ -5,6 +5,7 @@
   "questions": {
     "about": "Puis-je en savoir plus sur vous ?",
     "title": "Comment vous appelle-t-on, dans le métier ?",
+    "tags": "Quels sont vos points forts ?",
     "set1": "Quelle arme de corps à corps maniez-vous ?",
     "set2": "Quelle arme de tir avez-vous ?",
     "armor": "Quelle armure portez-vous ?",
@@ -124,6 +125,13 @@
     ],
     "no_title": [
       "Je n’ai pas encore de nom dans le métier."
+    ],
+    "tags": [
+      "Mes points forts ? {tags}. Rien que ça.",
+      "On dit de moi : {tags}. Et on a raison."
+    ],
+    "tags_none": [
+      "Mes points forts ? Je préfère vous laisser la surprise."
     ],
     "set1": [
       "Je me bats avec {armes}.",
@@ -455,6 +463,7 @@
     ],
     "questions": {
       "title": "Qu’est-ce qu’on dit {de lui|d’elle} ?",
+      "tags": "{Il|Elle} est {doué|douée} pour quoi ?",
       "affinity": "{Il|Elle} m’apprécierait, à ton avis ?"
     },
     "answers": {
@@ -463,6 +472,12 @@
       ],
       "no_title": [
         "{Prenom} ? On ne lui connaît pas encore de nom dans le métier."
+      ],
+      "tags": [
+        "{Prenom} ? {tags}, si tu veux mon avis."
+      ],
+      "no_tags": [
+        "{Prenom} ? Aucune idée. {Il|Elle} cache bien son jeu."
       ],
       "Hostile": [
         "{Prenom} ? Méfie-toi : {il|elle} ne t’aime pas, ça se voit."
@@ -474,5 +489,21 @@
         "{Prenom} ? {Il|Elle} t’aime bien, ça se voit."
       ]
     }
+  },
+  "steward": {
+    "option": "Demander l’avis de l’intendant",
+    "ask": "{Intendant}, qu’en pensez-vous ?",
+    "answers": [
+      "{Tags}. C’est ce que je vois.",
+      "À vue de nez ? {Tags}. Mais je peux me tromper."
+    ],
+    "none": [
+      "Rien de spécial. Je ne vois rien à en dire."
+    ]
+  },
+  "tag_sources": {
+    "candidate": "D’après {lui|elle}",
+    "keeper": "D’après le tavernier",
+    "steward": "D’après l’intendant"
   }
 }

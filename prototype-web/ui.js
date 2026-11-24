@@ -943,11 +943,16 @@ function evaluationContext(c){
   return {captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
 }
 // Son titre affiché : un seul tag (consolation comprise) devient son titre, avec la note du tag en infobulle (Idan,
-// 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; game-core/company-tags.js, titleTag) ; sinon le titre
-// calculé, au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »). {name, lines}.
+// 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; game-core/company-tags.js, titleTag) ; plusieurs : le
+// titre composé de ses tags (tagTitle) ; sans tags (pas d'intendant) : le titre calculé, au masculin pour tous (Idan,
+// 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »). {name, lines}.
 function characterTitle(c){
   const tags=typeof mercenaryTagList==="function"?mercenaryTagList(c):[];
   if(tags.length===1) return {name:tags[0].name,lines:tags[0].note?[tags[0].note]:[],tag:tags[0]};
+  // Plusieurs tags : le titre composé (Idan, 2026-11-24 : « Construis la nouvelle structure multi tags pour les titres »),
+  // les notes de ses tags en infobulle.
+  const composed=tags.length>1&&typeof companyTagRules==="function"?companyTagRules()?.tagTitle?.(tags.map(t=>t.id)):null;
+  if(composed?.name) return {name:composed.name,lines:composed.tags.map(t=>String(t.note||"").trim()).filter(Boolean),tags:composed.tags};
   const rules=profileRules();
   const context=evaluationContext(c);
   const result=rules?.evaluate(c,context);

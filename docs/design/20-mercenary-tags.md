@@ -269,7 +269,8 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
     « arbalétrier », « chanceux ») ; un tag sans titre ne mène pas (« De loin et de près » : « polyvalent ») ;
   - **qui mène** : ce qu'il fait avant ce qu'il est, dans l'ordre des familles (CAC, Tireur, Écoles de magie, Soigneur,
     Tank, Commandement, Sorts de soutien, Éclaireur et contrôle du terrain, Ce qu'il est) ; dans une famille, le rang le
-    plus haut, puis l'ordre de l'atelier ; un tag sans titre suit avec ce qu'il est ;
+    plus haut, puis le tag le plus précis (« Increvable » avant « Veinard »), puis l'ordre de l'atelier ; un tag sans
+    titre suit avec ce qu'il est ;
   - le titre du tag qui mène, puis **deux mots courts au plus**, « et » avant le dernier (« Arbalétrier éclaireur et
     chanceux ») ; un complément (« à neuf vies », « à l'œil de lynx ») va à la fin ; un mot déjà dit n'est pas répété ;
   - **36 caractères au plus** (mesuré : 38 tiennent sur une ligne de la fiche au survol, sans rapetisser) : un mot qui

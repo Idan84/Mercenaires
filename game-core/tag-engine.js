@@ -137,7 +137,7 @@
   // structure multi tags pour les titres […] il faut juste pas que le titre soit trop long ») ----
   // shown : ses tags affichés (ceux de doc.tags, ou un tag de consolation), dans l'ordre de l'atelier. Un seul tag : son nom.
   // Plusieurs : le « titre » du tag qui mène (ce qu'il fait avant ce qu'il est : l'ordre de doc.titres.familles, puis le
-  // rang le plus haut, puis l'ordre de l'atelier), puis les « mots courts » des suivants dans le même ordre, « et » avant le
+  // rang le plus haut, puis le tag le plus précis, puis l'ordre de l'atelier), puis les « mots courts » des suivants dans le même ordre, « et » avant le
   // dernier (un complément, « à neuf vies », en fin de titre), au plus suivants_max, sans dépasser longueur_max caractères
   // (un mot qui ne tient pas est sauté). Un tag sans
   // titre ne mène pas (il suit avec ce qu'il est) ; sans mot court, il ne suit pas. Un titre spécial (tous ses tags affichés) passe devant : son titre
@@ -154,7 +154,8 @@
     const lignee=id=>{ const acc=new Set([id]),pile=[id]; while(pile.length) for(const p of parId.get(pile.pop())?.parents||[]) if(!acc.has(p)){ acc.add(p); pile.push(p); } return acc; };
     // Un tag sans titre (un qualificatif, comme « De loin et de près ») se range avec ce qu'il est, après ce qu'il fait.
     const famille=t=>{ if(!txt(t.titre)) return fam.length; const a=lignee(t.id),i=fam.findIndex(f=>a.has(f)); return i<0?fam.length:i; };
-    const ordre=list.map((t,i)=>({t,i,f:famille(t),r:Number.isFinite(t.rang)?t.rang:0})).sort((a,b)=>a.f-b.f||b.r-a.r||a.i-b.i).map(x=>x.t);
+    // À rang égal, le tag le plus précis (le plus bas dans l'arbre : « Increvable » avant « Veinard »).
+    const ordre=list.map((t,i)=>({t,i,f:famille(t),r:Number.isFinite(t.rang)?t.rang:0,p:lignee(t.id).size})).sort((a,b)=>a.f-b.f||b.r-a.r||b.p-a.p||a.i-b.i).map(x=>x.t);
     const ids=new Set(ordre.map(t=>t.id));
     const speciaux=(Array.isArray(cfg.speciaux)?cfg.speciaux:[]).filter(s=>Array.isArray(s?.tags)&&s.tags.length>=2&&s.tags.every(id=>ids.has(id)))
       .map((s,i)=>({s,i})).sort((a,b)=>b.s.tags.length-a.s.tags.length||a.i-b.i).map(x=>x.s);

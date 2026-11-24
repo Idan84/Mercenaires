@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "name": "Tags de consolation",
+  "purpose": "Les tags de consolation (Idan, 2026-11-24 : « Ceux qui ont aucun tag en gagnent un au hasard parmi ces 8 ! Bravo à eux ! ») : un mercenaire ou un candidat sans aucun tag affiché en reçoit un, tiré au hasard une fois et gardé sur lui (game-core/company-tags.js ; doc 20).",
+  "rows": [
+    {
+      "code": "interimaire",
+      "nom": "Mercenaire intérimaire"
+    },
+    {
+      "code": "stagiaire",
+      "nom": "Stagiaire de première ligne"
+    },
+    {
+      "code": "eponges",
+      "nom": "Éponges à flèches"
+    },
+    {
+      "code": "porte_torches",
+      "nom": "Porte-torches"
+    },
+    {
+      "code": "pietaille",
+      "nom": "Piétaille à usage unique"
+    },
+    {
+      "code": "engrais",
+      "nom": "Engrais de champ de bataille"
+    },
+    {
+      "code": "chair_a_canon",
+      "nom": "Chair à canon"
+    },
+    {
+      "code": "prime_incertaine",
+      "nom": "Prime de retour très incertaine"
+    }
+  ]
+}

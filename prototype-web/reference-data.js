@@ -88,7 +88,8 @@ const REFERENCE_FILES = {
   renamedNames: "renamed-names.json",
   cultureColors: "culture-colors.json",
   cultureKits: "culture-kits.json",
-  tagWorkshop: "tag-workshop.json"
+  tagWorkshop: "tag-workshop.json",
+  tagConsolation: "tag-consolation.json"
 };
 
 async function loadReferenceData(base = "/data/") {

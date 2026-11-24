@@ -251,6 +251,11 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 - Seul le tag le plus bas de chaque branche s'affiche. Une catégorie peut ne garder que ses X tags de plus haut rang
   (Soigneur : garde 1) ; à égalité, l'ordre de la liste. Un tag ne s'efface que devant un enfant **réellement
   affiché** : un enfant écarté par une catégorie limitée ne cache pas son parent (Idan, 2026-11-24).
+- **Tags de consolation** (Idan, 2026-11-24 : « Ceux qui ont aucun tag en gagnent un au hasard parmi ces 8 ! Bravo à
+  eux ! ») : un mercenaire ou un candidat sans aucun tag affiché en reçoit un parmi Mercenaire intérimaire, Stagiaire de
+  première ligne, Éponges à flèches, Porte-torches, Piétaille à usage unique, Engrais de champ de bataille, Chair à
+  canon, Prime de retour très incertaine (`data/reference/tag-consolation.json`). Tiré une fois et gardé sur lui ; il
+  disparaît dès qu'il a un vrai tag. Sans intendant, toujours aucun tag.
 - **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
   bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
   Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte

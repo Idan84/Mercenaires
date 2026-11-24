@@ -265,27 +265,41 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
   Fais une passe des plus fréquents […] Faut juste pas que le titre soit trop long… l'objectif, c'est qu'il rentre sur
   une ligne dans la fiche au survol »). Plan de JC accepté (« je te fais confiance ») ; la règle est dans
   `game-core/tag-engine.js` (`composeTitle`), les données dans l'atelier (onglet « 4. Les titres ») :
-  - chaque tag a un **titre** (quand il mène : « Arbalétrier », « Veinard ») et un **mot court** (quand il suit :
-    « arbalétrier », « chanceux ») ; un tag sans titre ne mène pas (« De loin et de près » : « polyvalent ») ;
-  - **qui mène** : ce qu'il fait avant ce qu'il est, dans l'ordre des familles (CAC, Tireur, Écoles de magie, Soigneur,
-    Tank, Commandement, Sorts de soutien, Éclaireur et contrôle du terrain, Ce qu'il est) ; dans une famille, le rang le
-    plus haut, puis le tag le plus précis (« Increvable » avant « Veinard »), puis l'ordre de l'atelier ; un tag sans
-    titre suit avec ce qu'il est ;
-  - le titre du tag qui mène, puis **deux mots courts au plus**, « et » avant le dernier (« Arbalétrier éclaireur et
-    chanceux ») ; un complément (« à neuf vies », « à l'œil de lynx ») va à la fin ; un mot déjà dit n'est pas répété ;
-  - **36 caractères au plus** (mesuré : 38 tiennent sur une ligne de la fiche au survol, sans rapetisser) : un mot qui
-    ferait dépasser est sauté ; toutes les paires de tags tiennent (test) ;
+  - chaque tag a un **titre** (quand il mène : « Éclaireur », « Grosse brute ») et un **mot court** (quand il suit :
+    « à l'arc », « {chanceux|chanceuse} ») ; un tag sans titre ne mène pas (« De loin et de près » : « polyvalent ») ;
+  - **qui mène** : ce qu'il fait, puis comment il le fait, puis ce qu'il est, dans l'ordre des familles (CAC, Soigneur,
+    Tank, Commandement, Éclaireur et contrôle du terrain, Tireur, Écoles de magie, Sorts de soutien, Ce qu'il est) ; dans
+    une famille, le rang le plus haut, puis le tag le plus précis (« Increvable » avant « Veinard »), puis l'ordre de
+    l'atelier ; un tag sans titre suit avec ce qu'il est ;
+  - le titre du tag qui mène, puis **deux mots courts au plus** : d'abord les compléments (« à l'arc », « à neuf vies »),
+    puis les autres mots, « et » avant le dernier ; un mot déjà dit n'est pas répété ;
+  - retours d'Idan (2026-11-24) : « Eclaireur à l'arc généralement veinard », « Eclaireur à l'arbalète chanceuse »,
+    « Perce-armure sans peur et sans malchance », « Hopital ambulant (simplement, c'est mieux…) », « Grosse brute marche
+    pour les H & F alors que Cogneur, ça marche moins bien et faudrait mettre Cogneuse… Idem pour boîte de conserve ». D'où :
+    - **le tireur dit comment il le fait** : son mot court est son arme (« à l'arc », « à l'arbalète », « à la fronde »,
+      « au canon »…) ; le rôle mène (« Éclaireur à l'arc ») ;
+    - **les accords** : un mot s'accorde avec le dernier nom, titre ou complément (« fém. » dans l'atelier ; les deux
+      formes entre accolades, `{chanceux|chanceuse}`) : « Éclaireur à l'arbalète chanceuse », « Grosse brute
+      généralement veinarde » ; les mots qui marchent pour les hommes et les femmes reviennent en tête (Grosse brute, Boîte
+      de conserve, Force de la nature, Salamandre…) ;
+    - **les variantes** d'un mot court, séparées par « / » : la première qui tient (Veinard : « généralement
+      {veinard|veinarde} / {chanceux|chanceuse} ») ;
+    - **titre seul** : rien après (Hôpital ambulant) ;
+    - Veinard + Sans peur à la suite : « sans peur et sans malchance » (titre spécial) ;
+  - **40 caractères au plus** (Idan : « qu'il rentre sur une ligne dans la fiche au survol ») : jusqu'à 38, taille normale ;
+    au-delà, la police rapetisse un peu, toujours sur une ligne ; un mot qui ferait dépasser est sauté ; toutes les paires
+    de tags tiennent (test) ;
   - **titres spéciaux**, écrits à la main, quand tous leurs tags sont là : leur titre s'ils contiennent le tag qui mène
-    (Veinard + Increvable : « Chat à neuf vies »), sinon leur mot court à la suite (« Archer à neuf vies »). 17 pour
-    commencer : Chat à neuf vies, Trompe-la-mort, Inusable, Courant d'air, Ogre, Escroc de charme, Beau parleur, Fin
-    limier, Tribun, Guetteur (« à l'œil de lynx »), Mur de muscles, Faucon, Canard, Coupe-jarret, Coupe-gorge, Gros
-    veinard, Bourrin ;
-  - les titres restent au masculin ; l'infobulle de la fiche : les notes des tags du titre. Sans tags (sans intendant) :
-    le titre calculé (doc 19). La monture (« à cheval ») n'est plus ajoutée au titre tiré des tags.
+    (Veinard + Increvable : « Chat à neuf vies »), sinon leur mot court à la suite (« Archer à neuf vies »). 16 pour
+    commencer : Chat à neuf vies, sans peur et sans malchance, Trompe-la-mort, Inusable, Courant d'air, Terreur des
+    tavernes, Escroc de charme, Langue d'argent, Fin limier, Grande gueule, Sentinelle (« à l'œil de lynx »), Mur de
+    muscles, Faucon, Canard, Coupe-jarret, Coupe-gorge ;
+  - l'infobulle de la fiche : les notes des tags du titre. Sans tags (sans intendant) : le titre calculé (doc 19). La
+    monture (« à cheval ») n'est plus ajoutée au titre tiré des tags.
   - **Banc d'essai** (3 200 recrues, équipement de départ et T4, compagnie à 1 et 5 étoiles) : 2 603 recrues à plusieurs
-    tags à 1 étoile, 774 titres différents, aucun au-delà de 36 caractères ; les plus fréquents : Arbalétrier éclaireur,
-    Frondeur éclaireur, Éclaireur polyvalent, Archer éclaireur, Perce-armure robuste ; à 5 étoiles, Veinard sans peur,
-    Gros veinard, Trompe-la-mort, Mur de muscles.
+    tags à 1 étoile, 775 titres différents, aucun au-delà de 40 caractères ; les plus fréquents : Éclaireur à l'arbalète,
+    Éclaireur à la fronde, Éclaireur à l'arc, Éclaireur polyvalent, Hôpital ambulant ; à 5 étoiles, Veinard sans peur,
+    Grosse brute généralement veinarde, Trompe-la-mort, Mur de muscles.
 - **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
   bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
   Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte

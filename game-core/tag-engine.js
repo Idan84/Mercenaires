@@ -108,7 +108,7 @@
     let n=0; const id=uid||(()=>"x"+(++n));
     const tags=(Array.isArray(d?.tags)?d.tags:[]).map(t=>({id:String(t.id||id()),nom:String(t.nom||"Sans nom"),parents:Array.isArray(t.parents)?t.parents.map(String):[],groupe:Boolean(t.groupe),note:String(t.note||""),
       rang:t.rang===""||t.rang==null||!Number.isFinite(Number(t.rang))?null:Number(t.rang),garder:Number(t.garder)>=1?Math.floor(Number(t.garder)):null,inactif:Boolean(t.inactif),
-      titre:String(t.titre||""),court:String(t.court||"")}));
+      titre:String(t.titre||""),court:String(t.court||""),titre_fem:Boolean(t.titre_fem),court_fem:Boolean(t.court_fem),seul:Boolean(t.seul)}));
     const ids=new Set(tags.map(t=>t.id));
     for(const t of tags) t.parents=[...new Set(t.parents.filter(p=>ids.has(p)&&p!==t.id))];
     const liste=a=>Array.isArray(a)?[...new Set(a.map(String).filter(x=>ids.has(x)))]:[];
@@ -128,20 +128,29 @@
     // après le tag qui mène, l'ordre des familles (qui mène) et les titres spéciaux (au moins deux tags).
     const ti=d?.titres||{}, entier=(v,def,min,max)=>Number.isFinite(Number(v))?Math.min(max,Math.max(min,Math.round(Number(v)))):def;
     const titres={longueur_max:entier(ti.longueur_max,TITRE_LONGUEUR,10,200),suivants_max:entier(ti.suivants_max,TITRE_SUIVANTS,0,5),familles:liste(ti.familles),
-      speciaux:(Array.isArray(ti.speciaux)?ti.speciaux:[]).map(x=>({id:String(x?.id||id()),tags:liste(x?.tags),titre:String(x?.titre||""),court:String(x?.court||"")}))};
+      speciaux:(Array.isArray(ti.speciaux)?ti.speciaux:[]).map(x=>({id:String(x?.id||id()),tags:liste(x?.tags),titre:String(x?.titre||""),court:String(x?.court||""),
+        titre_fem:Boolean(x?.titre_fem),court_fem:Boolean(x?.court_fem)}))};
     return {tags,tests,constantes,titres};
   }
-  const TITRE_LONGUEUR=36, TITRE_SUIVANTS=2;
+  const TITRE_LONGUEUR=40, TITRE_SUIVANTS=2;
 
   // ---- Le titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; puis « Construis la nouvelle
   // structure multi tags pour les titres […] il faut juste pas que le titre soit trop long ») ----
   // shown : ses tags affichés (ceux de doc.tags, ou un tag de consolation), dans l'ordre de l'atelier. Un seul tag : son nom.
   // Plusieurs : le « titre » du tag qui mène (ce qu'il fait avant ce qu'il est : l'ordre de doc.titres.familles, puis le
-  // rang le plus haut, puis le tag le plus précis, puis l'ordre de l'atelier), puis les « mots courts » des suivants dans le même ordre, « et » avant le
-  // dernier (un complément, « à neuf vies », en fin de titre), au plus suivants_max, sans dépasser longueur_max caractères
-  // (un mot qui ne tient pas est sauté). Un tag sans
-  // titre ne mène pas (il suit avec ce qu'il est) ; sans mot court, il ne suit pas. Un titre spécial (tous ses tags affichés) passe devant : son titre
-  // s'il contient le tag qui mène, sinon son mot court à la suite. → {name, tags (ceux du titre), speciaux (ids)} ou null.
+  // rang le plus haut, puis le tag le plus précis, puis l'ordre de l'atelier), puis les « mots courts » des suivants dans
+  // le même ordre, au plus suivants_max, sans dépasser longueur_max caractères. Idan, 2026-11-24 (« Eclaireur à l'arc
+  // généralement veinard », « Eclaireur à l'arbalète chanceuse », « Perce-armure sans peur et sans malchance », « Hopital
+  // ambulant (simplement) », « Grosse brute marche pour les H & F ») :
+  // - les compléments (« à l'arc », « à neuf vies ») suivent le titre, puis les autres mots, « et » avant le dernier ;
+  // - un mot s'accorde avec le dernier nom (titre ou complément ; titre_fem, court_fem) : « {chanceux|chanceuse} » ;
+  // - un mot court peut avoir des variantes, « généralement {veinard|veinarde} / {chanceux|chanceuse} » : la première qui
+  //   tient ; aucune : le tag ne suit pas ;
+  // - un tag « seul » mène sans rien après (« Hôpital ambulant ») ;
+  // - un tag sans titre ne mène pas (il suit avec ce qu'il est) ; sans mot court, il ne suit pas ;
+  // - un titre spécial (tous ses tags affichés) passe devant : son titre s'il contient le tag qui mène, sinon son mot court
+  //   à la suite.
+  // → {name, tags (ceux du titre), speciaux (ids)} ou null.
   function composeTitle(doc,shown){
     const list=(Array.isArray(shown)?shown:[]).filter(Boolean);
     if(!list.length) return null;
@@ -160,28 +169,35 @@
     const speciaux=(Array.isArray(cfg.speciaux)?cfg.speciaux:[]).filter(s=>Array.isArray(s?.tags)&&s.tags.length>=2&&s.tags.every(id=>ids.has(id)))
       .map((s,i)=>({s,i})).sort((a,b)=>b.s.tags.length-a.s.tags.length||a.i-b.i).map(x=>x.s);
     const pris=new Set(), sp=[], deSes=s=>ordre.filter(t=>s.tags.includes(t.id));
-    let tete, teteTags;
+    // « {chanceux|chanceuse} » : la forme qui s'accorde ; « a / b » : les variantes, la première qui tient.
+    const accord=(v,fem)=>txt(String(v??"").replace(/\{([^{}|]*)\|([^{}]*)\}/g,(m,a,b)=>fem?b:a));
+    const variantes=v=>String(v??"").split(/\s+\/\s+/).map(x=>x.trim()).filter(Boolean);
+    let tete, teteFem, teteTags, seul=false;
     const meneur=ordre.find(t=>txt(t.titre))||null;
     const special=meneur&&speciaux.find(s=>txt(s.titre)&&s.tags.includes(meneur.id));
-    if(special){ tete=txt(special.titre); teteTags=deSes(special); sp.push(special); }
-    else if(meneur){ tete=txt(meneur.titre); teteTags=[meneur]; }
-    else{ tete=txt(ordre[0].nom); teteTags=[ordre[0]]; }
+    if(special){ teteFem=Boolean(special.titre_fem); tete=accord(special.titre,teteFem); teteTags=deSes(special); sp.push(special); }
+    else if(meneur){ teteFem=Boolean(meneur.titre_fem); tete=accord(meneur.titre,teteFem); teteTags=[meneur]; seul=Boolean(meneur.seul); }
+    else{ teteFem=false; tete=txt(ordre[0].nom); teteTags=[ordre[0]]; }
     for(const t of teteTags) pris.add(t.id);
-    // Les mots, « et » avant le dernier ; un complément (« à neuf vies », « de l'ombre ») vient toujours à la fin.
+    // Les compléments d'abord (« Éclaireur à l'arc »), puis les autres mots, « et » avant le dernier ; ils s'accordent avec
+    // le dernier nom (« Éclaireur à l'arbalète chanceuse »).
     const complement=t=>/^(à|au|aux|de|du|des|d['’])(\s|$)|^d['’]/i.test(t);
     const et=l=>l.length<2?l.join(""):l.slice(0,-1).join(", ")+" et "+l[l.length-1];
-    const phrase=s=>{ const mots=s.filter(x=>!complement(x.texte)).map(x=>x.texte),compl=s.filter(x=>complement(x.texte)).map(x=>x.texte);
-      return [tete,et(mots),et(compl)].filter(Boolean).join(" "); };
-    const dit=(s,mot)=>(" "+phrase(s)+" ").toLowerCase().includes(" "+mot.toLowerCase()+" ");
+    const phrase=s=>{ const compl=s.filter(x=>complement(x.texte)),mots=s.filter(x=>!complement(x.texte));
+      const fem=compl.length?compl[compl.length-1].fem:teteFem;
+      return [tete,et(compl.map(x=>accord(x.texte,x.fem))),et(mots.map(x=>accord(x.texte,fem)))].filter(Boolean).join(" "); };
+    const dit=(s,piece)=>{ const p=" "+phrase(s).toLowerCase()+" "; return [false,true].some(f=>{ const m=accord(piece.texte,f).toLowerCase(); return m&&p.includes(" "+m+" "); }); };
     const suivants=[];
     for(const t of ordre){
-      if(suivants.length>=nmax) break;
+      if(seul||suivants.length>=nmax) break;
       if(pris.has(t.id)) continue;
       const s=speciaux.find(x=>!sp.includes(x)&&txt(x.court)&&x.tags.includes(t.id)&&x.tags.every(id=>!pris.has(id)));
-      const piece=s?{texte:txt(s.court),tags:deSes(s),s}:txt(t.court)?{texte:txt(t.court),tags:[t],s:null}:null;
+      const base=s?{source:s.court,fem:Boolean(s.court_fem),tags:deSes(s),s}:txt(t.court)?{source:t.court,fem:Boolean(t.court_fem),tags:[t],s:null}:null;
+      if(!base) continue;
+      const essais=variantes(base.source).map(texte=>({...base,texte}));
+      if(essais.some(x=>dit(suivants,x))){ for(const x of base.tags) pris.add(x.id); continue; }
+      const piece=essais.find(x=>phrase([...suivants,x]).length<=max);
       if(!piece) continue;
-      if(dit(suivants,piece.texte)){ for(const x of piece.tags) pris.add(x.id); continue; }
-      if(phrase([...suivants,piece]).length>max) continue;
       suivants.push(piece);
       for(const x of piece.tags) pris.add(x.id);
       if(piece.s) sp.push(piece.s);

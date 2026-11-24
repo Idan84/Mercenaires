@@ -127,14 +127,15 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .trop{color:var(--danger);font-weight:600}
 .elimines li{font-size:15.5px}
 /* 4. Les titres (Idan, 2026-11-24) */
-.ti-ligne{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;padding:3px 0;border-bottom:1px dotted var(--line)}
+.ti-ligne{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto minmax(0,1.3fr) auto auto;gap:6px;align-items:center;padding:3px 0;border-bottom:1px dotted var(--line)}
+.ti-ligne .fem,.ti-special .fem{display:flex;align-items:center;gap:3px;font-size:13px;color:var(--ink-2);white-space:nowrap}
 .ti-ligne input{padding:4px 6px;font-size:15.5px}
 .ti-ligne .lib{display:grid;line-height:1.2;min-width:0}
 .ti-ligne .lib b{font-weight:600;color:var(--t-tag);overflow-wrap:anywhere}
 .ti-ligne.vide-forme .lib b::after{content:" · à remplir";color:var(--danger);font-weight:500;font-size:14px}
 .ti-entete{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)}
 .ti-groupe{margin:10px 0 2px;font:600 13px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--t-cat)}
-.ti-special{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dotted var(--line)}
+.ti-special{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dotted var(--line)}
 .ti-special select{font-size:14.5px;padding:3px 4px}
 .ti-familles{margin:6px 0;padding-left:22px;display:grid;gap:2px}
 .ti-familles li{display:flex;align-items:center;gap:6px}
@@ -195,8 +196,10 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
           <div class="puces" id="tag-parents"></div>
           <select id="tag-parent-ajout" aria-label="Ajouter un parent"></select>
         </div>
-        <div class="duo" id="tag-formes"><div class="champ"><label for="tag-titre">Titre (quand il mène)</label><input id="tag-titre" type="text" autocomplete="off" placeholder="Ex. : Archer"></div>
-          <div class="champ"><label for="tag-court">Mot court (quand il suit)</label><input id="tag-court" type="text" autocomplete="off" placeholder="Ex. : chanceux"></div></div>
+        <div id="tag-formes" style="display:grid;gap:6px"><div class="duo"><div class="champ"><label for="tag-titre">Titre (quand il mène)</label><input id="tag-titre" type="text" autocomplete="off" placeholder="Ex. : Archer"></div>
+          <div class="champ"><label for="tag-court">Mot court (quand il suit)</label><input id="tag-court" type="text" autocomplete="off" placeholder="Ex. : {chanceux|chanceuse}"></div></div>
+          <div class="actions"><label class="case"><input type="checkbox" id="tag-titre-fem"> Titre au féminin</label><label class="case"><input type="checkbox" id="tag-court-fem"> Mot court au féminin (un complément)</label>
+            <label class="case"><input type="checkbox" id="tag-seul"> Titre seul (rien après)</label></div></div>
         <div class="champ"><label for="tag-note">Note</label><textarea id="tag-note" placeholder="Ce que ce tag veut dire, d'où il vient…"></textarea></div>
         <div class="champ"><span class="lab">Éliminé par</span><div id="tag-par" class="aide"></div></div>
         <div class="actions">
@@ -285,10 +288,11 @@ details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
   <section id="v-titres" role="tabpanel" aria-labelledby="o-titres" class="layout" hidden>
     <div class="bloc">
       <div class="tete"><h2>Les titres</h2></div>
-      <p class="aide">Un seul tag : son nom devient le titre. Plusieurs : le <b>titre</b> du tag qui mène, puis les <b>mots courts</b> des suivants, « et » avant le dernier (« Archer éclaireur et chanceux »). Un mot court qui commence par « à » ou « de » va à la fin (« Archer à neuf vies »). Un mot qui ferait dépasser la longueur est sauté.</p>
+      <p class="aide">Un seul tag : son nom devient le titre. Plusieurs : le <b>titre</b> du tag qui mène, puis les <b>mots courts</b> des suivants. Un mot court qui commence par « à », « au » ou « de » est un complément : il vient juste après (« Éclaireur à l'arc »), puis les autres mots, « et » avant le dernier. Un mot qui ferait dépasser la longueur est sauté.</p>
+      <p class="aide"><b>Accords</b> : les mots s'accordent avec le dernier nom (cochez « fém. » pour un titre ou un complément au féminin) ; écrivez les deux formes entre accolades : <code>{chanceux|chanceuse}</code>. <b>Variantes</b> : séparées par « / », la première qui tient : <code>généralement {veinard|veinarde} / {chanceux|chanceuse}</code>. <b>Seul</b> : le titre se suffit, rien après (« Hôpital ambulant »).</p>
       <div class="duo">
         <div class="champ"><label for="ti-longueur">Longueur au plus (caractères)</label><input id="ti-longueur" type="number" min="10" max="200" step="1">
-          <p class="aide">36 : une ligne sur la fiche au survol.</p></div>
+          <p class="aide">40 : une ligne sur la fiche au survol (au-delà de 38, la police rapetisse un peu).</p></div>
         <div class="champ"><label for="ti-suivants">Mots courts au plus, après celui qui mène</label><input id="ti-suivants" type="number" min="0" max="5" step="1"></div>
       </div>
       <details class="sortie" open><summary><b>Qui mène</b> : ce qu'il fait avant ce qu'il est, dans cet ordre</summary>
@@ -462,6 +466,7 @@ function rendrePanneauTag(){
   $("tag-formes").hidden=t.groupe;
   if(document.activeElement!==$("tag-titre")) $("tag-titre").value=t.titre||"";
   if(document.activeElement!==$("tag-court")) $("tag-court").value=t.court||"";
+  $("tag-titre-fem").checked=Boolean(t.titre_fem); $("tag-court-fem").checked=Boolean(t.court_fem); $("tag-seul").checked=Boolean(t.seul);
   $("tag-groupe").checked=t.groupe; $("tag-inactif").checked=t.inactif;
   $("tag-garder-champ").hidden=!t.groupe; $("tag-rang-champ").hidden=t.groupe;
   if(document.activeElement!==$("tag-garder")) $("tag-garder").value=t.garder??"";
@@ -476,10 +481,12 @@ function rendrePanneauTag(){
   sel.disabled=!peutEcrire;
   const par=testsQuiEliminent(t.id); $("tag-par").textContent=(t.inactif?"Inactif : éliminé d'office. ":"")+(par.length?par.join(" · "):"Aucun test pour l'instant.");
   const b=$("tag-suppr"); b.textContent="Supprimer"; b.dataset.arme="";
-  for(const x of ["tag-nom","tag-note","tag-titre","tag-court","tag-groupe","tag-inactif","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
+  for(const x of ["tag-nom","tag-note","tag-titre","tag-court","tag-titre-fem","tag-court-fem","tag-seul","tag-groupe","tag-inactif","tag-garder","tag-rang","tag-enfant","tag-haut","tag-bas","tag-suppr"]) $(x).disabled=!peutEcrire;
 }
 $("tag-titre").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.titre=e.target.value; change(); majTitreEssai(); };
 $("tag-court").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.court=e.target.value; change(); majTitreEssai(); };
+for(const [id,k] of [["tag-titre-fem","titre_fem"],["tag-court-fem","court_fem"],["tag-seul","seul"]])
+  $(id).onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t[k]=e.target.checked; change(); majTitreEssai(); if(onglet==="titres") rendreFormes(); };
 $("tag-nom").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.nom=e.target.value; change(); rendreTags(); };
 $("tag-note").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.note=e.target.value; change(); rendreTags(); };
 $("tag-groupe").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.groupe=e.target.checked; change(); rendreTags(); rendrePanneauTag(); };
@@ -488,7 +495,7 @@ $("tag-inactif").onchange=e=>{ const t=tagPar(tagChoisi); if(!t) return; t.inact
 $("tag-garder").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=Number(e.target.value); t.garder=e.target.value.trim()!==""&&v>=1?Math.floor(v):null; change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-rang").oninput=e=>{ const t=tagPar(tagChoisi); if(!t) return; const v=e.target.value.trim(); t.rang=v===""||!Number.isFinite(Number(v))?null:Number(v); change(); rendreTags(); if(profil) rendreResultats(); };
 $("tag-parent-ajout").onchange=e=>{ const t=tagPar(tagChoisi); const p=e.target.value; if(!t||!p) return; t.parents.push(p); fermes.delete(p); memoFermes(); change(); rendreTags(); rendrePanneauTag(); };
-function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:"",inactif:false,titre:"",court:""};
+function nouveauTag(parent){ if(!peutEcrire) return; const t={id:uid(),nom:"Nouveau tag",parents:parent?[parent]:[],groupe:false,note:"",inactif:false,titre:"",court:"",titre_fem:false,court_fem:false,seul:false};
   const apres=parent?doc.tags.map(x=>x.parents.includes(parent)||x.id===parent).lastIndexOf(true):doc.tags.length-1;
   doc.tags.splice(apres+1,0,t); if(parent){ fermes.delete(parent); memoFermes(); } tagChoisi=t.id; change(); rendreTags(); rendrePanneauTag(); $("tag-nom").select(); $("tag-nom").focus(); }
 $("tag-ajout").onclick=()=>nouveauTag(null);
@@ -813,7 +820,7 @@ function rendreEssai(complet){
 // La composition est celle du jeu (game-core/tag-engine.js, composeTitle). ----------
 const vraisTags=()=>doc.tags.filter(t=>!t.groupe);
 const sansForme=()=>vraisTags().filter(t=>!String(t.titre||"").trim()&&!String(t.court||"").trim());
-const titres=()=>doc.titres||(doc.titres={longueur_max:36,suivants_max:2,familles:[],speciaux:[]});
+const titres=()=>doc.titres||(doc.titres={longueur_max:40,suivants_max:2,familles:[],speciaux:[]});
 let essaiTitre=(memo("atelier-essai-titre")||[]).filter(x=>typeof x==="string");
 function optionsTags(sel,libelle,exclus){
   sel.replaceChildren(el("option",{value:"",text:libelle}));
@@ -860,15 +867,18 @@ function rendreSpeciaux(){
     const titre=el("input",{type:"text",value:sp.titre,placeholder:"Titre (en tête)","aria-label":"Titre du titre spécial "+(i+1),disabled:!peutEcrire,oninput:e=>{ sp.titre=e.target.value; change(); majTitreEssai(); }});
     const court=el("input",{type:"text",value:sp.court,placeholder:"Mot court (à la suite)","aria-label":"Mot court du titre spécial "+(i+1),disabled:!peutEcrire,oninput:e=>{ sp.court=e.target.value; change(); majTitreEssai(); }});
     const x=el("button",{type:"button",class:"mini",text:"×","aria-label":"Supprimer le titre spécial "+(sp.titre||i+1),disabled:!peutEcrire,onclick:()=>{ ti.speciaux.splice(i,1); change(); rendreSpeciaux(); majTitreEssai(); }});
-    box.append(el("div",{class:"ti-special"},puces,titre,court,x));
+    box.append(el("div",{class:"ti-special"},puces,titre,caseFem(sp,"titre_fem","Titre spécial "+(i+1)+" au féminin"),court,caseFem(sp,"court_fem","Mot court du titre spécial "+(i+1)+" au féminin"),x));
   });
   $("ti-special-ajout").disabled=!peutEcrire;
 }
-$("ti-special-ajout").onclick=()=>{ if(!peutEcrire) return; titres().speciaux.push({id:uid(),tags:[],titre:"",court:""}); change(); rendreSpeciaux(); };
+$("ti-special-ajout").onclick=()=>{ if(!peutEcrire) return; titres().speciaux.push({id:uid(),tags:[],titre:"",court:"",titre_fem:false,court_fem:false}); change(); rendreSpeciaux(); };
+// Une case « fém. » (le titre ou le complément au féminin : les mots qui suivent s'accordent).
+function caseFem(o,k,libelle,apres){ return el("label",{class:"fem",title:libelle},el("input",{type:"checkbox",checked:Boolean(o[k]),"aria-label":libelle,disabled:!peutEcrire,
+  onchange:e=>{ o[k]=e.target.checked; change(); majTitreEssai(); apres?.(); }}),"fém."); }
 function rendreFormes(){
   const box=$("ti-tags"); box.replaceChildren();
   const q=norm($("ti-cherche").value);
-  box.append(el("div",{class:"ti-ligne ti-entete"},el("span",{text:"Tag"}),el("span",{text:"Titre (quand il mène)"}),el("span",{text:"Mot court (quand il suit)"})));
+  box.append(el("div",{class:"ti-ligne ti-entete"},el("span",{text:"Tag"}),el("span",{text:"Titre (quand il mène)"}),el("span",{text:""}),el("span",{text:"Mot court (quand il suit)"}),el("span",{text:""}),el("span",{text:""})));
   let groupe=null;
   for(const t of vraisTags()){
     if(q&&!norm(t.nom+" "+(t.titre||"")+" "+(t.court||"")).includes(q)) continue;
@@ -876,9 +886,14 @@ function rendreFormes(){
     if(g!==groupe){ groupe=g; box.append(el("div",{class:"ti-groupe",text:g||"Sans parent"})); }
     const ligne=el("div",{class:"ti-ligne"+(!String(t.titre||"").trim()&&!String(t.court||"").trim()?" vide-forme":"")});
     const maj=()=>{ ligne.classList.toggle("vide-forme",!String(t.titre||"").trim()&&!String(t.court||"").trim()); change(); majTitreEssai(); if(tagChoisi===t.id) rendrePanneauTag(); };
+    const majPanneau=()=>{ if(tagChoisi===t.id) rendrePanneauTag(); };
     ligne.append(el("span",{class:"lib"},el("b",{text:t.nom}),el("span",{class:"petit",text:chemin(t)})),
       el("input",{type:"text",value:t.titre||"",placeholder:"Ne mène pas","aria-label":"Titre de "+t.nom,disabled:!peutEcrire,oninput:e=>{ t.titre=e.target.value; maj(); }}),
-      el("input",{type:"text",value:t.court||"",placeholder:"Ne suit pas","aria-label":"Mot court de "+t.nom,disabled:!peutEcrire,oninput:e=>{ t.court=e.target.value; maj(); }}));
+      caseFem(t,"titre_fem","Titre de "+t.nom+" au féminin",majPanneau),
+      el("input",{type:"text",value:t.court||"",placeholder:"Ne suit pas","aria-label":"Mot court de "+t.nom,disabled:!peutEcrire,oninput:e=>{ t.court=e.target.value; maj(); }}),
+      caseFem(t,"court_fem","Mot court de "+t.nom+" au féminin",majPanneau),
+      el("label",{class:"fem",title:"Titre seul : rien après"},el("input",{type:"checkbox",checked:Boolean(t.seul),"aria-label":"Titre seul pour "+t.nom,disabled:!peutEcrire,
+        onchange:e=>{ t.seul=e.target.checked; change(); majTitreEssai(); majPanneau(); }}),"seul"));
     box.append(ligne);
   }
   if(box.children.length===1) box.append(el("p",{class:"aide",text:"Aucun tag ne correspond."}));

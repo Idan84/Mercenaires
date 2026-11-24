@@ -59,47 +59,58 @@ assert.equal(T("t5").si,null,"un test ne dépend pas de lui-même");
 assert.deepEqual(T("t5").oui,["a"]);
 assert.equal(sale.constantes[0].valeur,0);
 assert.equal(E.clean({tags:[{}]},{uid:()=>"u1"}).tags[0].id,"u1");
-assert.deepEqual(sale.tags.map(t=>[t.titre,t.court]),[["",""],["",""],["",""]],"pas encore de formes de titre");
-assert.deepEqual(sale.titres,{longueur_max:36,suivants_max:2,familles:[],speciaux:[]},"les réglages des titres par défaut");
-assert.deepEqual(E.clean({tags:[{id:"a"},{id:"b"}],titres:{longueur_max:"40",suivants_max:9,familles:["b","zz"],speciaux:[{id:"s",tags:["a","zz","b"],titre:"X"}]}}).titres,
-  {longueur_max:40,suivants_max:5,familles:["b"],speciaux:[{id:"s",tags:["a","b"],titre:"X",court:""}]},"bornés, tags inconnus retirés");
+assert.deepEqual(sale.tags.map(t=>[t.titre,t.court,t.titre_fem,t.court_fem,t.seul]),[["","",false,false,false],["","",false,false,false],["","",false,false,false]],"pas encore de formes de titre");
+assert.deepEqual(sale.titres,{longueur_max:40,suivants_max:2,familles:[],speciaux:[]},"les réglages des titres par défaut");
+assert.deepEqual(E.clean({tags:[{id:"a"},{id:"b"}],titres:{longueur_max:"44",suivants_max:9,familles:["b","zz"],speciaux:[{id:"s",tags:["a","zz","b"],titre:"X",court_fem:1}]}}).titres,
+  {longueur_max:44,suivants_max:5,familles:["b"],speciaux:[{id:"s",tags:["a","b"],titre:"X",court:"",titre_fem:false,court_fem:true}]},"bornés, tags inconnus retirés");
 
 // ---- Le titre (Idan, 2026-11-24) : un tag, son nom ; plusieurs, le titre du tag qui mène puis des mots courts ----
 {
   const d=E.clean({tags:[
-    {id:"fait",groupe:true},{id:"est",groupe:true},{id:"tir",parents:["fait"],groupe:true},{id:"cac",parents:["fait"],groupe:true},
-    {id:"archer",nom:"Archer",parents:["tir"],titre:"Archer",court:"archer",rang:1},
+    {id:"fait",groupe:true},{id:"est",groupe:true},{id:"role",groupe:true},{id:"tir",parents:["fait"],groupe:true},{id:"cac",parents:["fait"],groupe:true},
+    {id:"archer",nom:"Archer",parents:["tir"],titre:"Archer",court:"à l'arc",rang:1},
+    {id:"arbalete",nom:"Arbalétrier",parents:["tir"],titre:"Arbalétrier",court:"à l'arbalète",court_fem:true,rang:1},
+    {id:"eclaireur",nom:"Éclaireur",parents:["role"],titre:"Éclaireur",court:"{éclaireur|éclaireuse}"},
+    {id:"brute",nom:"Grosse Brute",parents:["est"],titre:"Grosse brute",titre_fem:true,court:"{costaud|costaude}"},
+    {id:"hopital",nom:"Un hôpital",parents:["role"],titre:"Hôpital ambulant",court:"guérisseur",seul:true},
     {id:"perce",nom:"Perce-armure",parents:["cac"],titre:"Perce-armure",court:"perce-armure",rang:2},
     {id:"loin",nom:"De loin et de près",parents:["cac","tir"],court:"polyvalent",rang:2},
-    {id:"veinard",nom:"Veinard",parents:["est"],titre:"Veinard",court:"chanceux"},
+    {id:"veinard",nom:"Veinard",parents:["est"],titre:"Veinard",court:"généralement {veinard|veinarde} / {chanceux|chanceuse}"},
     {id:"roc",nom:"Roc",parents:["est"],titre:"Roc",court:"robuste"},
     {id:"peur",nom:"Sans peur",parents:["est"],titre:"Casse-cou",court:"sans peur"},
     {id:"increvable",nom:"Increvable",parents:["est"],titre:"Increvable",court:"increvable"},
     {id:"muet",nom:"Muet",parents:["est"]}],
-    titres:{familles:["cac","tir","est"],speciaux:[{id:"chat",tags:["veinard","increvable"],titre:"Chat à neuf vies",court:"à neuf vies"},
-      {id:"trompe",tags:["veinard","roc"],titre:"Trompe-la-mort"}]}});
+    titres:{longueur_max:40,familles:["cac","role","tir","est"],speciaux:[{id:"chat",tags:["veinard","increvable"],titre:"Chat à neuf vies",court:"à neuf vies"},
+      {id:"trompe",tags:["veinard","roc"],titre:"Trompe-la-mort"},{id:"bayard",tags:["veinard","peur"],court:"sans peur et sans malchance"}]}});
   const p=id=>d.tags.find(t=>t.id===id), titre=(...ids)=>E.composeTitle(d,ids.map(p))?.name??null;
   assert.equal(titre(),null);
   assert.equal(titre("loin"),"De loin et de près","un seul tag : son nom");
-  assert.equal(titre("veinard","archer"),"Archer chanceux","ce qu'il fait mène, ce qu'il est suit");
-  assert.equal(titre("archer","perce"),"Perce-armure archer","l'ordre des familles (CAC, puis tir)");
-  assert.equal(titre("veinard","peur","roc","archer"),"Archer chanceux et sans peur","« et » avant le dernier, deux mots au plus");
-  assert.equal(titre("loin","perce","veinard"),"Perce-armure chanceux et polyvalent","sans titre, il suit avec ce qu'il est");
+  assert.equal(titre("veinard","archer"),"Archer généralement veinard","ce qu'il fait mène, ce qu'il est suit");
+  assert.equal(titre("archer","perce"),"Perce-armure à l'arc","l'ordre des familles (CAC, puis tir) ; l'arme en complément");
+  // Les exemples d'Idan (2026-11-24) : le complément d'abord, l'accord avec le dernier nom, la variante qui tient.
+  assert.equal(titre("archer","eclaireur","veinard"),"Éclaireur à l'arc généralement veinard");
+  assert.equal(titre("arbalete","eclaireur","veinard"),"Éclaireur à l'arbalète chanceuse","« généralement veinarde » ne tient pas");
+  assert.equal(titre("perce","veinard","peur"),"Perce-armure sans peur et sans malchance");
+  assert.equal(titre("hopital","eclaireur","veinard"),"Hôpital ambulant","un titre seul");
+  assert.equal(titre("brute","veinard"),"Grosse brute généralement veinarde","l'accord avec un titre au féminin");
+  assert.equal(titre("eclaireur","brute"),"Éclaireur costaud");
+  assert.equal(titre("roc","peur","archer"),"Archer robuste et sans peur","« et » avant le dernier, deux mots au plus");
+  assert.equal(titre("loin","perce","peur"),"Perce-armure sans peur et polyvalent","sans titre, il suit avec ce qu'il est");
   assert.equal(titre("loin","veinard"),"Veinard polyvalent","sans titre, il ne mène pas");
   assert.equal(titre("muet","veinard"),"Veinard","sans mot court, il ne suit pas");
   assert.equal(titre("muet","loin"),"De loin et de près","personne n'a de titre : le premier (rang le plus haut), sous son nom");
   assert.equal(titre("veinard","increvable"),"Chat à neuf vies","un titre spécial mène");
-  assert.equal(titre("archer","veinard","increvable","peur"),"Archer sans peur à neuf vies","ou suit, en complément à la fin");
-  assert.equal(titre("veinard","roc","archer"),"Archer chanceux et robuste","un titre spécial sans mot court ne suit pas : les tags suivent seuls");
+  assert.equal(titre("archer","veinard","increvable","roc"),"Archer à neuf vies robuste","ou suit, en complément, avant les autres mots");
+  assert.equal(titre("veinard","roc","archer"),"Archer généralement veinard et robuste","un titre spécial sans mot court ne suit pas : les tags suivent seuls");
   assert.deepEqual(E.composeTitle(d,["veinard","increvable","peur"].map(p)).speciaux,["chat"]);
   assert.deepEqual(E.composeTitle(d,["archer","veinard","muet"].map(p)).tags.map(t=>t.id),["archer","veinard"],"les tags du titre");
   // Une ligne sur la fiche au survol : un mot qui fait dépasser longueur_max est sauté.
   const court=E.clean({...d,titres:{...d.titres,longueur_max:24}});
   const t2=(...ids)=>E.composeTitle(court,ids.map(id=>court.tags.find(t=>t.id===id))).name;
-  assert.equal(t2("perce","veinard","peur"),"Perce-armure chanceux","« Perce-armure chanceux et sans peur » (34) ne tient pas");
-  assert.equal(t2("perce","roc","peur"),"Perce-armure robuste");
+  assert.equal(t2("perce","veinard","roc"),"Perce-armure chanceux","« Perce-armure trompe-la-mort »… non : spécial sans mot court ; la variante courte");
+  assert.equal(t2("perce","roc","peur"),"Perce-armure robuste","« Perce-armure robuste et sans peur » (34) ne tient pas");
   const un=E.clean({...d,titres:{...d.titres,suivants_max:1}});
-  assert.equal(E.composeTitle(un,["archer","veinard","peur"].map(id=>un.tags.find(t=>t.id===id))).name,"Archer chanceux");
+  assert.equal(E.composeTitle(un,["archer","roc","peur"].map(id=>un.tags.find(t=>t.id===id))).name,"Archer robuste");
 }
 
 // ---- L'arbre des tests ----

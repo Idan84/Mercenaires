@@ -197,7 +197,7 @@ assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses v
   assert.equal(tags.titleTag,titleTag);
   // Plusieurs tags : le titre composé (tag-engine.js, composeTitle), sur les données de l'atelier.
   const id=nom=>tags.doc.tags.find(t=>t.nom.trim()===nom).id;
-  assert.equal(tags.tagTitle([id("Arbalétrier"),id("Éclaireur"),id("Veinard")]).name,"Arbalétrier éclaireur et chanceux");
+  assert.equal(tags.tagTitle([id("Arbalétrier"),id("Éclaireur"),id("Veinard")]).name,"Éclaireur à l'arbalète chanceuse","l'exemple d'Idan (2026-11-24)");
   assert.equal(tags.tagTitle({affiches:[id("Veinard"),id("Roc")].map(x=>tags.doc.tags.find(t=>t.id===x))}).name,"Trompe-la-mort","un titre spécial");
   assert.equal(tags.tagTitle([]),null);
   assert.equal(tags.tagTitle([{id:"consolation-x",nom:"Stagiaire de la mort"}]).name,"Stagiaire de la mort","un tag de consolation");

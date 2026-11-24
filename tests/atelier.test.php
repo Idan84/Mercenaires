@@ -23,7 +23,7 @@ check(count($doc['tags']) > 50 && count($doc['tests']) > 20, 'la copie du dépô
 check(atelier_verifier($doc) === null, 'la copie du dépôt est acceptée : ' . (atelier_verifier($doc) ?? ''));
 check(atelier_verifier(['tags' => [], 'tests' => [], 'constantes' => []]) === null, 'un atelier vide');
 // Un atelier enregistré avant les titres (Idan, 2026-11-24) : ni titres, ni titre et mot court par tag.
-$ancien = ['tags' => array_map(function ($t) { unset($t['titre'], $t['court']); return $t; }, $copie['tags']), 'tests' => $copie['tests'], 'constantes' => $copie['constantes']];
+$ancien = ['tags' => array_map(function ($t) { unset($t['titre'], $t['court'], $t['titre_fem'], $t['court_fem'], $t['seul']); return $t; }, $copie['tags']), 'tests' => $copie['tests'], 'constantes' => $copie['constantes']];
 check(atelier_verifier($ancien) === null, 'un atelier d\'avant les titres : ' . (atelier_verifier($ancien) ?? ''));
 check(count($doc['titres']['speciaux']) > 5 && $doc['tags'][5]['titre'] !== '', 'les titres de la copie du dépôt');
 
@@ -50,6 +50,9 @@ check($mauvais(fn(&$d) => $d['constantes'][0]['valeur'] = INF) !== null, 'consta
 check($mauvais(fn(&$d) => $d['tags'] = ['a' => $d['tags'][0]]) !== null, 'tags : un objet');
 check($mauvais(function (&$d) { unset($d['tags'][3]['court']); }) !== null, 'un titre sans mot court');
 check($mauvais(fn(&$d) => $d['tags'][3]['titre'] = 3) !== null, 'titre en nombre');
+check($mauvais(fn(&$d) => $d['tags'][3]['seul'] = 1) !== null, 'titre seul en nombre');
+check($mauvais(function (&$d) { unset($d['tags'][3]['titre_fem']); }) !== null, 'titre sans son genre');
+check($mauvais(fn(&$d) => $d['titres']['speciaux'][0]['court_fem'] = 'oui') !== null, 'titre spécial : genre en texte');
 check($mauvais(fn(&$d) => $d['titres']['longueur_max'] = 5000) !== null, 'longueur des titres hors bornes');
 check($mauvais(fn(&$d) => $d['titres']['familles'] = ['<x>']) !== null, 'famille douteuse');
 check($mauvais(fn(&$d) => $d['titres']['speciaux'][0]['html'] = '<b>') !== null, 'clé inconnue dans un titre spécial');

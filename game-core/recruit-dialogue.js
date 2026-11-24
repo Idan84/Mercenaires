@@ -54,6 +54,9 @@
     const copy=reference?.tavernDialogue||{};
     const keeper=copy.tavernkeeper||{};
     const weaponForms=new Map((copy.weapons||[]).map(r=>[r.nom,r.avec_article]));
+    // Deux armes identiques (Idan, 2026-11-24 : « On met les deux, ça rend les dialogues plus vivants ! ») : « deux
+    // nunchakus » ou « un nunchaku dans chaque main », une chance sur deux, stable pour un même mercenaire.
+    const weaponPairs=new Map((copy.weapons||[]).map(r=>[r.nom,[r.deux,r.chaque_main].filter(Boolean)]));
     const constant=(code,fallback)=>{
       const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
@@ -74,8 +77,10 @@
     }
 
     // Ses armes, avec leur article : « l’épée longue et l’écu ».
-    function withArticles(names){
-      return (names||[]).map(name=>weaponForms.get(name)||String(name||"").toLocaleLowerCase("fr")).join(" et ");
+    function withArticles(names,m=null){
+      const list=names||[], pairs=list.length===2&&list[0]===list[1]?weaponPairs.get(list[0])||[]:[];
+      if(pairs.length) return pairs[hash((m?.id??m?.name??"")+"|paire|"+list[0])%pairs.length];
+      return list.map(name=>weaponForms.get(name)||String(name||"").toLocaleLowerCase("fr")).join(" et ");
     }
 
     // « de Feu », « d'Eau ».

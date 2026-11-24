@@ -195,155 +195,231 @@
   "weapons": [
     {
       "nom": "Arbalète",
-      "avec_article": "l’arbalète"
+      "avec_article": "l’arbalète",
+      "deux": "deux arbalètes",
+      "chaque_main": "une arbalète dans chaque main"
     },
     {
       "nom": "Arc",
-      "avec_article": "l’arc"
+      "avec_article": "l’arc",
+      "deux": "deux arcs",
+      "chaque_main": "un arc dans chaque main"
     },
     {
       "nom": "Arme d’hast double",
-      "avec_article": "l’arme d’hast double"
+      "avec_article": "l’arme d’hast double",
+      "deux": "deux armes d’hast doubles",
+      "chaque_main": "une arme d’hast double dans chaque main"
     },
     {
       "nom": "Arquebuse",
-      "avec_article": "l’arquebuse"
+      "avec_article": "l’arquebuse",
+      "deux": "deux arquebuses",
+      "chaque_main": "une arquebuse dans chaque main"
     },
     {
       "nom": "Bardiche",
-      "avec_article": "la bardiche"
+      "avec_article": "la bardiche",
+      "deux": "deux bardiches",
+      "chaque_main": "une bardiche dans chaque main"
     },
     {
       "nom": "Bâton court",
-      "avec_article": "le bâton court"
+      "avec_article": "le bâton court",
+      "deux": "deux bâtons courts",
+      "chaque_main": "un bâton court dans chaque main"
     },
     {
       "nom": "Bâton long",
-      "avec_article": "le bâton long"
+      "avec_article": "le bâton long",
+      "deux": "deux bâtons longs",
+      "chaque_main": "un bâton long dans chaque main"
     },
     {
       "nom": "Canon à main",
-      "avec_article": "le canon à main"
+      "avec_article": "le canon à main",
+      "deux": "deux canons à main",
+      "chaque_main": "un canon à main dans chaque main"
     },
     {
       "nom": "Dague",
-      "avec_article": "la dague"
+      "avec_article": "la dague",
+      "deux": "deux dagues",
+      "chaque_main": "une dague dans chaque main"
     },
     {
       "nom": "Estoc",
-      "avec_article": "l’estoc"
+      "avec_article": "l’estoc",
+      "deux": "deux estocs",
+      "chaque_main": "un estoc dans chaque main"
     },
     {
       "nom": "Fléau d’armes",
-      "avec_article": "le fléau d’armes"
+      "avec_article": "le fléau d’armes",
+      "deux": "deux fléaux d’armes",
+      "chaque_main": "un fléau d’armes dans chaque main"
     },
     {
       "nom": "Fouet",
-      "avec_article": "le fouet"
+      "avec_article": "le fouet",
+      "deux": "deux fouets",
+      "chaque_main": "un fouet dans chaque main"
     },
     {
       "nom": "Fronde",
-      "avec_article": "la fronde"
+      "avec_article": "la fronde",
+      "deux": "deux frondes",
+      "chaque_main": "une fronde dans chaque main"
     },
     {
       "nom": "Épée à deux mains",
-      "avec_article": "l’épée à deux mains"
+      "avec_article": "l’épée à deux mains",
+      "deux": "deux épées à deux mains",
+      "chaque_main": "une épée à deux mains dans chaque main"
     },
     {
       "nom": "Hache de guerre",
-      "avec_article": "la hache de guerre"
+      "avec_article": "la hache de guerre",
+      "deux": "deux haches de guerre",
+      "chaque_main": "une hache de guerre dans chaque main"
     },
     {
       "nom": "Hache double",
-      "avec_article": "la hache double"
+      "avec_article": "la hache double",
+      "deux": "deux haches doubles",
+      "chaque_main": "une hache double dans chaque main"
     },
     {
       "nom": "Hachette",
-      "avec_article": "la hachette"
+      "avec_article": "la hachette",
+      "deux": "deux hachettes",
+      "chaque_main": "une hachette dans chaque main"
     },
     {
       "nom": "Hallebarde",
-      "avec_article": "la hallebarde"
+      "avec_article": "la hallebarde",
+      "deux": "deux hallebardes",
+      "chaque_main": "une hallebarde dans chaque main"
     },
     {
       "nom": "Katana",
-      "avec_article": "le katana"
+      "avec_article": "le katana",
+      "deux": "deux katanas",
+      "chaque_main": "un katana dans chaque main"
     },
     {
       "nom": "Kukri",
-      "avec_article": "le kukri"
+      "avec_article": "le kukri",
+      "deux": "deux kukris",
+      "chaque_main": "un kukri dans chaque main"
     },
     {
       "nom": "Lance",
-      "avec_article": "la lance"
+      "avec_article": "la lance",
+      "deux": "deux lances",
+      "chaque_main": "une lance dans chaque main"
     },
     {
       "nom": "Marteau de guerre",
-      "avec_article": "le marteau de guerre"
+      "avec_article": "le marteau de guerre",
+      "deux": "deux marteaux de guerre",
+      "chaque_main": "un marteau de guerre dans chaque main"
     },
     {
       "nom": "Masse d’armes",
-      "avec_article": "la masse d’armes"
+      "avec_article": "la masse d’armes",
+      "deux": "deux masses d’armes",
+      "chaque_main": "une masse d’armes dans chaque main"
     },
     {
       "nom": "Massue",
-      "avec_article": "la massue"
+      "avec_article": "la massue",
+      "deux": "deux massues",
+      "chaque_main": "une massue dans chaque main"
     },
     {
       "nom": "Nunchaku",
-      "avec_article": "le nunchaku"
+      "avec_article": "le nunchaku",
+      "deux": "deux nunchakus",
+      "chaque_main": "un nunchaku dans chaque main"
     },
     {
       "nom": "Pavois",
-      "avec_article": "le pavois"
+      "avec_article": "le pavois",
+      "deux": "deux pavois",
+      "chaque_main": "un pavois dans chaque main"
     },
     {
       "nom": "Pic de guerre",
-      "avec_article": "le pic de guerre"
+      "avec_article": "le pic de guerre",
+      "deux": "deux pics de guerre",
+      "chaque_main": "un pic de guerre dans chaque main"
     },
     {
       "nom": "Pistolet",
-      "avec_article": "le pistolet"
+      "avec_article": "le pistolet",
+      "deux": "deux pistolets",
+      "chaque_main": "un pistolet dans chaque main"
     },
     {
       "nom": "Rondache",
-      "avec_article": "la rondache"
+      "avec_article": "la rondache",
+      "deux": "deux rondaches",
+      "chaque_main": "une rondache dans chaque main"
     },
     {
       "nom": "Sabre",
-      "avec_article": "le sabre"
+      "avec_article": "le sabre",
+      "deux": "deux sabres",
+      "chaque_main": "un sabre dans chaque main"
     },
     {
       "nom": "Sai",
-      "avec_article": "le sai"
+      "avec_article": "le sai",
+      "deux": "deux sais",
+      "chaque_main": "un sai dans chaque main"
     },
     {
       "nom": "Sarbacane",
-      "avec_article": "la sarbacane"
+      "avec_article": "la sarbacane",
+      "deux": "deux sarbacanes",
+      "chaque_main": "une sarbacane dans chaque main"
     },
     {
       "nom": "Trident",
-      "avec_article": "le trident"
+      "avec_article": "le trident",
+      "deux": "deux tridents",
+      "chaque_main": "un trident dans chaque main"
     },
     {
       "nom": "Tromblon",
-      "avec_article": "le tromblon"
+      "avec_article": "le tromblon",
+      "deux": "deux tromblons",
+      "chaque_main": "un tromblon dans chaque main"
     },
     {
       "nom": "Écu",
-      "avec_article": "l’écu"
+      "avec_article": "l’écu",
+      "deux": "deux écus",
+      "chaque_main": "un écu dans chaque main"
     },
     {
       "nom": "Épée courte",
-      "avec_article": "l’épée courte"
+      "avec_article": "l’épée courte",
+      "deux": "deux épées courtes",
+      "chaque_main": "une épée courte dans chaque main"
     },
     {
       "nom": "Épée double",
-      "avec_article": "l’épée double"
+      "avec_article": "l’épée double",
+      "deux": "deux épées doubles",
+      "chaque_main": "une épée double dans chaque main"
     },
     {
       "nom": "Épée longue",
-      "avec_article": "l’épée longue"
+      "avec_article": "l’épée longue",
+      "deux": "deux épées longues",
+      "chaque_main": "une épée longue dans chaque main"
     }
   ],
   "tavernkeeper": {

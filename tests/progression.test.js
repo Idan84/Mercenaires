@@ -35,7 +35,7 @@ assert.deepEqual(real.constants,{
   dexterityChain:200,dodgeWoundTaken:40,enduranceHeavyArmorHex:8,willCourageHeld:80,willRecovery:80,intelligenceWorstChoice:120,
   skillWeaponAttack:40,skillWeaponHit:20,skillWeaponWound:20,skillTwoHandedAttack:40,skillOneHandedAttack:40,skillDualSequence:40,skillShieldBlock:40,
   skillIntimidation:200,mountReturn:200,regenerationBurn:120,skillRegressionRatio:0.5,
-  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8,
+  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,skillFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8,
   // XP de combat (Idan, 2026-11-08) : valeurs telles quelles (pas de doublement) ; multiplicateur d'étoiles.
   speedHexMoved:1,constitutionDamageTaken:2,enduranceContactTurn:10,perceptionLongShot:20,willSpellResisted:80,charismaAuraHold:40,
   // Magie en armure (Idan, 2026-11-09 : « passons à 80xp ») : par sort raté tant que l'équipement gêne encore.
@@ -177,11 +177,19 @@ near(learner.skills.martial["Lames longues"],30+466/610,"+100 XP depuis 30,6");
 near(learner.skills.martial["Épée longue"],rules.continuousLevel(rules.xpForContinuous(99.9)+10000),"pas de plafond à 100");
 assert.ok(learner.skills.martial["Épée longue"]>100,"au-delà de 100");
 assert.ok(learner.skills.martial["Combat à mains nues"]>132.4,"une valeur au-delà de 100 monte encore");
-assert.equal(learner.skills.martial["Dague"],0,"jamais sous 0");
+assert.equal(learner.skills.martial["Dague"],0,"une compétence à 0 (catégorie non pratiquée) n'en perd pas davantage");
 assert.deepEqual(sk.map(c=>c.name),["Lames longues","Épée longue","Combat à mains nues","Dague"],"compétence inconnue ignorée");
 assert.equal(sk[0].family,"skills");
 rules.apply(learner,{skills:{martial:{"Combat à mains nues":-200}}});
 assert.ok(learner.skills.martial["Combat à mains nues"]<132.4,"et elle peut redescendre");
+// Plancher à 1 (Idan, 2026-11-23 : « fais en sorte qu'on ne puisse pas perdre d'xp en dessous de 1 ») : une perte ne
+// descend pas sous 1 ; une compétence déjà plus bas n'en perd pas davantage.
+{
+  const loser={skills:{martial:{"Hache de guerre":5,"Haches":0.5,"Écu":1}}};
+  rules.apply(loser,{skills:{martial:{"Hache de guerre":-100000,"Haches":-100,"Écu":-50}}});
+  assert.deepEqual(loser.skills.martial,{"Hache de guerre":1,"Haches":0.5,"Écu":1},"pas sous 1, ni plus bas qu'avant");
+  assert.equal(real.constants.skillFloor,1,"progression.skills.floor");
+}
 rules.apply(learner,{skills:{martial:{"Lames longues":10}}});
 near(learner.xp.skills.martial["Lames longues"],9366+100+10,"l'XP gardée sert de base à la mission suivante");
 

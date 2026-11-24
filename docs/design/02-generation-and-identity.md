@@ -193,6 +193,10 @@ En fin de génération, après le domaine, une **arme précise**, une **catégor
 mains, deux armes, Boucliers) ou une **école** à **20 ou moins**, 0 compris, passe à **1** : « jamais pratiqué »
 (« Non pratiquée » dans la trace de génération). **Aucun sort ne se tire dans une école à 20 ou moins.**
 
+Une **catégorie d’arme** non pratiquée passe à **0**, pas à 1 (Idan, 2026-11-23 : « Fais passer les armes à 1 ») : sur
+la fiche, une arme montre arme + catégorie (doc 03), et une arme jamais pratiquée y vaut 1 + 0 = **1**. Boucliers est un
+style : il reste à 1. Constante `generation.skills.unpracticed_category_value`.
+
 ### Camp
 
 `Camp = (1 + (Charisme + Intelligence) / 100) × 6D6`.

@@ -237,9 +237,9 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 
 ## 11 — La refonte (atelier des tags, 2026-11-20 à 22)
 
-> Travail en cours d'Idan dans l'artefact « Atelier des tags ». Copie de ses données du 2026-11-22 :
-> `data/reference/tag-workshop.json` ; l'outil se reconstruit avec `scripts/atelier-tags/` (voir son README). Le jeu
-> applique encore les §2 à §10 ; cette refonte n'y est pas branchée (§12).
+> Conçu par Idan dans l'artefact « Atelier des tags », puis basculé dans le Design Lab (§12). Copie de ses données du
+> 2026-11-24 (la bascule) : `data/reference/tag-workshop.json` ; l'outil se reconstruit avec `scripts/atelier-tags/`
+> (voir son README). Le jeu tire ses tags de cet atelier (§12).
 
 ### Les principes (Idan)
 
@@ -249,7 +249,24 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
 - Des **tests** éliminent des tags. Ils sont rangés en arbre (« posé seulement si ») : un test qui n'est pas posé
   n'élimine rien.
 - Seul le tag le plus bas de chaque branche s'affiche. Une catégorie peut ne garder que ses X tags de plus haut rang
-  (Soigneur : garde 1) ; à égalité, l'ordre de la liste.
+  (Soigneur : garde 1) ; à égalité, l'ordre de la liste. Un tag ne s'efface que devant un enfant **réellement
+  affiché** : un enfant écarté par une catégorie limitée ne cache pas son parent (Idan, 2026-11-24).
+- **Tags de consolation** (Idan, 2026-11-24 : « Ceux qui ont aucun tag en gagnent un au hasard parmi ces 8 ! Bravo à
+  eux ! ») : un mercenaire ou un candidat sans aucun tag affiché en reçoit un parmi Mercenaire intérimaire, Stagiaire de
+  première ligne, Éponges à flèches, Porte-torches, Piétaille à usage unique, Engrais de champ de bataille, Chair à
+  canon, Prime de retour très incertaine (`data/reference/tag-consolation.json`). Tiré une fois et gardé sur lui ; il
+  disparaît dès qu'il a un vrai tag. Sans intendant, toujours aucun tag.
+- **Un seul tag devient le titre** (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») : un mercenaire
+  qui n'a qu'un tag affiché, tag de consolation compris, porte ce tag comme titre, sur la fiche (la note du tag en
+  infobulle), la fiche au survol et la fiche complète ; avec plusieurs tags, ou aucun (sans intendant), le titre calculé
+  (doc 19). Le candidat aussi (« oui, candidats aussi ») : son titre suit les tags qu'il annonce en se vantant, et celui
+  que donne le tavernier, les tags sur ses estimations (`game-core/company-tags.js`, `titleTag`, `describedTags`).
+- **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
+  bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
+  Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte
+  professionnel : deux tags du même nom, un seul s'affiche). Rangs des Armures : Ouvre-boîte et Écailleur 1,
+  Perce-armure 2, Bélier 3, professionnels 4, Bélier légendaire 5, Destructeur d'armure 6 ; un spécialiste plus haut
+  (Écailleur professionnel, Destructeur) fait s'effacer le Bélier, et la charge reste visible.
 - Les seuils suivent les **étoiles de la compagnie** (on juge un vétéran, pas une recrue) et sont des constantes
   réglables.
 - Les niveaux 1 / 2 / 3 des tags sont retirés du jeu (2026-11-20).
@@ -342,23 +359,23 @@ avec son **arme de tir la plus efficace** (le set qui fait le plus de dégâts c
 | 1 | Frondeur | Tireur |
 | 1 | Sarbacanier | Tireur |
 | 1 | Arquebusier | Tireur |
-| 1 | Canonier | Tireur |
+| 1 | Canonnier | Tireur |
 | 1 | Tromblonnier | Tireur |
 | 2 | Tromblonnier d'élite | Tromblonnier |
-| 2 | Canonier d'élite | Canonier |
+| 2 | Canonnier d'élite | Canonnier |
 | 2 | Arquebusier d'élite | Arquebusier |
 | 2 | Sarbacanier d'éli | Sarbacanier |
 | 2 | Frondeur d'élite | Frondeur |
 | 2 | Arbalétrier d'élite | Arbalétrier |
 | 2 | Archer d'élite | Archer |
 | 3 | Sniper | Tireur |
-| 3 | Maitre de la salve | Tireur |
+| 3 | Maître de la salve | Tireur |
 | 3 | Tireur d'escarmouche | Tireur |
-| 3 | Maitre de la poudre noire | Tireur |
-| 4 | Maitre sniper | Sniper, Maitre de la salve |
+| 3 | Maître de la poudre noire | Tireur |
+| 4 | Maître sniper | Sniper, Maître de la salve |
 | 4 | Sniper tacticien | Sniper, Tireur d'escarmouche |
-| 4 | Maître harceleur | Maitre de la salve, Tireur d'escarmouche |
-| 5 | Grand maître du combat à distance | Sniper, Tireur d'escarmouche, Maitre de la salve |
+| 4 | Maître harceleur | Maître de la salve, Tireur d'escarmouche |
+| 5 | Grand maître du combat à distance | Sniper, Tireur d'escarmouche, Maître de la salve |
 
 ### Les tests, dans l'ordre de l'arbre
 
@@ -387,15 +404,15 @@ la réponse est non. Un calcul vide est à écrire.
 | Bolide : Vitesse exceptionnelle ? | Vitesse > 100 + étoiles de la compagnie (équipement compris). | `carac.vitesse > base_carac_exceptionnelle + compagnie.etoiles` | Bolide |
 | → Flash : Vitesse hors norme et la meilleure de la compagnie ? | Vitesse > (100 + étoiles de la compagnie) × 1,5, et la meilleure Vitesse de la compagnie (ex æquo compris). | `carac.vitesse > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.vitesse >= compagnie.max.carac.vitesse` | Flash |
 | Sans peur : Courage exceptionnel ? | Courage > 100 + étoiles de la compagnie (équipement compris). | `carac.courage > base_carac_exceptionnelle + compagnie.etoiles` | Sans peur |
-| → Tête brulée : Courage hors norme et le meilleur de la compagnie ? | Courage > (100 + étoiles de la compagnie) × 1,5, et le meilleur Courage de la compagnie (ex æquo compris). | `carac.courage > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.courage >= compagnie.max.carac.courage` | Tête brulée |
+| → Tête brûlée : Courage hors norme et le meilleur de la compagnie ? | Courage > (100 + étoiles de la compagnie) × 1,5, et le meilleur Courage de la compagnie (ex æquo compris). | `carac.courage > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.courage >= compagnie.max.carac.courage` | Tête brûlée |
 | Volonté de Fer : Volonté exceptionnelle ? | Volonté > 100 + étoiles de la compagnie (équipement compris). | `carac.volonte > base_carac_exceptionnelle + compagnie.etoiles` | Volonté de Fer |
 | → Volonté de diamant : Volonté hors norme et la meilleure de la compagnie ? | Volonté > (100 + étoiles de la compagnie) × 1,5, et la meilleure Volonté de la compagnie (ex æquo compris). | `carac.volonte > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.volonte >= compagnie.max.carac.volonte` | Volonté de diamant |
 | Effrayant : Intimidation exceptionnelle ? | Intimidation > 100 + étoiles de la compagnie (équipement compris). | `comp.intimidation > base_carac_exceptionnelle + compagnie.etoiles` | Effrayant |
 | → Terrorisant : Intimidation hors norme et la meilleure de la compagnie ? | Intimidation > (100 + étoiles de la compagnie) × 1,5, et la meilleure Intimidation de la compagnie (ex æquo compris). | `comp.intimidation > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et comp.intimidation >= compagnie.max.comp.intimidation` | Terrorisant |
 | Séducteur : Charisme exceptionnel ? | Charisme > 100 + étoiles de la compagnie (équipement compris). | `carac.charisme > base_carac_exceptionnelle + compagnie.etoiles` | Séducteur |
-| → Irresistible : Charisme hors norme et le meilleur de la compagnie ? | Charisme > (100 + étoiles de la compagnie) × 1,5, et le meilleur Charisme de la compagnie (ex æquo compris). | `carac.charisme > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.charisme >= compagnie.max.carac.charisme` | Irresistible |
+| → Irrésistible : Charisme hors norme et le meilleur de la compagnie ? | Charisme > (100 + étoiles de la compagnie) × 1,5, et le meilleur Charisme de la compagnie (ex æquo compris). | `carac.charisme > (base_carac_exceptionnelle + compagnie.etoiles) * facteur_carac_superieure et carac.charisme >= compagnie.max.carac.charisme` | Irrésistible |
 | Ignifugé : Résistance au feu exceptionnelle ? | Protection contre le feu (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le feu et se soigne de ce qui dépasse. | `res.feu > base_resistance_exceptionnelle + compagnie.etoiles` | Ignifugé  |
-| Paratonerre : Résistance à la foudre exceptionnelle ? | Protection contre la foudre (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe la foudre et se soigne de ce qui dépasse. | `res.foudre > base_resistance_exceptionnelle + compagnie.etoiles` | Paratonerre |
+| Paratonnerre : Résistance à la foudre exceptionnelle ? | Protection contre la foudre (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe la foudre et se soigne de ce qui dépasse. | `res.foudre > base_resistance_exceptionnelle + compagnie.etoiles` | Paratonnerre |
 | Frigorifugé : Résistance au froid exceptionnelle ? | Protection contre le froid (résistance avec l'équipement + armure portée + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le froid et se soigne de ce qui dépasse. | `res.froid > base_resistance_exceptionnelle + compagnie.etoiles` | Frigorifugé  |
 | Mithridatisé : Résistance au poison exceptionnelle ? | Protection contre le poison (résistance avec l'équipement + bonus, sans plafond) > 100 + étoiles de la compagnie : à 100, il ne prend plus rien ; au-delà, il absorbe le poison et se soigne de ce qui dépasse. | `res.poison > base_resistance_exceptionnelle + compagnie.etoiles` | Mithridatisé  |
 | Sait-il lancer un sort ? |  | `nb_sorts > 0` | Magie |
@@ -416,20 +433,20 @@ la réponse est non. Un calcul vide est à écrire.
 | → → Son arme de tir la plus efficace est-elle : Arc ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Arc (Archer). | `tir.arme = "Arc"` | Archer |
 | → → Son arme de tir la plus efficace est-elle : Arbalète ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Arbalète (Arbalétrier). | `tir.arme = "Arbalète"` | Arbalétrier |
 | → → Son arme de tir la plus efficace est-elle : Fronde ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Fronde (Frondeur). | `tir.arme = "Fronde"` | Frondeur |
-| → → Son arme de tir la plus efficace est-elle : Sarbacane ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Sarbacane (Sarbacanier). | `tir.arme = "Sarbacane"` | Sarbacanier  |
+| → → Son arme de tir la plus efficace est-elle : Sarbacane ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Sarbacane (Sarbacanier). | `tir.arme = "Sarbacane"` | Sarbacanier |
 | → → Son arme de tir la plus efficace est-elle : Arquebuse ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Arquebuse (Arquebusier). | `tir.arme = "Arquebuse"` | Arquebusier |
-| → → Son arme de tir la plus efficace est-elle : Canon à main ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Canon à main (Canonnier). | `tir.arme = "Canon à main"` | Canonier |
-| → → Son arme de tir la plus efficace est-elle : Tromblon ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Tromblon (Tromblonnier). | `tir.arme = "Tromblon"` | Tromblonnier  |
-| → → Tireur, rang 2 : est-il un tireur d'élite ? | Précision, Puissance au tir et Dextérité + Vitesse > 100 + étoiles × 10. Les rangs 3 demandent le rang 2 (Idan, 2026-11-22). | `tir.precision > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles` | Archer d'élite, Arbalétrier d'élite, Frondeur d'élite, Sarbacanier  d'éli, Arquebusier d'élite, Canonier d'élite, Tromblonnier  d'élite, Sniper, Maitre de la salve, Tireur d'escarmouche, Maitre de la poudre noire |
+| → → Son arme de tir la plus efficace est-elle : Canon à main ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Canon à main (Canonnier). | `tir.arme = "Canon à main"` | Canonnier |
+| → → Son arme de tir la plus efficace est-elle : Tromblon ? | L'arme de tir avec laquelle il fait le plus de dégâts est : Tromblon (Tromblonnier). | `tir.arme = "Tromblon"` | Tromblonnier |
+| → → Tireur, rang 2 : est-il un tireur d'élite ? | Précision, Puissance au tir et Dextérité + Vitesse > 100 + étoiles × 10. Les rangs 3 demandent le rang 2 (Idan, 2026-11-22). | `tir.precision > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.puissance > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles et tir.dex_vit > base_tir_rang_2 + tir_par_etoile * compagnie.etoiles` | Archer d'élite, Arbalétrier d'élite, Frondeur d'élite, Sarbacanier d'élite, Arquebusier d'élite, Canonnier d'élite, Tromblonnier d'élite, Sniper, Maître de la salve, Tireur d'escarmouche, Maître de la poudre noire |
 | → → → Sniper : précis et discret ? | Précision > 130 + étoiles × 10, et Discrétion (armure comprise) > 40 + étoiles × 10 (Idan, 2026-11-22). | `tir.precision > base_sniper_precision + tir_par_etoile * compagnie.etoiles et comp.discretion_effective > base_sniper_discretion + tir_par_etoile * compagnie.etoiles` | Sniper |
-| → → → Maître de la salve : enchaîne-t-il les tirs ? | Son arme enchaîne les tirs (arc, arbalète, fronde, sarbacane ; plus tard les arquebuses automatiques), et Dextérité + Vitesse > 150 + étoiles × 10 (Idan, 2026-11-22). | `tir.repetable et tir.dex_vit > base_salve + tir_par_etoile * compagnie.etoiles` | Maitre de la salve |
+| → → → Maître de la salve : enchaîne-t-il les tirs ? | Son arme enchaîne les tirs (arc, arbalète, fronde, sarbacane ; plus tard les arquebuses automatiques), et Dextérité + Vitesse > 150 + étoiles × 10 (Idan, 2026-11-22). | `tir.repetable et tir.dex_vit > base_salve + tir_par_etoile * compagnie.etoiles` | Maître de la salve |
 | → → → Tireur d'escarmouche : se déplace-t-il vite ? | PM > 6 (Idan, 2026-11-22). | `pm > pm_escarmouche` | Tireur d'escarmouche |
-| → → → Maître de la poudre noire : deux armes à feu différentes en set 1 et en set 2 ? | D'après la note du tag : une arme à feu en set 1 et une autre, différente, en set 2 (pistolet compris). Le niveau : celui du rang 2. (Proposition de JC, à valider.) | `arme1.categorie = "Armes à feu" et arme2.categorie = "Armes à feu" et arme1 != arme2` | Maitre de la poudre noire |
-| Connaît-il un sort de contrôle du terrain ? | Il connaît au moins un sort de contrôle du terrain (altération du terrain ou déplacement des personnages). | `sorts.controle_du_terrain > 0` | Contrôleur du terrain, Maitre du champ de bataille |
-| → Peut-il lancer son sort de terrain 2 fois par étoile ? | Avec sa réserve de mana (équipement compris), il peut lancer 2 × étoiles de la compagnie sorts de contrôle du terrain, au coût moyen de ses sorts de terrain (Idan, 2026-11-21). | `carac.reserve_de_mana >= moy.cout.controle_du_terrain * 2 * compagnie.etoiles` | Contrôleur du terrain, Maitre du champ de bataille |
-| → → Maîtrise-t-il assez de sorts de terrain pour être Maître du champ de bataille ? | Il connaît au moins 3 sorts de contrôle du terrain, et sa réserve de mana (équipement compris) lui permet d'en lancer 3 × étoiles de la compagnie, au coût moyen de ses sorts de terrain (Idan, 2026-11-21). | `sorts.controle_du_terrain >= min_sorts_maitre_terrain et carac.reserve_de_mana >= moy.cout.controle_du_terrain * 3 * compagnie.etoiles` | Maitre du champ de bataille |
-| Est-il éclaireur ? | Il a un animal éclaireur (un des 3 papillons), ou il peut invoquer le Corbeau 2 × étoiles de la compagnie fois avec sa réserve de mana, ou sa Discrétion + Perception (équipement compris) dépasse 100 + étoiles × 10 (Idan, 2026-11-21). | `monture contient "Papillon" ou (sorts.eclaireur > 0 et carac.reserve_de_mana >= cout.eclaireur * 2 * compagnie.etoiles) ou comp.discretion_effective + comp.perception_effective > base_eclaireur + eclaireur_par_etoile * compagnie.etoiles` | Éclaireur, Eclaireur vétéran |
-| → Est-il éclaireur vétéran ? | Il a un animal éclaireur haut de gamme (le papillon télépathe), ou sa Discrétion + Perception (équipement compris) dépasse 150 + étoiles × 10 (Idan, 2026-11-21). | `monture = "Papillon télépathe" ou comp.discretion_effective + comp.perception_effective > base_eclaireur_veteran + eclaireur_par_etoile * compagnie.etoiles` | Eclaireur vétéran |
+| → → → Maître de la poudre noire : deux armes à feu différentes en set 1 et en set 2 ? | D'après la note du tag : une arme à feu en set 1 et une autre, différente, en set 2 (pistolet compris). Le niveau : celui du rang 2. (Proposition de JC, à valider.) | `arme1.categorie = "Armes à feu" et arme2.categorie = "Armes à feu" et arme1 != arme2` | Maître de la poudre noire |
+| Connaît-il un sort de contrôle du terrain ? | Il connaît au moins un sort de contrôle du terrain (altération du terrain ou déplacement des personnages). | `sorts.controle_du_terrain > 0` | Contrôleur du terrain, Maître du champ de bataille |
+| → Peut-il lancer son sort de terrain 2 fois par étoile ? | Avec sa réserve de mana (équipement compris), il peut lancer 2 × étoiles de la compagnie sorts de contrôle du terrain, au coût moyen de ses sorts de terrain (Idan, 2026-11-21). | `carac.reserve_de_mana >= moy.cout.controle_du_terrain * 2 * compagnie.etoiles` | Contrôleur du terrain, Maître du champ de bataille |
+| → → Maîtrise-t-il assez de sorts de terrain pour être Maître du champ de bataille ? | Il connaît au moins 3 sorts de contrôle du terrain, et sa réserve de mana (équipement compris) lui permet d'en lancer 3 × étoiles de la compagnie, au coût moyen de ses sorts de terrain (Idan, 2026-11-21). | `sorts.controle_du_terrain >= min_sorts_maitre_terrain et carac.reserve_de_mana >= moy.cout.controle_du_terrain * 3 * compagnie.etoiles` | Maître du champ de bataille |
+| Est-il éclaireur ? | Il a un animal éclaireur (un des 3 papillons), ou il peut invoquer le Corbeau 2 × étoiles de la compagnie fois avec sa réserve de mana, ou sa Discrétion + Perception (équipement compris) dépasse 100 + étoiles × 10 (Idan, 2026-11-21). | `monture contient "Papillon" ou (sorts.eclaireur > 0 et carac.reserve_de_mana >= cout.eclaireur * 2 * compagnie.etoiles) ou comp.discretion_effective + comp.perception_effective > base_eclaireur + eclaireur_par_etoile * compagnie.etoiles` | Éclaireur, Éclaireur vétéran |
+| → Est-il éclaireur vétéran ? | Il a un animal éclaireur haut de gamme (le papillon télépathe), ou sa Discrétion + Perception (équipement compris) dépasse 150 + étoiles × 10 (Idan, 2026-11-21). | `monture = "Papillon télépathe" ou comp.discretion_effective + comp.perception_effective > base_eclaireur_veteran + eclaireur_par_etoile * compagnie.etoiles` | Éclaireur vétéran |
 
 ### Les constantes
 
@@ -458,7 +475,10 @@ la réponse est non. Un calcul vide est à écrire.
 
 Variables du profil : `scripts/atelier-tags/profils.js` (caractéristiques, résistances, compétences, ports d'armure,
 écoles, capacités, armes, armure, monture, sorts par tag de rôle, réussite / coût / durée par tag de sort, moyennes des
-soins, `lancers.soin` = réserve ÷ coût moyen, `moy.cout.<tag de sort>` = coût moyen de ses sorts de ce tag, le tir
+soins, `lancers.soin` = réserve ÷ coût moyen, `moy.cout.<tag de sort>` = coût moyen de ses sorts de ce tag ; par école
+(Idan, 2026-11-23, tags des écoles de magie, calqués sur les soins) `sorts.ecole.<école>`, `moy.chance.ecole.<école>`,
+`moy.cout.ecole.<école>`, `lancers.ecole.<école>`, et sur tous ses sorts `nb_ecoles_sorts`, `moy.chance.sorts`,
+`moy.cout.sorts`, `lancers.sorts` ; fonctions `arrondi_sup` et `arrondi_inf` ; le tir
 `tir.arme`, `tir.precision`, `tir.puissance`, `tir.dex_vit`, `tir.repetable`, `tir.degats_tour`, `pm`, `compagnie.etoiles`
 de 1 à 15).
 
@@ -548,13 +568,14 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
   Hostinger, et le jeu les lit au chargement, comme les réglages des cultures (doc DEPLOYMENT). Sans eux (serveur local,
   tests), la copie du dépôt (`data/reference/tag-workshop.json`). Le même moteur (`game-core/tag-engine.js`) calcule les
   tags dans le jeu et dans l'onglet « Essayer » de l'atelier.
-- **Préparé (2026-11-22), pas encore en ligne** : le moteur des tags (`game-core/tag-engine.js` : le langage des
+- **En ligne depuis le 2026-11-23** : le moteur des tags (`game-core/tag-engine.js` : le langage des
   calculs, l'arbre, les tags affichés, les variables d'un mercenaire), utilisé par l'artefact ; la page de l'atelier dans
   le Design Lab (`design/atelier/`, bouton « Atelier des tags ») ; son enregistrement sur Hostinger
   (`media/atelier/actuel.json`, la dernière version ; un historique des versions ; deux onglets ne s'écrasent pas).
-  **La bascule** : l'artefact reste la référence tant qu'Idan y travaille ; au moment de basculer, JC recopie sa base dans
-  `data/reference/tag-workshop.json` et met en ligne ; la première modification dans le Design Lab crée la version 1
-  sur Hostinger, et l'artefact n'est plus utilisé.
+  **La bascule** (Idan, 2026-11-24 : « je te propose de mettre en ligne tout cet atelier des tags ») : JC a recopié la
+  base de l'artefact (sa version 1400 : 160 tags, 115 tests, 64 constantes, les infobulles des tags dans leurs notes)
+  dans `data/reference/tag-workshop.json` et l'a mise en ligne ; la première modification dans le Design Lab crée la
+  version 1 sur Hostinger, et l'artefact n'est plus utilisé.
 
 ### Deux sortes de tags, un même calcul
 

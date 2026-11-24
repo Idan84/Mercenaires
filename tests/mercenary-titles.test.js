@@ -186,8 +186,9 @@ assert.equal(title(rider, scout), "Guetteur en herbe à dos de licorne", "deux m
 
 // ---- Fiche : un seul titre, pas d'étoiles, pas de petite ligne ----
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web", "ui.js"), "utf8");
-const render = ui.slice(ui.indexOf("function renderEvaluation("), ui.indexOf("function renderProfileTab("));
-assert.match(render, /rules\.composeTitle\?\.\(c,result,context\);/, "au masculin pour tous (Idan, 2026-11-15)");
+// Le titre affiché (characterTitle : un seul tag, sinon le titre calculé ; Idan, 2026-11-24) et sa fiche.
+const render = ui.slice(ui.indexOf("function characterTitle("), ui.indexOf("function renderProfileTab("));
+assert.match(render, /rules\.composeTitle\?\.\(c,result,context\)\|\|null;/, "au masculin pour tous (Idan, 2026-11-15)");
 assert.doesNotMatch(render, /renderStarLevel|sheet-eval-spec|spécialité/);
 assert.match(render, /copy\.lines\.map\(line=>`<em>\$\{esc\(line\)\}<\/em>`\)/);
 console.log("Titres v3 : " + weaponNames.length + " armes, 10 rôles, titres composés, masculin et féminin — OK (" + titled + " recrues titrées, " + names.size + " titres différents)");

@@ -582,7 +582,8 @@ compétences), que cette simulation n'a pas. Escarmouche (7 PM) est très rare.
 Les mêmes tests de l'atelier, sur des valeurs vues à travers un **biais** :
 
 - **Le candidat**, avant son recrutement, se décrit lui-même : il se vante (doc 14 §7). Toutes ses valeurs × un même
-  tirage entre **1,10 et 3,00**, une fois par candidat. Ses tags s'affichent sur sa fiche à la Taverne (la case « Tags »).
+  tirage entre **1,10 et 3,00**, une fois par candidat. Ses tags s'affichent sur sa fiche à la Taverne (la case « Tags »),
+  avec ceux du tavernier (ses estimations à ±10 %) et ceux de l'intendant (son biais, une option du dialogue) : doc 14 §6 bis.
 - **L'intendant** décrit nos mercenaires (Cruxor Limortel, ou celui qu'on a nommé) :
 
 ```
@@ -625,8 +626,9 @@ ValeurVue  = Valeur × (1 + Biais)
 - **Les écoles de magie** comptent comme des compétences (elles reçoivent le biais). **La réserve de mana** aussi
   (« mana » et `carac.reserve_de_mana`) ; le nombre de soins qu'il peut lancer (`lancers.soin`) suit sa réserve vue.
 - **Le candidat** compare ses valeurs annoncées à la compagnie telle que l'intendant la voit. Son tirage est gardé sur
-  lui (`tagSelfBias`). Ses tags sont calculés (`candidateTags`) mais **pas encore affichés** : la fiche du candidat à la
-  Taverne, avec sa case « Tags » (doc 14 §6), reste à faire avec le dialogue de recrutement.
+  lui (`tagSelfBias`). Ses tags (`candidateTags`) s'affichent quand on lui demande ses points forts (doc 14 §6 bis,
+  2026-11-24). L'intendant voit un candidat comme nos mercenaires : un tirage pour le couple, gardé sur lui (`tagBias`,
+  `stewardCandidateTags`).
 - **Le choix de l'escouade** : les onglets de filtre prennent les nouveaux tags (« Tous », puis les tags que portent les
   mercenaires de la galerie, les plus portés d'abord, au-delà de quatre dans « Autres compétences », Idan, 2026-11-22) ; l'onglet du tag de la
   mission (camp, chasse, garde du corps) disparaît : l'atelier n'a pas de tags de mission.

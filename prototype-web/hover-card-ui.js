@@ -319,11 +319,14 @@ function hoverHearts(filled){
 //   tavernier à la place des cœurs), bonus et salary (sa demande, puis la négociation ; la ligne Salaire n'existe que sur
 //   la fiche du candidat).
 const hoverUnknown=`<span class="hc-unknown">?</span>`;
-function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=null,affinityWord=null}={}){
+function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=null,affinityWord=null,knownTags=null,tagSource=null}={}){
   const d=mercenaryHoverData(c);
   const hidden=key=>Boolean(unknown&&unknown.has(key));
   if(bonus!=null) d.bonus=bonus;
   if(title!=null) d.title=title;
+  // Les tags d'un candidat, tels qu'on les a appris (tavern-ui.js : lui, le tavernier ou l'intendant) ; tagSource, d'où ils
+  // viennent, au survol des plaques.
+  if(knownTags!=null) d.tags=knownTags.map(name=>({name,tone:"bleu",mission:false}));
   const frame=hoverCultureFrame(d.culture);
   // Le nom en grand (Idan, 2026-11-15 : « on reste pour que 20 caractères rentrent dans le cartouche. On réduira auto pour
   // les noms plus longs ») : sa taille (styles.css) laisse tenir les noms de 20 caractères les plus larges ; au-delà, il
@@ -351,7 +354,7 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=n
     :rows.length?`<div class="hc-magic"><div class="hc-schools" style="--n:${rows[0].length}">${rows.map(row=>`<div class="hc-schools-row">${row.map(school).join("")}</div>`).join("")}</div></div>`:"";
   const steed=showSteed?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
-  const tags=hidden("tags")?`<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3/span 2">?</li>`:hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc(tag.hidden.join(", "))}"`:""}>${esc(tag.name)}</li>`).join("");
+  const tags=hidden("tags")?`<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3/span 2">?</li>`:hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc((tagSource?tagSource+" : ":"")+tag.hidden.join(", "))}"`:tagSource?` title="${esc(tagSource)}"`:""}>${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title||hidden("title")?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(hidden("title")?"?":d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>

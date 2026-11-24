@@ -40,13 +40,30 @@ assert.equal(q.about,"Puis-je en savoir plus sur vous ?");
 assert.deepEqual([q.title,q.set1,q.set2,q.armor,q.magic,q.salary],["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
   "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Quelles sont vos prétentions salariales ?"]);
 assert.ok(!Object.values(q).some(text=>/\b(tu|t’|te|ton)\b|-tu\b/i.test(text)),"pas de tutoiement");
-assert.deepEqual(dialogue.aboutQuestions,["title","set1","set2","armor","magic"]);
+assert.equal(q.tags,"Quels sont vos points forts ?");
+assert.deepEqual(dialogue.aboutQuestions,["title","tags","set1","set2","armor","magic"]);
 const candidate={mercenary:{id:9}};
 const k=dialogue.known(candidate);
 assert.equal(candidate.recruitKnown,k,"gardé sur le candidat");
-assert.deepEqual(dialogue.aboutLeft(k),["title","set1","set2","armor","magic"]);
+assert.deepEqual(dialogue.aboutLeft(k),["title","tags","set1","set2","armor","magic"]);
+// Ses tags sur sa fiche (Idan, 2026-11-24) : la source la plus fiable qu'on ait, l'intendant, puis le tavernier, puis lui.
+assert.equal(dialogue.shownTags(k),null,"on ne sait rien");
+k.tags=["Veinard","Roc","Éclaireur"];
+assert.deepEqual(dialogue.shownTags(k),{source:"candidate",names:["Veinard","Roc","Éclaireur"]});
+k.keeperTags=["Roc"];
+assert.deepEqual(dialogue.shownTags(k),{source:"keeper",names:["Roc"]},"le tavernier passe devant lui");
+k.stewardTags=[];
+assert.deepEqual(dialogue.shownTags(k),{source:"steward",names:[]},"l'intendant passe devant tous, même sans rien voir");
+delete k.tags; delete k.keeperTags; delete k.stewardTags;
+assert.equal(dialogue.listNames(["Veinard","Roc","Éclaireur"]),"Veinard, Roc et Éclaireur");
+assert.equal(dialogue.listNames(["Roc"]),"Roc");
+assert.equal(dialogue.tagSourceLabel("candidate",{sex:"femme"}),"D’après elle");
+assert.equal(dialogue.tagSourceLabel("keeper",{}),"D’après le tavernier");
+assert.equal(dialogue.stewardAsk({name:"Cruxor Limortel"}),"Cruxor, qu’en pensez-vous ?");
+assert.ok(copy.steward.answers.map(t=>t.replace("{Tags}","Veinard et Roc")).includes(dialogue.stewardAnswer({id:"x"},{id:9},["Veinard","Roc"])));
+assert.ok(copy.steward.none.includes(dialogue.stewardAnswer({id:"x"},{id:9},[])));
 k.asked.title=true; k.asked.armor=true; k.asked.magic=true;
-assert.deepEqual(dialogue.aboutLeft(k),["set1","set2"]);
+assert.deepEqual(dialogue.aboutLeft(k),["tags","set1","set2"]);
 assert.equal(dialogue.known(candidate),k,"même objet la seconde fois");
 // Le titre sur sa fiche : priorité au tavernier (Idan, 2026-11-22), même quand il n'en connaît pas (« »).
 assert.equal(dialogue.shownTitle({}),null);

@@ -48,8 +48,8 @@ const menu=new Function("recruitDialogue","game","MercenairesRecruitDialogue","t
 const labels=view=>menu(view).map(o=>o.label);
 assert.deepEqual(labels({view:"main"}),["Boire une bière (1 PO)","Payer sa tournée !","Demander des conseils","Partir"]);
 assert.deepEqual(labels({view:"who"}),["Inga","Retour"]);
-assert.deepEqual(labels({view:"what",candidateId:7}),["Qu’est-ce qu’on dit d’elle ?","Elle m’apprécierait, à ton avis ?","Retour"]);
-assert.deepEqual(menu({view:"what",candidateId:7}).slice(0,2).map(o=>[o.key,o.arg]),[["ask","title"],["ask","affinity"]]);
+assert.deepEqual(labels({view:"what",candidateId:7}),["Qu’est-ce qu’on dit d’elle ?","Elle est douée pour quoi ?","Elle m’apprécierait, à ton avis ?","Retour"]);
+assert.deepEqual(menu({view:"what",candidateId:7}).slice(0,3).map(o=>[o.key,o.arg]),[["ask","title"],["ask","tags"],["ask","affinity"]]);
 assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur les caractéristiques (Idan, 2026-11-19)");
 
 // Le dialogue avec un candidat (doc 14 §6 bis ; Idan, 2026-11-22 : « On va regrouper toutes les questions […] comme Puis-je
@@ -81,13 +81,17 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Puis-je en savoir plus sur vous ?","Quelles sont vos prétentions salariales ?","Partir"],"trois choix");
   assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","armor","bonus","magic","mount","salary","set1","set2","tags","title"]);
   api.recruitTalkChoice("about");
-  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Comment vous appelle-t-on, dans le métier ?","Quels sont vos points forts ?","Quelle arme de corps à corps maniez-vous ?",
     "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Retour"]);
   api.recruitTalkChoice("title");
   assert.deepEqual(t.lines.slice(-2).map(l=>l.who),["you","merc"]);
   assert.equal(t.lines.at(-2).text,q.title);
   assert.match(lastSay(),/Colosse 80/,"son titre, sur sa Force vantée (40 × 2)");
   assert.equal(cards.at(-1).title,"Colosse 80");
+  // Ses points forts, tels qu'il les annonce (sans les règles des tags ici : il préfère garder la surprise).
+  api.recruitTalkChoice("tags");
+  assert.equal(t.lines.at(-2).text,"Quels sont vos points forts ?");
+  assert.ok(dialogueCopy.answers.tags_none.includes(lastSay()));
   api.recruitTalkChoice("set1");
   assert.match(lastSay(),/l’épée longue et l’écu/i);
   api.recruitTalkChoice("set2");
@@ -103,7 +107,7 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.match(lastSay(),/des sorts d’Eau et de Vie\./,"il liste ses écoles");
   assert.equal(t.mode,"choices","plus rien à lui demander : retour au menu");
   assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Quelles sont vos prétentions salariales ?","Partir"]);
-  assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","bonus","mount","salary","tags"]);
+  assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","bonus","mount","salary"],"ses tags sont connus (même aucun)");
   api.recruitTalkChoice("salary");
   assert.equal(t.lines.at(-2).text,"Quelles sont vos prétentions salariales ?");
   assert.match(lastSay(),/12 PO par jour et 30 PO par mission/);
@@ -126,14 +130,16 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   const game={referenceData:{},recruitDialogue:dialogue};
   let annonce=[{nom:"Veinard "}];
   const tagRules={candidateFactor:()=>2,candidateTags:(cd,ctx)=>{ assert.equal(cd,candidate); assert.equal(ctx.ok,true); return {affiches:annonce}; },
-    titleTag:res=>res.affiches.length===1?res.affiches[0]:null};
+    titleTag:res=>res.affiches.length===1?res.affiches[0]:null,
+    stewardCandidateTags:(cd,ctx)=>{ assert.equal(cd,candidate); assert.equal(ctx.steward.id,"cruxor"); return {affiches:[{nom:"Roc"}]}; }};
+  const ctx={ok:true,steward:{id:"cruxor",name:"Cruxor Limortel"}}, cards=[];
   const api=new Function("game","$","tavernCandidate","tavernRules","profileRules","companyTagRules","companyTagContext","mercenaryHoverData",
     "captainAffinity","saveGame","renderMercenaryHoverCard","renderPicto","esc","fmt","MercenairesRecruitDialogue","requestAnimationFrame",
-    js.slice(js.indexOf("function recruitDialogue(){"),js.indexOf("function submitRecruitOffer(){"))+"return {openRecruitTalk,recruitTalkChoice};")(
+    js.slice(js.indexOf("function recruitDialogue(){"),js.indexOf("function submitRecruitOffer(){"))+"return {openRecruitTalk,recruitChoices,recruitTalkChoice};")(
     game,()=>({innerHTML:"",textContent:"",scrollTop:0,scrollHeight:0,querySelector:()=>null,showModal(){},close(){},focus(){}}),
     id=>id===7?candidate:null,()=>({negotiationState:()=>({salary:12,bonus:30,agreed:null})}),
-    ()=>({evaluate:c=>({force:c.stats.Force}),composeTitle:(c,r)=>({name:"Colosse "+r.force})}),()=>tagRules,()=>({ok:true}),
-    ()=>({sets:[[],[]],schools:[]}),()=>({total:0}),()=>{},()=>"",()=>"",x=>String(x??""),n=>String(n),{firstName:m=>m.name.split(" ")[0]},()=>{});
+    ()=>({evaluate:c=>({force:c.stats.Force}),composeTitle:(c,r)=>({name:"Colosse "+r.force})}),()=>tagRules,()=>ctx,
+    ()=>({sets:[[],[]],schools:[]}),()=>({total:0}),()=>{},(m,o)=>{ cards.push(o); return ""; },()=>"",x=>String(x??""),n=>String(n),{firstName:m=>m.name.split(" ")[0]},()=>{});
   api.openRecruitTalk(7);
   api.recruitTalkChoice("about"); api.recruitTalkChoice("title");
   assert.equal(dialogue.known(candidate).title,"Veinard","un seul tag annoncé : son titre");
@@ -141,6 +147,44 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   delete dialogue.known(candidate).asked.title;
   api.recruitTalkChoice("title");
   assert.equal(dialogue.known(candidate).title,"Colosse 80","plusieurs tags : le titre calculé, sur sa Force vantée");
+  // Ses tags sur sa fiche (Idan, 2026-11-24 : « tes suggestions sont parfaites ») : ce qu'il annonce, puis l'avis de
+  // l'intendant (une option du dialogue : « branche-le comme une option de dialogue pour l'instant »), qui passe devant.
+  const t=game.recruitTalk, lastSay=()=>t.lines.at(-1);
+  assert.equal(cards.at(-1).unknown.has("tags"),true,"on ne sait rien de ses tags");
+  api.recruitTalkChoice("tags");
+  assert.ok(dialogueCopy.answers.tags.map(x=>x.replace("{tags}","Veinard et Roc")).includes(lastSay().text));
+  assert.deepEqual([cards.at(-1).unknown.has("tags"),cards.at(-1).knownTags,cards.at(-1).tagSource],[false,["Veinard","Roc"],"D’après elle"]);
+  api.recruitTalkChoice("back");
+  assert.deepEqual(api.recruitChoices(t).find(c=>c.key==="steward"),{key:"steward",label:"Demander l’avis de l’intendant"});
+  api.recruitTalkChoice("steward");
+  assert.deepEqual(t.lines.at(-2),{who:"you",text:"Cruxor, qu’en pensez-vous ?"});
+  assert.equal(lastSay().name,"Cruxor","l'intendant répond");
+  assert.ok(dialogueCopy.steward.answers.map(x=>x.replace("{Tags}","Roc")).includes(lastSay().text));
+  assert.deepEqual([cards.at(-1).knownTags,cards.at(-1).tagSource],[["Roc"],"D’après l’intendant"]);
+  assert.equal(api.recruitChoices(t).some(c=>c.key==="steward"),false,"une fois demandé, l'option disparaît");
+  assert.match(js,/esc\(line\.name\|\|first\)/,"le nom de celui qui parle");
+}
+
+// Le tavernier dit pour quoi un candidat est doué (Idan, 2026-11-24) : ses tags sur ses estimations (±10 %), payés comme
+// ses autres réponses ; ils passent devant ce que le candidat annonce.
+{
+  const dialogue=createRecruitDialogue({reference:{tavernDialogue:dialogueCopy}});
+  const merc={id:7,name:"Inga Longueforge",sex:"femme",stats:{Force:40}};
+  const candidate={mercenary:merc}, game={tavernTalk:{candidateId:7}}, asks=[];
+  const fn=js.slice(js.indexOf("function candidateTagNames("),js.indexOf("// Sa réponse à une question sur lui"))
+    +js.slice(js.indexOf("function askTavernAbout(kind){"),js.indexOf("// Les salles de la taverne et son tavernier"));
+  const ask=new Function("game","recruitDialogue","tavernCandidate","companyTagRules","companyTagContext","campaignRules","captainAffinity",
+    "describedTitle","tavernTalkLine","tavernLog","saveGame","renderTavern","fmt",fn+"return askTavernAbout;")(
+    game,()=>dialogue,id=>id===7?candidate:null,
+    ()=>({describedTags:(estime,cd,ctx)=>{ assert.equal(cd,candidate); assert.equal(estime.stats.Force,44,"ses valeurs estimées"); return {affiches:[{nom:"Roc "},{nom:"Veinard"}]}; }}),
+    ()=>({ok:true}),
+    ()=>({askTavernkeeper:(state,id,kind,compute)=>{ asks.push(kind); return {ok:true,cost:1,answer:compute(()=>1.1)}; }}),
+    ()=>({total:0}),()=>"",()=>"",()=>{},()=>{},()=>{},n=>String(n));
+  ask("tags");
+  assert.deepEqual(asks,["tags"]);
+  assert.deepEqual(dialogue.known(candidate).keeperTags,["Roc","Veinard"]);
+  assert.equal(game.tavernTalk.line,"Inga ? Roc et Veinard, si tu veux mon avis.");
+  assert.deepEqual(dialogue.shownTags(dialogue.known(candidate)),{source:"keeper",names:["Roc","Veinard"]});
 }
 
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.

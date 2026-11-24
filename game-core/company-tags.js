@@ -136,6 +136,15 @@
       const v=view||company({members,steward,companyStars,roleOf});
       return consolation(holder,tree.tags(Engine.withCompany(valuesOf(character),others(v,members,null),companyStars)));
     }
+    // Un candidat vu par notre intendant (Idan, 2026-11-24 : « Pour l'intendant, branche-le comme une option de dialogue ») :
+    // son biais, comme pour nos mercenaires (tiré pour le couple intendant / candidat et gardé sur lui, tagBias), comparé à
+    // la compagnie telle que l'intendant la voit. Sans intendant, rien.
+    function stewardCandidateTags(candidate,{members=[],steward=null,companyStars=1,roleOf=()=>"",view=null}={}){
+      if(!steward||!candidate?.mercenary) return {affiches:[],restent:[],motif:new Map(),reps:[]};
+      const v=view||company({members,steward,companyStars,roleOf}), m=candidate.mercenary;
+      const mine=seen(valuesOf(m),factorOf(stewardBias(m,{steward,companyStars})));
+      return consolation(candidate,tree.tags(Engine.withCompany(mine,others(v,members,null),companyStars)));
+    }
     // Le candidat (tavern.candidates[] : {mercenary, …}) : son tirage, gardé sur lui (tagSelfBias).
     function candidateFactor(candidate){
       if(!Number.isFinite(candidate.tagSelfBias)) candidate.tagSelfBias=C.candidateMin+random()*(C.candidateMax-C.candidateMin);
@@ -148,7 +157,7 @@
       return consolation(candidate,tree.tags(Engine.withCompany(mine,others(v,members,null),companyStars)));
     }
     return {constants:C,doc,tree,consolations:CONSOLATION,isBiased,valuesOf,seen,stewardCompetence,maxError,drawStewardBias,stewardBias,factorOf,company,
-      tagsOf,candidateFactor,candidateTags,describedTags,titleTag};
+      tagsOf,candidateFactor,candidateTags,describedTags,stewardCandidateTags,titleTag};
   }
 
   // Le titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») : un seul tag affiché, tag de

@@ -175,6 +175,19 @@ const fort=tags.candidateTags(candidat,{members,steward:cruxor,companyStars:3,vi
 const attendu=tree.tags(E.withCompany(tags.seen(tags.valuesOf(candidat.mercenary),3),members.map(x=>view.get(x)),3));
 assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses valeurs × 3, contre la compagnie vue par l'intendant");
 
+// ---- Le candidat vu par notre intendant (Idan, 2026-11-24 : « branche-le comme une option de dialogue ») ----
+{
+  const c={mercenary:generator.createMercenary({id:98,captain})};
+  assert.deepEqual(tags.stewardCandidateTags(c,{members,steward:null,companyStars:3}).affiches,[],"sans intendant : rien");
+  const vu=tags.stewardCandidateTags(c,{members,steward:cruxor,companyStars:3,view});
+  const b=c.mercenary.tagBias;
+  assert.ok(b&&b.steward===String(cruxor.id??cruxor.name),"son biais, tiré pour le couple intendant / candidat et gardé sur lui");
+  const attendu=tree.tags(E.withCompany(tags.seen(tags.valuesOf(c.mercenary),tags.factorOf(b)),members.map(x=>view.get(x)),3));
+  if(attendu.affiches.length) assert.deepEqual(vu.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses valeurs vues par l'intendant");
+  else assert.equal(vu.affiches[0].consolation,true,"sinon sa consolation");
+  assert.deepEqual(tags.stewardCandidateTags(c,{members,steward:cruxor,companyStars:3,view}).affiches.map(t=>t.id),vu.affiches.map(t=>t.id),"le même avis la seconde fois");
+}
+
 // ---- Le titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») ----
 {
   const {titleTag}=R("company-tags.js");

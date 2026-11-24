@@ -117,6 +117,32 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.equal(cards.at(-1).title,"Chair à canon");
 }
 
+// Un seul tag annoncé devient son titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; « oui,
+// candidats aussi ») ; plusieurs : le titre calculé.
+{
+  const dialogue=createRecruitDialogue({reference:{tavernDialogue:dialogueCopy}});
+  const merc={id:7,name:"Inga Longueforge",sex:"femme",stats:{Force:40},items:[],equipment:{slots:{}}};
+  const candidate={mercenary:merc};
+  const game={referenceData:{},recruitDialogue:dialogue};
+  let annonce=[{nom:"Veinard "}];
+  const tagRules={candidateFactor:()=>2,candidateTags:(cd,ctx)=>{ assert.equal(cd,candidate); assert.equal(ctx.ok,true); return {affiches:annonce}; },
+    titleTag:res=>res.affiches.length===1?res.affiches[0]:null};
+  const api=new Function("game","$","tavernCandidate","tavernRules","profileRules","companyTagRules","companyTagContext","mercenaryHoverData",
+    "captainAffinity","saveGame","renderMercenaryHoverCard","renderPicto","esc","fmt","MercenairesRecruitDialogue","requestAnimationFrame",
+    js.slice(js.indexOf("function recruitDialogue(){"),js.indexOf("function submitRecruitOffer(){"))+"return {openRecruitTalk,recruitTalkChoice};")(
+    game,()=>({innerHTML:"",textContent:"",scrollTop:0,scrollHeight:0,querySelector:()=>null,showModal(){},close(){},focus(){}}),
+    id=>id===7?candidate:null,()=>({negotiationState:()=>({salary:12,bonus:30,agreed:null})}),
+    ()=>({evaluate:c=>({force:c.stats.Force}),composeTitle:(c,r)=>({name:"Colosse "+r.force})}),()=>tagRules,()=>({ok:true}),
+    ()=>({sets:[[],[]],schools:[]}),()=>({total:0}),()=>{},()=>"",()=>"",x=>String(x??""),n=>String(n),{firstName:m=>m.name.split(" ")[0]},()=>{});
+  api.openRecruitTalk(7);
+  api.recruitTalkChoice("about"); api.recruitTalkChoice("title");
+  assert.equal(dialogue.known(candidate).title,"Veinard","un seul tag annoncé : son titre");
+  annonce=[{nom:"Veinard"},{nom:"Roc"}];
+  delete dialogue.known(candidate).asked.title;
+  api.recruitTalkChoice("title");
+  assert.equal(dialogue.known(candidate).title,"Colosse 80","plusieurs tags : le titre calculé, sur sa Force vantée");
+}
+
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.
 const extract=(start,end)=>js.slice(js.indexOf(start),js.indexOf(end));
 const code=extract("function buyTavernDrink(kind){","function openTavernTalk(){");

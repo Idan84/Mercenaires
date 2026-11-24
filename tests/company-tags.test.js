@@ -193,7 +193,7 @@ assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses v
   const sheet=read("prototype-web/ui.js"), hover=read("prototype-web/hover-card-ui.js"), tavern=read("prototype-web/tavern-ui.js");
   assert.match(sheet,/if\(tags\.length===1\) return \{name:tags\[0\]\.name,lines:tags\[0\]\.note\?\[tags\[0\]\.note\]:\[\],tag:tags\[0\]\};/,"fiche : le tag et sa note en infobulle");
   assert.match(hover,/characterTitle\(c\)\?\.name/,"fiche au survol : le même titre");
-  assert.match(tavern,/tagRules\.candidateTags\(candidate,companyTagContext\(\)\)/,"le candidat : ses tags annoncés");
+  assert.match(tavern,/tagRules\.candidateTags\(candidate,ctx\)/,"le candidat : ses tags annoncés");
   assert.match(tavern,/describedTitle\(m,value=>value\*draw\(\),candidate\)/,"le tavernier : les tags sur ses estimations");
 }
 

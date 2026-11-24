@@ -273,8 +273,8 @@ function describedTitle(m,estimate,candidate=null,tags=null){
   if(!rules) return "";
   const copy=recruitDialogue().described(m,estimate),context={captain:false,lieutenant:false};
   const tagRules=typeof companyTagRules==="function"?companyTagRules():null;
-  if(tagRules&&candidate){
-    const ctx=companyTagContext();
+  const ctx=typeof companyTagContext==="function"?companyTagContext():null;
+  if(candidate&&tagRules?.titleTag&&(tags||ctx&&tagRules.describedTags)){
     const one=tagRules.titleTag(tags||tagRules.describedTags(copy,candidate,ctx));
     if(one) return one.nom.trim();
   }
@@ -286,7 +286,8 @@ function describedTitle(m,estimate,candidate=null,tags=null){
 function boastedTitle(candidate){
   const tagRules=typeof companyTagRules==="function"?companyTagRules():null;
   const factor=tagRules?.candidateFactor(candidate)??1;
-  const tags=tagRules?tagRules.candidateTags(candidate,companyTagContext()):null;
+  const ctx=typeof companyTagContext==="function"?companyTagContext():null;
+  const tags=ctx&&tagRules?.candidateTags?tagRules.candidateTags(candidate,ctx):null;
   return describedTitle(candidate.mercenary,value=>value*factor,candidate,tags);
 }
 // Son armure : l'objet porté.

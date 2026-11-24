@@ -265,18 +265,30 @@ function companyPhrase(){
 }
 
 // Son titre tel qu'on le décrit (doc 14 §7) : recalculé sur ses capacités passées par estimate (sa vantardise, ou la
-// précision du tavernier), au masculin comme tous les titres. Un candidat n'est ni capitaine ni lieutenant.
-function describedTitle(m,estimate){
+// précision du tavernier), au masculin comme tous les titres. Un candidat n'est ni capitaine ni lieutenant. Un seul tag sur
+// ces mêmes capacités devient son titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; « oui,
+// candidats aussi ») : tags, ses tags tels qu'on les décrit (sinon calculés ici) ; candidate garde son tag de consolation.
+function describedTitle(m,estimate,candidate=null,tags=null){
   const rules=profileRules();
   if(!rules) return "";
   const copy=recruitDialogue().described(m,estimate),context={captain:false,lieutenant:false};
+  const tagRules=typeof companyTagRules==="function"?companyTagRules():null;
+  const ctx=typeof companyTagContext==="function"?companyTagContext():null;
+  if(candidate&&tagRules?.titleTag&&(tags||ctx&&tagRules.describedTags)){
+    const one=tagRules.titleTag(tags||tagRules.describedTags(copy,candidate,ctx));
+    if(one) return one.nom.trim();
+  }
   const result=rules.evaluate(copy,context);
   return result&&rules.composeTitle?.(copy,result,context)?.name||"";
 }
-// Il se vante (×1,10 à ×3,00, le même tirage que pour ses tags : companyTagRules().candidateFactor).
+// Il se vante (×1,10 à ×3,00, le même tirage que pour ses tags : companyTagRules().candidateFactor) ; son titre suit les
+// tags qu'il annonce (companyTagRules().candidateTags).
 function boastedTitle(candidate){
-  const factor=typeof companyTagRules==="function"?companyTagRules()?.candidateFactor(candidate)??1:1;
-  return describedTitle(candidate.mercenary,value=>value*factor);
+  const tagRules=typeof companyTagRules==="function"?companyTagRules():null;
+  const factor=tagRules?.candidateFactor(candidate)??1;
+  const ctx=typeof companyTagContext==="function"?companyTagContext():null;
+  const tags=ctx&&tagRules?.candidateTags?tagRules.candidateTags(candidate,ctx):null;
+  return describedTitle(candidate.mercenary,value=>value*factor,candidate,tags);
 }
 // Son armure : l'objet porté.
 function wornArmor(m){
@@ -366,7 +378,7 @@ function recruitAnswer(candidate,key){
   if(key==="set1"||key==="set2"){
     k.asked[key]=true;
     const names=mercenaryHoverData(m).sets[key==="set1"?0:1];
-    return names.length?d.answer(key,m,{armes:d.withArticles(names)}):d.answer(key+"_none",m);
+    return names.length?d.answer(key,m,{armes:d.withArticles(names,m)}):d.answer(key+"_none",m);
   }
   if(key==="armor"){
     k.asked.armor=true;
@@ -570,7 +582,7 @@ function askTavernAbout(kind){
   if(!candidate||!["title","affinity"].includes(kind)){ t.view="who"; t.line=tavernTalkLine(t); return; }
   const m=candidate.mercenary;
   const compute=kind==="title"
-    ?draw=>describedTitle(m,value=>value*draw())
+    ?draw=>describedTitle(m,value=>value*draw(),candidate)
     :draw=>Math.round((Number(captainAffinity(m)?.total)||0)*draw());
   const result=campaignRules().askTavernkeeper(game.campaign,m.id,kind,compute);
   if(!result.ok){ t.line=result.reason==="gold"?d.keeperLine("no_gold"):result.reason; return; }

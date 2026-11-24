@@ -942,12 +942,19 @@ function evaluationContext(c){
   const company=game.campaign?.company;
   return {captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
 }
-function renderEvaluation(c){
+// Son titre affiché : un seul tag (consolation comprise) devient son titre, avec la note du tag en infobulle (Idan,
+// 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; game-core/company-tags.js, titleTag) ; sinon le titre
+// calculé, au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »). {name, lines}.
+function characterTitle(c){
+  const tags=typeof mercenaryTagList==="function"?mercenaryTagList(c):[];
+  if(tags.length===1) return {name:tags[0].name,lines:tags[0].note?[tags[0].note]:[],tag:tags[0]};
   const rules=profileRules();
   const context=evaluationContext(c);
   const result=rules?.evaluate(c,context);
-  // Au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »).
-  const copy=result&&rules.composeTitle?.(c,result,context);
+  return result&&rules.composeTitle?.(c,result,context)||null;
+}
+function renderEvaluation(c){
+  const copy=characterTitle(c);
   if(!copy) return "";
   const tip=copy.lines.length?`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span>`:"";
   return `<section class="sheet-evaluation" aria-label="Titre"><div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>${tip}</div></section>`;
@@ -1189,6 +1196,34 @@ function skillValue(m,group,name){
 function skillChildren(parent){
   return (game.referenceData?.skills?.rows||[]).filter(r=>r.parent===parent).map(r=>r.nom);
 }
+// L'affichage des armes (Idan, 2026-11-23 : « le problème, c'est un problème de lecture […] on touche à rien, mais on
+// affiche uniquement l'arme avec la valeur arme+cat ») : sur la fiche, une arme montre sa maîtrise au combat, arme +
+// catégorie (doc 04 : toucher, blesser, vitesse) ; une catégorie d'armes ne montre plus sa propre valeur mais celle de sa
+// meilleure arme. Les styles (Boucliers compris) gardent la leur ; un bouclier montre bouclier + Boucliers. Les règles ne
+// changent pas.
+function martialWeaponFamily(name){
+  const row=(game.referenceData?.skills?.rows||[]).find(r=>r.nom===name);
+  return row?.parent&&String(row.domaine||"").includes("Martial")?row.parent:null;
+}
+function isWeaponFamily(name){
+  const styles=game.referenceData?.characterSheetCopy?.skills_layout?.styles_de_combat||[];
+  return !styles.includes(name)&&skillChildren(name).some(child=>martialWeaponFamily(child)===name);
+}
+function shownSkillValue(m,group,name){
+  if(group!=="martial") return skillValue(m,group,name);
+  const family=martialWeaponFamily(name);
+  if(family){
+    const weapon=skillValue(m,"martial",name);
+    return Number.isFinite(weapon)?weapon+(Number(m?.skills?.martial?.[family])||0):weapon;
+  }
+  if(isWeaponFamily(name)){
+    const values=skillChildren(name).map(child=>shownSkillValue(m,"martial",child)).filter(Number.isFinite);
+    return values.length?Math.max(...values):NaN;
+  }
+  return skillValue(m,group,name);
+}
+// Une arme ou une catégorie d'armes : sa valeur (arme + catégorie) va jusqu'au double des autres compétences.
+const shownSkillScale=(group,name)=>group==="martial"&&(martialWeaponFamily(name)||isWeaponFamily(name))?2:1;
 // Cape de discrétion et gants de pièges (Idan, 2026-10-24) : ces compétences montrent la valeur avec l'équipement, en
 // vert, et son détail.
 // Chapeau du dresseur (Idan, 2026-10-25) : de même pour le Compagnon animal.
@@ -1199,8 +1234,8 @@ function skillValueCell(c,group,name){
     const value=Math.round(effect.value),shift=Math.sign(value-Math.round(effect.base));
     return `<span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>sheetEquippedValue(m,name),equipmentDetail(effect,"Total"))}</span>`;
   }
-  const value=skillValue(c,group,name);
-  return `<span class="sheet-stat-value" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>skillValue(m,group,name))}</span>`;
+  const value=shownSkillValue(c,group,name);
+  return `<span class="sheet-stat-value" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>shownSkillValue(m,group,name))}</span>`;
 }
 // Infobulle d'une compétence (Idan, 2026-10-30) : à quoi elle sert en jeu (character-sheet-copy.json, skills_usage),
 // jamais sa définition ; une compétence qui ne joue pas encore n'en a pas.
@@ -1211,37 +1246,39 @@ function skillName(name){
   const usage=skillUsage(name);
   return `<span class="sheet-stat-name"${usage?' tabindex="0"':""}>${esc(name)}${usage?`<span class="sheet-stat-tip" role="tooltip"><strong>${esc(name)}</strong><em>${esc(usage)}</em></span>`:""}</span>`;
 }
-// Le niveau d'une compétence en fond de sa ligne, pour lire la fiche d'un coup d'œil (0 à 100).
-function skillLevelStyle(value){
-  const v=Math.max(0,Math.min(100,Number(value)||0));
+// Le niveau d'une compétence en fond de sa ligne, pour lire la fiche d'un coup d'œil (0 à 100 ; une arme : 0 à 200).
+function skillLevelStyle(value,scale=1){
+  const v=Math.max(0,Math.min(100,(Number(value)||0)/scale));
   return ` style="--skill-level:${v}%"`;
 }
 function skillChildRows(c,group,name){
-  return skillChildren(name).map(n=>({n,v:skillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
+  return skillChildren(name).map(n=>({n,v:shownSkillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
 }
 // Une compétence ; une catégorie qui a des armes (ou des animaux) ouvre sa fenêtre par-dessus l'onglet (Idan,
 // 2026-10-30 : plus d'accordéon, jamais de barre de défilement).
 function skillLine(c,group,name){
-  const value=skillValue(c,group,name);
-  if(!skillChildRows(c,group,name).length) return `<div class="sheet-skill"${skillLevelStyle(value)}>${skillName(name)}${skillValueCell(c,group,name)}</div>`;
-  return `<div class="sheet-skill sheet-skill--open" role="button" tabindex="0" data-skill-open="${esc(name)}" data-skill-group="${esc(group)}"${skillLevelStyle(value)}>
+  const value=shownSkillValue(c,group,name),scale=shownSkillScale(group,name);
+  if(!skillChildRows(c,group,name).length) return `<div class="sheet-skill"${skillLevelStyle(value,scale)}>${skillName(name)}${skillValueCell(c,group,name)}</div>`;
+  return `<div class="sheet-skill sheet-skill--open" role="button" tabindex="0" data-skill-open="${esc(name)}" data-skill-group="${esc(group)}"${skillLevelStyle(value,scale)}>
     ${skillName(name)}<span class="sheet-skill-more" aria-hidden="true">›</span>${skillValueCell(c,group,name)}</div>`;
 }
-// La fenêtre d'une catégorie : sa valeur, à quoi elle sert, puis ses armes (ou animaux), les meilleures d'abord.
+// La fenêtre d'une catégorie : sa valeur, à quoi elle sert, puis ses armes (ou animaux), les meilleures d'abord. Une
+// catégorie d'armes n'a plus de valeur à elle : seules ses armes en montrent une.
 function skillOverlay(c,group,name){
   const rows=skillChildRows(c,group,name);
   const usage=skillUsage(name);
+  const own=group==="martial"&&isWeaponFamily(name)?"":`<b>${fmt(skillValue(c,group,name))}</b>`;
   return `<div class="sheet-skill-overlay">
     <section class="sheet-skill-window" role="dialog" aria-label="${esc(name)}">
-      <header><h4>${esc(name)}</h4><b>${fmt(skillValue(c,group,name))}</b><button type="button" class="sheet-skill-close" aria-label="Fermer">×</button></header>
+      <header><h4>${esc(name)}</h4>${own}<button type="button" class="sheet-skill-close" aria-label="Fermer">×</button></header>
       ${usage?`<p>${esc(usage)}</p>`:""}
-      <div class="sheet-skill-window-list">${rows.map(x=>`<div class="sheet-skill"${skillLevelStyle(x.v)}>${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`).join("")}</div>
+      <div class="sheet-skill-window-list">${rows.map(x=>`<div class="sheet-skill"${skillLevelStyle(x.v,shownSkillScale(group,x.n))}>${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`).join("")}</div>
     </section>
   </div>`;
 }
 function skillRows(c,names,group="martial"){
-  return names.filter(n=>Number.isFinite(skillValue(c,group,n)))
-    .sort((a,b)=>skillValue(c,group,b)-skillValue(c,group,a)).map(n=>skillLine(c,group,n)).join("");
+  return names.filter(n=>Number.isFinite(shownSkillValue(c,group,n)))
+    .sort((a,b)=>shownSkillValue(c,group,b)-shownSkillValue(c,group,a)).map(n=>skillLine(c,group,n)).join("");
 }
 function skillColumn(c,title,names){
   return `<section class="sheet-skill-column"><h4>${title}</h4>${skillRows(c,names)}</section>`;
@@ -1654,7 +1691,7 @@ function companyTagContext() {
   const roleOf = m => company && m.id === company.captainId ? "capitaine" : (company?.lieutenantIds || []).includes(m.id) ? "lieutenant" : "";
   return {rules, members, steward, companyStars, roleOf, view: rules.company({members, steward, companyStars, roleOf})};
 }
-// Les tags affichés de chaque membre de la compagnie : Map membre → [{id, name, parent}] (hors de la compagnie : rien ; une
+// Les tags affichés de chaque membre de la compagnie : Map membre → [{id, name, note, parent}] (hors de la compagnie : rien ; une
 // copie d'un membre, comme l'aperçu du mode dieu : ceux du membre).
 function mercenaryTagLists(list, ctx = companyTagContext()) {
   const out = new Map();
@@ -1662,7 +1699,7 @@ function mercenaryTagLists(list, ctx = companyTagContext()) {
   for (const c of list) {
     const member = ctx.members.includes(c) ? c : ctx.members.find(m => c?.id != null && m.id === c.id);
     if (!member) { out.set(c, []); continue; }
-    out.set(c, ctx.rules.tagsOf(member, ctx).affiches.map(t => ({id: t.id, name: t.nom.trim(),
+    out.set(c, ctx.rules.tagsOf(member, ctx).affiches.map(t => ({id: t.id, name: t.nom.trim(), note: String(t.note || "").trim(),
       parent: t.parents.length ? ctx.rules.tree.nomTag(t.parents[0]).trim() : ""})));
   }
   return out;

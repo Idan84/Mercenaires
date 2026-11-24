@@ -120,4 +120,34 @@ assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
   // Le recrutement ajoute sa fiche (talk-dialog--fiche, Idan, 2026-11-22).
   for(const id of ["recruit","steward","deal"]) assert.match(html,new RegExp(`<dialog id="${id}-talk-dialog" class="talk-dialog talk-dialog--recruit[" ]`));
 }
+// L'affichage des armes (Idan, 2026-11-23 : « on touche à rien, mais on affiche uniquement l'arme avec la valeur
+// arme+cat ») : une arme montre arme + catégorie ; une catégorie d'armes, sa meilleure arme (sans valeur à elle dans sa
+// fenêtre) ; un style garde la sienne, un bouclier montre bouclier + Boucliers ; les animaux ne changent pas.
+{
+  const ui=fs.readFileSync(path.join(__dirname,"..","prototype-web","ui.js"),"utf8");
+  const from=ui.indexOf("function skillValue(m,group,name){"),to=ui.indexOf("function skillColumn(c,title,names){");
+  const game={referenceData:{skills:read("skills.json"),characterSheetCopy:copy}};
+  const api=new Function("game","fmt","esc","comparePopover","equipmentEffectRules","sheetEquippedValue","equipmentDetail",
+    ui.slice(from,to)+"\nreturn {shownSkillValue,skillLine,skillOverlay,skillRows};")(
+    game,n=>String(Math.round(n)),x=>String(x??""),()=>"",()=>({effects:()=>({})}),()=>0,()=>"");
+  const m={skills:{martial:{"Haches":40,"Hache de guerre":38,"Hachette":10,"Hache double":1,"Boucliers":30,"Écu":20,"Combat à une main":25},animal:{"Compagnon animal":12,"Équidés":9}}};
+  assert.equal(api.shownSkillValue(m,"martial","Hache de guerre"),78,"38 + 40");
+  assert.equal(api.shownSkillValue(m,"martial","Hachette"),50);
+  assert.equal(api.shownSkillValue(m,"martial","Haches"),78,"la catégorie : sa meilleure arme");
+  assert.equal(api.shownSkillValue(m,"martial","Boucliers"),30,"un style garde sa valeur");
+  assert.equal(api.shownSkillValue(m,"martial","Écu"),50,"20 + Boucliers");
+  assert.equal(api.shownSkillValue(m,"martial","Combat à une main"),25);
+  assert.equal(api.shownSkillValue(m,"animal","Équidés"),9,"les animaux ne changent pas");
+  assert.ok(Number.isNaN(api.shownSkillValue(m,"martial","Lames longues")),"aucune lame : pas de ligne");
+  // Une arme jamais pratiquée (1) dans une catégorie jamais pratiquée (0, Idan, 2026-11-23) : la fiche montre 1.
+  const novice={skills:{martial:{"Lames longues":0,"Épée longue":1}}};
+  assert.equal(api.shownSkillValue(novice,"martial","Épée longue"),1,"1 + 0");
+  assert.equal(api.shownSkillValue(novice,"martial","Lames longues"),1,"la catégorie : sa meilleure arme");
+  assert.match(api.skillLine(m,"martial","Haches"),/data-skill-open="Haches"[^>]*style="--skill-level:39%">[\s\S]*?<span class="sheet-stat-value" tabindex="0">78</);
+  const fenetre=api.skillOverlay(m,"martial","Haches");
+  assert.match(fenetre,/<h4>Haches<\/h4><button/,"pas de valeur pour la catégorie");
+  assert.deepEqual([...fenetre.matchAll(/<span class="sheet-stat-value" tabindex="0">(\d+)</g)].map(x=>+x[1]),[78,50,41],"ses armes, arme + catégorie, la meilleure d'abord");
+  assert.match(api.skillOverlay(m,"martial","Boucliers"),/<h4>Boucliers<\/h4><b>30<\/b>/,"le style garde sa valeur");
+  assert.ok(!Object.values(copy.skills_usage).some(t=>/S’ajoute à la maîtrise de chaque arme/.test(t||"")));
+}
 console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques, des compétences et de la magie — OK");

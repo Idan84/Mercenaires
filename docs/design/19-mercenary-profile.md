@@ -106,7 +106,7 @@ Décisions d'Idan du 2026-11-06 : « Ce qu'il fait sur le terrain × comment il 
 `data/reference/mercenary-titles.json`.
 
 - **Un seul titre** : ses 1 à 3 rôles (§4) fondus en un titre, **sans étoiles**, ou **Chair à canon**. Pas de petite
-  ligne de spécialité.
+  ligne de spécialité. **S'il n'a qu'un tag, ce tag devient son titre** (Idan, 2026-11-24 ; doc 20 §11).
 - **Le comment** : l'**arme** qui porte le rôle (le set qui donne la meilleure valeur), le **style** quand aucune arme ne
   domine, l'**école** de son meilleur sort, ou la **sous-catégorie** qui a son propre mot (Assassin, Rempart, Rôdeur…).
   On y lit toujours l'arme ou l'école, et ce qu'il fait.

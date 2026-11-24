@@ -18,6 +18,9 @@ assert.equal(ev("(1 + 2) * 3"),9);
 assert.equal(ev("-3 + 5"),2);
 assert.equal(ev("10 / 0"),0,"diviser par 0 donne 0");
 assert.equal(ev("max(1, 4, 2) + min(3, 9) + abs(-2) + arrondi(2.6)"),12);
+// Arrondi au-dessus et au-dessous (Idan, 2026-11-23 : « arr sup (nombre d'étoiles de la compagnie/5) »).
+assert.deepEqual(["arrondi_sup(1/5)","arrondi_sup(5/5)","arrondi_sup(6/5)","arrondi_inf(9/5)"].map(ev),[1,1,2,1]);
+assert.equal(ev("somme(3 >= 2, 1 >= 2, 5 >= 2)"),2,"compter des conditions vraies");
 assert.equal(ev("somme(1, vrai, 2)"),4);
 assert.equal(ev("nombre(sorts)",{sorts:["a","b"]}),2);
 assert.equal(ev("a > 2 et b < 1",{a:3,b:0}),true);
@@ -121,6 +124,34 @@ assert.equal(r.motif.has("soin"),false);
 assert.equal(r.reps.find(x=>x.x.id==="t-soin").force,true);
 assert.equal(r.motif.get("reconnu"),"1.1. Reconnu ? → non");
 
+// ---- Les tags qui regroupent (Idan, 2026-11-24 : le Bélier) ----
+// Un tag ne s'efface que devant un enfant réellement affiché : un enfant écarté par une catégorie « garder 1 » ne cache
+// pas son parent. Bélier (Charge + Perce-armure) remplace les deux ; un spécialiste plus haut le fait s'effacer.
+{
+  const d=E.clean({tags:[
+    {id:"cac",nom:"CAC",groupe:true},
+    {id:"charge",nom:"Spécialiste de la charge",parents:["cac"]},
+    {id:"legende",nom:"Charge légendaire",parents:["charge"]},
+    {id:"armures",nom:"Armures",groupe:true,garder:1,parents:["cac"]},
+    {id:"perce",nom:"Perce-armure",parents:["armures"],rang:2},
+    {id:"pro",nom:"Ouvre-boîte professionnel",parents:["perce"],rang:4},
+    {id:"destructeur",nom:"Destructeur d'armure",parents:["pro"],rang:6},
+    {id:"belier",nom:"Bélier",parents:["perce","charge"],rang:3},
+    {id:"bl1",nom:"Bélier légendaire",parents:["belier","legende"],rang:5},
+    {id:"bl2",nom:"Bélier légendaire",parents:["belier","pro"],rang:5}]});
+  const t=E.createTagTree(d);
+  const vus=garde=>{ const motif=new Map(d.tags.filter(x=>!garde.includes(x.id)&&!x.groupe).map(x=>[x.id,"x"]));
+    for(let encore=true;encore;){ encore=false; for(const x of d.tags) if(!motif.has(x.id)&&x.parents.some(p=>motif.has(p))){ motif.set(x.id,"p"); encore=true; } }
+    return [...new Set(t.displayed(motif).affiches.map(x=>x.nom))].sort(); };
+  assert.deepEqual(vus(["charge","perce","belier"]),["Bélier"],"le Bélier remplace ses deux parents");
+  assert.deepEqual(vus(["charge","legende","perce","belier","bl1"]),["Bélier légendaire"]);
+  assert.deepEqual(vus(["charge","perce","pro","belier","bl2"]),["Bélier légendaire"],"Charge + Ouvre-boîte professionnel");
+  assert.deepEqual(vus(["charge","perce","pro","destructeur","belier","bl2"]),["Destructeur d'armure","Spécialiste de la charge"],
+    "le spécialiste plus haut n'est pas bloqué, et la charge reste visible");
+  assert.deepEqual(vus(["charge","legende","perce","pro","destructeur","belier","bl1","bl2"]),["Charge légendaire","Destructeur d'armure"]);
+  assert.deepEqual(vus(["charge"]),["Spécialiste de la charge"]);
+}
+
 // ---- La compagnie ----
 const comp=E.withCompany({"carac.force":50,"comp.haches":10,"nom":"A"},[{"carac.force":70},{"comp.haches":5}],3);
 assert.equal(comp["compagnie.etoiles"],3);
@@ -155,8 +186,55 @@ const cles=Object.keys(recrues[0]).sort();
 assert.ok(cles.length>300,"toutes les variables de l'atelier");
 for(const v of recrues) assert.deepEqual(Object.keys(v).sort(),cles,"la même liste de variables pour chacun");
 const VARS=new Set(tagVars.vars().map(x=>x.k));
-for(const k of ["carac.force","comp.armes_de_tir","tir.precision","tir.puissance","tir.dex_vit","tir.repetable","pm","sorts","nb_sorts","moy.cout.soin","lancers.soin"])
+for(const k of ["carac.force","comp.armes_de_tir","tir.precision","tir.puissance","tir.dex_vit","tir.repetable","pm","sorts","nb_sorts","moy.cout.soin","lancers.soin",
+  "nb_ecoles_sorts","moy.chance.sorts","moy.cout.sorts","lancers.sorts"])
   assert.ok(VARS.has(k),k);
+// Par école (Idan, 2026-11-23 : tags des écoles de magie) : ses sorts de l'école, leur réussite et leur coût moyens, et
+// combien il peut en lancer avec sa réserve.
+const ECOLES=["vie","feu","eau","transmutation","foudre","telekinesie","illusion","necromancie","invocation"];
+for(const e of ECOLES) for(const k of ["sorts.ecole.","moy.chance.ecole.","moy.cout.ecole.","lancers.ecole."]) assert.ok(VARS.has(k+e),k+e);
+for(const v of recrues){
+  assert.equal(ECOLES.reduce((t,e)=>t+v["sorts.ecole."+e],0),v.nb_sorts,"ses sorts, école par école");
+  assert.equal(ECOLES.filter(e=>v["sorts.ecole."+e]>0).length,v.nb_ecoles_sorts);
+  for(const e of ECOLES) if(v["moy.cout.ecole."+e]>0) assert.equal(v["lancers.ecole."+e],Math.floor(v["carac.reserve_de_mana"]/v["moy.cout.ecole."+e]));
+}
+assert.ok(recrues.some(v=>v.nb_ecoles_sorts>=1&&v["moy.chance.sorts"]>0),"des recrues qui lancent des sorts");
+// La maîtrise de l'arme et du bouclier portés, arme + catégorie (Idan, 2026-11-24 : tags du Tank).
+for(const k of ["arme1.maitrise","arme2.maitrise","arme1.bouclier.maitrise","arme2.bouclier.maitrise"]) assert.ok(VARS.has(k),k);
+{
+  const c=gen.createMercenary({id:900,captain}), v=tagVars.of(c), mk=c.skills.martial;
+  const items=new Map(c.items.map(it=>[it.id,it])), main=items.get(c.equipment.slots.weapon_set_1_main);
+  if(main) assert.ok(Math.abs(v["arme1.maitrise"]-((Number(mk[main.name])||0)+(Number(mk[main.category])||0)))<0.11,"arme + catégorie");
+  for(const r of recrues){ if(!r["arme1.bouclier"]) assert.equal(r["arme1.bouclier.maitrise"],0); if(!r.arme1) assert.equal(r["arme1.maitrise"],0); }
+  assert.ok(recrues.some(r=>r["arme1.maitrise"]>0),"des recrues armées");
+}
+// Le corps à corps (Idan, 2026-11-24 : tags de la catégorie CAC) : les valeurs du combat, au meilleur set de contact.
+{
+  const K=["contact.puissance","contact.precision","contact.force_charge","contact.bonus_charge","contact.percee_plates","contact.percee_ecailles","contact.deux_armes","contact.fleau"];
+  for(const k of K) assert.ok(VARS.has(k),k);
+  const engine=R("combat-engine.js").createCombatEngine(reference,{});
+  let vus=0;
+  for(let i=0;i<30;i++){
+    const c=gen.createMercenary({id:950+i,captain}), v=tagVars.of(c);
+    const sets=[1,2].map(set=>({set,u:{character:c,activeSet:set}})).filter(x=>{ const it=engine.activeWeaponItem(x.u); return it&&engine.weaponTemplate(it)&&it.combatFamily!=="ranged"; });
+    if(!sets.length){ assert.equal(v["contact.puissance"],0); assert.equal(v["contact.force_charge"],0); continue; }
+    vus++;
+    const best=Math.max(...sets.map(x=>engine.attackPower(x.u,"melee")));
+    assert.ok(Math.abs(v["contact.puissance"]-best)<0.06,"puissance au contact = celle du combat");
+    assert.ok(v["contact.force_charge"]>v["contact.puissance"],"la charge ajoute à la puissance");
+    assert.ok(v["contact.percee_ecailles"]>=v["contact.percee_plates"],"les écailles se passent mieux que les plates");
+    assert.ok([1,2].includes(v["contact.bonus_charge"]));
+  }
+  assert.ok(vus>10,"des recrues armées pour le contact");
+}
+// Les moyennes des soins pour chaque tag de sort (Idan, 2026-11-23 : sorts de soutien et entraves).
+for(const t of ["soutien.enchantements","entrave.immobilisation","entrave.affaiblissement","entrave.demoralisateur"])
+  for(const k of ["moy.chance.","moy.ecole.","lancers."]) assert.ok(VARS.has(k+t),k+t);
+for(const v of recrues) for(const t of ["soutien.enchantements","entrave.immobilisation"]){
+  if(!v["sorts."+t]){ assert.equal(v["lancers."+t],0); assert.equal(v["moy.chance."+t],0); continue; }
+  assert.equal(v["lancers."+t],Math.floor(v["carac.reserve_de_mana"]/v["moy.cout."+t]));
+  assert.ok(v["moy.chance."+t]>=0&&v["moy.chance."+t]<=v["chance."+t],"la moyenne ne dépasse pas la meilleure");
+}
 
 const donnees=E.clean(JSON.parse(read("data/reference/tag-workshop.json")));
 const arbre=E.createTagTree(donnees);

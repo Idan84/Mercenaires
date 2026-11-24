@@ -98,7 +98,10 @@ assert.equal(tags.maxError(parfait),0);
 for(const x of members) delete x.tagBias;
 for(const x of members.slice(0,6)){
   const direct=tree.tags(E.withCompany(tags.valuesOf(x),members.filter(o=>o!==x).map(o=>tags.valuesOf(o)),3));
-  assert.deepEqual(tags.tagsOf(x,{members,steward:parfait,companyStars:3}).affiches.map(t=>t.id),direct.affiches.map(t=>t.id),x.name);
+  const jeu=tags.tagsOf(x,{members,steward:parfait,companyStars:3}).affiches;
+  // Sans aucun tag, un tag de consolation (Idan, 2026-11-24).
+  if(direct.affiches.length) assert.deepEqual(jeu.map(t=>t.id),direct.affiches.map(t=>t.id),x.name);
+  else assert.ok(jeu.length===1&&jeu[0].consolation,x.name);
 }
 // Sans intendant, aucun tag (Idan, 2026-11-22 : « Sans intendant […] aucun tag s'affiche »).
 for(const x of members.slice(0,6)) assert.deepEqual(tags.tagsOf(x,{members,steward:null,companyStars:3}).affiches,[],x.name);
@@ -117,6 +120,35 @@ for(const x of members){
 const seul=tags.tagsOf(roster[3],{members,steward:cruxor,companyStars:3});
 assert.deepEqual(seul.affiches.map(t=>t.id),tags.tagsOf(roster[3],{members,steward:cruxor,companyStars:3,view}).affiches.map(t=>t.id),
   "le même résultat, la vue de la compagnie donnée ou non");
+
+// ---- Les tags de consolation (Idan, 2026-11-24 : « Ceux qui ont aucun tag en gagnent un au hasard parmi ces 8 ! ») ----
+{
+  const noms=reference.tagConsolation.rows.map(r=>r.nom);
+  assert.deepEqual(noms,["Mercenaire intérimaire","Stagiaire de première ligne","Éponges à flèches","Porte-torches",
+    "Piétaille à usage unique","Engrais de champ de bataille","Chair à canon","Prime de retour très incertaine"]);
+  // Un atelier où personne n'a de tag : chacun reçoit un tag de consolation, tiré une fois et gardé sur lui.
+  const vide=createCompanyTags({reference,workshop:{tags:[{id:"x",nom:"Inaccessible",parents:[]}],tests:[{id:"t",nom:"Jamais",calcul:"faux",non:["x"]}]},
+    variables,stars,affinity,random});
+  const vus=new Set();
+  for(const x of members){
+    delete x.tagConsolation;
+    const a=vide.tagsOf(x,{members,steward:parfait,companyStars:3});
+    assert.equal(a.affiches.length,1,x.name);
+    assert.ok(a.affiches[0].consolation&&noms.includes(a.affiches[0].nom),a.affiches[0].nom);
+    assert.ok(Number.isInteger(x.tagConsolation),"le tirage est gardé sur lui");
+    assert.equal(vide.tagsOf(x,{members,steward:parfait,companyStars:3}).affiches[0].nom,a.affiches[0].nom,"toujours le même");
+    vus.add(a.affiches[0].nom);
+  }
+  assert.ok(vus.size>=3,"au hasard parmi les 8 : "+[...vus].join(", "));
+  // Sans intendant : toujours aucun tag ; avec un vrai tag : pas de consolation.
+  assert.deepEqual(vide.tagsOf(members[0],{members,steward:null,companyStars:3}).affiches,[]);
+  const plein=createCompanyTags({reference,workshop:{tags:[{id:"y",nom:"Toujours",parents:[]}],tests:[]},variables,stars,affinity,random});
+  assert.deepEqual(plein.tagsOf(members[0],{members,steward:parfait,companyStars:3}).affiches.map(t=>t.nom),["Toujours"]);
+  // Le candidat aussi.
+  const c2={mercenary:generator.createMercenary({id:98,captain})};
+  const annonce2=vide.candidateTags(c2,{members,steward:parfait,companyStars:3});
+  assert.ok(annonce2.affiches.length===1&&annonce2.affiches[0].consolation&&Number.isInteger(c2.tagConsolation));
+}
 
 // ---- Les auras (Commandement) : la place dans la compagnie, et le biais de l'intendant ----
 for(const k of ["aura.officier","aura.fouet","aura.courage","bonus.commandement"]) assert.ok(isBiased(k,10),k);
@@ -142,6 +174,28 @@ candidat.tagSelfBias=3;
 const fort=tags.candidateTags(candidat,{members,steward:cruxor,companyStars:3,view});
 const attendu=tree.tags(E.withCompany(tags.seen(tags.valuesOf(candidat.mercenary),3),members.map(x=>view.get(x)),3));
 assert.deepEqual(fort.affiches.map(t=>t.id),attendu.affiches.map(t=>t.id),"ses valeurs × 3, contre la compagnie vue par l'intendant");
+
+// ---- Le titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») ----
+{
+  const {titleTag}=R("company-tags.js");
+  assert.equal(titleTag({affiches:[]}),null,"aucun tag : le titre calculé");
+  assert.equal(titleTag({affiches:[{nom:"Veinard"},{nom:"Roc"}]}),null,"plusieurs tags : le titre calculé");
+  assert.equal(titleTag({affiches:[{nom:"Veinard"}]}).nom,"Veinard","un seul tag : son titre");
+  assert.equal(tags.titleTag,titleTag);
+  // Un seul tag, tag de consolation compris (« oui, titre = consolation »).
+  const seul=members.map(x=>tags.tagsOf(x,{members,steward:cruxor,companyStars:1,view})).find(r=>r.affiches.length===1&&r.affiches[0].consolation);
+  if(seul) assert.equal(titleTag(seul).consolation,true);
+  // Le tavernier décrit un candidat (ses valeurs estimées) : ses tags sur ces valeurs ; le candidat garde sa consolation.
+  const decrit=tags.describedTags(candidat.mercenary,candidat,{members,steward:cruxor,companyStars:1,view});
+  const exactes=tree.tags(E.withCompany(tags.valuesOf(candidat.mercenary),members.map(x=>view.get(x)),1));
+  if(exactes.affiches.length) assert.deepEqual(decrit.affiches.map(t=>t.id),exactes.affiches.map(t=>t.id),"sans estimation : ses vraies valeurs");
+  else assert.equal(decrit.affiches[0].id,"consolation-"+reference.tagConsolation.rows[candidat.tagConsolation].code,"sa consolation, gardée sur le candidat");
+  const sheet=read("prototype-web/ui.js"), hover=read("prototype-web/hover-card-ui.js"), tavern=read("prototype-web/tavern-ui.js");
+  assert.match(sheet,/if\(tags\.length===1\) return \{name:tags\[0\]\.name,lines:tags\[0\]\.note\?\[tags\[0\]\.note\]:\[\],tag:tags\[0\]\};/,"fiche : le tag et sa note en infobulle");
+  assert.match(hover,/characterTitle\(c\)\?\.name/,"fiche au survol : le même titre");
+  assert.match(tavern,/tagRules\.candidateTags\(candidate,ctx\)/,"le candidat : ses tags annoncés");
+  assert.match(tavern,/describedTitle\(m,value=>value\*draw\(\),candidate\)/,"le tavernier : les tags sur ses estimations");
+}
 
 // ---- Branché dans le jeu (Idan, 2026-11-22) : plus d'onglet ni de demande de tags ----
 const ui=read("prototype-web/ui.js"), stewardUi=read("prototype-web/steward-ui.js"), html=read("prototype-web/index.html");

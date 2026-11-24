@@ -158,6 +158,9 @@
     // une catégorie d'arme, un style ou une école à 20 ou moins passe à 1 ; un sort ne se tire pas dans une telle école.
     const unpracticedMax = constant("generation.skills.unpracticed_max", 20);
     const unpracticedValue = constant("generation.skills.unpracticed_value", 1);
+    // Une catégorie d'armes non pratiquée vaut 0 (Idan, 2026-11-23 : « Fais passer les armes à 1 ») : sur la fiche, une arme
+    // montre arme + catégorie, et une arme jamais pratiquée y vaut 1 + 0 = 1.
+    const unpracticedCategoryValue = constant("generation.skills.unpracticed_category_value", 0);
 
     function culturesForPeople(people) {
       return cultureRows
@@ -417,22 +420,26 @@
     // au moins un sort de sa meilleure école ») : un Mage qui n'a rien tiré apprend un sort au hasard dans sa meilleure
     // école, une fois le domaine accentué.
     // Armes précises, catégories d'armes, styles et écoles à unpracticedMax ou moins → unpracticedValue (Idan, 2026-11-06),
-    // 0 compris (« On remonte les 0 à 1 ») : un malus de peuple, de culture ou de domaine ne descend plus sous 1.
+    // 0 compris (« On remonte les 0 à 1 ») : un malus de peuple, de culture ou de domaine ne descend plus sous 1. Sauf les
+    // catégories d'armes → unpracticedCategoryValue (0, Idan, 2026-11-23) ; Boucliers est un style et reste à 1.
+    const martialStyles = ["Combat à une main", "Combat à deux mains", "Combat à deux armes", "Boucliers"];
+    const weaponCategoryNames = new Set(weaponRows.map(w => skillByName.get(w.nom)?.parent).filter(c => c && !martialStyles.includes(c)));
     const unpracticedMartial = new Set([
       ...weaponRows.map(w => w.nom),
-      ...weaponRows.map(w => skillByName.get(w.nom)?.parent).filter(Boolean),
-      "Combat à une main", "Combat à deux mains", "Combat à deux armes", "Boucliers"
+      ...weaponCategoryNames,
+      ...martialStyles
     ]);
     function clearUnpracticedSkills(character, trace) {
       const cleared = [];
       const clear = (group, name) => {
         const values = character.skills[group];
         const before = values?.[name];
-        if (!Number.isFinite(before) || before === unpracticedValue || before > unpracticedMax) return;
-        values[name] = unpracticedValue;
+        const target = group === "martial" && weaponCategoryNames.has(name) ? unpracticedCategoryValue : unpracticedValue;
+        if (!Number.isFinite(before) || before === target || before > unpracticedMax) return;
+        values[name] = target;
         cleared.push(name);
         const entry = trace.skills[name];
-        if (entry) { entry.contributions.push({name: "Non pratiquée (20 ou moins)", kind: "unpracticed", delta: unpracticedValue - before}); entry.final = unpracticedValue; }
+        if (entry) { entry.contributions.push({name: "Non pratiquée (20 ou moins)", kind: "unpracticed", delta: target - before}); entry.final = target; }
       };
       for (const name of unpracticedMartial) clear("martial", name);
       for (const name of magicSchoolNames) clear("magic", name);

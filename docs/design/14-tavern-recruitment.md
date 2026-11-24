@@ -155,10 +155,13 @@ en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ».
   Signer), Partir.
 - **« Puis-je en savoir plus sur vous ? »** ouvre ses questions sur lui : son titre, son set 1, son set 2, son armure, ses
   sorts (il liste ses écoles), et Retour. Quand il n'y a plus rien à demander, on revient au menu et le choix disparaît.
+  Deux armes identiques (Idan, 2026-11-24 : « On met les deux, ça rend les dialogues plus vivants ! ») : « deux
+  nunchakus » ou « un nunchaku dans chaque main », une chance sur deux, toujours la même pour un candidat
+  (`tavern-dialogue.json`, weapons : deux, chaque_main) ; sur la fiche au survol, « Nunchaku × 2 ».
 - **Sa fiche** : la ligne **Salaire** à côté de la prime (sur la fiche du candidat seulement) ; chaque case de
   l'équipement se remplit à part ; les pictos de ses écoles une fois qu'il les a dites.
 - **Son titre** : recalculé sur ses capacités vantées, avec le même tirage que ses tags (×1,10 à ×3,00, une fois par
-  candidat, doc 20 §12).
+  candidat, doc 20 §12) ; s'il n'annonce qu'un tag, ce tag est son titre (Idan, 2026-11-24 ; doc 20 §11).
 - **Le tavernier** : « Demander des conseils », puis qui ?, puis ses deux questions (« Qu'est-ce qu'on dit de lui ? »,
   « Il m'apprécierait, à ton avis ? »), 1 PO chacune, réponse figée. Le titre : recalculé sur ses capacités estimées une à
   une à ±10 %. L'affinité : estimée à ±10 %, puis le mot. Ses réponses vont sur la fiche du candidat ; son titre passe

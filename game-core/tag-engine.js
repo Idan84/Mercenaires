@@ -3,11 +3,11 @@
 // Moteur des tags (refonte de l'atelier des tags, doc 20 §11 et §12 ; Idan, 2026-11-22 : « je veux que le jeu lise les
 // datas de l'atelier »). Une seule source pour l'atelier (artefact et Design Lab) et pour le jeu :
 // - le langage des calculs de l'atelier (sûr : aucun code exécuté) : variables, constantes, et / ou / non, comparaisons,
-//   + − × ÷, « contient », max, min, abs, arrondi, nombre, somme ;
+//   + − × ÷, « contient », max, min, abs, arrondi, arrondi_sup, arrondi_inf, nombre, somme ;
 // - les données de l'atelier (tags à plusieurs parents, tests rangés en arbre, constantes), nettoyées par clean ;
 // - la résolution : chaque test posé élimine des tags, un tag tombe avec l'un de ses parents, un tag inactif tombe
 //   d'office ; seuls s'affichent le tag le plus bas de chaque branche, ou les X tags de plus haut rang d'une catégorie
-//   qui « garde X » ;
+//   qui « garde X » ; un tag ne s'efface que devant un enfant réellement affiché ;
 // - les variables d'un mercenaire à l'instant T (équipement compris), lues par les calculs.
 // Pur : ni DOM, ni hasard (les biais viendront d'ailleurs, doc 20 §12).
 (function(root,factory){
@@ -31,6 +31,8 @@
   }
   function vrai(x){ return Array.isArray(x)?x.length>0:typeof x==="string"?x!=="":Boolean(x); }
   const FONCTIONS={max:(...a)=>Math.max(...a.map(nombre)),min:(...a)=>Math.min(...a.map(nombre)),abs:a=>Math.abs(nombre(a)),arrondi:a=>Math.round(nombre(a)),
+    // Arrondi au-dessus et au-dessous (Idan, 2026-11-23 : « arr sup (nombre d'étoiles de la compagnie/5) »).
+    arrondi_sup:a=>Math.ceil(nombre(a)),arrondi_inf:a=>Math.floor(nombre(a)),
     nombre:a=>Array.isArray(a)?a.length:typeof a==="string"?(a?1:0):nombre(a),somme:(...a)=>a.reduce((s,x)=>s+nombre(x),0)};
   function lexer(src){
     const toks=[]; let i=0;
@@ -177,7 +179,6 @@
     // catégorie qui « garde X » ne montre que ses X tags de plus haut rang qui restent (à rang égal, l'ordre de la liste).
     function displayed(motif){
       const restent=doc.tags.filter(t=>!t.groupe&&!motif.has(t.id));
-      const plusBas=t=>![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id); });
       const gardes=new Map();
       for(const c of doc.tags.filter(c=>c.groupe&&c.garder)){
         const cand=[...descendants(c.id)].map(tagPar).filter(d=>d&&!d.groupe&&!motif.has(d.id))
@@ -185,7 +186,18 @@
         gardes.set(c.id,new Set(cand.slice(0,c.garder).map(d=>d.id)));
       }
       const limitees=t=>[...ancetres(t.id)].filter(id=>gardes.has(id));
-      const affiches=restent.filter(t=>{ const l=limitees(t); return l.length?l.every(id=>gardes.get(id).has(t.id)):plusBas(t); });
+      // Un tag ne s'efface que devant un enfant réellement affiché (Idan, 2026-11-24, le Bélier : « je veux pas que ça
+      // bloque les spécialistes ») : un enfant écarté par une catégorie limitée ne cache pas son parent.
+      const memo=new Map();
+      const affiche=t=>{
+        if(memo.has(t.id)) return memo.get(t.id);
+        memo.set(t.id,false);
+        const l=limitees(t);
+        const r=l.length?l.every(id=>gardes.get(id).has(t.id))
+          :![...descendants(t.id)].some(id=>{ const d=tagPar(id); return d&&!d.groupe&&!motif.has(id)&&affiche(d); });
+        memo.set(t.id,r); return r;
+      };
+      const affiches=restent.filter(affiche);
       return {restent,affiches};
     }
     // Tout d'un coup, sur des valeurs : les tags affichés, ceux qui restent, les éliminés.
@@ -232,6 +244,10 @@
         items:[{id:"w",name:g.arme,itemType:"weapon",tier:1,qualityCode:"standard",category:cat},{id:"a",name:g.armure,itemType:"armor",tier:1,qualityCode:"standard"}],
         equipment:{slots:{weapon_set_1_main:"w",armor:"a"}}},activeSet:1}; })();
     const SCHOOLS=[...new Set([...spellRows.values()].map(r=>r.ecole).filter(Boolean))];
+    // Corps à corps : les armures de référence (base-armors.json) et les types de coups (puissance de l'arme, résistance).
+    const armorRows=new Map(rows(reference?.baseArmors).map(r=>[r.nom,r]));
+    const DEGATS=[["puissance_tranchante_base","resistance_tranchant"],["puissance_perforante_base","resistance_perforant"],["puissance_contondante_base","resistance_contondant"]];
+    const AERIEN=Number(rows(reference?.formulaConstants).find(r=>r.code==="combat.charge_aerienne.bonus")?.valeur)||1.2;
     const VARS=[], seen=new Map();
     const v=(k,label,groupe,type)=>{ if(!seen.has(k)){ seen.set(k,VARS.length); VARS.push({k,label,groupe,type}); } };
     // Les variables des tags de sorts existent pour tout le monde (0 s'il n'en connaît pas).
@@ -244,6 +260,12 @@
       }
       for(const r of spellRows.values()) for(const t of roleTags(r)) if(t!=="role/soin")
         v("moy.cout."+tagKey(t),"Coût moyen en mana de ses sorts « "+tagLabel(t)+" »","Sorts : coût en mana","nombre");
+      // Les moyennes des soins, pour chaque tag de sort (Idan, 2026-11-23 : sorts de soutien et entraves).
+      for(const r of spellRows.values()) for(const t of roleTags(r)) if(t!=="role/soin"){
+        v("moy.chance."+tagKey(t),"Réussite moyenne de ses sorts « "+tagLabel(t)+" » (%)","Sorts : moyennes par tag","nombre");
+        v("moy.ecole."+tagKey(t),"Niveau moyen des écoles de ses sorts « "+tagLabel(t)+" » (équipement compris)","Sorts : moyennes par tag","nombre");
+        v("lancers."+tagKey(t),"Nombre de sorts « "+tagLabel(t)+" » qu'il peut lancer avec sa réserve (coût moyen)","Sorts : moyennes par tag","nombre");
+      }
       // Le bonus des sorts qui en donnent un (Courage de masse : +20, +5 par pas de maîtrise ; magic.bonus).
       for(const r of spellRows.values()) if(r.bonus_base!=null) for(const t of roleTags(r))
         v("bonus."+tagKey(t),"Bonus de son meilleur sort « "+tagLabel(t)+" » (points)","Sorts : bonus","nombre");
@@ -311,7 +333,13 @@
         put("arme"+n+".famille","Set "+n+" : contact ou distance","Équipement porté","texte",fam(m));
         put("arme"+n+".prise","Set "+n+" : prise","Équipement porté","texte",m?.grip||"");
         put("arme"+n+".main_gauche","Set "+n+" : main gauche","Équipement porté","texte",o?.name||"");
-        put("arme"+n+".bouclier","Set "+n+" : bouclier","Équipement porté","oui/non",Boolean(o&&(o.category==="Boucliers"||weaponRows.get(o.name)?.categorie==="Boucliers")));
+        const bouclier=Boolean(o&&(o.category==="Boucliers"||weaponRows.get(o.name)?.categorie==="Boucliers"));
+        put("arme"+n+".bouclier","Set "+n+" : bouclier","Équipement porté","oui/non",bouclier);
+        // La maîtrise de l'arme portée, arme + catégorie (comme la fiche, Idan, 2026-11-23 ; tags du Tank, 2026-11-24 :
+        // « l'arme portée + carac de la catégorie », « le bouclier porté + carac du bouclier »), équipement compris.
+        const maitrise=nom=>{ if(!nom) return 0; const x=Number(engine.statWithGear(unit,nom)); return Number.isFinite(x)&&x?x:Number(mart[nom])||0; };
+        put("arme"+n+".maitrise","Set "+n+" : maîtrise de l'arme (arme + catégorie, équipement compris)","Équipement porté","nombre",m?r1(maitrise(m.name)+maitrise(m.category)):0);
+        put("arme"+n+".bouclier.maitrise","Set "+n+" : maîtrise du bouclier (bouclier + Boucliers, équipement compris)","Équipement porté","nombre",bouclier?r1(maitrise(o.name)+maitrise("Boucliers")):0);
       }
       // Le tir (Idan, 2026-11-22 : tags du Tireur) : son set de tir le plus efficace (dégâts par tour contre l'étalon en
       // gambison, comme les titres), sans le pistolet (« particulier »), et les valeurs du moteur avec ce set en main.
@@ -327,6 +355,40 @@
         r1(Number(engine.effectiveDexterity(tirUnit||unit))+Number(engine.effectiveSpeed(tirUnit||unit))));
       put("tir.degats_tour","Dégâts par tour au tir contre l'étalon en gambison (comme les titres)","Tir (son meilleur set de tir)","nombre",tirSets.length?r1(tirSets[0].dps):0);
       put("pm","PM : cases de déplacement","Capacités","nombre",Number(engine.movementBase(unit))||0);
+      // Le corps à corps (Idan, 2026-11-24 : tags de la catégorie CAC), pour chaque set dont l'arme principale est de contact,
+      // avec les formules du combat (combat-engine.js) : puissance (Blesser) et précision (Toucher) ; percée contre une
+      // armure = puissance + meilleur écart puissance de l'arme − résistance de l'armure (tranchant, perforant, contondant) ;
+      // force de charge = puissance + bonus de charge à pleine course (2 × déplacement × bonus de charge de l'arme × qualité)
+      // + la moitié de la Force de sa monture, × 1,2 en charge aérienne. Chaque valeur garde le meilleur des deux sets ; le
+      // bonus de charge est celui de l'arme de sa meilleure charge.
+      const contact={puissance:0,precision:0,force_charge:0,bonus_charge:0,percee_plates:0,percee_ecailles:0,deux_armes:false,fleau:false};
+      for(const set of [1,2]){
+        const u={character:c,activeSet:set}, it=engine.activeWeaponItem(u), w=engine.weaponTemplate(it);
+        if(!w||it.combatFamily==="ranged") continue;
+        const off=engine.weaponTemplate(engine.itemBySlot(u,"weapon_set_"+set+"_off"));
+        const ap=Number(engine.attackPower(u,"melee"))||0;
+        const percee=armure=>{ const a=armorRows.get(armure)||{};
+          const ecarts=DEGATS.filter(([pw])=>Number(w[pw])>0).map(([pw,res])=>Number(w[pw])-(Number(a[res])||0));
+          return ap+(ecarts.length?Math.max(...ecarts):0); };
+        const course=2*(Number(engine.movementBase(u))||0)*(Number(w.bonus_charge_base)||1)*(Number(engine.quality(it)?.multiplicateur_qualite)||1);
+        const charge=(ap+course+(Number(engine.mountChargeForce(u,course))||0))*(engine.aerialCharger?.(u)?AERIEN:1);
+        contact.puissance=Math.max(contact.puissance,ap);
+        contact.precision=Math.max(contact.precision,Number(engine.attackPrecision(u))||0);
+        if(charge>contact.force_charge){ contact.force_charge=charge; contact.bonus_charge=Number(w.bonus_charge_base)||1; }
+        contact.percee_plates=Math.max(contact.percee_plates,percee("Armure de plates"));
+        contact.percee_ecailles=Math.max(contact.percee_ecailles,percee("Armure d'écailles"));
+        if(off&&!/Boucliers/.test(String(off.domaine||""))) contact.deux_armes=true;
+        if([w.nom,off?.nom].includes("Fléau d’armes")) contact.fleau=true;
+      }
+      const CAC="Corps à corps (son meilleur set de contact)";
+      put("contact.puissance","Puissance au contact (Blesser : Force + 1/5 des maîtrises)",CAC,"nombre",r1(contact.puissance));
+      put("contact.precision","Précision au contact (Toucher : Dextérité + 1/5 des maîtrises, Perception, Vitesse)",CAC,"nombre",r1(contact.precision));
+      put("contact.force_charge","Force de charge à pleine course (puissance + charge, monture, charge aérienne)",CAC,"nombre",r1(contact.force_charge));
+      put("contact.bonus_charge","Bonus de charge de l'arme de sa meilleure charge (1 ou 2)",CAC,"nombre",contact.bonus_charge);
+      put("contact.percee_plates","Percée contre l'armure de plates (puissance + son meilleur écart arme − armure)",CAC,"nombre",r1(contact.percee_plates));
+      put("contact.percee_ecailles","Percée contre l'armure d'écailles (puissance + son meilleur écart arme − armure)",CAC,"nombre",r1(contact.percee_ecailles));
+      put("contact.deux_armes","Deux armes en main (pas de bouclier) dans un set de contact",CAC,"oui/non",contact.deux_armes);
+      put("contact.fleau","Un fléau d'armes en main (divise par deux le blocage des boucliers)",CAC,"oui/non",contact.fleau);
       const arm=slot("armor");
       put("armure","Armure","Équipement porté","texte",arm?.name||"");
       put("armure.classe","Classe d'armure","Équipement porté","texte",c.equipment?.armorClass||"");
@@ -367,6 +429,33 @@
       put("moy.ecole.soin","Niveau moyen des écoles de ses sorts de soin (équipement compris)","Sorts : moyennes des soins","nombre",r1(moy(sp=>Number(engine.statWithGear(unit,spellRows.get(sp.code).ecole))||0)));
       put("lancers.soin","Nombre de soins qu'il peut lancer avec sa réserve (coût moyen de ses soins)","Sorts : moyennes des soins","nombre",moyCout?Math.floor(reserve/moyCout):0);
       put("sorts.soin_rapide","Sorts de soin en action rapide","Sorts","nombre",soins.filter(sp=>spellRows.get(sp.code).action==="rapide").length);
+      // Les mêmes moyennes pour chaque autre tag de sort (Idan, 2026-11-23 : Enchanteur, Immobilisateur, Affaiblisseur,
+      // Démoralisateur) : réussite moyenne, niveau moyen de leurs écoles, et combien il peut en lancer avec sa réserve.
+      const parTag={};
+      for(const sp of known) for(const t of roleTags(spellRows.get(sp.code))) (parTag[t]||(parTag[t]=[])).push(sp);
+      for(const [t,liste] of Object.entries(parTag)) if(t!=="role/soin"){
+        const k=tagKey(t), m=f=>liste.reduce((x,sp)=>x+f(sp),0)/liste.length, cout=somme[t]/nb[t];
+        out["moy.chance."+k]=Math.round(m(sp=>Number(magic?.castChance(unit,sp.code)?.p)||0));
+        out["moy.ecole."+k]=r1(m(sp=>Number(engine.statWithGear(unit,spellRows.get(sp.code).ecole))||0));
+        out["lancers."+k]=cout?Math.floor(reserve/cout):0;
+      }
+      // Par école, comme les soins (Idan, 2026-11-23 : tags des écoles, « Tu avais fait des seuils et des constantes pour
+      // soin, tu peux te baser dessus ») : ses sorts de l'école, leur réussite moyenne, leur coût moyen, et combien il
+      // peut en lancer avec sa réserve ; puis les mêmes sur tous ses sorts (Mage pluridisciplinaire et suivants).
+      const moyennes=(liste,k,lib,groupe)=>{
+        const m=f=>liste.length?liste.reduce((t,sp)=>t+f(sp),0)/liste.length:0;
+        const cout=m(sp=>Number(magic?.manaCost(unit,sp.code))||0);
+        put("moy.chance."+k,"Réussite moyenne de "+lib+" (%)",groupe,"nombre",Math.round(m(sp=>Number(magic?.castChance(unit,sp.code)?.p)||0)));
+        put("moy.cout."+k,"Coût moyen en mana de "+lib,groupe,"nombre",r1(cout));
+        put("lancers."+k,"Nombre de "+lib+" qu'il peut lancer avec sa réserve (coût moyen)",groupe,"nombre",cout?Math.floor(reserve/cout):0);
+      };
+      for(const s of SCHOOLS){
+        const k="ecole."+key(s), lib="ses sorts de l'école "+s, deEcole=known.filter(sp=>spellRows.get(sp.code).ecole===s);
+        put("sorts."+k,"Sorts connus de l'école "+s,"Sorts par école","nombre",deEcole.length);
+        moyennes(deEcole,k,lib,"Sorts par école");
+      }
+      put("nb_ecoles_sorts","Nombre d'écoles où il connaît au moins un sort","Sorts par école","nombre",new Set(known.map(sp=>spellRows.get(sp.code).ecole)).size);
+      moyennes(known,"sorts","tous ses sorts","Sorts par école");
       // Les auras de courage (Commandement, Idan, 2026-11-22) : celle d'officier, en points de Courage pour ses alliés
       // (capitaine : 0,35 × Courage + 0,25 × Charisme ; lieutenant : la moitié ; combat-engine.js), celle de son fouet (le %
       // du Courage de chaque allié proche, selon le tier : 5 / 10 / 15 / 20), et la plus forte en points (officier ou sort).

@@ -451,6 +451,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   const {hoverWeapons} = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {hoverWeapons};")(...Object.values(stubs));
   assert.equal(hoverWeapons(["Épée longue", "Écu"]), "Épée longue et écu");
   assert.equal(hoverWeapons(["Arc"]), "Arc");
+  assert.equal(hoverWeapons(["Nunchaku", "Nunchaku"]), "Nunchaku × 2", "deux armes identiques (Idan, 2026-11-24)");
   assert.equal(hoverWeapons([]), "");
   assert.equal(api.mercenaryHoverData({...merc, items: [{id: 4, category: "Intermédiaire"}]}).armor, "Armure intermédiaire", "sans nom : son type");
   assert.deepEqual(d.schools, ["Feu", "Vie"], "les écoles où il a au moins un sort");

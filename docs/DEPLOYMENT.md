@@ -98,7 +98,7 @@ Hostinger (`media/…`, par une API de `design/api/`) ; le jeu les lit au charge
 garde la copie du dépôt (`data/reference/`). Déjà fait : les réglages des cultures (ci-dessous). En cours : l'atelier
 des tags (ci-dessous, doc 20 §12). Ensuite : le bestiaire et les constantes de formules.
 
-### Atelier des tags : `media/atelier/` (préparé le 2026-11-22, pas encore en ligne)
+### Atelier des tags : `media/atelier/` (en ligne depuis le 2026-11-23, basculé le 2026-11-24)
 
 Le bouton **Atelier des tags** du Design Lab ouvre `design/atelier/` : la page de l'artefact « Atelier des tags »
 (`scripts/atelier-tags/`), assemblée par `scripts/build-site.sh` avec le moteur des tags (`game-core/tag-engine.js`) et
@@ -107,7 +107,7 @@ pas, la copie du dépôt (`data/reference/tag-workshop.json`). Chaque modificati
 `design/api/atelier.php` (mêmes gardes que les dépôts d'images) : une nouvelle version, qui doit partir de la dernière
 (sinon refusée : deux onglets ne s'écrasent pas ; la page le dit et garde les modifications refusées dans le
 navigateur). Chaque version est gardée dans `media/atelier/<id>/atelier.json` (les 200 dernières, puis la dernière de
-chaque jour) ; `media/atelier/index.json` liste l'historique. Le jeu lira `actuel.json` (doc 20 §12, à brancher).
+chaque jour) ; `media/atelier/index.json` liste l'historique. Le jeu lit `actuel.json` au chargement (`prototype-web/reference-data.js`, doc 20 §12).
 
 ### Réglages des cultures : `media/reglages/`
 

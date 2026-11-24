@@ -94,6 +94,7 @@ assert.deepEqual(E.clean({tags:[{id:"a"},{id:"b"}],titres:{longueur_max:"44",sui
   assert.equal(titre("hopital","eclaireur","veinard"),"Hôpital ambulant","un titre seul");
   assert.equal(titre("brute","veinard"),"Grosse brute généralement veinarde","l'accord avec un titre au féminin");
   assert.equal(titre("eclaireur","brute"),"Éclaireur costaud");
+  assert.equal(titre("perce","eclaireur","arbalete"),"Perce-armure éclaireur à l'arbalète","ce qu'il fait avant l'arme, accordé avec le titre");
   assert.equal(titre("roc","peur","archer"),"Archer robuste et sans peur","« et » avant le dernier, deux mots au plus");
   assert.equal(titre("loin","perce","peur"),"Perce-armure sans peur et polyvalent","sans titre, il suit avec ce qu'il est");
   assert.equal(titre("loin","veinard"),"Veinard polyvalent","sans titre, il ne mène pas");

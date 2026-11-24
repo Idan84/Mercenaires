@@ -142,8 +142,11 @@
   // le même ordre, au plus suivants_max, sans dépasser longueur_max caractères. Idan, 2026-11-24 (« Eclaireur à l'arc
   // généralement veinard », « Eclaireur à l'arbalète chanceuse », « Perce-armure sans peur et sans malchance », « Hopital
   // ambulant (simplement) », « Grosse brute marche pour les H & F ») :
-  // - les compléments (« à l'arc », « à neuf vies ») suivent le titre, puis les autres mots, « et » avant le dernier ;
-  // - un mot s'accorde avec le dernier nom (titre ou complément ; titre_fem, court_fem) : « {chanceux|chanceuse} » ;
+  // - après le titre : ce qu'il fait (« Meneur éclaireur »), puis les compléments (« à l'arbalète »), puis ce qu'il est
+  //   (la dernière famille, et les tags sans titre) : « Meneur éclaireur à l'arbalète », « Éclaireur à l'arbalète
+  //   chanceuse » ; « et » avant le dernier mot ;
+  // - ce qu'il fait s'accorde avec le titre, ce qu'il est avec le dernier nom (titre ou complément ; titre_fem, court_fem) :
+  //   « {chanceux|chanceuse} » ;
   // - un mot court peut avoir des variantes, « généralement {veinard|veinarde} / {chanceux|chanceuse} » : la première qui
   //   tient ; aucune : le tag ne suit pas ;
   // - un tag « seul » mène sans rien après (« Hôpital ambulant ») ;
@@ -163,6 +166,8 @@
     const lignee=id=>{ const acc=new Set([id]),pile=[id]; while(pile.length) for(const p of parId.get(pile.pop())?.parents||[]) if(!acc.has(p)){ acc.add(p); pile.push(p); } return acc; };
     // Un tag sans titre (un qualificatif, comme « De loin et de près ») se range avec ce qu'il est, après ce qu'il fait.
     const famille=t=>{ if(!txt(t.titre)) return fam.length; const a=lignee(t.id),i=fam.findIndex(f=>a.has(f)); return i<0?fam.length:i; };
+    // Ce qu'il est : la dernière famille de la liste (« Ce qu'il est »), un tag hors des familles ou sans titre.
+    const qualite=t=>famille(t)>=Math.max(0,fam.length-1);
     // À rang égal, le tag le plus précis (le plus bas dans l'arbre : « Increvable » avant « Veinard »).
     const ordre=list.map((t,i)=>({t,i,f:famille(t),r:Number.isFinite(t.rang)?t.rang:0,p:lignee(t.id).size})).sort((a,b)=>a.f-b.f||b.r-a.r||b.p-a.p||a.i-b.i).map(x=>x.t);
     const ids=new Set(ordre.map(t=>t.id));
@@ -183,9 +188,13 @@
     // le dernier nom (« Éclaireur à l'arbalète chanceuse »).
     const complement=t=>/^(à|au|aux|de|du|des|d['’])(\s|$)|^d['’]/i.test(t);
     const et=l=>l.length<2?l.join(""):l.slice(0,-1).join(", ")+" et "+l[l.length-1];
-    const phrase=s=>{ const compl=s.filter(x=>complement(x.texte)),mots=s.filter(x=>!complement(x.texte));
+    const phrase=s=>{
+      const compl=s.filter(x=>complement(x.texte)),fait=s.filter(x=>!complement(x.texte)&&!x.qualite),est=s.filter(x=>!complement(x.texte)&&x.qualite);
       const fem=compl.length?compl[compl.length-1].fem:teteFem;
-      return [tete,et(compl.map(x=>accord(x.texte,x.fem))),et(mots.map(x=>accord(x.texte,fem)))].filter(Boolean).join(" "); };
+      const faits=fait.map(x=>accord(x.texte,teteFem)),ests=est.map(x=>accord(x.texte,fem)),compls=compl.map(x=>accord(x.texte,x.fem));
+      // Sans complément, un seul groupe : « Perce-armure cuirassé et chanceux ».
+      if(!compl.length) return [tete,et([...faits,...ests])].filter(Boolean).join(" ");
+      return [tete,et(faits),et(compls),et(ests)].filter(Boolean).join(" "); };
     const dit=(s,piece)=>{ const p=" "+phrase(s).toLowerCase()+" "; return [false,true].some(f=>{ const m=accord(piece.texte,f).toLowerCase(); return m&&p.includes(" "+m+" "); }); };
     const suivants=[];
     for(const t of ordre){
@@ -193,6 +202,7 @@
       if(pris.has(t.id)) continue;
       const s=speciaux.find(x=>!sp.includes(x)&&txt(x.court)&&x.tags.includes(t.id)&&x.tags.every(id=>!pris.has(id)));
       const base=s?{source:s.court,fem:Boolean(s.court_fem),tags:deSes(s),s}:txt(t.court)?{source:t.court,fem:Boolean(t.court_fem),tags:[t],s:null}:null;
+      if(base) base.qualite=base.tags.every(qualite);
       if(!base) continue;
       const essais=variantes(base.source).map(texte=>({...base,texte}));
       if(essais.some(x=>dit(suivants,x))){ for(const x of base.tags) pris.add(x.id); continue; }

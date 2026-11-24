@@ -271,8 +271,10 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
     Tank, Commandement, Éclaireur et contrôle du terrain, Tireur, Écoles de magie, Sorts de soutien, Ce qu'il est) ; dans
     une famille, le rang le plus haut, puis le tag le plus précis (« Increvable » avant « Veinard »), puis l'ordre de
     l'atelier ; un tag sans titre suit avec ce qu'il est ;
-  - le titre du tag qui mène, puis **deux mots courts au plus** : d'abord les compléments (« à l'arc », « à neuf vies »),
-    puis les autres mots, « et » avant le dernier ; un mot déjà dit n'est pas répété ;
+  - le titre du tag qui mène, puis **deux mots courts au plus** : ce qu'il fait (accordé avec le titre), puis les
+    compléments (« à l'arc », « à neuf vies »), puis ce qu'il est (la dernière famille, et les tags sans titre ; accordé
+    avec le dernier nom) : « Meneur éclaireur à l'arbalète », « Éclaireur à l'arbalète chanceuse » ; sans complément, un
+    seul groupe, « et » avant le dernier ; un mot déjà dit n'est pas répété ;
   - retours d'Idan (2026-11-24) : « Eclaireur à l'arc généralement veinard », « Eclaireur à l'arbalète chanceuse »,
     « Perce-armure sans peur et sans malchance », « Hopital ambulant (simplement, c'est mieux…) », « Grosse brute marche
     pour les H & F alors que Cogneur, ça marche moins bien et faudrait mettre Cogneuse… Idem pour boîte de conserve ». D'où :

@@ -256,6 +256,11 @@ l'équipe d'une mission…) et des titres plus drôles (historique, classement d
   première ligne, Éponges à flèches, Porte-torches, Piétaille à usage unique, Engrais de champ de bataille, Chair à
   canon, Prime de retour très incertaine (`data/reference/tag-consolation.json`). Tiré une fois et gardé sur lui ; il
   disparaît dès qu'il a un vrai tag. Sans intendant, toujours aucun tag.
+- **Un seul tag devient le titre** (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») : un mercenaire
+  qui n'a qu'un tag affiché, tag de consolation compris, porte ce tag comme titre, sur la fiche (la note du tag en
+  infobulle), la fiche au survol et la fiche complète ; avec plusieurs tags, ou aucun (sans intendant), le titre calculé
+  (doc 19). Le candidat aussi (« oui, candidats aussi ») : son titre suit les tags qu'il annonce en se vantant, et celui
+  que donne le tavernier, les tags sur ses estimations (`game-core/company-tags.js`, `titleTag`, `describedTags`).
 - **Tags qui regroupent** (Idan, 2026-11-24 : « On va limiter le nombre de tags en trichant… Mais je veux pas que ça
   bloque les spécialistes ») : un enfant commun à deux tags les remplace. **Bélier** (Spécialiste de la charge +
   Perce-armure) ; **Bélier légendaire** par deux chemins (Bélier + Charge légendaire, ou Bélier + Ouvre-boîte

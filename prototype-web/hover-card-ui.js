@@ -80,14 +80,9 @@ function mercenaryHoverData(c){
   // Sa monture : celle qu'il a équipée.
   const mountItem=itemIn("mount");
   const mountKind=mountItem?.mountCode?(reference.mounts?.rows||[]).find(row=>row.code===mountItem.mountCode)?.nom:"";
-  // Le titre, comme la fiche complète : au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble
-  // des titres »).
-  let title="";
-  const profile=typeof profileRules==="function"?profileRules():null;
-  if(profile){
-    const context=evaluationContext(c),result=profile.evaluate(c,context);
-    title=result&&profile.composeTitle?.(c,result,context)?.name||"";
-  }
+  // Le titre, comme la fiche complète (ui.js, characterTitle) : son seul tag s'il n'en a qu'un, sinon le titre calculé, au
+  // masculin pour tous.
+  const title=typeof characterTitle==="function"?characterTitle(c)?.name||"":"";
   const affinity=typeof captainAffinity==="function"?captainAffinity(c):null;
   return {
     name:c.name,title,

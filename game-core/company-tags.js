@@ -9,7 +9,7 @@
 //   gardée sur le mercenaire (tagBias) tant qu'il ne change pas d'étoile et qu'on ne change pas d'intendant.
 // « Le meilleur de la compagnie » se compare sur ce que l'intendant voit, chacun avec son biais. Sans intendant, personne
 // ne décrit nos mercenaires : aucun tag (Idan, 2026-11-22). Celui qui n'a aucun tag reçoit un tag de consolation (Idan,
-// 2026-11-24 ; data/reference/tag-consolation.json). Les constantes : data/reference/formula-constants.json
+// 2026-11-24 ; data/reference/tag-consolation.json). Un seul tag devient son titre (titleTag). Les constantes : data/reference/formula-constants.json
 // (tags.*). Le hasard est donné (random).
 (function(root,factory){
   const engine=typeof module!=="undefined"&&module.exports?require("./tag-engine.js"):root.MercenairesTagEngine;
@@ -130,6 +130,12 @@
       const mine=v.get(m)||seen(valuesOf(m,roleOf(m)||""),factorOf(stewardBias(m,{steward,companyStars})));
       return consolation(m,tree.tags(Engine.withCompany(mine,others(v,members,m),companyStars)));
     }
+    // Un personnage décrit par un autre (le tavernier qui estime un candidat, recruit-dialogue.js described) : ses tags sur
+    // ces valeurs, comparés à la compagnie telle que l'intendant la voit ; holder garde son tag de consolation.
+    function describedTags(character,holder,{members=[],steward=null,companyStars=1,roleOf=()=>"",view=null}={}){
+      const v=view||company({members,steward,companyStars,roleOf});
+      return consolation(holder,tree.tags(Engine.withCompany(valuesOf(character),others(v,members,null),companyStars)));
+    }
     // Le candidat (tavern.candidates[] : {mercenary, …}) : son tirage, gardé sur lui (tagSelfBias).
     function candidateFactor(candidate){
       if(!Number.isFinite(candidate.tagSelfBias)) candidate.tagSelfBias=C.candidateMin+random()*(C.candidateMax-C.candidateMin);
@@ -142,8 +148,16 @@
       return consolation(candidate,tree.tags(Engine.withCompany(mine,others(v,members,null),companyStars)));
     }
     return {constants:C,doc,tree,consolations:CONSOLATION,isBiased,valuesOf,seen,stewardCompetence,maxError,drawStewardBias,stewardBias,factorOf,company,
-      tagsOf,candidateFactor,candidateTags};
+      tagsOf,candidateFactor,candidateTags,describedTags,titleTag};
   }
 
-  return {createCompanyTags,isBiased};
+  // Le titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag ») : un seul tag affiché, tag de
+  // consolation compris, devient son titre (son nom, et sa note en infobulle) ; sinon (aucun tag, ou plusieurs), le titre
+  // calculé (doc 19). res : tagsOf, candidateTags ou describedTags.
+  function titleTag(res){
+    const shown=res?.affiches||[];
+    return shown.length===1?shown[0]:null;
+  }
+
+  return {createCompanyTags,isBiased,titleTag};
 });

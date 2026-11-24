@@ -942,12 +942,19 @@ function evaluationContext(c){
   const company=game.campaign?.company;
   return {captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
 }
-function renderEvaluation(c){
+// Son titre affiché : un seul tag (consolation comprise) devient son titre, avec la note du tag en infobulle (Idan,
+// 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; game-core/company-tags.js, titleTag) ; sinon le titre
+// calculé, au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »). {name, lines}.
+function characterTitle(c){
+  const tags=typeof mercenaryTagList==="function"?mercenaryTagList(c):[];
+  if(tags.length===1) return {name:tags[0].name,lines:tags[0].note?[tags[0].note]:[],tag:tags[0]};
   const rules=profileRules();
   const context=evaluationContext(c);
   const result=rules?.evaluate(c,context);
-  // Au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres »).
-  const copy=result&&rules.composeTitle?.(c,result,context);
+  return result&&rules.composeTitle?.(c,result,context)||null;
+}
+function renderEvaluation(c){
+  const copy=characterTitle(c);
   if(!copy) return "";
   const tip=copy.lines.length?`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span>`:"";
   return `<section class="sheet-evaluation" aria-label="Titre"><div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>${tip}</div></section>`;
@@ -1684,7 +1691,7 @@ function companyTagContext() {
   const roleOf = m => company && m.id === company.captainId ? "capitaine" : (company?.lieutenantIds || []).includes(m.id) ? "lieutenant" : "";
   return {rules, members, steward, companyStars, roleOf, view: rules.company({members, steward, companyStars, roleOf})};
 }
-// Les tags affichés de chaque membre de la compagnie : Map membre → [{id, name, parent}] (hors de la compagnie : rien ; une
+// Les tags affichés de chaque membre de la compagnie : Map membre → [{id, name, note, parent}] (hors de la compagnie : rien ; une
 // copie d'un membre, comme l'aperçu du mode dieu : ceux du membre).
 function mercenaryTagLists(list, ctx = companyTagContext()) {
   const out = new Map();
@@ -1692,7 +1699,7 @@ function mercenaryTagLists(list, ctx = companyTagContext()) {
   for (const c of list) {
     const member = ctx.members.includes(c) ? c : ctx.members.find(m => c?.id != null && m.id === c.id);
     if (!member) { out.set(c, []); continue; }
-    out.set(c, ctx.rules.tagsOf(member, ctx).affiches.map(t => ({id: t.id, name: t.nom.trim(),
+    out.set(c, ctx.rules.tagsOf(member, ctx).affiches.map(t => ({id: t.id, name: t.nom.trim(), note: String(t.note || "").trim(),
       parent: t.parents.length ? ctx.rules.tree.nomTag(t.parents[0]).trim() : ""})));
   }
   return out;

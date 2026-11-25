@@ -406,8 +406,8 @@ function renderRecruitTalk(){
   // Les mots composés (« avez-vous », « maniez-vous ») ne se coupent pas à leur trait d'union : la ligne passe avant eux ;
   // la ponctuation double (? ! : ; ») reste collée au mot qui la précède (espace insécable), jamais seule sur sa ligne.
   const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`).replace(/ ([?!:;»])/g,"\u00a0$1");
-  $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map(choice=>
-    `<li><button type="button" data-talk="${choice.key}"><span class="talk-choice">${unbroken(choice.label)}</span></button></li>`).join("")}</ol>`;
+  $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map((choice,i)=>
+    `<li><button type="button" data-talk="${choice.key}"><span class="talk-num" aria-hidden="true">${i+1}</span><span class="talk-choice">${unbroken(choice.label)}</span></button></li>`).join("")}</ol>`;
 }
 
 // Les tags d'un candidat, en noms (game-core/company-tags.js ; Idan, 2026-11-24 : « tes suggestions sont parfaites ») : tels

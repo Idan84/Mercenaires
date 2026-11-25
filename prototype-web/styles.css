@@ -1473,12 +1473,15 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-say{grid-template-columns:120px minmax(0,1fr);align-items:start;gap:12px}
 .conv .talk-say--you{grid-template-columns:minmax(0,1fr) 120px;justify-items:stretch;text-align:left}
 .conv .talk-say--you>.talk-mini{order:2}
-/* La vignette (Idan, 2026-11-25 : « Le CSS peut suffire ») : un cadre doré en dégradé, sans filet sombre autour ; un léger
-   relief vers l'intérieur ; une ombre portée franche. */
-.talk-mini{position:relative;display:grid;place-items:center;width:120px;height:120px;overflow:hidden;border:4px solid transparent;border-radius:3px;background:linear-gradient(#2a1d14,#2a1d14) padding-box,linear-gradient(135deg,#fff3c4 0%,#e2b552 20%,#8c6420 42%,#f6d77e 60%,#a8782a 80%,#fbe7a6 100%) border-box;box-shadow:3px 7px 16px rgba(30,16,4,.45),1px 2px 4px rgba(30,16,4,.35)}
-.talk-mini::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(90,58,14,.35),inset 0 0 8px rgba(0,0,0,.4);pointer-events:none}
-.talk-mini img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.talk-mini i{color:#f0d395;font:700 34px/1 "Cinzel",Georgia,serif;font-style:normal}
+/* La vignette (Idan, 2026-11-25 : « tu le fais pour le contour des avatars ? ») : le cadre doré du bouton d'Idan, seul
+   (assets/creation/cadre-or.webp : son velours rendu transparent), aux coins coupés ; le portrait est taillé à la même forme ;
+   sans portrait, les initiales sur le velours du bouton passé au brun (velours-brun.webp). L'ombre suit la forme, vers le bas
+   à droite comme le reste de la vue. */
+.talk-mini{position:relative;display:grid;place-items:center;width:120px;height:120px;filter:drop-shadow(3px 6px 6px rgba(30,16,4,.42)) drop-shadow(1px 2px 1.5px rgba(30,16,4,.3))}
+.talk-mini::before{content:"";position:absolute;inset:0;background:url("assets/creation/velours-brun.webp") center/cover;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px)}
+.talk-mini::after{content:"";position:absolute;inset:0;z-index:2;box-sizing:border-box;border-style:solid;border-width:12px;border-image:url("assets/creation/cadre-or.webp") 45 / 12px stretch;pointer-events:none}
+.talk-mini img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px)}
+.talk-mini i{position:relative;z-index:1;color:#f0d395;font:700 34px/1 "Cinzel",Georgia,serif;font-style:normal}
 .conv .talk-say-body{display:grid;justify-items:start;gap:7px;min-width:0}
 .conv .talk-say--you .talk-say-body{justify-items:end}
 .conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:1px 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}

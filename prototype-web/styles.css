@@ -1489,14 +1489,14 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-say-body{display:grid;justify-items:start;gap:7px;min-width:0}
 .conv .talk-say--you .talk-say-body{justify-items:end}
 .conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:1px 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}
-.conv .talk-say-body>span{position:relative;isolation:isolate;max-width:100%;padding:14px 21px 15px;border:1px solid rgba(100,73,46,.3);border-radius:8px;background:rgba(253,247,232,.5);color:#2c1b10;font:600 21px/1.35 "EB Garamond",Georgia,serif}
+.conv .talk-say-body>span{position:relative;isolation:isolate;max-width:100%;padding:15px 22px 16px;border-radius:8px;background:rgba(253,247,232,.5);color:#2c1b10;font:600 21px/1.35 "EB Garamond",Georgia,serif}
 .conv .talk-say-body>span::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;opacity:.5;background:url("assets/taverne/papier-vieilli.webp") 50% 50%/1500px auto}
 .conv .talk-say:nth-child(3n+1) .talk-say-body>span::after{background-position:38% 42%}
 .conv .talk-say:nth-child(3n+2) .talk-say-body>span::after{background-position:62% 56%}
 /* La bulle (Idan, 2026-11-25 : « Il manque aussi un peu de texture… une texture de parchemin en transparence », « Le tout
    dans les mêmes tons qu'aujourd'hui ») : un fond crème à moitié transparent ; par-dessus, à moitié transparent, le papier
-   vieilli d'Idan (ses fibres, décalées d'une bulle à l'autre pour ne pas répéter la même craquelure) ; un fin contour. Ni
-   pointe (« On va virer la flèche blanche »), ni ombrage (« L'ombre fait juste un gros caca. Retire tout l'ombrage ») : ni
+   vieilli d'Idan (ses fibres, décalées d'une bulle à l'autre pour ne pas répéter la même craquelure). Ni contour (« On peut
+   le retirer ? »), ni pointe (« On va virer la flèche blanche »), ni ombrage (« L'ombre fait juste un gros caca. Retire tout l'ombrage ») : ni
    ombre portée, ni côtés ou bas assombris. « On écrit pas en italique ». */
 .conv .talk-note{padding:0 18px;color:#64492e;font:italic 500 18px/1.4 "EB Garamond",Georgia,serif}
 .conv>#recruit-talk-choices{flex:none}

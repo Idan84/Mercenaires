@@ -737,6 +737,16 @@ function initializeTavernUi(){
     if(open===talk) tavernTalk(option.dataset.talk,option.dataset.arg);
     else recruitTalkChoice(option.dataset.talk);
   });
+  // Espace replie ou rouvre la fiche (Idan, 2026-11-25). Écouté avant tout le monde, et retenu jusqu'au relâché : il ne
+  // déclenche pas en plus le bouton qui a le focus. Pas dans un champ de saisie (la négociation).
+  const isSpace=event=>event.code==="Space"||event.key===" ";
+  const spaceFolds=event=>recruit.open&&isSpace(event)&&!event.target.matches?.("input,select,textarea")&&!event.ctrlKey&&!event.metaKey&&!event.altKey;
+  document.addEventListener("keydown",event=>{
+    if(!spaceFolds(event)) return;
+    event.preventDefault();
+    if(!event.repeat) setRecruitFolded(!recruit.classList.contains("is-folded"));
+  },true);
+  document.addEventListener("keyup",event=>{ if(spaceFolds(event)) event.preventDefault(); },true);
   recruit.addEventListener("close",()=>{
     clearTimeout(game.recruitTalk?.closeTimer);
     game.recruitTalk=null;

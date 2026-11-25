@@ -403,8 +403,9 @@ function renderRecruitTalk(){
     </form>`;
     return;
   }
-  // Les mots composés (« appelle-t-on », « avez-vous ») ne se coupent pas à leur trait d'union : la ligne passe avant eux.
-  const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`);
+  // Les mots composés (« avez-vous », « maniez-vous ») ne se coupent pas à leur trait d'union : la ligne passe avant eux ;
+  // la ponctuation double (? ! : ; ») reste collée au mot qui la précède (espace insécable), jamais seule sur sa ligne.
+  const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`).replace(/ ([?!:;»])/g,"\u00a0$1");
   $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map(choice=>
     `<li><button type="button" data-talk="${choice.key}"><span class="talk-choice">${unbroken(choice.label)}</span></button></li>`).join("")}</ol>`;
 }

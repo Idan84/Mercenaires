@@ -37,7 +37,7 @@ assert.match(dialogue.answer("magic",{id:4,name:"Aldo"},{ecoles:"d’Eau et de V
 // corporate ») ; le salaire, sa question d'origine (« Tu repasses à la bonne version »). Une question posée disparaît.
 const q=copy.questions;
 assert.equal(q.about,"Puis-je en savoir plus sur vous ?");
-assert.deepEqual([q.title,q.set1,q.set2,q.armor,q.magic,q.salary],["Comment vous appelle-t-on, dans le métier ?","Quelle arme de corps à corps maniez-vous ?",
+assert.deepEqual([q.title,q.set1,q.set2,q.armor,q.magic,q.salary],["Et dans le métier, on vous appelle comment ?","Quelle arme de corps à corps maniez-vous ?",
   "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Quelles sont vos prétentions salariales ?"]);
 assert.ok(!Object.values(q).some(text=>/\b(tu|t’|te|ton)\b|-tu\b/i.test(text)),"pas de tutoiement");
 assert.equal(q.tags,"Quels sont vos points forts ?");

@@ -118,7 +118,7 @@ l'aubergiste.
 
 | Case de la fiche | Au départ | Question | Source | Réponse | Biais (§7) |
 |---|---|---|---|---|---|
-| Titre | ligne vide | « Comment vous appelle-t-on, dans le métier ? » | Candidat | son titre | vantardise : le titre recalculé sur ses valeurs telles qu'il les annonce |
+| Titre | ligne vide | « Et dans le métier, on vous appelle comment ? » | Candidat | son titre | vantardise : le titre recalculé sur ses valeurs telles qu'il les annonce |
 | Titre | ligne vide | « Qu'est-ce qu'on dit de lui ? » | Aubergiste | son titre | précision de l'aubergiste : le titre recalculé sur ses estimations |
 | Origines | visibles | — | — | — | — |
 | Réputation | visible | — | — | — | — |

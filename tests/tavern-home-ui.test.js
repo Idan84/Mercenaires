@@ -81,7 +81,7 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Puis-je en savoir plus sur vous ?","Quelles sont vos prétentions salariales ?","Partir"],"trois choix");
   assert.deepEqual([...cards.at(-1).unknown].sort(),["affinity","armor","bonus","magic","mount","salary","set1","set2","tags","title"]);
   api.recruitTalkChoice("about");
-  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Comment vous appelle-t-on, dans le métier ?","Quels sont vos points forts ?","Quelle arme de corps à corps maniez-vous ?",
+  assert.deepEqual(api.recruitChoices(t).map(c=>c.label),["Et dans le métier, on vous appelle comment ?","Quels sont vos points forts ?","Quelle arme de corps à corps maniez-vous ?",
     "Quelle arme de tir avez-vous ?","Quelle armure portez-vous ?","Connaissez-vous des sorts ?","Retour"]);
   api.recruitTalkChoice("title");
   assert.deepEqual(t.lines.slice(-2).map(l=>l.who),["you","merc"]);

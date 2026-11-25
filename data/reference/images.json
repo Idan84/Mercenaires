@@ -197,13 +197,13 @@
     {
       "cle": "interface-creation",
       "famille": "Interface de la charte : parchemin, bouton, cachet, fond de Cruxor, cadre doré, barre de défilement",
-      "nombre": 17,
-      "ou": "Création du capitaine ; aussi le dortoir, les recrues de mission, la fiche au survol (texture des lettres) ; la boîte de dialogue (vignettes des portraits, barre de défilement).",
+      "nombre": 18,
+      "ou": "Création du capitaine ; aussi le dortoir, les recrues de mission, la fiche au survol (texture des lettres) ; la boîte de dialogue (vignettes des portraits, barre de défilement, boutons des réponses : brun au repos, rouge au survol).",
       "pourquoi": "Les pièces d'Idan de la charte : le parchemin où tout se lit, le bouton qui fait avancer, le cachet qui signe ; le cadre doré du bouton, repris pour les vignettes et la barre de défilement (Idan, 2026-11-25).",
-      "fichiers": "assets/creation/parchemin.webp, bouton.webp, cachet.webp, fond-cruxor.webp ; tirés du bouton : cadre-or.webp, velours-brun.webp, barre-defilement-haut|milieu|bas.webp ; tirées du kit doré (assets/kit/fleches) : fleche-defilement-haut|bas-survol.webp (éclaircies pour le survol) ; tirées des bordures du kit (barre et embouts en pointe) : curseur-defilement-haut|milieu|bas.webp et leur version -survol.",
+      "fichiers": "assets/creation/parchemin.webp, bouton.webp, cachet.webp, fond-cruxor.webp ; tirés du bouton : bouton-brun.webp (le bouton, velours passé au brun, or intact), cadre-or.webp, velours-brun.webp, barre-defilement-haut|milieu|bas.webp ; tirées du kit doré (assets/kit/fleches) : fleche-defilement-haut|bas-survol.webp (éclaircies pour le survol) ; tirées des bordures du kit (barre et embouts en pointe) : curseur-defilement-haut|milieu|bas.webp et leur version -survol.",
       "affichage": "Parchemin en bordure étirable (tranche de 180 px, bords de 80 à 100 px) ; bouton 240 × 81 ; cachet 78 à 92 px de large ; fond plein écran.",
       "depot": "PNG transparent (parchemin, bouton, cachet ; mêmes proportions) ; JPEG 16:9 pour le fond.",
-      "format_jeu": "WebP : parchemin 1000 × 992, bouton 760 × 257, cachet 199 × 300 (transparents), fond 1800 × 1005 ; cadre-or 756 × 169, velours-brun 240 × 240, barre-defilement 165 × 260 (bouts) et 165 × 420 (milieu), flèches de survol 220 × 166 et 223 × 151 ; curseur 102 × 101 (haut), 102 × 480 (milieu), 102 × 103 (bas).",
+      "format_jeu": "WebP : parchemin 1000 × 992, bouton et bouton-brun 760 × 257, cachet 199 × 300 (transparents), fond 1800 × 1005 ; cadre-or 756 × 169, velours-brun 240 × 240, barre-defilement 165 × 260 (bouts) et 165 × 420 (milieu), flèches de survol 220 × 166 et 223 × 151 ; curseur 102 × 101 (haut), 102 × 480 (milieu), 102 × 103 (bas).",
       "alternates": "Une seule image.",
       "source": "Idan ; pas de master dans assets-src. Les pièces tirées du bouton et du kit sont recalculées depuis leurs originaux.",
       "exemples": [

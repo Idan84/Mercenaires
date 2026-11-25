@@ -1444,10 +1444,17 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    défile) : la vignette et le nom de qui parle, sa réplique dans une bulle, les autres à gauche, le capitaine à droite, le
    récit centré sans bulle ; en bas, les réponses, sans barre de défilement (trop de réponses : un tiroir, comme « Puis-je
    en savoir plus sur vous ? ») ; la réponse survolée prend le bouton d'Idan (ses pointes jamais déformées). */
-.conv{position:relative;gap:12px;padding:16px 16px 14px;border:1px solid #b58a45;border-radius:4px;background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:6px 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
-.conv::before,.conv::after{content:"";position:absolute;z-index:3;width:64px;height:64px;background:center/contain no-repeat;filter:drop-shadow(1px 3px 3px rgba(0,0,0,.5));pointer-events:none}
-.conv::before{top:-6px;left:-6px;background-image:url("assets/ui/menu-corner-tl.webp")}
-.conv::after{right:-6px;bottom:-6px;background-image:url("assets/ui/menu-corner-br.webp")}
+/* Le cadre (Idan, 2026-11-25 : kit « Cadre_dialogue » de Chatty, planche 1) : une image en neuf parts
+   (creation/cadre-dialogue.webp, scripts/build-dialog-frame.js : les coins de la planche, les côtés tirés de ses barres et
+   recalés sur les coins), à l'échelle 0,42 ; ses côtés se répètent sans couture (round). Il passe devant le contenu (ses
+   coins intérieurs arrondis recouvrent les angles du parchemin) ; le fond sombre de l'ouverture est posé dessous, en
+   retrait, pour ne pas déborder des coins coupés. Bandes : haut 39,5 px, bas 38, côtés 31,5. */
+.conv{position:relative;gap:12px;padding:44px 36px 42px;border:0;border-radius:0;background:none;box-shadow:6px 18px 50px #000a}
+.conv::before,.conv::after{content:"";position:absolute;pointer-events:none}
+.conv::before{inset:14px;z-index:-1;background:linear-gradient(180deg,#3b2a1b,#15100c)}
+.conv::after{inset:0;z-index:3;border-style:solid;border-width:66.4px 79.4px 66.4px 78.1px;border-image:url("assets/creation/cadre-dialogue.webp") 158 189 158 186 / 66.4px 79.4px 66.4px 78.1px round}
+/* Le losange du bas (planche 1, n° 19), au milieu de la bande du bas. */
+.conv-gem{position:absolute;bottom:4.7px;left:50%;z-index:4;width:28.1px;height:28.5px;margin-left:-14px;background:url("assets/kit/cadre-dialogue/planche1-19.webp") 50% 50%/100% 100% no-repeat;filter:drop-shadow(1px 2px 2px rgba(30,16,4,.5));pointer-events:none}
 /* La croix (Idan, 2026-11-25 : « un rond fond brun et une croix dorée. Au survol, elle devient rouge. On la pose en haut à
    droite ») : le rond du kit au velours brun (creation/rond-brun.webp), le rouge (kit rond-rouge.webp) fondu par-dessus au
    survol, la croix dorée du kit (kit/fleches/fermer.webp) ; centrée sur le coin haut droit de la boîte. Le « ✕ » du texte
@@ -1462,8 +1469,9 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* L'emblème (Idan, 2026-11-25 : « l'icône de bulles de conversation de la barre… en doré, dans un cercle avec fond velours
    rouge… en haut au milieu… 30 % environ au-dessus de la barre, 70 % sur le parchemin » ; à caler avec le cadre) : le rond
    du kit (rond-rouge.webp) et l'icône Discussions de la barre du bas passée à l'or du kit (creation/discussions-or.webp,
-   scripts/build-gold-icon.js). L'ombre porte vers le bas à droite, comme le reste de la vue. */
-.conv-emblem{position:absolute;top:-24px;left:50%;z-index:4;width:80px;height:82.6px;margin-left:-40px;background:url("assets/creation/discussions-or.webp") 50% 52%/46px 46px no-repeat,url("assets/kit/boutons/rond-rouge.webp") 50% 50%/100% 100% no-repeat;filter:drop-shadow(3px 6px 6px rgba(30,16,4,.5)) drop-shadow(1px 2px 1.5px rgba(30,16,4,.35));pointer-events:none}
+   scripts/build-gold-icon.js). L'ombre porte vers le bas à droite, comme le reste de la vue. Avec le cadre de Chatty : les
+   deux branches de laurier de sa planche 2 (n° 1 et 3), sous le rond, de part et d'autre. */
+.conv-emblem{position:absolute;top:-24px;left:50%;z-index:4;width:250px;height:82.6px;margin-left:-125px;background:url("assets/creation/discussions-or.webp") 50% 52%/46px 46px no-repeat,url("assets/kit/boutons/rond-rouge.webp") 50% 50%/80px 82.6px no-repeat,url("assets/kit/cadre-dialogue/planche2-01.webp") 11px 1px/89px auto no-repeat,url("assets/kit/cadre-dialogue/planche2-03.webp") right 11px top 1px/89px auto no-repeat;filter:drop-shadow(3px 6px 6px rgba(30,16,4,.5)) drop-shadow(1px 2px 1.5px rgba(30,16,4,.35));pointer-events:none}
 .conv-page{position:relative;z-index:0;display:flex;flex:1;min-height:0}
 .conv-page::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:56px;border-image:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;filter:drop-shadow(2px 6px 12px rgba(0,0,0,.5))}
 /* « On ajoute un dégradé pour foncer légèrement les côtés du parchemin » (Idan, 2026-11-25) : sur le parchemin seul (sa

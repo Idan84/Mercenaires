@@ -1433,13 +1433,16 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-say{grid-template-columns:100px minmax(0,1fr);align-items:start;gap:12px}
 .conv .talk-say--you{grid-template-columns:minmax(0,1fr) 100px;justify-items:stretch;text-align:left}
 .conv .talk-say--you>.talk-mini{order:2}
-.talk-mini{position:relative;display:grid;place-items:center;width:100px;height:100px;overflow:hidden;border:2px solid #b58a45;border-radius:4px;background:#3b2a1b;box-shadow:0 3px 8px rgba(0,0,0,.4)}
+/* La vignette (Idan, 2026-11-25 : « Le CSS peut suffire ») : un cadre doré en dégradé, sans filet sombre autour ; un léger
+   relief vers l'intérieur ; une ombre portée franche. */
+.talk-mini{position:relative;display:grid;place-items:center;width:100px;height:100px;overflow:hidden;border:4px solid transparent;border-radius:3px;background:linear-gradient(#2a1d14,#2a1d14) padding-box,linear-gradient(135deg,#fff3c4 0%,#e2b552 20%,#8c6420 42%,#f6d77e 60%,#a8782a 80%,#fbe7a6 100%) border-box;box-shadow:0 8px 16px rgba(30,16,4,.55),0 2px 4px rgba(30,16,4,.4)}
+.talk-mini::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(90,58,14,.35),inset 0 0 8px rgba(0,0,0,.4);pointer-events:none}
 .talk-mini img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .talk-mini i{color:#f0d395;font:700 30px/1 "Cinzel",Georgia,serif;font-style:normal}
 .conv .talk-say-body{display:grid;justify-items:start;gap:7px;min-width:0}
 .conv .talk-say--you .talk-say-body{justify-items:end}
 .conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:0 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}
-.conv .talk-say-body>span{position:relative;max-width:100%;padding:9px 16px 10px;border:1px solid rgba(100,73,46,.4);border-radius:8px;background:linear-gradient(180deg,#fcf6e6,#ecdab4);color:#2c1b10;font:italic 600 21px/1.35 "EB Garamond",Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.75);filter:drop-shadow(0 4px 5px rgba(50,28,10,.32)) drop-shadow(0 1px 1px rgba(50,28,10,.25))}
+.conv .talk-say-body>span{position:relative;max-width:100%;padding:9px 16px 10px;border:1px solid rgba(100,73,46,.4);border-radius:8px;background:linear-gradient(180deg,#fcf6e6,#ecdab4);color:#2c1b10;font:italic 600 21px/1.35 "EB Garamond",Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.75);filter:drop-shadow(0 7px 9px rgba(40,22,6,.45)) drop-shadow(0 2px 2px rgba(40,22,6,.3))}
 .conv .talk-say-body>span::before{content:"";position:absolute;top:13px;left:-6px;width:10px;height:10px;border:solid rgba(100,73,46,.4);border-width:0 0 1px 1px;background:#f9f0dc;transform:rotate(45deg)}
 .conv .talk-say--you .talk-say-body>span::before{left:auto;right:-6px;border-width:1px 1px 0 0}
 .conv .talk-note{padding:0 18px;color:#64492e;font:italic 500 18px/1.4 "EB Garamond",Georgia,serif}

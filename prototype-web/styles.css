@@ -1409,7 +1409,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    autres fenêtres). « On réduit environ la marge foncée à gauche de la moitié » : la fiche à --talk-marge du bord gauche,
    centrée en hauteur ; « on reprend la même valeur en haut, en bas et à droite de la fenêtre de dialogue » ; « La fenêtre de
    dialogue doit légèrement mordre sur la fiche au survol et elle pose une légère ombre portée dessus » (--talk-mord). */
-.talk-dialog--fiche{--talk-marge:104px;--talk-mord:24px;--talk-depasse:36px;width:1920px;height:1080px;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.talk-dialog--fiche{--talk-marge:104px;--talk-mord:24px;--talk-depasse:80px;width:1920px;height:1080px;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
 .talk-dialog--fiche[open]{display:block;height:1080px}
 .talk-dialog--fiche::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .talk-dialog--fiche>.recruit-fiche{position:absolute;left:var(--talk-marge);top:calc(50% - 282.5px);width:860px;height:565px}
@@ -1448,11 +1448,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* La barre de défilement de la conversation (le webdesigner ; Idan, 2026-11-25 : « intégrer la scroll bar ») : un rail sombre
    et un curseur doré arrondis. Les navigateurs sans ::-webkit-scrollbar (Firefox) prennent les mêmes couleurs. */
 .conv .talk-log{scrollbar-color:auto;scrollbar-width:auto}
-.conv .talk-log::-webkit-scrollbar{width:20px}
+.conv .talk-log::-webkit-scrollbar{width:25px}
 /* Le fondu du haut et du bas (mask) épargne la barre et ses flèches (Idan, 2026-11-25 : « on l'élargit et il faut faire des
    flèches en haut et en bas »). */
-.conv .talk-log{-webkit-mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent),linear-gradient(#000,#000);-webkit-mask-size:calc(100% - 20px) 100%,20px 100%;-webkit-mask-position:left top,right top;-webkit-mask-repeat:no-repeat;mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent),linear-gradient(#000,#000);mask-size:calc(100% - 20px) 100%,20px 100%;mask-position:left top,right top;mask-repeat:no-repeat}
-.conv .talk-log::-webkit-scrollbar-button:single-button{display:block;height:24px;border:1px solid rgba(201,165,106,.35);border-radius:6px;background-color:#3a281d;background-position:center;background-size:11px 7px;background-repeat:no-repeat}
+.conv .talk-log{-webkit-mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent),linear-gradient(#000,#000);-webkit-mask-size:calc(100% - 25px) 100%,25px 100%;-webkit-mask-position:left top,right top;-webkit-mask-repeat:no-repeat;mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent),linear-gradient(#000,#000);mask-size:calc(100% - 25px) 100%,25px 100%;mask-position:left top,right top;mask-repeat:no-repeat}
+.conv .talk-log::-webkit-scrollbar-button:single-button{display:block;height:28px;border:1px solid rgba(201,165,106,.35);border-radius:6px;background-color:#3a281d;background-position:center;background-size:13px 8px;background-repeat:no-repeat}
 .conv .talk-log::-webkit-scrollbar-button:single-button:vertical:decrement{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 6L5 0l5 6z' fill='%23e3bd76'/%3E%3C/svg%3E"),linear-gradient(180deg,#4b3425,#2b1d15)}
 .conv .talk-log::-webkit-scrollbar-button:single-button:vertical:increment{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23e3bd76'/%3E%3C/svg%3E"),linear-gradient(180deg,#4b3425,#2b1d15)}
 .conv .talk-log::-webkit-scrollbar-button:single-button:hover{border-color:rgba(240,207,138,.7)}

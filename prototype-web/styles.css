@@ -1432,7 +1432,15 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* « On ajoute un dégradé pour foncer légèrement les côtés du parchemin » (Idan, 2026-11-25) : sur le parchemin seul (sa
    propre forme sert de masque). */
 .conv-page::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(96,58,20,.3),rgba(96,58,20,0) 16%,rgba(96,58,20,0) 84%,rgba(96,58,20,.3));-webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;mask-border:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;pointer-events:none}
-.conv .talk-log{flex:1;align-content:start;gap:32px;max-height:none;margin:18px 12px 16px;padding:12px 18px 12px;scrollbar-width:thin;scrollbar-color:#a08055 transparent;-webkit-mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent)}
+.conv .talk-log{flex:1;align-content:start;gap:64px;max-height:none;margin:18px 12px 16px;padding:12px 18px 12px;-webkit-mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent)}
+/* La barre de défilement de la conversation (le webdesigner ; Idan, 2026-11-25 : « intégrer la scroll bar ») : un rail sombre
+   et un curseur doré arrondis. Les navigateurs sans ::-webkit-scrollbar (Firefox) prennent les mêmes couleurs. */
+.conv .talk-log{scrollbar-color:auto;scrollbar-width:auto}
+.conv .talk-log::-webkit-scrollbar{width:12px}
+.conv .talk-log::-webkit-scrollbar-track{border:1px solid rgba(201,165,106,.22);border-radius:999px;background:linear-gradient(180deg,#4b3425,#2b1d15)}
+.conv .talk-log::-webkit-scrollbar-thumb{border:2px solid #3a281d;border-radius:999px;background:linear-gradient(180deg,#d4aa62,#9c6f34)}
+.conv .talk-log::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#ebc57f,#b17f3d)}
+@supports not selector(::-webkit-scrollbar){.conv .talk-log{scrollbar-width:thin;scrollbar-color:#b98b44 #3a281d}}
 .conv .talk-say{grid-template-columns:100px minmax(0,1fr);align-items:start;gap:12px}
 .conv .talk-say--you{grid-template-columns:minmax(0,1fr) 100px;justify-items:stretch;text-align:left}
 .conv .talk-say--you>.talk-mini{order:2}

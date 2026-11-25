@@ -41,6 +41,7 @@ Blood & Wages est un jeu de gestion de mercenaires en dark fantasy. L'écran mon
 - Motifs petits, pris dans les ornements d'Idan : pointe de lance (`lance.svg`), couronne (`couronne.svg`), fleur de lys (`fleur-de-lys.svg`). Le losange (`losange.svg`) seulement pour les étapes.
 - Chaque culture a son ornement de titre (groupe Ornements du titre), en miroir de part et d'autre du titre de la fiche au survol, couleur `hc-parchemin`, tous sur la même ligne.
 - Les SVG d'ornements sont noirs, d'une seule encre : on s'en sert comme masque (`mask`) et la couleur vient du jeton (`encre-secondaire`, `or`, `hc-parchemin`).
+- Le fin contour d'or, c'est le cadre doré du bouton d'Idan (composant Cadre doré, Idan, 2026-11-25) : vignettes des portraits, barre de défilement, et partout où il faut un contour doré. On ne le redessine pas en CSS. Son velours passé au brun sert de fond (`velours-brun.webp`).
 
 ## Pictos et images
 

@@ -795,6 +795,47 @@
       ]
     },
     {
+      "name": "Cadre doré",
+      "tile": "m",
+      "files": [
+        {
+          "name": "cadre-or.webp",
+          "source": "prototype-web/assets/creation/cadre-or.webp",
+          "size": 18784,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "velours-brun.webp",
+          "source": "prototype-web/assets/creation/velours-brun.webp",
+          "size": 1854,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "barre-defilement-haut.webp",
+          "source": "prototype-web/assets/creation/barre-defilement-haut.webp",
+          "size": 10054,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "barre-defilement-milieu.webp",
+          "source": "prototype-web/assets/creation/barre-defilement-milieu.webp",
+          "size": 11616,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "barre-defilement-bas.webp",
+          "source": "prototype-web/assets/creation/barre-defilement-bas.webp",
+          "size": 10074,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        }
+      ]
+    },
+    {
       "name": "Pictos du camp",
       "tile": "s",
       "files": [

@@ -213,6 +213,11 @@ function buildAssets() {
       {name: "papier-froisse.webp", source: "prototype-web/assets/taverne/papier-froisse.webp", author: "ambientCG (texture « Paper003 »)", licence: "CC0"},
       {name: "papier-vieilli.webp", source: "prototype-web/assets/taverne/papier-vieilli.webp", author: IDAN},
     ]),
+    // Le cadre doré du bouton d'Idan (Idan, 2026-11-25 : « tu le fais pour le contour des avatars ? ») : tiré de bouton.webp,
+    // son velours rendu transparent (cadre-or) ou passé du rouge au brun (velours-brun, barre de défilement), en attendant
+    // les PNG qu'Idan prépare.
+    group("Cadre doré", "m", ["cadre-or.webp", "velours-brun.webp", "barre-defilement-haut.webp", "barre-defilement-milieu.webp", "barre-defilement-bas.webp"]
+      .map(f => ({name: f, source: `prototype-web/assets/creation/${f}`, author: `${IDAN} (tiré de bouton.webp)`}))),
     group("Pictos du camp", "s", [
       ...["picto-or.webp", "picto-mercenaires.webp", "picto-salaires.webp", "next.webp"].map(f => ({name: f, source: `prototype-web/assets/hud/${f}`})),
       ...listDir("assets/hud/pictos-bas").map(f => ({name: `bas-${f}`, source: `prototype-web/assets/hud/pictos-bas/${f}`})),

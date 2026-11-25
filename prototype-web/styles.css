@@ -1413,7 +1413,9 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--fiche[open]{display:block;height:1080px}
 .talk-dialog--fiche::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .talk-dialog--fiche>.recruit-fiche{position:absolute;left:var(--talk-marge);top:calc(50% - 282.5px);width:860px;height:565px}
-.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:var(--talk-marge);right:var(--talk-marge);bottom:var(--talk-marge);left:calc(var(--talk-marge) + 860px - var(--talk-mord));display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:-14px 8px 24px rgba(0,0,0,.55),0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
+/* Une seule lumière, en haut à gauche (Idan, 2026-11-25 : « décale tout, et ombre douce de contact sur la fiche ») : les
+   ombres portent vers le bas à droite ; la fenêtre pose sur la fiche une ombre douce de contact, sans direction. */
+.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:var(--talk-marge);right:var(--talk-marge);bottom:var(--talk-marge);left:calc(var(--talk-marge) + 860px - var(--talk-mord));display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:0 0 16px 3px rgba(0,0,0,.6),11px 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
 /* La fiche repliée (Idan, 2026-11-25 : « je voudrais qu'on puisse replier la fiche au survol : elle passe sous la boite de
    dialogue qui prend alors toute la largeur. La fiche au survol doit toujours dépasser de 30 / 40 px : on doit voir le début
    du portrait ») : la boîte glisse par-dessus la fiche, qui ne bouge pas et dépasse de --talk-depasse ; un clic sur ce qui
@@ -1421,7 +1423,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--fiche>.recruit-talk-box{transition:left .35s ease}
 .talk-dialog--fiche.is-folded>.recruit-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse))}
 .talk-dialog--fiche.is-folded>.recruit-fiche{cursor:pointer}
-.conv-fold{position:absolute;top:50%;left:-18px;z-index:4;display:grid;place-items:center;width:36px;height:72px;margin-top:-36px;padding:0;border:2px solid #c9a461;border-radius:8px;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 26px/1 "Cinzel",Georgia,serif;box-shadow:0 4px 10px #000a;cursor:pointer;transition:filter .12s}
+.conv-fold{position:absolute;top:50%;left:-18px;z-index:4;display:grid;place-items:center;width:36px;height:72px;margin-top:-36px;padding:0;border:2px solid #c9a461;border-radius:8px;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 26px/1 "Cinzel",Georgia,serif;box-shadow:3px 4px 10px #000a;cursor:pointer;transition:filter .12s}
 .conv-fold::before{content:"\2039"}
 .is-folded .conv-fold::before{content:"\203A"}
 .conv-fold:hover,.conv-fold:focus-visible{filter:brightness(1.3);outline:none}
@@ -1432,15 +1434,15 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    défile) : la vignette et le nom de qui parle, sa réplique dans une bulle, les autres à gauche, le capitaine à droite, le
    récit centré sans bulle ; en bas, les réponses, sans barre de défilement (trop de réponses : un tiroir, comme « Puis-je
    en savoir plus sur vous ? ») ; la réponse survolée prend le bouton d'Idan (ses pointes jamais déformées). */
-.conv{position:relative;gap:12px;padding:16px 16px 14px;border:1px solid #b58a45;border-radius:4px;background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
-.conv::before,.conv::after{content:"";position:absolute;z-index:3;width:64px;height:64px;background:center/contain no-repeat;filter:drop-shadow(0 3px 3px rgba(0,0,0,.55));pointer-events:none}
+.conv{position:relative;gap:12px;padding:16px 16px 14px;border:1px solid #b58a45;border-radius:4px;background:linear-gradient(180deg,#3b2a1b,#15100c);box-shadow:11px 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
+.conv::before,.conv::after{content:"";position:absolute;z-index:3;width:64px;height:64px;background:center/contain no-repeat;filter:drop-shadow(2px 3px 3px rgba(0,0,0,.55));pointer-events:none}
 .conv::before{top:-6px;left:-6px;background-image:url("assets/ui/menu-corner-tl.webp")}
 .conv::after{right:-6px;bottom:-6px;background-image:url("assets/ui/menu-corner-br.webp")}
-.conv-close{position:absolute;top:-15px;right:-15px;z-index:4;display:grid;place-items:center;width:38px;height:38px;padding:0;border:2px solid #c9a461;border-radius:50%;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 17px/1 "Cinzel",Georgia,serif;box-shadow:0 4px 10px #000a;cursor:pointer;transition:filter .12s,transform .12s}
+.conv-close{position:absolute;top:-15px;right:-15px;z-index:4;display:grid;place-items:center;width:38px;height:38px;padding:0;border:2px solid #c9a461;border-radius:50%;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 17px/1 "Cinzel",Georgia,serif;box-shadow:3px 4px 10px #000a;cursor:pointer;transition:filter .12s,transform .12s}
 .conv-close:hover,.conv-close:focus-visible{filter:brightness(1.3);outline:none}
 .conv-close:active{transform:translateY(2px)}
 .conv-page{position:relative;z-index:0;display:flex;flex:1;min-height:0}
-.conv-page::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:56px;border-image:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
+.conv-page::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:56px;border-image:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;filter:drop-shadow(4px 6px 12px rgba(0,0,0,.5))}
 /* « On ajoute un dégradé pour foncer légèrement les côtés du parchemin » (Idan, 2026-11-25) : sur le parchemin seul (sa
    propre forme sert de masque). */
 .conv-page::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(96,58,20,.3),rgba(96,58,20,0) 16%,rgba(96,58,20,0) 84%,rgba(96,58,20,.3));-webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;mask-border:url("assets/creation/parchemin.webp") 180 fill / 56px stretch;pointer-events:none}
@@ -1469,14 +1471,14 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-say--you>.talk-mini{order:2}
 /* La vignette (Idan, 2026-11-25 : « Le CSS peut suffire ») : un cadre doré en dégradé, sans filet sombre autour ; un léger
    relief vers l'intérieur ; une ombre portée franche. */
-.talk-mini{position:relative;display:grid;place-items:center;width:120px;height:120px;overflow:hidden;border:4px solid transparent;border-radius:3px;background:linear-gradient(#2a1d14,#2a1d14) padding-box,linear-gradient(135deg,#fff3c4 0%,#e2b552 20%,#8c6420 42%,#f6d77e 60%,#a8782a 80%,#fbe7a6 100%) border-box;box-shadow:0 8px 16px rgba(30,16,4,.55),0 2px 4px rgba(30,16,4,.4)}
+.talk-mini{position:relative;display:grid;place-items:center;width:120px;height:120px;overflow:hidden;border:4px solid transparent;border-radius:3px;background:linear-gradient(#2a1d14,#2a1d14) padding-box,linear-gradient(135deg,#fff3c4 0%,#e2b552 20%,#8c6420 42%,#f6d77e 60%,#a8782a 80%,#fbe7a6 100%) border-box;box-shadow:5px 8px 16px rgba(30,16,4,.55),1px 2px 4px rgba(30,16,4,.4)}
 .talk-mini::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(90,58,14,.35),inset 0 0 8px rgba(0,0,0,.4);pointer-events:none}
 .talk-mini img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .talk-mini i{color:#f0d395;font:700 34px/1 "Cinzel",Georgia,serif;font-style:normal}
 .conv .talk-say-body{display:grid;justify-items:start;gap:7px;min-width:0}
 .conv .talk-say--you .talk-say-body{justify-items:end}
-.conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:0 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}
-.conv .talk-say-body>span{position:relative;max-width:100%;padding:14px 21px 15px;border:1px solid rgba(100,73,46,.3);border-radius:8px;background:radial-gradient(200px 90px at 0 100%,rgba(104,64,22,.45),transparent),radial-gradient(200px 90px at 100% 100%,rgba(104,64,22,.45),transparent),linear-gradient(180deg,rgba(255,250,236,.4),rgba(244,230,200,.12));color:#2c1b10;font:600 21px/1.35 "EB Garamond",Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.45),0 7px 12px rgba(40,22,6,.35),0 2px 3px rgba(40,22,6,.25)}
+.conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:1px 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}
+.conv .talk-say-body>span{position:relative;max-width:100%;padding:14px 21px 15px;border:1px solid rgba(100,73,46,.3);border-radius:8px;background:radial-gradient(200px 90px at 0 100%,rgba(104,64,22,.45),transparent),radial-gradient(200px 90px at 100% 100%,rgba(104,64,22,.45),transparent),linear-gradient(180deg,rgba(255,250,236,.4),rgba(244,230,200,.12));color:#2c1b10;font:600 21px/1.35 "EB Garamond",Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.45),4px 7px 12px rgba(40,22,6,.35),1px 2px 3px rgba(40,22,6,.25)}
 /* La bulle à moitié transparente (Idan, 2026-11-25 : « La bulle à 50 %, on garde ») : le grain du parchemin passe au
    travers ; sa pointe est un triangle découpé, pour ne pas doubler la transparence. « 50 % partout, c'est un peu plat » :
    plus claire en haut, plus transparente en bas (le parchemin se voit plus), ses coins bas plus foncés (« Le deux est
@@ -1488,7 +1490,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-options{display:grid;gap:5px;padding:0}
 .conv .talk-options button{position:relative;isolation:isolate;align-items:center;min-height:40px;padding:5px 28px;border:1px solid rgba(181,138,69,.35);border-radius:0;background:rgba(21,16,12,.6);color:#eadcbc;font:500 18px/1.25 "EB Garamond",Georgia,serif;transition:color .12s}
 .conv .talk-options button::before{color:#c9a461;font:700 15px/1 "Cinzel",Georgia,serif}
-.conv .talk-options button::after{content:"";position:absolute;inset:-4px -8px;z-index:-1;box-sizing:border-box;border-style:solid;border-width:12px 24px;border-image:url("assets/creation/bouton.webp") 64 128 fill / 12px 24px stretch;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55));opacity:0;transition:opacity .12s}
+.conv .talk-options button::after{content:"";position:absolute;inset:-4px -8px;z-index:-1;box-sizing:border-box;border-style:solid;border-width:12px 24px;border-image:url("assets/creation/bouton.webp") 64 128 fill / 12px 24px stretch;filter:drop-shadow(3px 4px 5px rgba(0,0,0,.55));opacity:0;transition:opacity .12s}
 .conv .talk-options button:hover,.conv .talk-options button:focus-visible{border-color:transparent;background:transparent;color:#f0d395;outline:none}
 .conv .talk-options button:hover::after,.conv .talk-options button:focus-visible::after{opacity:1}
 .conv .talk-options button:active{transform:translateY(2px)}

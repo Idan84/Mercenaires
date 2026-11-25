@@ -218,6 +218,11 @@ function buildAssets() {
     // les PNG qu'Idan prépare.
     group("Cadre doré", "m", ["cadre-or.webp", "velours-brun.webp", "barre-defilement-haut.webp", "barre-defilement-milieu.webp", "barre-defilement-bas.webp"]
       .map(f => ({name: f, source: `prototype-web/assets/creation/${f}`, author: `${IDAN} (tiré de bouton.webp)`}))),
+    // Le kit doré d'Idan (Idan, 2026-11-25, media/charte_graph.zip : 22 planches PNG) : découpé en pièces WebP rangées par
+    // famille dans assets/kit/ ; les pièces cadre + velours rouge sont aussi séparées (-cadre, -velours) pour changer le velours.
+    ...[["Cadres dorés", "m", "cadres"], ["Boutons dorés", "m", "boutons"], ["Velours", "m", "velours"], ["Bordures dorées", "m", "bordures"],
+      ["Flèches dorées", "s", "fleches"], ["Icônes dorées", "s", "icones"], ["Curseurs dorés", "s", "curseurs"]]
+      .map(([name, tile, dir]) => group(name, tile, listDir(`assets/kit/${dir}`).map(f => ({name: f, source: `prototype-web/assets/kit/${dir}/${f}`, author: IDAN})))),
     group("Pictos du camp", "s", [
       ...["picto-or.webp", "picto-mercenaires.webp", "picto-salaires.webp", "next.webp"].map(f => ({name: f, source: `prototype-web/assets/hud/${f}`})),
       ...listDir("assets/hud/pictos-bas").map(f => ({name: `bas-${f}`, source: `prototype-web/assets/hud/pictos-bas/${f}`})),

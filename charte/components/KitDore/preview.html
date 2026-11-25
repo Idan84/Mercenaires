@@ -1,0 +1,77 @@
+<!-- @dsCard group="Cadres" height=900 subtitle="Le kit doré d'Idan : boutons au velours teinté, flèches, cadres, bordures, icônes" -->
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Kit doré</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&amp;display=swap">
+<style>
+  body{margin:0;font-family:var(--font-texte)}
+  .scene{display:grid;gap:22px;justify-items:center;padding:26px 24px 30px;background:var(--ink)}
+  .papier{display:grid;gap:22px;justify-items:center;padding:26px 24px 30px;background:var(--parchemin)}
+  .rang{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:22px 28px}
+  figure{margin:0;display:grid;justify-items:center;gap:10px}
+  figcaption{font:700 10px/1 var(--font-titre);letter-spacing:.12em;text-transform:uppercase;color:var(--or)}
+  .papier figcaption{color:var(--encre-secondaire)}
+  /* Bouton : velours (teinté ou non) sous le cadre d'or, les deux en border-image (coins jamais déformés). */
+  .kb{position:relative;isolation:isolate;display:grid;place-items:center;width:280px;height:62px;color:var(--or-clair);font:700 15px/1 var(--font-titre);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 1px 2px #000;filter:drop-shadow(2px 5px 5px rgba(0,0,0,.5))}
+  .kb>i{position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:21px;font-style:normal}
+  .kb .v{border-image:url("{{asset:Boutons dorés/bouton-velours.webp}}") 90 fill / 21px stretch}
+  .kb .c{z-index:1;border-image:url("{{asset:Boutons dorés/bouton-cadre.webp}}") 90 / 21px stretch}
+  .kb .t{display:none;border:0;background:var(--teinte);-webkit-mask:url("{{asset:Boutons dorés/bouton-velours.webp}}") center/100% 100% no-repeat;mask:url("{{asset:Boutons dorés/bouton-velours.webp}}") center/100% 100% no-repeat;mix-blend-mode:color}
+  .kb b{position:relative;z-index:2}
+  .brun .v{filter:hue-rotate(35deg) saturate(.6) brightness(1.05)}
+  .teinte .v{filter:grayscale(1) brightness(1.9) contrast(1.15)}
+  .teinte .t{display:block}
+  /* Rond et carré : même principe, image entière. */
+  .kr,.kc{position:relative;isolation:isolate;display:grid;place-items:center;width:64px;height:64px;filter:drop-shadow(2px 4px 4px rgba(0,0,0,.5))}
+  .kr>i,.kc>i{position:absolute;inset:0;z-index:-1;background:center/100% 100% no-repeat;font-style:normal}
+  .kr .v{background-image:url("{{asset:Boutons dorés/rond-velours.webp}}")}.kr .c{z-index:1;background-image:url("{{asset:Boutons dorés/rond-cadre.webp}}")}
+  .kc .v{background-image:url("{{asset:Boutons dorés/carre-velours.webp}}")}.kc .c{z-index:1;background-image:url("{{asset:Boutons dorés/carre-cadre.webp}}")}
+  .kr .t{display:none;background:var(--teinte);-webkit-mask:url("{{asset:Boutons dorés/rond-velours.webp}}") center/100% 100%;mask:url("{{asset:Boutons dorés/rond-velours.webp}}") center/100% 100%;mix-blend-mode:color}
+  .kr img,.kc img{position:relative;z-index:2;width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 1px 1px #000)}
+  .fl{height:46px;filter:drop-shadow(2px 4px 4px rgba(0,0,0,.5))}
+  .py{height:30px;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.6))}
+  /* Champ : le cadre fin. */
+  .champ{box-sizing:border-box;display:flex;align-items:center;width:320px;height:46px;padding:0 18px;border-style:solid;border-width:12px;border-image:url("{{asset:Cadres dorés/cadre-fin.webp}}") 44 / 12px stretch;color:var(--encre);font:600 18px/1 var(--font-texte)}
+  .sep{width:340px}
+  .icones{display:grid;grid-template-columns:repeat(12,40px);gap:14px}
+  .icones img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(1px 2px 1.5px rgba(40,22,8,.45))}
+  .panneau{position:relative;width:420px;height:230px;background:var(--parchemin);display:grid;place-items:center;color:var(--encre-secondaire);font:italic 500 18px/1.3 var(--font-texte)}
+  .panneau img{position:absolute;width:150px;height:auto}
+  .panneau .hg{top:-8px;left:-8px}.panneau .hd{top:-8px;right:-8px}.panneau .bg{bottom:-8px;left:-8px}.panneau .bd{bottom:-8px;right:-8px}
+</style></head>
+<body>
+<div class="scene">
+  <div class="rang">
+    <figure><span class="kb"><i class="v"></i><i class="t"></i><i class="c"></i><b>Partir en mission</b></span><figcaption>Velours rouge (par défaut)</figcaption></figure>
+    <figure><span class="kb brun"><i class="v"></i><i class="t"></i><i class="c"></i><b>Partir en mission</b></span><figcaption>Velours brun</figcaption></figure>
+    <figure><span class="kb teinte" style="--teinte:var(--culture-elfes-noirs-moyen)"><i class="v"></i><i class="t"></i><i class="c"></i><b>Partir en mission</b></span><figcaption>Couleur de la culture (Elfes noirs)</figcaption></figure>
+  </div>
+  <div class="rang">
+    <figure><span class="kr"><i class="v"></i><i class="c"></i><img src="{{asset:Icônes dorées/plus.webp}}" alt=""></span><figcaption>Rond</figcaption></figure>
+    <figure><span class="kr teinte" style="--teinte:var(--culture-nains-des-montagnes-moyen)"><i class="v" style="filter:grayscale(1) brightness(1.9) contrast(1.15)"></i><i class="t" style="display:block"></i><i class="c"></i><img src="{{asset:Icônes dorées/loupe.webp}}" alt=""></span><figcaption>Rond teinté</figcaption></figure>
+    <figure><span class="kc"><i class="v"></i><i class="c"></i><img src="{{asset:Flèches dorées/fermer.webp}}" alt=""></span><figcaption>Carré</figcaption></figure>
+    <figure><img class="fl" src="{{asset:Boutons dorés/fleche-rouge-gauche.webp}}" alt=""><figcaption>Page précédente</figcaption></figure>
+    <figure><img class="fl" src="{{asset:Boutons dorés/fleche-rouge-droite.webp}}" alt=""><figcaption>Page suivante</figcaption></figure>
+    <figure><span class="rang" style="gap:10px"><img class="py" src="{{asset:Flèches dorées/gauche.webp}}" alt=""><img class="py" src="{{asset:Flèches dorées/haut.webp}}" alt=""><img class="py" src="{{asset:Flèches dorées/bas.webp}}" alt=""><img class="py" src="{{asset:Flèches dorées/droite.webp}}" alt=""></span><figcaption>Pyramides</figcaption></figure>
+  </div>
+</div>
+<div class="papier">
+  <figure><span class="champ">Bob le Rouge</span><figcaption>Champ (cadre fin)</figcaption></figure>
+  <figure><img class="sep" src="{{asset:Bordures dorées/separateur-volutes.webp}}" alt=""><figcaption>Séparateur</figcaption></figure>
+  <figure><div class="icones">
+    <img src="{{asset:Icônes dorées/plus.webp}}" alt=""><img src="{{asset:Icônes dorées/moins.webp}}" alt=""><img src="{{asset:Icônes dorées/coche.webp}}" alt=""><img src="{{asset:Icônes dorées/croix.webp}}" alt="">
+    <img src="{{asset:Icônes dorées/cadenas-ferme.webp}}" alt=""><img src="{{asset:Icônes dorées/cadenas-ouvert.webp}}" alt=""><img src="{{asset:Icônes dorées/loupe.webp}}" alt=""><img src="{{asset:Icônes dorées/filtre.webp}}" alt="">
+    <img src="{{asset:Icônes dorées/info.webp}}" alt=""><img src="{{asset:Icônes dorées/question.webp}}" alt=""><img src="{{asset:Icônes dorées/attention.webp}}" alt=""><img src="{{asset:Icônes dorées/actualiser.webp}}" alt="">
+    <img src="{{asset:Icônes dorées/case-vide.webp}}" alt=""><img src="{{asset:Icônes dorées/case-cochee.webp}}" alt=""><img src="{{asset:Icônes dorées/rond-vide.webp}}" alt=""><img src="{{asset:Icônes dorées/rond-coche.webp}}" alt="">
+    <img src="{{asset:Icônes dorées/agrandir.webp}}" alt=""><img src="{{asset:Icônes dorées/retour-rapide.webp}}" alt=""><img src="{{asset:Icônes dorées/avance-rapide.webp}}" alt=""><img src="{{asset:Icônes dorées/triangle-gauche.webp}}" alt="">
+    <img src="{{asset:Icônes dorées/triangle-droit.webp}}" alt=""><img src="{{asset:Icônes dorées/triangle-haut.webp}}" alt=""><img src="{{asset:Icônes dorées/triangle-bas.webp}}" alt="">
+  </div><figcaption>Icônes</figcaption></figure>
+</div>
+<div class="scene">
+  <figure><div class="panneau">Un panneau aux grands coins ornés
+    <img class="hg" src="{{asset:Cadres dorés/coin-orne-haut-gauche.webp}}" alt=""><img class="hd" src="{{asset:Cadres dorés/coin-orne-haut-droit.webp}}" alt="">
+    <img class="bg" src="{{asset:Cadres dorés/coin-orne-bas-gauche.webp}}" alt=""><img class="bd" src="{{asset:Cadres dorés/coin-bas-droit.webp}}" alt=""></div>
+    <figcaption>Coins ornés (le coin bas-droit n'a pas de rinceaux)</figcaption></figure>
+</div>
+</body>
+</html>

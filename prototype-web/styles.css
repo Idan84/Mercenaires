@@ -1439,8 +1439,16 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv::before,.conv::after{content:"";position:absolute;z-index:3;width:64px;height:64px;background:center/contain no-repeat;filter:drop-shadow(1px 3px 3px rgba(0,0,0,.5));pointer-events:none}
 .conv::before{top:-6px;left:-6px;background-image:url("assets/ui/menu-corner-tl.webp")}
 .conv::after{right:-6px;bottom:-6px;background-image:url("assets/ui/menu-corner-br.webp")}
-.conv-close{position:absolute;top:-15px;right:-15px;z-index:4;display:grid;place-items:center;width:38px;height:38px;padding:0;border:2px solid #c9a461;border-radius:50%;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 17px/1 "Cinzel",Georgia,serif;box-shadow:2px 4px 10px #000a;cursor:pointer;transition:filter .12s,transform .12s}
-.conv-close:hover,.conv-close:focus-visible{filter:brightness(1.3);outline:none}
+/* La croix (Idan, 2026-11-25 : « un rond fond brun et une croix dorée. Au survol, elle devient rouge. On la pose en haut à
+   droite ») : le rond du kit au velours brun (creation/rond-brun.webp), le rouge (kit rond-rouge.webp) fondu par-dessus au
+   survol, la croix dorée du kit (kit/fleches/fermer.webp) ; centrée sur le coin haut droit de la boîte. Le « ✕ » du texte
+   reste pour les lecteurs d'écran, caché à l'œil. */
+.conv-close{position:absolute;top:-20px;right:-20px;z-index:4;width:48px;height:49.6px;padding:0;border:0;border-radius:50%;background:url("assets/creation/rond-brun.webp") 50% 50%/100% 100% no-repeat;color:transparent;font-size:0;filter:drop-shadow(2px 4px 4px rgba(30,16,4,.5)) drop-shadow(1px 1px 1px rgba(30,16,4,.35));cursor:pointer;transition:transform .12s}
+.conv-close::before,.conv-close::after{content:"";position:absolute;inset:0;pointer-events:none}
+.conv-close::before{background:url("assets/kit/boutons/rond-rouge.webp") 50% 50%/100% 100% no-repeat;opacity:0;transition:opacity .12s}
+.conv-close::after{background:url("assets/kit/fleches/fermer.webp") 50% 50%/48% auto no-repeat}
+.conv-close:hover::before,.conv-close:focus-visible::before{opacity:1}
+.conv-close:focus-visible{outline:none}
 .conv-close:active{transform:translateY(2px)}
 /* L'emblème (Idan, 2026-11-25 : « l'icône de bulles de conversation de la barre… en doré, dans un cercle avec fond velours
    rouge… en haut au milieu… 30 % environ au-dessus de la barre, 70 % sur le parchemin » ; à caler avec le cadre) : le rond

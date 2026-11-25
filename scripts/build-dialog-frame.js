@@ -7,11 +7,14 @@
 //   puis ramenées, ligne par ligne, à la couleur moyenne des deux coins qu'elles relient ; enfin raccordées bout à bout
 //   (fondu) pour se répéter sans couture (border-image-repeat : round).
 // Le centre reste vide (l'ouverture). Affiche les tranches à passer à border-image-slice.
+// Écrit aussi, à côté : cuir-dialogue.webp (le cuir du panneau, répétable), filet-losange-droit.webp (le filet de la
+// planche 2, n° 14, en miroir), equerre-bas-gauche.webp et equerre-bas-droite.webp (l'équerre de la planche 3, n° 10,
+// retournée pour les coins du bas).
 const {chromium}=require("playwright"),fs=require("fs"),path=require("path");
 const ROOT=path.resolve(__dirname,".."),K=ROOT+"/prototype-web/assets/kit/cadre-dialogue/",OUT=ROOT+"/prototype-web/assets/creation/cadre-dialogue.webp";
 (async()=>{const b=await chromium.launch();const p=await b.newPage();
  const L=f=>"data:image/webp;base64,"+fs.readFileSync(K+f).toString("base64");
- const ims={TL:L("planche1-01.webp"),TR:L("planche1-03.webp"),BL:L("planche1-14.webp"),BR:L("planche1-15.webp"),T:L("planche1-02.webp"),B:L("planche1-16.webp"),G:L("planche1-07.webp"),D:L("planche1-08.webp")};
+ const ims={TL:L("planche1-01.webp"),TR:L("planche1-03.webp"),BL:L("planche1-14.webp"),BR:L("planche1-15.webp"),T:L("planche1-02.webp"),B:L("planche1-16.webp"),G:L("planche1-07.webp"),D:L("planche1-08.webp"),P:L("planche3-06.webp"),F:L("planche2-14.webp"),E:L("planche3-10.webp")};
  const res=await p.evaluate(async ims=>{
   const load=async d=>{const i=new Image();i.src=d;await i.decode();const c=document.createElement("canvas");c.width=i.width;c.height=i.height;const g=c.getContext("2d");g.drawImage(i,0,0);return g.getImageData(0,0,i.width,i.height);};
   const I={};for(const [k,d] of Object.entries(ims))I[k]=await load(d);
@@ -90,11 +93,52 @@ const ROOT=path.resolve(__dirname,".."),K=ROOT+"/prototype-web/assets/kit/cadre-
     for(let y=0;y<im.height;y++)for(let x=0;x<im.width;x++){const ex=dx>0?im.width-1-x:x,ey=dy>0?im.height-1-y:y;
       const f=Math.min(1,Math.max(0,(ex-CUT)/FADE)),h=Math.min(1,Math.max(0,(ey-CUT)/FADE)),q=(y*im.width+x)*4;o.data[q+3]*=Math.min(f,h);}
     return o;};
+  // Les volutes des coins (Idan, 2026-11-25 : « reprends son exemple ») : le parchemin et le panneau du bas passent
+  // par-dessus l'intérieur du cadre, et couperaient les volutes en deux ; on les remplace par du cuir du même coin
+  // (pris dans sa bande, répété, fondu sur 6 px) ; les petits ornements de la planche se posent à part.
+  const unswirl=(im,mx,my)=>{const o=new ImageData(new Uint8ClampedArray(im.data),im.width,im.height),W2=im.width,H2=im.height;
+    const at=(u,v)=>{const x=mx?W2-1-u:u,y=my?H2-1-v:v;return (y*W2+x)*4;},lumq=q=>.3*im.data[q]+.59*im.data[q+1]+.11*im.data[q+2];
+    // la zone : au-delà des filets (u, v ≥ 31) et du filet du chanfrein (u + v ≥ 88), jusqu'à 101
+    const U0=31,U1=101,inR=(u,v)=>u>=U0&&v>=U0&&u<=U1&&v<=U1&&u+v>=88,F=5;
+    // teinte : moyenne locale du seul cuir (pixels sombres) dans un rayon de 12 px ; grain : celui du cuir de la bande
+    // (u 110–170, v 35–75), moins sa propre moyenne locale
+    const PU0=110,PU=60,PV0=35,PV=40,patchQ=(u,v)=>at(PU0+((u%PU)+PU)%PU,PV0+((v%PV)+PV)%PV);
+    const patchMean=(u,v)=>{let r=0,g=0,b2=0,n=0;for(let dv=-5;dv<=5;dv++)for(let du=-5;du<=5;du++){const q=patchQ(u+du,v+dv);r+=im.data[q];g+=im.data[q+1];b2+=im.data[q+2];n++;}return [r/n,g/n,b2/n];};
+    for(let v=U0;v<=U1;v++)for(let u=U0;u<=U1;u++){if(!inR(u,v))continue;
+      let r=0,g=0,b2=0,n=0;for(let dv=-12;dv<=12;dv++)for(let du=-12;du<=12;du++){const uu=u+du,vv=v+dv;if(uu<0||vv<0||uu>=150||vv>=H2)continue;const q=at(uu,vv);if(im.data[q+3]<200||lumq(q)>=46)continue;r+=im.data[q];g+=im.data[q+1];b2+=im.data[q+2];n++;}
+      if(!n)continue;r/=n;g/=n;b2/=n;const pm=patchMean(u-U0,v-U0),pq=patchQ(u-U0,v-U0),q=at(u,v);
+      const e=Math.min(U1-u,U1-v),w=Math.min(1,(e+1)/F);   // contre les filets : remplacé en entier ; fondu côté cuir seulement
+      const nv=[r+im.data[pq]-pm[0],g+im.data[pq+1]-pm[1],b2+im.data[pq+2]-pm[2]];
+      for(let c=0;c<3;c++)o.data[q+c]=o.data[q+c]*(1-w)+nv[c]*w;}
+    return o;};
+  I.TL=unswirl(I.TL,false,false);I.TR=unswirl(I.TR,true,false);I.BL=unswirl(I.BL,false,true);I.BR=unswirl(I.BR,true,true);
   put(feather(I.TL,1,1),0,0);
   put(feather(I.TR,-1,1),CW-W(I.TR),-info.T.decalage_second_coin);
   put(feather(I.BL,1,-1),-info.G.decalage_second_coin,CH-H(I.BL));
   put(feather(I.BR,-1,-1),CW-W(I.BR)+info.D.decalage_second_coin,CH-H(I.BR)+info.B.decalage_second_coin);
-  return {url:c.toDataURL("image/webp",.95),CW,CH,slice:{haut:Th,droite:Rw,bas:Bh,gauche:Lw},info};
+  // Le cuir du panneau (Idan, 2026-11-25 : « reprends son exemple ») : l'intérieur de la plaque de la planche 3 (n° 6),
+  // raccordé bout à bout dans les deux sens (fondu de 30 px en large, 16 px en haut) pour se répéter sans couture.
+  const leather=(im,x0,y0,w,h,fx,fy)=>{const o=new ImageData(w,h),src=(x,y)=>((y0+y)*im.width+x0+x)*4;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){let acc=[0,0,0],tot=0;
+      const ax=x<fx?(x+1)/(fx+1):1,ay=y<fy?(y+1)/(fy+1):1;
+      for(const [xx,wx] of [[x,ax],[x+w,1-ax]])for(const [yy,wy] of [[y,ay],[y+h,1-ay]]){const k=wx*wy;if(!k)continue;const q=src(xx,yy);acc[0]+=im.data[q]*k;acc[1]+=im.data[q+1]*k;acc[2]+=im.data[q+2]*k;tot+=k;}
+      const q=(y*w+x)*4;o.data[q]=acc[0]/tot;o.data[q+1]=acc[1]/tot;o.data[q+2]=acc[2]/tot;o.data[q+3]=255;}
+    return o;};
+  const toUrl=(im,q)=>{const t=document.createElement("canvas");t.width=im.width;t.height=im.height;t.getContext("2d").putImageData(im,0,0);return t.toDataURL("image/webp",q);};
+  const flip=(im,h,v)=>{const t=document.createElement("canvas");t.width=im.width;t.height=im.height;t.getContext("2d").putImageData(im,0,0);
+    const c2=document.createElement("canvas");c2.width=im.width;c2.height=im.height;const g2=c2.getContext("2d");g2.translate(h?im.width:0,v?im.height:0);g2.scale(h?-1:1,v?-1:1);g2.drawImage(t,0,0);return c2.toDataURL("image/webp",.95);};
+  // la plaque est plus sombre vers ses bords : on retire sa lumière (moyenne par ligne et par colonne ramenée à la moyenne
+  // générale) avant de la répéter, sinon elle ferait des bandes
+  const flatten=im=>{const W3=im.width,H3=im.height,o=new ImageData(new Uint8ClampedArray(im.data),W3,H3),L3=q=>.3*o.data[q]+.59*o.data[q+1]+.11*o.data[q+2];
+    for(const pass of ["ligne","colonne"]){const n=pass==="ligne"?H3:W3,m=pass==="ligne"?W3:H3,mean=[];let all=0;
+      for(let i=0;i<n;i++){let t=0;for(let j=0;j<m;j++)t+=L3(((pass==="ligne"?i:j)*W3+(pass==="ligne"?j:i))*4);mean.push(t/m);all+=t/m;}all/=n;
+      const sm=mean.map((_,i)=>{let t=0,c=0;for(let k=-4;k<=4;k++){const ii=Math.min(n-1,Math.max(0,i+k));t+=mean[ii];c++;}return t/c;});
+      for(let i=0;i<n;i++){const g=all/Math.max(1,sm[i]);for(let j=0;j<m;j++){const q=((pass==="ligne"?i:j)*W3+(pass==="ligne"?j:i))*4;for(let c=0;c<3;c++)o.data[q+c]=Math.min(255,o.data[q+c]*g);}}}
+    return o;};
+  const extra={cuir:toUrl(flatten(leather(I.P,60,34,400,66,30,14)),.9),filetDroit:flip(I.F,true,false),equerreBG:flip(I.E,false,true),equerreBD:flip(I.E,true,true)};
+  return {url:c.toDataURL("image/webp",.95),CW,CH,slice:{haut:Th,droite:Rw,bas:Bh,gauche:Lw},info,extra};
  },ims);
  fs.writeFileSync(OUT,Buffer.from(res.url.split(",")[1],"base64"));
+ const C=path.dirname(OUT),w=(n,d)=>fs.writeFileSync(path.join(C,n),Buffer.from(d.split(",")[1],"base64"));
+ w("cuir-dialogue.webp",res.extra.cuir);w("filet-losange-droit.webp",res.extra.filetDroit);w("equerre-bas-gauche.webp",res.extra.equerreBG);w("equerre-bas-droite.webp",res.extra.equerreBD);
  console.log("cadre-dialogue.webp",res.CW+"×"+res.CH,"tranches",JSON.stringify(res.slice),"\n",JSON.stringify(res.info));await b.close();})();

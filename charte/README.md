@@ -47,6 +47,7 @@ Blood & Wages est un jeu de gestion de mercenaires en dark fantasy. L'écran mon
 
 - Pictos des origines : Peuples, Cultures, Ascendances, Écoles de magie (WebP 128 × 128). Sur la fiche au survol : `picto-origine` (52 px), `ecart-pictos-origine` entre eux, ombre `ombre-picto`.
 - Barre du camp : Pictos du camp ; les textures de la barre de chaque culture : Textures des cultures.
+- Le kit doré d'Idan (`prototype-web/assets/kit/` ; groupes Cadres dorés, Boutons dorés, Velours, Bordures dorées, Flèches dorées, Icônes dorées, Curseurs dorés ; Idan, 2026-11-25) : des ressources à disposition, à prendre avant de dessiner quoi que ce soit en CSS. Rien n'y est figé : on peut en faire d'autres et les adapter si besoin (recolorer, recadrer, adoucir), en gardant l'original et en notant d'où vient la pièce adaptée (`assets/creation/`).
 - Avant de dessiner un picto, un ornement ou une icône, chercher d'abord dans les bibliothèques libres (game-icons.net, CC BY 3.0, via Iconify ; les autres collections libres d'Iconify), proposer des candidats à Idan, et noter l'auteur et la licence pour les crédits du jeu. Budget : 0 €.
 
 ## Mouvement

@@ -1442,9 +1442,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-say-body{display:grid;justify-items:start;gap:7px;min-width:0}
 .conv .talk-say--you .talk-say-body{justify-items:end}
 .conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:0 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}
-.conv .talk-say-body>span{position:relative;max-width:100%;padding:9px 16px 10px;border:1px solid rgba(100,73,46,.4);border-radius:8px;background:linear-gradient(180deg,#fcf6e6,#ecdab4);color:#2c1b10;font:italic 600 21px/1.35 "EB Garamond",Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.75);filter:drop-shadow(0 7px 9px rgba(40,22,6,.45)) drop-shadow(0 2px 2px rgba(40,22,6,.3))}
-.conv .talk-say-body>span::before{content:"";position:absolute;top:13px;left:-6px;width:10px;height:10px;border:solid rgba(100,73,46,.4);border-width:0 0 1px 1px;background:#f9f0dc;transform:rotate(45deg)}
-.conv .talk-say--you .talk-say-body>span::before{left:auto;right:-6px;border-width:1px 1px 0 0}
+.conv .talk-say-body>span{position:relative;max-width:100%;padding:9px 16px 10px;border:1px solid rgba(100,73,46,.3);border-radius:8px;background:linear-gradient(180deg,rgba(252,246,230,.5),rgba(236,218,180,.5));color:#2c1b10;font:italic 600 21px/1.35 "EB Garamond",Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.45),0 7px 12px rgba(40,22,6,.35),0 2px 3px rgba(40,22,6,.25)}
+/* La bulle à moitié transparente (Idan, 2026-11-25 : « La bulle à 50 %, on garde ») : le grain du parchemin passe au
+   travers ; sa pointe est un triangle découpé, pour ne pas doubler la transparence. */
+.conv .talk-say-body>span::before{content:"";position:absolute;top:14px;left:-11px;width:11px;height:16px;background:rgba(250,242,222,.5);clip-path:polygon(100% 0,0 50%,100% 100%)}
+.conv .talk-say--you .talk-say-body>span::before{left:auto;right:-11px;clip-path:polygon(0 0,100% 50%,0 100%)}
 .conv .talk-note{padding:0 18px;color:#64492e;font:italic 500 18px/1.4 "EB Garamond",Georgia,serif}
 .conv>#recruit-talk-choices{flex:none}
 .conv .talk-options{display:grid;gap:5px;padding:0}

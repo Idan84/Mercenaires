@@ -627,7 +627,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(css, /\.talk-dialog--fiche\{--talk-marge:104px;--talk-mord:24px;--talk-depasse:100px;width:1920px;height:1080px;/);
     assert.match(css, /\.talk-dialog--fiche\[open\]\{display:block;height:1080px\}/);
     assert.match(css, /\.talk-dialog--fiche>\.recruit-fiche\{position:absolute;left:var\(--talk-marge\);top:calc\(50% - 282\.5px\);width:860px;height:565px\}/);
-    assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:var\(--talk-marge\);right:var\(--talk-marge\);bottom:var\(--talk-marge\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\)\);[^}]*box-shadow:0 0 16px 3px rgba\(0,0,0,\.6\),11px 18px 50px #000a/);
+    assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:var\(--talk-marge\);right:var\(--talk-marge\);bottom:var\(--talk-marge\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\)\);[^}]*box-shadow:0 0 16px 3px rgba\(0,0,0,\.6\),6px 18px 50px #000a/);
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.

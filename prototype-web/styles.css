@@ -1409,11 +1409,23 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    autres fenêtres). « On réduit environ la marge foncée à gauche de la moitié » : la fiche à --talk-marge du bord gauche,
    centrée en hauteur ; « on reprend la même valeur en haut, en bas et à droite de la fenêtre de dialogue » ; « La fenêtre de
    dialogue doit légèrement mordre sur la fiche au survol et elle pose une légère ombre portée dessus » (--talk-mord). */
-.talk-dialog--fiche{--talk-marge:104px;--talk-mord:24px;width:1920px;height:1080px;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.talk-dialog--fiche{--talk-marge:104px;--talk-mord:24px;--talk-depasse:36px;width:1920px;height:1080px;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
 .talk-dialog--fiche[open]{display:block;height:1080px}
 .talk-dialog--fiche::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .talk-dialog--fiche>.recruit-fiche{position:absolute;left:var(--talk-marge);top:calc(50% - 282.5px);width:860px;height:565px}
 .talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:var(--talk-marge);right:var(--talk-marge);bottom:var(--talk-marge);left:calc(var(--talk-marge) + 860px - var(--talk-mord));display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:-14px 8px 24px rgba(0,0,0,.55),0 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
+/* La fiche repliée (Idan, 2026-11-25 : « je voudrais qu'on puisse replier la fiche au survol : elle passe sous la boite de
+   dialogue qui prend alors toute la largeur. La fiche au survol doit toujours dépasser de 30 / 40 px : on doit voir le début
+   du portrait ») : la boîte glisse par-dessus la fiche, qui ne bouge pas et dépasse de --talk-depasse ; un clic sur ce qui
+   dépasse, ou sur le bouton, la rouvre. */
+.talk-dialog--fiche>.recruit-talk-box{transition:left .35s ease}
+.talk-dialog--fiche.is-folded>.recruit-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse))}
+.talk-dialog--fiche.is-folded>.recruit-fiche{cursor:pointer}
+.conv-fold{position:absolute;top:50%;left:-18px;z-index:4;display:grid;place-items:center;width:36px;height:72px;margin-top:-36px;padding:0;border:2px solid #c9a461;border-radius:8px;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 26px/1 "Cinzel",Georgia,serif;box-shadow:0 4px 10px #000a;cursor:pointer;transition:filter .12s}
+.conv-fold::before{content:"\2039"}
+.is-folded .conv-fold::before{content:"\203A"}
+.conv-fold:hover,.conv-fold:focus-visible{filter:brightness(1.3);outline:none}
+@media (prefers-reduced-motion:reduce){.talk-dialog--fiche>.recruit-talk-box{transition:none}}
 .recruit-talk-box .talk-head{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 /* La boîte de dialogue (Idan, 2026-11-24, d'après la maquette de Chatty : « Commence une vraie mise en page », avec les
    éléments existants) : un cadre sombre aux coins du menu ; en haut, la conversation sur le parchemin d'Idan (elle seule
@@ -1436,20 +1448,28 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* La barre de défilement de la conversation (le webdesigner ; Idan, 2026-11-25 : « intégrer la scroll bar ») : un rail sombre
    et un curseur doré arrondis. Les navigateurs sans ::-webkit-scrollbar (Firefox) prennent les mêmes couleurs. */
 .conv .talk-log{scrollbar-color:auto;scrollbar-width:auto}
-.conv .talk-log::-webkit-scrollbar{width:12px}
+.conv .talk-log::-webkit-scrollbar{width:20px}
+/* Le fondu du haut et du bas (mask) épargne la barre et ses flèches (Idan, 2026-11-25 : « on l'élargit et il faut faire des
+   flèches en haut et en bas »). */
+.conv .talk-log{-webkit-mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent),linear-gradient(#000,#000);-webkit-mask-size:calc(100% - 20px) 100%,20px 100%;-webkit-mask-position:left top,right top;-webkit-mask-repeat:no-repeat;mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 14px),transparent),linear-gradient(#000,#000);mask-size:calc(100% - 20px) 100%,20px 100%;mask-position:left top,right top;mask-repeat:no-repeat}
+.conv .talk-log::-webkit-scrollbar-button:single-button{display:block;height:24px;border:1px solid rgba(201,165,106,.35);border-radius:6px;background-color:#3a281d;background-position:center;background-size:11px 7px;background-repeat:no-repeat}
+.conv .talk-log::-webkit-scrollbar-button:single-button:vertical:decrement{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 6L5 0l5 6z' fill='%23e3bd76'/%3E%3C/svg%3E"),linear-gradient(180deg,#4b3425,#2b1d15)}
+.conv .talk-log::-webkit-scrollbar-button:single-button:vertical:increment{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23e3bd76'/%3E%3C/svg%3E"),linear-gradient(180deg,#4b3425,#2b1d15)}
+.conv .talk-log::-webkit-scrollbar-button:single-button:hover{border-color:rgba(240,207,138,.7)}
+.conv .talk-log::-webkit-scrollbar-button:vertical:start:increment,.conv .talk-log::-webkit-scrollbar-button:vertical:end:decrement{display:none}
 .conv .talk-log::-webkit-scrollbar-track{border:1px solid rgba(201,165,106,.22);border-radius:999px;background:linear-gradient(180deg,#4b3425,#2b1d15)}
-.conv .talk-log::-webkit-scrollbar-thumb{border:2px solid #3a281d;border-radius:999px;background:linear-gradient(180deg,#d4aa62,#9c6f34)}
+.conv .talk-log::-webkit-scrollbar-thumb{border:3px solid #3a281d;border-radius:999px;background:linear-gradient(180deg,#d4aa62,#9c6f34)}
 .conv .talk-log::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#ebc57f,#b17f3d)}
 @supports not selector(::-webkit-scrollbar){.conv .talk-log{scrollbar-width:thin;scrollbar-color:#b98b44 #3a281d}}
-.conv .talk-say{grid-template-columns:100px minmax(0,1fr);align-items:start;gap:12px}
-.conv .talk-say--you{grid-template-columns:minmax(0,1fr) 100px;justify-items:stretch;text-align:left}
+.conv .talk-say{grid-template-columns:120px minmax(0,1fr);align-items:start;gap:12px}
+.conv .talk-say--you{grid-template-columns:minmax(0,1fr) 120px;justify-items:stretch;text-align:left}
 .conv .talk-say--you>.talk-mini{order:2}
 /* La vignette (Idan, 2026-11-25 : « Le CSS peut suffire ») : un cadre doré en dégradé, sans filet sombre autour ; un léger
    relief vers l'intérieur ; une ombre portée franche. */
-.talk-mini{position:relative;display:grid;place-items:center;width:100px;height:100px;overflow:hidden;border:4px solid transparent;border-radius:3px;background:linear-gradient(#2a1d14,#2a1d14) padding-box,linear-gradient(135deg,#fff3c4 0%,#e2b552 20%,#8c6420 42%,#f6d77e 60%,#a8782a 80%,#fbe7a6 100%) border-box;box-shadow:0 8px 16px rgba(30,16,4,.55),0 2px 4px rgba(30,16,4,.4)}
+.talk-mini{position:relative;display:grid;place-items:center;width:120px;height:120px;overflow:hidden;border:4px solid transparent;border-radius:3px;background:linear-gradient(#2a1d14,#2a1d14) padding-box,linear-gradient(135deg,#fff3c4 0%,#e2b552 20%,#8c6420 42%,#f6d77e 60%,#a8782a 80%,#fbe7a6 100%) border-box;box-shadow:0 8px 16px rgba(30,16,4,.55),0 2px 4px rgba(30,16,4,.4)}
 .talk-mini::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(90,58,14,.35),inset 0 0 8px rgba(0,0,0,.4);pointer-events:none}
 .talk-mini img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.talk-mini i{color:#f0d395;font:700 30px/1 "Cinzel",Georgia,serif;font-style:normal}
+.talk-mini i{color:#f0d395;font:700 34px/1 "Cinzel",Georgia,serif;font-style:normal}
 .conv .talk-say-body{display:grid;justify-items:start;gap:7px;min-width:0}
 .conv .talk-say--you .talk-say-body{justify-items:end}
 .conv .talk-say b{padding:5px 12px 4px;border:1px solid #8a6a44;border-radius:3px;background:linear-gradient(180deg,#4a3424,#241911);color:#f0d395;font:700 13px/1 "Cinzel",Georgia,serif;letter-spacing:.12em;box-shadow:0 2px 4px rgba(40,22,8,.4),inset 0 1px rgba(255,228,168,.18)}

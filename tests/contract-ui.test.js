@@ -586,7 +586,10 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(html, /<dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit talk-dialog--fiche" aria-labelledby="recruit-talk-name">\s*<div id="recruit-talk-card" class="recruit-fiche"><\/div>\s*<div class="recruit-talk-box conv">/);
     // La boîte de dialogue (Idan, 2026-11-24, d'après la maquette de Chatty) : une croix pour fermer, la conversation sur le
     // parchemin (elle seule défile), les réponses en dessous.
-    assert.match(html, /<button type="button" class="conv-close" data-talk="leave" aria-label="Fermer"[^>]*>✕<\/button>\s*<div class="conv-page"><div id="recruit-talk-log" class="talk-log" aria-live="polite"><\/div><\/div>\s*<div id="recruit-talk-choices"><\/div>/);
+    assert.match(html, /<button type="button" class="conv-close" data-talk="leave" aria-label="Fermer"[^>]*>✕<\/button>\s*<button type="button" class="conv-fold" aria-expanded="true" aria-label="Replier la fiche"[^>]*><\/button>\s*<div class="conv-page"><div id="recruit-talk-log" class="talk-log" aria-live="polite"><\/div><\/div>\s*<div id="recruit-talk-choices"><\/div>/);
+    // La fiche repliée sous la boîte (Idan, 2026-11-25) : la boîte glisse par-dessus, la fiche dépasse de --talk-depasse.
+    assert.match(css, /\.talk-dialog--fiche\.is-folded>\.recruit-talk-box\{left:calc\(var\(--talk-marge\) \+ var\(--talk-depasse\)\)\}/);
+    assert.match(tavernJs, /function setRecruitFolded\(folded\)\{\s*game\.recruitFolded=folded;/);
     // Chaque réplique : la vignette et le nom de qui parle, la réplique dans une bulle ; le récit sans bulle.
     const lines = new Function("esc", "mercenaryAvatarUrl", "avatarInitials",
       tavernJs.slice(tavernJs.indexOf("function talkMini(person){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return renderTalkLines;")(
@@ -621,7 +624,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(css, /\.talk-dialog--fiche::backdrop\{background:rgba\(0,0,0,\.82\);backdrop-filter:blur\(8px\);/);
     // Les volumes (Idan, 2026-11-24) : l'écran de référence entier ; la fiche à la marge du bord gauche, centrée en hauteur ; la
     // discussion avec la même marge en haut, en bas et à droite, qui mord sur la fiche avec une légère ombre.
-    assert.match(css, /\.talk-dialog--fiche\{--talk-marge:104px;--talk-mord:24px;width:1920px;height:1080px;/);
+    assert.match(css, /\.talk-dialog--fiche\{--talk-marge:104px;--talk-mord:24px;--talk-depasse:36px;width:1920px;height:1080px;/);
     assert.match(css, /\.talk-dialog--fiche\[open\]\{display:block;height:1080px\}/);
     assert.match(css, /\.talk-dialog--fiche>\.recruit-fiche\{position:absolute;left:var\(--talk-marge\);top:calc\(50% - 282\.5px\);width:860px;height:565px\}/);
     assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:var\(--talk-marge\);right:var\(--talk-marge\);bottom:var\(--talk-marge\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\)\);[^}]*box-shadow:-14px 8px 24px rgba\(0,0,0,\.55\)/);

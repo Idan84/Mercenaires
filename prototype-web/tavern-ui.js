@@ -301,6 +301,19 @@ function wornArmor(m){
   return id==null?null:(m.items||[]).find(item=>String(item.id)===String(id))||null;
 }
 
+// La fiche repliée sous la boîte de dialogue (Idan, 2026-11-25) ; le choix tient le temps de la partie ouverte.
+function setRecruitFolded(folded){
+  game.recruitFolded=folded;
+  const dialog=$("recruit-talk-dialog"),button=dialog?.querySelector?.(".conv-fold");
+  dialog?.classList?.toggle("is-folded",folded);
+  if(button){
+    const label=folded?"Déplier la fiche":"Replier la fiche";
+    button.setAttribute("aria-expanded",String(!folded));
+    button.setAttribute("aria-label",label);
+    button.title=label;
+  }
+}
+
 function openRecruitTalk(id){
   const candidate=tavernCandidate(id);
   if(!candidate) return;
@@ -310,6 +323,7 @@ function openRecruitTalk(id){
   game.recruitTalk={id,mercenary:m,lines:[{who:"merc",text:recruitDialogue().greeting(m,captainAffinity(m)?.total)}],
     mode:"choices",round:0,closeTimer:null};
   renderRecruitTalk();
+  setRecruitFolded(Boolean(game.recruitFolded));
   $("recruit-talk-dialog").showModal();
 }
 
@@ -695,6 +709,11 @@ function initializeTavernUi(){
   initializeRecruitCarousel();
   const recruit=$("recruit-talk-dialog");
   recruit.addEventListener("click",event=>{
+    // Replier la fiche sous la boîte (Idan, 2026-11-25), ou la rouvrir par ce qui dépasse.
+    if(event.target.closest(".conv-fold")||recruit.classList.contains("is-folded")&&event.target.closest("#recruit-talk-card")){
+      setRecruitFolded(!recruit.classList.contains("is-folded"));
+      return;
+    }
     const option=event.target.closest("[data-talk]");
     if(option&&!option.disabled) recruitTalkChoice(option.dataset.talk);
   });

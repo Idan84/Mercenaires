@@ -389,9 +389,8 @@ function renderRecruitTalk(){
     </form>`;
     return;
   }
-  // « Partir » et « Retour » détachés en bas de la liste (le webdesigner, 2026-11-25).
   $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map(choice=>
-    `<li${["leave","back"].includes(choice.key)?' class="talk-exit"':""}><button type="button" data-talk="${choice.key}">${esc(choice.label)}</button></li>`).join("")}</ol>`;
+    `<li><button type="button" data-talk="${choice.key}">${esc(choice.label)}</button></li>`).join("")}</ol>`;
 }
 
 // Les tags d'un candidat, en noms (game-core/company-tags.js ; Idan, 2026-11-24 : « tes suggestions sont parfaites ») : tels

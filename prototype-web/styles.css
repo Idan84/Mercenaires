@@ -1537,6 +1537,10 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-options button:disabled{background:transparent;color:rgba(240,211,149,.45);cursor:default}
 .conv .talk-options button:disabled::before{filter:saturate(.6) brightness(.82) drop-shadow(0 6px 6px rgba(0,0,0,.55))}
 .conv .talk-options button:disabled .talk-num{color:rgba(201,164,97,.45);filter:saturate(.6) brightness(.82)}
+/* Fiche repliée (Idan, 2026-11-25 : « c'est trop serré… on augmente de 5 px l'espace entre les lignes et également 5 entre
+   les colonnes… réduire la police d'1 px ») ; la fiche ouverte garde ses réglages. */
+.is-folded .conv .talk-options{gap:19px 17px}
+.is-folded .conv .talk-options button{font-size:17px}
 .talk-nobr{white-space:nowrap}
 .conv .talk-offer{padding:4px 6px 2px}
 .hc-unknown{font:700 22px/1 var(--police-texte);color:var(--encre);opacity:.7}

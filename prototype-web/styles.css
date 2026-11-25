@@ -1424,10 +1424,19 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--fiche>.recruit-talk-box{transition:left .35s ease}
 .talk-dialog--fiche.is-folded>.recruit-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse))}
 .talk-dialog--fiche.is-folded>.recruit-fiche{cursor:pointer}
-.conv-fold{position:absolute;top:50%;left:-18px;z-index:4;display:grid;place-items:center;width:36px;height:72px;margin-top:-36px;padding:0;border:2px solid #c9a461;border-radius:8px;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0d395;font:700 26px/1 "Cinzel",Georgia,serif;box-shadow:2px 4px 10px #000a;cursor:pointer;transition:filter .12s}
-.conv-fold::before{content:"\2039"}
-.is-folded .conv-fold::before{content:"\203A"}
-.conv-fold:hover,.conv-fold:focus-visible{filter:brightness(1.3);outline:none}
+/* La languette qui replie la fiche (Idan, 2026-11-25 : « un bouton capitaine fond brun, une flèche dorée du kit, rouge au
+   survol ») : le bouton d'Idan tourné à la verticale (creation/bouton-brun-vertical.webp, le haut à gauche, côté lumière),
+   36 px de large visibles sur 72 de haut, à la même place qu'avant ; le rouge (bouton-rouge-vertical.webp) fondu par-dessus
+   au survol ; la flèche du kit (kit/fleches/gauche.webp, droite.webp quand la fiche est repliée). La boîte déborde de
+   l'image visible de ses marges transparentes (échelle 36/168). */
+.conv-fold{position:absolute;top:50%;left:-26.4px;z-index:4;width:55.1px;height:72px;margin-top:-36px;padding:0;box-sizing:border-box;border-style:solid;border-width:15.4px 13.7px;border-radius:0;border-image:url("assets/creation/bouton-brun-vertical.webp") 72 64 fill / 15.4px 13.7px stretch;background:transparent;filter:drop-shadow(2px 4px 4px rgba(30,16,4,.5)) drop-shadow(1px 1px 1px rgba(30,16,4,.35));cursor:pointer;transition:transform .12s}
+.conv-fold::before,.conv-fold::after{content:"";position:absolute;inset:-15.4px -13.7px;box-sizing:border-box;pointer-events:none}
+.conv-fold::before{border-style:solid;border-width:15.4px 13.7px;border-image:url("assets/creation/bouton-rouge-vertical.webp") 72 64 fill / 15.4px 13.7px stretch;opacity:0;transition:opacity .12s}
+.conv-fold::after{background:url("assets/kit/fleches/gauche.webp") calc(50% - 1.2px) 50%/13px auto no-repeat}
+.is-folded .conv-fold::after{background-image:url("assets/kit/fleches/droite.webp")}
+.conv-fold:hover::before,.conv-fold:focus-visible::before{opacity:1}
+.conv-fold:focus-visible{outline:none}
+.conv-fold:active{transform:translateY(2px)}
 @media (prefers-reduced-motion:reduce){.talk-dialog--fiche>.recruit-talk-box{transition:none}}
 .recruit-talk-box .talk-head{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 /* La boîte de dialogue (Idan, 2026-11-24, d'après la maquette de Chatty : « Commence une vraie mise en page », avec les

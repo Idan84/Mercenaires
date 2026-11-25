@@ -8,7 +8,9 @@
 //    (flou horizontal) : il ne garde que la lumière, qu'on peut étirer sans que ça se voie ;
 //  - grain-velours.webp : le grain de ce milieu (rapport entre l'image et sa version lissée, en gris : 128 = rien), raccordé
 //    bout à bout pour se répéter ; posé en « overlay » sur le milieu, il rend le grain d'origine sans jamais l'étirer ;
-//  - rond-brun.webp : le rond du kit, velours passé au brun de la même façon.
+//  - rond-brun.webp : le rond du kit, velours passé au brun de la même façon ;
+//  - bouton-brun-vertical.webp, bouton-rouge-vertical.webp : le bouton entier (brun, rouge), tourné d'un quart de tour à
+//    gauche, pour la languette qui replie la fiche.
 const {chromium}=require("playwright"),fs=require("fs"),path=require("path");
 const ROOT=path.resolve(__dirname,".."),A=ROOT+"/prototype-web/assets/",OUT=process.argv[2]||A+"creation";
 (async()=>{const b=await chromium.launch();const p=await b.newPage();
@@ -47,8 +49,12 @@ const ROOT=path.resolve(__dirname,".."),A=ROOT+"/prototype-web/assets/",OUT=proc
     r=Math.round(Math.min(1,r/2)*255)/127.5;Rt[(y-Y0)*TW+x-X0]=r;mn=Math.min(mn,r);mx=Math.max(mx,r);const v=Math.round(Math.min(1,r/2)*255),o=((y-Y0)*TW+x-X0)*4;G.data[o]=G.data[o+1]=G.data[o+2]=v;G.data[o+3]=255;}
   // le rond, au brun
   const rond=brun(await load(dO));
-  return {brun:save(lisse(brunB,blB),.92),rouge:save(lisse(R,blR),.92),grain:save(G,.95),rond:save(rond,.92),plage:[mn.toFixed(2),mx.toFixed(2)]};
+  // la languette de la fiche (Idan, 2026-11-25 : « un bouton capitaine fond brun… rouge au survol ») : le bouton entier, sans
+  // lissage, tourné d'un quart de tour à gauche (le haut passe à gauche, côté lumière)
+  const vertical=im=>{const t=document.createElement("canvas");t.width=im.width;t.height=im.height;t.getContext("2d").putImageData(im,0,0);
+    const c=document.createElement("canvas");c.width=im.height;c.height=im.width;const g=c.getContext("2d");g.translate(0,im.width);g.rotate(-Math.PI/2);g.drawImage(t,0,0);return c.toDataURL("image/webp",.92);};
+  return {brun:save(lisse(brunB,blB),.92),rouge:save(lisse(R,blR),.92),grain:save(G,.95),rond:save(rond,.92),brunV:vertical(brunB),rougeV:vertical(R),plage:[mn.toFixed(2),mx.toFixed(2)]};
  },[data("creation/bouton.webp"),data("creation/bouton.webp"),data("kit/boutons/rond-rouge.webp")]);
  const w=(n,d)=>fs.writeFileSync(path.join(OUT,n),Buffer.from(d.split(",")[1],"base64"));
- w("bouton-brun.webp",res.brun);w("bouton-rouge.webp",res.rouge);w("grain-velours.webp",res.grain);w("rond-brun.webp",res.rond);
+ w("bouton-brun.webp",res.brun);w("bouton-rouge.webp",res.rouge);w("grain-velours.webp",res.grain);w("rond-brun.webp",res.rond);w("bouton-brun-vertical.webp",res.brunV);w("bouton-rouge-vertical.webp",res.rougeV);
  console.log("grain : rapport de",res.plage[0],"à",res.plage[1]," → ",OUT);await b.close();})();

@@ -1509,7 +1509,9 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    −2 px, éteint) ; le texte en EB Garamond gras, deux lignes au plus, les mots composés jamais coupés à leur trait d'union
    (« appelle-t-on »). Puis (Idan, 2026-11-25) : « on remet les numéros » (les touches 1 à 9 valident), « marron et rouge
    au survol » (velours brun au repos, bouton-brun.webp, copie du bouton d'Idan dont seul le velours passe au brun ; le
-   rouge d'origine se fond par-dessus au survol) ; le numéro « dans un petit rond avec le cadre doré, fond brun / rouge »
+   rouge, bouton-rouge.webp, se fond par-dessus au survol) ; « répète le velours » : le milieu que le border-image étire
+   n'y garde que sa lumière (lissé dans la longueur) et son grain (grain-velours.webp) se pose par-dessus en « overlay »,
+   répété, jamais étiré, quelle que soit la largeur du bouton (scripts/build-dialog-buttons.js refait les quatre images) ; le numéro « dans un petit rond avec le cadre doré, fond brun / rouge »
    (rond-rouge du kit, et sa copie au velours brun rond-brun.webp), « exactement au milieu de la ligne en métal du haut,
    posé sur l'angle » : centré sur le coin haut gauche de la bande de métal (bouton.webp : bande de y 39 à 59, coin du
    milieu de la bande vers x 52, à l'échelle 20/64) ; le numéro garde sa taille, centré dans le rond ; le texte reste doré (« on oublie le texte en gris / métal ici »), « la
@@ -1517,20 +1519,21 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:64px;grid-auto-flow:row;gap:14px 12px;padding:16px 6px 12px}
 .conv .talk-options li{display:flex;min-width:0}
 .conv .talk-options button{position:relative;isolation:isolate;flex:1;display:flex;align-items:center;justify-content:center;min-width:0;height:100%;padding:2px 30px 4px;border:0;border-radius:0;background:transparent;color:#f0d395;font:700 18px/1.12 "EB Garamond",Georgia,serif;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.85);transition:color .12s,transform .12s}
-.conv .talk-options button::before,.conv .talk-options button::after{content:"";position:absolute;inset:-12px 0 -16px;z-index:-1;min-width:0;box-sizing:border-box;border-style:solid;border-width:20px 40px;border-image:url("assets/creation/bouton-brun.webp") 64 128 fill / 20px 40px stretch;pointer-events:none}
+.conv .talk-options button::before,.conv .talk-choice::before{content:"";position:absolute;inset:-12px 0 -16px;z-index:-1;min-width:0;box-sizing:border-box;border-style:solid;border-width:20px 40px;border-image:url("assets/creation/bouton-brun.webp") 64 128 fill / 20px 40px stretch;pointer-events:none}
 .conv .talk-options button::before{filter:drop-shadow(0 6px 6px rgba(0,0,0,.55));transition:filter .12s}
-.conv .talk-options button::after{border-image-source:url("assets/creation/bouton.webp");opacity:0;transition:opacity .12s,filter .12s}
+.conv .talk-choice::before{border-image-source:url("assets/creation/bouton-rouge.webp");opacity:0;transition:opacity .12s,filter .12s}
+.conv .talk-options button::after{content:"";position:absolute;inset:8px 40px 4px;z-index:-1;background:url("assets/creation/grain-velours.webp") 0 0/auto 100% round no-repeat;mix-blend-mode:overlay;pointer-events:none}
 .conv .talk-num{position:absolute;top:3.3px;left:16.3px;z-index:1;display:grid;place-items:center;width:28px;height:28.9px;transform:translate(-50%,-50%);isolation:isolate;color:#c9a461;font:700 15px/1 "Cinzel",Georgia,serif;text-shadow:0 1px 2px rgba(0,0,0,.85);transition:color .12s}
 .conv .talk-num::before,.conv .talk-num::after{content:"";position:absolute;inset:0;z-index:-1;background:url("assets/creation/rond-brun.webp") 50% 50%/100% 100% no-repeat;transition:opacity .12s}
 .conv .talk-num::before{filter:drop-shadow(0 2px 2px rgba(0,0,0,.55))}
 .conv .talk-num::after{background-image:url("assets/kit/boutons/rond-rouge.webp");opacity:0}
 .conv .talk-options button:hover,.conv .talk-options button:focus-visible{background:transparent;color:#ffe3a6;outline:none}
-.conv .talk-options button:not(:disabled):hover::after,.conv .talk-options button:not(:disabled):focus-visible::after{opacity:1}
+.conv .talk-options button:not(:disabled):hover .talk-choice::before,.conv .talk-options button:not(:disabled):focus-visible .talk-choice::before{opacity:1}
 .conv .talk-options button:not(:disabled):hover .talk-num,.conv .talk-options button:not(:disabled):focus-visible .talk-num{color:#f0d395}
 .conv .talk-options button:not(:disabled):hover .talk-num::after,.conv .talk-options button:not(:disabled):focus-visible .talk-num::after{opacity:1}
 .conv .talk-options button:active{transform:translateY(2px)}
 .conv .talk-options button:active::before{filter:drop-shadow(0 3px 3px rgba(0,0,0,.55))}
-.conv .talk-options button:active::after{filter:brightness(.84)}
+.conv .talk-options button:active .talk-choice::before{filter:brightness(.84)}
 .conv .talk-options button:disabled{background:transparent;color:rgba(240,211,149,.45);cursor:default}
 .conv .talk-options button:disabled::before{filter:saturate(.6) brightness(.82) drop-shadow(0 6px 6px rgba(0,0,0,.55))}
 .conv .talk-options button:disabled .talk-num{color:rgba(201,164,97,.45);filter:saturate(.6) brightness(.82)}

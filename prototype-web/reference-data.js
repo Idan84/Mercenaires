@@ -38,6 +38,7 @@ const REFERENCE_FILES = {
   dormitoryQuality: "dormitory-quality.json",
   campBuildings: "camp-buildings.json",
   canteenDishes: "canteen-dishes.json",
+  tavernKeeperScenes: "tavern-keeper-scenes.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

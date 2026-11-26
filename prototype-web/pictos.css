@@ -14,3 +14,8 @@
   .picto-goutte>.goutte-halo{display:none}
   .picto-goutte>.goutte-embleme{animation:none}
 }
+
+/* Le recalage optique des logos de culture d'une autre forme (Idan, 2026-11-26 : pentagones des humains, triangles des
+   nains) : réduits, étirés en hauteur s'il le faut, puis décalés, sans sortir de leur boîte ; les valeurs par logo sont
+   dans picto-ui.js (PICTO_OPTIQUE). */
+.picto[data-picto-optique]{scale:var(--picto-s) calc(var(--picto-s) * var(--picto-sy));translate:0 var(--picto-dy)}

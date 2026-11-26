@@ -464,13 +464,21 @@
     <!-- La fiche au survol d'un mercenaire (hover-card-ui.js), à côté du portrait survolé. -->
     <div id="mission-choice-hover" class="mission-choice-hover" aria-hidden="true" hidden></div>
   </dialog>
-  <dialog id="tavern-talk-dialog" class="talk-dialog" aria-labelledby="tavern-talk-name">
-    <header class="talk-head">
-      <span class="talk-portrait" aria-hidden="true"></span>
-      <div><p class="eyebrow">The Black Anvil</p><h2 id="tavern-talk-name">Le tavernier</h2></div>
-    </header>
-    <p id="tavern-talk-line" class="talk-line"></p>
-    <ol id="tavern-talk-options" class="talk-options"></ol>
+  <!-- Le tavernier (Idan, 2026-11-26 : « On fait une fenêtre ? ») : la boîte de dialogue de la charte (celle des candidats),
+       à gauche ; le tavernier reste visible à droite dans le décor ; « The Black Anvil » en tête de la conversation. Sa fiche
+       (le faux easter egg, tavern-ui.js) est repliée sous la boîte ; la languette la déplie. -->
+  <dialog id="tavern-talk-dialog" class="talk-dialog talk-dialog--fiche talk-dialog--keeper" aria-labelledby="tavern-talk-name">
+    <div id="tavern-talk-card" class="recruit-fiche"></div>
+    <div class="recruit-talk-box keeper-talk-box conv">
+      <header class="talk-head">
+        <div><p class="eyebrow">The Black Anvil</p><h2 id="tavern-talk-name">Le tavernier</h2></div>
+      </header>
+      <span class="conv-emblem" aria-hidden="true"></span>
+      <button type="button" class="conv-close" data-talk="leave" aria-label="Fermer" title="Fermer">✕</button>
+      <button type="button" class="conv-fold" aria-expanded="false" aria-label="Déplier la fiche" title="Déplier la fiche"></button>
+      <div class="conv-page"><div id="tavern-talk-log" class="talk-log" aria-live="polite"></div></div>
+      <div id="tavern-talk-choices"></div>
+    </div>
   </dialog>
   <!-- La fiche du candidat (Idan, 2026-11-22) : la fiche au survol (des « ? » pour ce qu'on ne sait pas encore), la
        discussion à côté, un fond noir flou derrière. -->

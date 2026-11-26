@@ -305,7 +305,11 @@ function wornArmor(m){
 // La fiche repliée sous la boîte de dialogue (Idan, 2026-11-25) ; le choix tient le temps de la partie ouverte.
 function setRecruitFolded(folded){
   game.recruitFolded=folded;
-  const dialog=$("recruit-talk-dialog"),button=dialog?.querySelector?.(".conv-fold");
+  setTalkFolded($("recruit-talk-dialog"),folded);
+}
+// Replier ou déplier la fiche d'une boîte de dialogue (le candidat, le tavernier) : la classe et la languette.
+function setTalkFolded(dialog,folded){
+  const button=dialog?.querySelector?.(".conv-fold");
   dialog?.classList?.toggle("is-folded",folded);
   if(button){
     const label=folded?"Déplier la fiche":"Replier la fiche";
@@ -366,6 +370,7 @@ function talkCaptain(){
   return company?.roster.find(m=>m.id===company.captainId)||game.captain||null;
 }
 function talkMini(person){
+  if(person?.miniHtml) return person.miniHtml;
   const src=person&&typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(person,"portrait"):null;
   const initials=person&&typeof avatarInitials==="function"?avatarInitials(person):"?";
   return `<span class="talk-mini" aria-hidden="true"><i>${esc(initials)}</i>${src?`<img src="${esc(src)}" alt="" decoding="async" onerror="this.remove()">`:""}</span>`;
@@ -644,13 +649,16 @@ function buyTavernDrink(kind){
   const count=c.company.roster.length; // capitaine compris ; effectif sous contrat actuel
   const cost=kind==="round"?count:1;
   if(c.company.gold<cost){
-    tavernLog("Pas assez d'or : "+cost+" PO nécessaires.","warn");
-    return;
+    const short="Pas assez d'or : "+cost+" PO nécessaires.";
+    tavernLog(short,"warn");
+    return short;
   }
   c.company.gold-=cost;
-  tavernLog(kind==="round"?"Tournée générale : "+cost+" PO pour "+count+" membres.":"Une bière : 1 PO.","gear");
+  const done=kind==="round"?"Tournée générale : "+cost+" PO pour "+count+" membres.":"Une bière : 1 PO.";
+  tavernLog(done,"gear");
   saveGame();
   renderTavern();
+  return done;
 }
 
 // Dialogue avec le tavernier (Idan, 2026-10-21 ; doc 14 §6 bis, 2026-11-19) : boire, payer sa tournée, ou lui poser
@@ -688,35 +696,85 @@ function tavernTalkLine(t){
   if(t.view==="what") return d.keeperLine("ask_what",{cout:adviceCost()},m);
   return d.keeperLine("greeting",{capitaine:captainFirstName()});
 }
+// La conversation (Idan, 2026-11-26 : « On fait une fenêtre ? » ; la boîte de dialogue de la charte) : les répliques du
+// tavernier en bulles, avec son portrait (celui qu'on avait : /media/video/Img_Tavern.jpg, son visage) ; nos questions en
+// bulles « Vous » ; ce qu'on fait (une bière, la tournée) en récit, le message du journal ; « The Black Anvil » en tête.
+// La fiche du tavernier, le faux easter egg (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui parler.
+// Par défaut, elle est repliée » ; « une image au hasard du tavernier et un texte qui correspond » ; « C'est un faux easter
+// egg… ») : à chaque conversation, une situation au hasard parmi celles qui sont écrites (tavern-keeper-scenes.json : un
+// titre et un texte), la fiche repliée ; aucun effet en jeu. Sans situation écrite : pas de fiche.
+function keeperScenes(rows=game.referenceData?.tavernKeeperScenes?.rows||[]){
+  return rows.filter(row=>row.image&&row.titre&&row.texte?.length);
+}
+function pickKeeperScene(rows=keeperScenes(),random=Math.random){
+  return rows.length?rows[Math.min(rows.length-1,Math.floor(random()*rows.length))]:null;
+}
+function showKeeperCard(){
+  const dialog=$("tavern-talk-dialog"),scene=pickKeeperScene();
+  const box=$("tavern-talk-card");
+  box.innerHTML=scene?renderKeeperCard(scene):"";
+  dialog.classList.toggle("has-card",Boolean(scene));
+  setTalkFolded(dialog,true);
+  const card=box.querySelector(".hover-card");
+  if(card&&typeof fitHoverCard==="function") requestAnimationFrame(()=>fitHoverCard(card));
+}
+
+const KEEPER_NAME="Le tavernier";
+// Au-delà de ce nombre de signes, une réponse ne tient plus dans un bouton : elle prend deux colonnes.
+const TALK_WIDE_LABEL=48;
+const tavernKeeper={miniHtml:`<span class="talk-mini talk-mini--keeper" aria-hidden="true"><span class="talk-mini-keeper"></span></span>`};
+function tavernKeeperSays(t,text){ if(text) t.lines.push({who:"merc",name:KEEPER_NAME,text}); }
 function renderTavernTalk(){
   const t=game.tavernTalk;
   if(!t) return;
-  $("tavern-talk-line").textContent=`«\u00a0${t.line}\u00a0»`;
-  $("tavern-talk-options").innerHTML=tavernTalkOptions(t).map(o=>
-    `<li><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}>${esc(o.label)}</button></li>`).join("");
+  const log=$("tavern-talk-log");
+  log.innerHTML=renderTalkLines(t.lines,line=>line.who==="you"?talkCaptain():tavernKeeper,KEEPER_NAME);
+  log.scrollTop=log.scrollHeight;
+  requestAnimationFrame(()=>{ log.scrollTop=log.scrollHeight; });
+  const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`).replace(/ ([?!:;»])/g,"\u00a0$1");
+  // Une réponse longue (la demande à l'usurier) prend deux colonnes (Idan, 2026-11-26 : « Bouton sur 2 colonnes »).
+  $("tavern-talk-choices").innerHTML=`<ol class="talk-options">${tavernTalkOptions(t).map((o,i)=>
+    `<li${o.label.length>TALK_WIDE_LABEL?' class="is-wide"':""}><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}><span class="talk-num" aria-hidden="true">${i+1}</span><span class="talk-choice">${unbroken(o.label)}</span></button></li>`).join("")}</ol>`;
 }
 function openTavernTalk(){
-  game.tavernTalk={view:"main",candidateId:null};
+  game.tavernTalk={view:"main",candidateId:null,lines:[{who:"note",text:"The Black Anvil"}]};
   game.tavernTalk.line=tavernTalkLine(game.tavernTalk);
+  tavernKeeperSays(game.tavernTalk,game.tavernTalk.line);
   renderTavernTalk();
+  showKeeperCard();
   $("tavern-talk-dialog").showModal();
 }
+// Un choix : nos paroles en bulle (les questions, l'usurier), nos actes en récit (la bière, la tournée) ; puis sa réponse.
 function tavernTalk(choice,arg){
   const t=game.tavernTalk;
   if(!t) return;
   if(choice==="leave"){ $("tavern-talk-dialog").close(); return; }
-  if(choice==="beer"||choice==="round"){ buyTavernDrink(choice); return; }
-  if(choice==="ask"){ askTavernAbout(arg); renderTavernTalk(); return; }
+  const said=tavernTalkOptions(t).find(o=>o.key===choice&&(o.arg==null||String(o.arg)===String(arg)))?.label;
+  if(choice==="beer"||choice==="round"){
+    const done=buyTavernDrink(choice);
+    if(done) t.lines.push({who:"note",text:done});
+    renderTavernTalk();
+    return;
+  }
+  if(choice==="ask"){
+    if(said) t.lines.push({who:"you",text:said});
+    askTavernAbout(arg);
+    tavernKeeperSays(t,t.line);
+    renderTavernTalk();
+    return;
+  }
   if((choice==="usurer"||choice==="usurer_pay")&&typeof usurerTavernChoice==="function"){
+    if(said) t.lines.push({who:"you",text:said});
     const line=usurerTavernChoice(choice);
-    if(line) t.line=line;
+    if(line){ t.line=line; tavernKeeperSays(t,line); }
     renderTavernTalk();
     return;
   }
   if(choice==="advice") t.view="who";
   if(choice==="who"){ t.candidateId=Number(arg); t.view="what"; }
-  if(choice==="back") t.view={what:"who",who:"main"}[t.view]||"main";
+  if(choice==="back"){ t.view={what:"who",who:"main"}[t.view]||"main"; renderTavernTalk(); return; }
   t.line=tavernTalkLine(t);
+  tavernKeeperSays(t,t.line);
   renderTavernTalk();
 }
 // Sa réponse (doc 14 §7) : le titre recalculé sur ses estimations des capacités du candidat (±10 % chacune), ou son
@@ -760,6 +818,11 @@ function openTavernPlace(key){
 function initializeTavernUi(){
   const talk=$("tavern-talk-dialog");
   talk.addEventListener("click",event=>{
+    // Déplier sa fiche (le faux easter egg), ou la replier ; par ce qui dépasse aussi.
+    if(event.target.closest(".conv-fold")||talk.classList.contains("is-folded")&&event.target.closest("#tavern-talk-card")){
+      setTalkFolded(talk,!talk.classList.contains("is-folded"));
+      return;
+    }
     const option=event.target.closest("[data-talk]");
     if(option&&!option.disabled) tavernTalk(option.dataset.talk,option.dataset.arg);
   });
@@ -814,11 +877,13 @@ function initializeTavernUi(){
   // Espace replie ou rouvre la fiche (Idan, 2026-11-25). Écouté avant tout le monde, et retenu jusqu'au relâché : il ne
   // déclenche pas en plus le bouton qui a le focus. Pas dans un champ de saisie (la négociation).
   const isSpace=event=>event.code==="Space"||event.key===" ";
-  const spaceFolds=event=>recruit.open&&isSpace(event)&&!event.target.matches?.("input,select,textarea")&&!event.ctrlKey&&!event.metaKey&&!event.altKey;
+  const spaceFolds=event=>(recruit.open||talk.open&&talk.classList.contains("has-card"))&&isSpace(event)&&!event.target.matches?.("input,select,textarea")&&!event.ctrlKey&&!event.metaKey&&!event.altKey;
   document.addEventListener("keydown",event=>{
     if(!spaceFolds(event)) return;
     event.preventDefault();
-    if(!event.repeat) setRecruitFolded(!recruit.classList.contains("is-folded"));
+    if(event.repeat) return;
+    if(recruit.open) setRecruitFolded(!recruit.classList.contains("is-folded"));
+    else setTalkFolded(talk,!talk.classList.contains("is-folded"));
   },true);
   document.addEventListener("keyup",event=>{ if(spaceFolds(event)) event.preventDefault(); },true);
   recruit.addEventListener("close",()=>{

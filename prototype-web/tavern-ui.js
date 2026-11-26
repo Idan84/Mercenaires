@@ -366,6 +366,7 @@ function talkCaptain(){
   return company?.roster.find(m=>m.id===company.captainId)||game.captain||null;
 }
 function talkMini(person){
+  if(person?.miniHtml) return person.miniHtml;
   const src=person&&typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(person,"portrait"):null;
   const initials=person&&typeof avatarInitials==="function"?avatarInitials(person):"?";
   return `<span class="talk-mini" aria-hidden="true"><i>${esc(initials)}</i>${src?`<img src="${esc(src)}" alt="" decoding="async" onerror="this.remove()">`:""}</span>`;
@@ -644,13 +645,16 @@ function buyTavernDrink(kind){
   const count=c.company.roster.length; // capitaine compris ; effectif sous contrat actuel
   const cost=kind==="round"?count:1;
   if(c.company.gold<cost){
-    tavernLog("Pas assez d'or : "+cost+" PO nécessaires.","warn");
-    return;
+    const short="Pas assez d'or : "+cost+" PO nécessaires.";
+    tavernLog(short,"warn");
+    return short;
   }
   c.company.gold-=cost;
-  tavernLog(kind==="round"?"Tournée générale : "+cost+" PO pour "+count+" membres.":"Une bière : 1 PO.","gear");
+  const done=kind==="round"?"Tournée générale : "+cost+" PO pour "+count+" membres.":"Une bière : 1 PO.";
+  tavernLog(done,"gear");
   saveGame();
   renderTavern();
+  return done;
 }
 
 // Dialogue avec le tavernier (Idan, 2026-10-21 ; doc 14 §6 bis, 2026-11-19) : boire, payer sa tournée, ou lui poser
@@ -688,35 +692,61 @@ function tavernTalkLine(t){
   if(t.view==="what") return d.keeperLine("ask_what",{cout:adviceCost()},m);
   return d.keeperLine("greeting",{capitaine:captainFirstName()});
 }
+// La conversation (Idan, 2026-11-26 : « On fait une fenêtre ? » ; la boîte de dialogue de la charte) : les répliques du
+// tavernier en bulles, avec son portrait (celui qu'on avait : /media/video/Img_Tavern.jpg, son visage) ; nos questions en
+// bulles « Vous » ; ce qu'on fait (une bière, la tournée) en récit, le message du journal ; « The Black Anvil » en tête.
+const KEEPER_NAME="Le tavernier";
+const tavernKeeper={miniHtml:`<span class="talk-mini talk-mini--keeper" aria-hidden="true"><span class="talk-mini-keeper"></span></span>`};
+function tavernKeeperSays(t,text){ if(text) t.lines.push({who:"merc",name:KEEPER_NAME,text}); }
 function renderTavernTalk(){
   const t=game.tavernTalk;
   if(!t) return;
-  $("tavern-talk-line").textContent=`«\u00a0${t.line}\u00a0»`;
-  $("tavern-talk-options").innerHTML=tavernTalkOptions(t).map(o=>
-    `<li><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}>${esc(o.label)}</button></li>`).join("");
+  const log=$("tavern-talk-log");
+  log.innerHTML=renderTalkLines(t.lines,line=>line.who==="you"?talkCaptain():tavernKeeper,KEEPER_NAME);
+  log.scrollTop=log.scrollHeight;
+  requestAnimationFrame(()=>{ log.scrollTop=log.scrollHeight; });
+  const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`).replace(/ ([?!:;»])/g,"\u00a0$1");
+  $("tavern-talk-choices").innerHTML=`<ol class="talk-options">${tavernTalkOptions(t).map((o,i)=>
+    `<li><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}><span class="talk-num" aria-hidden="true">${i+1}</span><span class="talk-choice">${unbroken(o.label)}</span></button></li>`).join("")}</ol>`;
 }
 function openTavernTalk(){
-  game.tavernTalk={view:"main",candidateId:null};
+  game.tavernTalk={view:"main",candidateId:null,lines:[{who:"note",text:"The Black Anvil"}]};
   game.tavernTalk.line=tavernTalkLine(game.tavernTalk);
+  tavernKeeperSays(game.tavernTalk,game.tavernTalk.line);
   renderTavernTalk();
   $("tavern-talk-dialog").showModal();
 }
+// Un choix : nos paroles en bulle (les questions, l'usurier), nos actes en récit (la bière, la tournée) ; puis sa réponse.
 function tavernTalk(choice,arg){
   const t=game.tavernTalk;
   if(!t) return;
   if(choice==="leave"){ $("tavern-talk-dialog").close(); return; }
-  if(choice==="beer"||choice==="round"){ buyTavernDrink(choice); return; }
-  if(choice==="ask"){ askTavernAbout(arg); renderTavernTalk(); return; }
+  const said=tavernTalkOptions(t).find(o=>o.key===choice&&(o.arg==null||String(o.arg)===String(arg)))?.label;
+  if(choice==="beer"||choice==="round"){
+    const done=buyTavernDrink(choice);
+    if(done) t.lines.push({who:"note",text:done});
+    renderTavernTalk();
+    return;
+  }
+  if(choice==="ask"){
+    if(said) t.lines.push({who:"you",text:said});
+    askTavernAbout(arg);
+    tavernKeeperSays(t,t.line);
+    renderTavernTalk();
+    return;
+  }
   if((choice==="usurer"||choice==="usurer_pay")&&typeof usurerTavernChoice==="function"){
+    if(said) t.lines.push({who:"you",text:said});
     const line=usurerTavernChoice(choice);
-    if(line) t.line=line;
+    if(line){ t.line=line; tavernKeeperSays(t,line); }
     renderTavernTalk();
     return;
   }
   if(choice==="advice") t.view="who";
   if(choice==="who"){ t.candidateId=Number(arg); t.view="what"; }
-  if(choice==="back") t.view={what:"who",who:"main"}[t.view]||"main";
+  if(choice==="back"){ t.view={what:"who",who:"main"}[t.view]||"main"; renderTavernTalk(); return; }
   t.line=tavernTalkLine(t);
+  tavernKeeperSays(t,t.line);
   renderTavernTalk();
 }
 // Sa réponse (doc 14 §7) : le titre recalculé sur ses estimations des capacités du candidat (±10 % chacune), ou son

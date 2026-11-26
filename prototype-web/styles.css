@@ -1492,6 +1492,14 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv-fold:focus-visible{outline:none}
 .conv-fold:active{transform:translateY(2px)}
 @media (prefers-reduced-motion:reduce){.talk-dialog--fiche>.recruit-talk-box{transition:none}}
+/* Le tavernier (Idan, 2026-11-26 : la boîte de la charte, « Parfait ») : seule, à gauche, à la même marge que la boîte des
+   candidats ; un voile léger, sans flou, pour que le tavernier reste visible à droite dans le décor. */
+.talk-dialog--keeper::backdrop{background:rgba(0,0,0,.35);backdrop-filter:none;-webkit-backdrop-filter:none}
+.talk-dialog--keeper>.keeper-talk-box{left:calc(var(--talk-marge) - 10px);right:auto;width:900px;transition:none}
+/* Son portrait (Idan : « On doit déjà avoir un portrait, c'est suffisant ») : son visage dans /media/video/Img_Tavern.jpg
+   (1600 × 893 : le carré de 150 px en 1250, 246), taillé comme les autres vignettes. */
+.talk-mini-keeper{position:absolute;inset:0;z-index:1;background:url("/media/video/Img_Tavern.jpg") 86.2% 33.1%/1066.67% auto no-repeat;
+  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px)}
 .recruit-talk-box .talk-head{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 /* La boîte de dialogue (Idan, 2026-11-24, d'après la maquette de Chatty : « Commence une vraie mise en page », avec les
    éléments existants) : un cadre sombre aux coins du menu ; en haut, la conversation sur le parchemin d'Idan (elle seule
@@ -1613,7 +1621,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    plus foncée et moins floue qui part des coins du bas et monte en s'amincissant jusqu'aux coins du haut (deux bandes
    étroites, inclinées, dont seule l'ombre dépasse), plus forte à droite. « On écrit pas en italique ». */
 .conv .talk-note{padding:0 18px;color:#64492e;font:italic 500 18px/1.4 "EB Garamond",Georgia,serif}
-.conv>#recruit-talk-choices{flex:none}
+.conv>#recruit-talk-choices,.conv>#tavern-talk-choices{flex:none}
 /* Les choix (Idan, 2026-11-25 : « 3 colonnes de 3 boutons (9 au total)… les boutons rouges d'avant… grossir et graisser le
    texte ») : le bouton d'Idan de la création du capitaine (assets/creation/bouton.webp : coins jamais déformés ; l'image
    déborde de ses marges transparentes pour que le bouton visible remplisse sa case), ses états (survol plus lumineux, appui
@@ -1640,10 +1648,10 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    intérieurs sont sur ::before, découpé ; l'ombre portée est sur ::after, une forme aux mêmes angles coupés (dégradés aux
    coins) floutée et décalée vers le bas à droite, pour qu'elle suive les angles ; elle est évidée sous le plateau (comme
    une ombre portée), pour ne pas assombrir le cuir vu à travers. */
-.conv #recruit-talk-choices{position:relative;z-index:0;padding:11px 7.5px 4px}
-.conv #recruit-talk-choices::before,.conv #recruit-talk-choices::after{content:"";position:absolute;inset:0;pointer-events:none}
-.conv #recruit-talk-choices::before{z-index:-1;background:rgba(12,6,2,.4);box-shadow:inset 12px 12px 30px -10px rgba(255,228,168,.2),inset -12px -12px 30px -10px rgba(0,0,0,.42);clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px)}
-.conv #recruit-talk-choices::after{z-index:-2;background:linear-gradient(135deg,transparent 11px,#000 0) top left,linear-gradient(225deg,transparent 11px,#000 0) top right,linear-gradient(315deg,transparent 11px,#000 0) bottom right,linear-gradient(45deg,transparent 11px,#000 0) bottom left;background-size:51% 51%;background-repeat:no-repeat;opacity:.62;filter:blur(15px);transform:translate(6px,12px);clip-path:polygon(evenodd,-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) calc(100% + 80px),-80px calc(100% + 80px),-80px -80px,5px -12px,calc(100% - 17px) -12px,calc(100% - 6px) -1px,calc(100% - 6px) calc(100% - 23px),calc(100% - 17px) calc(100% - 12px),5px calc(100% - 12px),-6px calc(100% - 23px),-6px -1px,5px -12px,-80px -80px)}
+.conv #recruit-talk-choices,.conv #tavern-talk-choices{position:relative;z-index:0;padding:11px 7.5px 4px}
+.conv #recruit-talk-choices::before,.conv #recruit-talk-choices::after,.conv #tavern-talk-choices::before,.conv #tavern-talk-choices::after{content:"";position:absolute;inset:0;pointer-events:none}
+.conv #recruit-talk-choices::before,.conv #tavern-talk-choices::before{z-index:-1;background:rgba(12,6,2,.4);box-shadow:inset 12px 12px 30px -10px rgba(255,228,168,.2),inset -12px -12px 30px -10px rgba(0,0,0,.42);clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px)}
+.conv #recruit-talk-choices::after,.conv #tavern-talk-choices::after{z-index:-2;background:linear-gradient(135deg,transparent 11px,#000 0) top left,linear-gradient(225deg,transparent 11px,#000 0) top right,linear-gradient(315deg,transparent 11px,#000 0) bottom right,linear-gradient(45deg,transparent 11px,#000 0) bottom left;background-size:51% 51%;background-repeat:no-repeat;opacity:.62;filter:blur(15px);transform:translate(6px,12px);clip-path:polygon(evenodd,-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) calc(100% + 80px),-80px calc(100% + 80px),-80px -80px,5px -12px,calc(100% - 17px) -12px,calc(100% - 6px) -1px,calc(100% - 6px) calc(100% - 23px),calc(100% - 17px) calc(100% - 12px),5px calc(100% - 12px),-6px calc(100% - 23px),-6px -1px,5px -12px,-80px -80px)}
 .conv .talk-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:64px;grid-auto-flow:row;gap:19px 12px;padding:16px 6px 12px}
 .conv .talk-options li{display:flex;min-width:0}
 .conv .talk-options button{position:relative;isolation:isolate;flex:1;display:flex;align-items:center;justify-content:center;min-width:0;height:100%;padding:2px 30px 4px;border:0;border-radius:0;background:transparent;color:#f0d395;font:700 18px/1.12 "EB Garamond",Georgia,serif;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.85);transition:color .12s,transform .12s}

@@ -31,7 +31,42 @@ assert.deepEqual(calls,[["scene","tavern"],["talk"]]);
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
-assert.match(talk,/<ol id="tavern-talk-options" class="talk-options"><\/ol>/,"réponses écrites par tavern-ui.js");
+// La boîte de dialogue de la charte (Idan, 2026-11-26 : « On fait une fenêtre ? » ; « Parfait ») : seule, à gauche ;
+// la conversation sur le parchemin, les réponses en dessous (écrites par tavern-ui.js) ; « The Black Anvil » gardé.
+assert.match(talk,/<dialog id="tavern-talk-dialog" class="talk-dialog talk-dialog--fiche talk-dialog--keeper"/);
+assert.match(talk,/<div class="recruit-talk-box keeper-talk-box conv">[\s\S]*<p class="eyebrow">The Black Anvil<\/p>[\s\S]*<div class="conv-page"><div id="tavern-talk-log" class="talk-log" aria-live="polite"><\/div><\/div>\s*<div id="tavern-talk-choices"><\/div>/);
+assert.match(talk,/<button type="button" class="conv-close" data-talk="leave"/,"la croix ferme");
+assert.match(css,/\.talk-dialog--keeper::backdrop\{background:rgba\(0,0,0,\.35\);backdrop-filter:none/,"le tavernier reste visible");
+assert.match(css,/\.talk-dialog--keeper>\.keeper-talk-box\{left:calc\(var\(--talk-marge\) - 10px\);right:auto;width:900px/,"à gauche");
+assert.match(css,/\.talk-mini-keeper\{[^}]*url\("\/media\/video\/Img_Tavern\.jpg"\)/,"son portrait d'avant");
+// La conversation : sa réplique d'accueil sous « The Black Anvil » ; la bière en récit (le message du journal) ; une
+// question en bulle « Vous », puis sa réponse.
+{
+  const els={},el=id=>els[id]||(els[id]={innerHTML:"",scrollTop:0,scrollHeight:0,showModal(){this.open=true;},close(){this.open=false;}});
+  const lines=[];
+  const conv=new Function("game","$","esc","renderTalkLines","talkCaptain","tavernTalkOptions","tavernTalkLine","buyTavernDrink","askTavernAbout","usurerTavernChoice","requestAnimationFrame",
+    js.slice(js.indexOf("const KEEPER_NAME="),js.indexOf("// Sa réponse (doc 14 §7)"))+"return {openTavernTalk,tavernTalk};");
+  const g={};
+  const api=conv(g,el,x=>String(x),(ls)=>{ lines.splice(0,lines.length,...ls); return ""; },()=>({name:"Cap"}),
+    t=>t.view==="what"?[{key:"ask",arg:"title",label:"Qu’est-ce qu’on dit d’elle ?"},{key:"back",label:"Retour"}]:t.view==="who"?[{key:"who",arg:7,label:"Inga"},{key:"back",label:"Retour"}]:[{key:"beer",label:"Boire une bière (1 PO)"},{key:"advice",label:"Demander des conseils"},{key:"leave",label:"Partir"}],
+    t=>t.view==="who"?"Qui donc ?":t.view==="what"?"Que veux-tu savoir ?":"Salut !",
+    ()=>"Une bière : 1 PO.",kind=>{ g.tavernTalk.line="On l’appelle la Tueuse."; },null,()=>{});
+  api.openTavernTalk();
+  assert.deepEqual(lines.map(l=>[l.who,l.text]),[["note","The Black Anvil"],["merc","Salut !"]]);
+  assert.equal(lines[1].name,"Le tavernier");
+  api.tavernTalk("beer");
+  assert.deepEqual(lines.at(-1),{who:"note",text:"Une bière : 1 PO."},"la bière, en récit");
+  api.tavernTalk("advice");
+  assert.deepEqual(lines.at(-1),{who:"merc",name:"Le tavernier",text:"Qui donc ?"});
+  api.tavernTalk("who","7");
+  api.tavernTalk("ask","title");
+  assert.deepEqual(lines.slice(-2).map(l=>[l.who,l.text]),[["you","Qu’est-ce qu’on dit d’elle ?"],["merc","On l’appelle la Tueuse."]],"la question en bulle, puis sa réponse");
+  const before=lines.length;
+  api.tavernTalk("back");
+  assert.equal(lines.length,before,"Retour : on change de choix, sans rien dire");
+  api.tavernTalk("leave");
+  assert.equal(els["tavern-talk-dialog"].open,false);
+}
 // Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ? et ses deux
 // questions (doc 14 §6 bis : son titre, son affinité), avec un retour à chaque étape.
 const dialogueCopy=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-dialogue.json"),"utf8"));

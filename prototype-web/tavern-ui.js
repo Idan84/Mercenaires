@@ -540,11 +540,15 @@ function finishRecruitment(){
   const result=campaignRules().signCandidate(game.campaign,t.id);
   if(result.ok){
     result.mercenary.role="Recrue";
-    t.lines.push({who:"merc",text:d.line("accepted",m,{compagnie:companyPhrase()})});
+    const said=d.line("accepted",m,{compagnie:companyPhrase()});
+    t.lines.push({who:"merc",text:said});
     t.mode="ended";
     tavernLog(m.name+" signe et rejoint la compagnie.","turn");
     saveGame();
     renderGame();
+    // Le pop-up de bienvenue (Idan, 2026-11-26) : dès la signature ; sa réplique passe dans le pop-up.
+    openRecruitWelcome(result.mercenary,said);
+    return;
   }else{
     // Dortoir plein (un ogre a besoin de deux places).
     if(result.dormFull) t.lines.push({who:"merc",text:d.line(result.places>1?"dorm_full_ogre":"dorm_full",m)},
@@ -554,6 +558,27 @@ function finishRecruitment(){
     saveGame();
   }
   renderRecruitTalk();
+}
+
+// Le pop-up de bienvenue (Idan, 2026-11-26 : « Après avoir signé le mercenaire, un pop up apparaît » ; hover-card-ui.js,
+// renderWelcomeCard) : la discussion se ferme, le pop-up s'ouvre sur le même fond noir flou. Dessous, trois boutons :
+// continuer le recrutement (les candidats), aller boire un verre (la salle de la Taverne : « Salle de la Taverne »), retour
+// au camp. Échap le ferme comme « Continuer le recrutement ».
+function openRecruitWelcome(m,said){
+  const contract=m.contract||{};
+  const host=$("recruit-welcome-card");
+  host.innerHTML=renderWelcomeCard(m,{line:said,join:recruitDialogue().line("welcome",m),
+    salary:Number(contract.dailySalary)||0,bonus:Number(contract.missionBonus)||0});
+  const card=host.querySelector(".hover-card");
+  if(card&&typeof fitHoverCard==="function") requestAnimationFrame(()=>fitHoverCard(card));
+  $("recruit-talk-dialog").close();
+  $("recruit-welcome-dialog").showModal();
+}
+function recruitWelcomeChoice(key){
+  $("recruit-welcome-dialog").close();
+  if(key==="drink") showTavernView("home");
+  else if(key==="camp"&&typeof openCampScene==="function") openCampScene("home");
+  else showTavernView("recruits");
 }
 
 // Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
@@ -751,5 +776,9 @@ function initializeTavernUi(){
     clearTimeout(game.recruitTalk?.closeTimer);
     game.recruitTalk=null;
     renderTavern();
+  });
+  $("recruit-welcome-dialog").addEventListener("click",event=>{
+    const button=event.target.closest("[data-welcome]");
+    if(button) recruitWelcomeChoice(button.dataset.welcome);
   });
 }

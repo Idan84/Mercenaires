@@ -187,6 +187,9 @@
     "accepted": [
       "Parfait. {Ravi|Ravie} de faire partie de {compagnie}."
     ],
+    "welcome": [
+      "{prenom} fait maintenant partie de votre compagnie"
+    ],
     "floor": [
       "Vous m’offriez déjà {salaire} et {prime} tout à l’heure. Vous me prenez pour {un idiot|une idiote} ?"
     ],

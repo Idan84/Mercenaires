@@ -83,3 +83,8 @@
 .hc-emblem{display:block;line-height:0}
 .hc-emblem .picto{display:block;width:48px;height:48px;margin:0;object-fit:contain;filter:drop-shadow(var(--ombre-picto))}
 .hc-origin{margin:0;max-width:100%;text-align:center;text-wrap:balance;font:700 20px/1.15 var(--police-texte);color:var(--hc-culture,var(--encre));text-shadow:var(--ombre-phrase-origine)}
+.hover-card--popup{width:var(--hc-popup-w);height:var(--hc-popup-h)}
+.hover-card--popup .hc-portrait{left:calc(var(--hc-w) * .012);top:calc(var(--hc-h) * .015);bottom:calc(var(--hc-h) * .015);width:calc(var(--hc-w) * .34 + var(--hc-popup-dx));height:auto}
+.hover-card--popup :is(.hc-banner,.hc-page){left:calc(var(--hc-w) * .362 + var(--hc-popup-dx));right:calc(var(--hc-w) * .012)}
+.hover-card--popup .hc-banner{top:calc(var(--hc-h) * .015);height:var(--hc-cart-h);padding:0 calc(var(--hc-w) * .04)}
+.hover-card--popup .hc-page{top:calc(var(--hc-h) * .1725);bottom:calc(var(--hc-h) * .015);padding:14px 40px 16px}

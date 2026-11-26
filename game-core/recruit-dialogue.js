@@ -100,7 +100,8 @@
       return say(copy.answers?.[kind],m,kind,vars);
     }
 
-    // Répliques : salary, offer, sign, counter, left, accepted, floor, dorm_full, dorm_full_ogre, dorm_full_note.
+    // Répliques : salary, offer, sign, counter, left, accepted, floor, dorm_full, dorm_full_ogre, dorm_full_note ; welcome, la
+    // phrase d'accueil du pop-up après la signature (Idan, 2026-11-26).
     // seed permet de varier la contre-proposition d'un tour de négociation à l'autre.
     function line(kind,m,vars={},seed=0){
       return say(copy.lines?.[kind],m,kind+"|"+seed,vars);

@@ -7,7 +7,7 @@
   <!-- Les polices de la charte (création du capitaine) : Cinzel pour les titres courts, EB Garamond pour le texte. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Yellowtail&family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="pictos.css" />
 </head>
@@ -260,10 +260,8 @@
             <button type="button" class="mission-board-arrow mission-board-arrow--next" data-board-page="1" aria-label="Annonces suivantes"></button>
           </div>
         </section>
-        <!-- La Cantine (Idan, 2026-11-08) : une salle de la Taverne, le tavernier cuisine (canteen-ui.js). -->
-        <section id="tavern-canteen-view" class="panel tavern-panel hidden">
-          <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
-          <h2>La Cantine</h2>
+        <!-- La Cantine (Idan, 2026-11-08) : une salle de la Taverne, le tavernier cuisine (canteen-ui.js) ; pas de bouton retour ni de titre (Idan, 2026-11-26 : « Retire tout le blabla actuel ») : la barre du bas ramène à la taverne. -->
+        <section id="tavern-canteen-view" class="panel tavern-panel hidden" aria-label="La Cantine">
           <div id="tavern-canteen" class="tavern-canteen"></div>
         </section>
         <!-- La Cave (Idan, 2026-11-10) : la bagarre du soir et les paris (cellar-ui.js). -->

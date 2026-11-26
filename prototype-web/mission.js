@@ -1076,7 +1076,7 @@ function missionChoicePage(count,size,page){
   const pages=Math.max(1,Math.ceil(count/Math.max(1,size)));
   return {page:Math.max(0,Math.min(Number.isFinite(page)?page:pages-1,pages-1)),pages};
 }
-// Les flèches, comme celles du panneau : cachées s'il n'y a qu'une page, grisées au début et à la fin.
+// Les flèches, comme celles du panneau : cachées s'il n'y a qu'une page, effacées (disabled) au début et à la fin.
 function missionPageArrows(scope,page,pages){
   for(const [dir,off] of [["up",page<=0],["down",page>=pages-1]]){
     const arrow=document.querySelector(`${scope} > .mission-scroll--${dir}`);

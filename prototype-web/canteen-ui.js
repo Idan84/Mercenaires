@@ -1,16 +1,53 @@
 "use strict";
 
 // La Cantine (Idan, 2026-11-08 ; règles : game-core/canteen.js) : une salle de la Taverne, où le tavernier cuisine. L'écran
-// « La Cantine » de la Taverne : construire ou améliorer la salle (comme un bâtiment du camp), choisir le plat du jour parmi
-// les plats débloqués, goûter le nouveau plat que propose le tavernier (son effet n'est connu qu'une fois goûté).
+// « La Cantine » de la Taverne : le plat du jour sur un parchemin, en changer parmi les plats débloqués, goûter le nouveau
+// plat que propose le tavernier (son effet n'est connu qu'une fois goûté). La salle se construit et s'améliore dans la
+// fenêtre Construction.
 function canteenRulesOf(){ return typeof campaignRules==="function"?campaignRules().canteenRules||null:null; }
 
 // « augmente la Force », « l’Endurance », « le Courage ».
 function canteenEffect(stat){
   return "augmente "+(/^[AEIOUÉ]/.test(stat)?"l’":stat==="Courage"?"le ":"la ")+stat;
 }
-function canteenDishLabel(dish,xp){
-  return `${dish.nom} — ${canteenEffect(dish.caracteristique)}${xp?` (+${fmt(xp)} XP par jour)`:""}`;
+
+// Le fond de l'écran (Idan, 2026-11-26 : « 10 backgrounds à mettre en plein écran (sous la barre de jeu). L'image à
+// mettre dépend du niveau de la cantine ») : celle de son niveau, de 1 à 10 (scripts/build-canteen-bg.js) ; plein écran,
+// sous les barres (styles.css, #tavern-canteen-view::before).
+const CANTEEN_BG_DIR="assets/cantine/";
+function canteenBackground(level,levels=10){
+  return `${CANTEEN_BG_DIR}cantine-${Math.max(1,Math.min(levels,Math.round(Number(level)||1)))}.webp`;
+}
+function setCanteenBackground(level,levels){
+  const view=$("tavern-canteen-view"),src=canteenBackground(level,levels);
+  const url=typeof document!=="undefined"&&document.baseURI?new URL(src,document.baseURI).href:src;
+  view?.style?.setProperty("--canteen-bg",`url("${url}")`);
+}
+
+// L'écran (Idan, 2026-11-26 : « Retire tout le blabla actuel. On met un petit parchemin […] Au menu ; titre du plat ; image
+// du plat dans un cadre doré ; phrase explicative du plat (pas une phrase qui dit ce plat vous donne +40 xp par jour) ; en
+// dessous, un bouton capitaine : changer le menu, uniquement si un autre plat est dispo ») : le parchemin de la charte, le
+// plat du jour (canteen-dishes.json : nom, image, phrase), le cadre carré or du kit. Changer le menu (Idan : « le clic
+// transforme le bouton en Certain de manger ça ? et des flèches apparaissent à gauche et à droite de l'icône du plat. On
+// fait tourner et on peut valider ») : les flèches font tourner les plats disponibles (les plats goûtés, puis celui que
+// propose le tavernier, avec sa vraie phrase : Idan, « Non, mets la vraie phrase ») ; « Certain de manger ça ? » met au menu le plat montré
+// (celui du tavernier : il est goûté, son effet est alors connu ; game-core/canteen.js). Le niveau et l'amélioration de
+// la salle sont dans la fenêtre Construction.
+let canteenBrowse=null; // pendant le choix : l'index du plat montré dans canteenChoices ; null sinon
+// Les plats qu'on peut mettre au menu : les plats goûtés, puis celui que propose le tavernier.
+function canteenChoices(state,offer){ return [...state.dishes,...(offer&&!state.dishes.includes(offer.code)?[offer.code]:[])]; }
+function canteenMenuHtml(dish,{change=false,browsing=false}={}){
+  const arrow=(dir,label)=>browsing?`<button type="button" class="canteen-arrow canteen-arrow--${dir>0?"next":"prev"}" data-canteen-turn="${dir}" aria-label="${label}"></button>`:"";
+  const button=browsing
+    ?`<button type="button" class="mission-btn canteen-change" data-canteen-confirm>Certain de manger ça ?</button>`
+    :change?`<button type="button" class="mission-btn canteen-change" data-canteen-change>Changer le menu</button>`:"";
+  return `<article class="canteen-menu${browsing?" is-choosing":""}">
+      <p class="canteen-menu-kicker">Au menu</p>
+      <h2 class="canteen-dish-name">${esc(dish.nom)}</h2>
+      <div class="canteen-dish-row">${arrow(-1,"Plat précédent")}<figure class="canteen-dish-img"><img src="${esc(dish.image||"")}" alt="${esc(dish.nom)}"></figure>${arrow(1,"Plat suivant")}</div>
+      <p class="canteen-dish-phrase">${esc(dish.phrase||"")}</p>
+      ${button}
+    </article>`;
 }
 
 function renderCanteen(){
@@ -18,27 +55,44 @@ function renderCanteen(){
   if(!box) return;
   if(!c||!canteen){ box.innerHTML=""; return; }
   const rules=campaignRules(),row=rules.campBuildingRow(canteen.HALL),level=rules.buildingLevel(c,canteen.HALL);
-  const action=typeof campBuildingAction==="function"?campBuildingAction(c,canteen.HALL,level):"";
-  const head=`<p class="building-info"><span>${level?`Niveau ${fmt(level)} · +${fmt(canteen.xpPerDay(c))} XP par jour pour chaque mercenaire au camp, blessés et fatigués compris`:"À construire"}</span></p>
-    <div class="building-actions">${action}</div>`;
-  if(!level){
-    box.innerHTML=`<p class="tavern-canteen-intro">${esc(row?.description||"")}</p>${head}`;
-    return;
-  }
-  const state=canteen.canteenOf(c),xp=canteen.xpPerDay(c);
-  const option=code=>{ const dish=canteen.dish(code); return dish?`<option value="${esc(code)}"${code===state.current?" selected":""}>${esc(canteenDishLabel(dish,xp))}</option>`:""; };
-  const offer=canteen.offer(c);
-  const locked=canteen.lockedDishes(c).length;
-  const proposal=offer
-    ?`<div class="building-action"><button type="button" class="primary" data-canteen-taste>Goûter : ${esc(offer.nom)}</button>
-      <span class="building-cost">Le tavernier propose un nouveau plat. Gratuit ; on ne sait ce qu’il fait qu’une fois goûté.</span></div>`
-    :`<p class="building-work">${locked?`Le tavernier proposera un nouveau plat au prochain niveau du Labo d’alchimie (${fmt(locked)} encore inconnu${locked>1?"s":""}).`:"Tous les plats sont au menu."}</p>`;
-  box.innerHTML=`${head}
-    <label class="tavern-canteen-dish">Plat du jour <select data-canteen-dish>${state.dishes.map(option).join("")}</select></label>
-    ${proposal}`;
+  setCanteenBackground(level,row?.niveaux||10);
+  const state=level?canteen.canteenOf(c):null,current=state?canteen.dish(state.current):null;
+  if(!current){ canteenBrowse=null; box.innerHTML=""; return; }
+  const offer=canteen.offer(c),choices=canteenChoices(state,offer);
+  // « Uniquement si un autre plat est dispo » : un autre plat goûté, ou celui que propose le tavernier.
+  if(choices.length<2) canteenBrowse=null;
+  if(canteenBrowse==null){ box.innerHTML=canteenMenuHtml(current,{change:choices.length>1}); return; }
+  const code=choices[(canteenBrowse%choices.length+choices.length)%choices.length];
+  box.innerHTML=canteenMenuHtml(canteen.dish(code),{browsing:true});
+}
+
+// Le clic sur « Changer le menu » : le choix commence sur le plat du jour (open = false : il se referme).
+function openCanteenChoice(open=true){
+  const c=game.campaign,canteen=canteenRulesOf(),state=open&&c&&canteen?canteen.canteenOf(c):null;
+  canteenBrowse=state?Math.max(0,canteenChoices(state,canteen.offer(c)).indexOf(state.current)):null;
+  renderCanteen();
+}
+// Les flèches : le plat d'avant ou d'après, en tournant.
+function turnCanteenDish(dir){
+  const c=game.campaign,canteen=canteenRulesOf(),state=c&&canteen?canteen.canteenOf(c):null;
+  if(canteenBrowse==null||!state) return;
+  const n=canteenChoices(state,canteen.offer(c)).length;
+  canteenBrowse=((canteenBrowse+Math.sign(dir))%n+n)%n;
+  renderCanteen();
+}
+// « Certain de manger ça ? » : le plat montré passe au menu (celui du tavernier est goûté).
+function confirmCanteenDish(){
+  const c=game.campaign,canteen=canteenRulesOf(),state=c&&canteen?canteen.canteenOf(c):null;
+  if(canteenBrowse==null||!state) return;
+  const offer=canteen.offer(c),choices=canteenChoices(state,offer),code=choices[canteenBrowse];
+  if(offer&&code===offer.code) tasteCanteenDish();
+  else chooseCanteenDish(code);
 }
 
 function chooseCanteenDish(code){
+  canteenBrowse=null;
+  // Le plat déjà au menu : on referme le choix, sans rien changer.
+  if(code===game.campaign?.company?.canteen?.current){ renderCanteen(); return; }
   const result=canteenRulesOf()?.setDish(game.campaign,code);
   if(!result) return;
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCanteen(); return; }
@@ -47,11 +101,14 @@ function chooseCanteenDish(code){
   renderGame();
 }
 
+// Le plat que propose le tavernier : on le goûte (gratuit, son effet est connu) et il passe au menu.
 function tasteCanteenDish(){
-  const result=canteenRulesOf()?.unlock(game.campaign);
+  const canteen=canteenRulesOf(),result=canteen?.unlock(game.campaign);
+  canteenBrowse=null;
   if(!result) return;
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCanteen(); return; }
   tavernLog(`Le tavernier fait goûter un nouveau plat : ${result.dish.nom}. Il ${canteenEffect(result.dish.caracteristique)}.`,"gear");
+  canteen.setDish(game.campaign,result.dish.code);
   saveGame();
   renderGame();
 }
@@ -65,10 +122,11 @@ function logCanteen(report){
 
 function initializeCanteenUi(){
   document.addEventListener("click",event=>{
-    if(event.target.closest("[data-canteen-taste]")) tasteCanteenDish();
-  });
-  document.addEventListener("change",event=>{
-    const select=event.target.closest?.("[data-canteen-dish]");
-    if(select) chooseCanteenDish(select.value);
+    if(event.target.closest("[data-canteen-change]")) openCanteenChoice(true);
+    else if(event.target.closest("[data-canteen-confirm]")) confirmCanteenDish();
+    else{
+      const turn=event.target.closest("[data-canteen-turn]");
+      if(turn) turnCanteenDish(Number(turn.dataset.canteenTurn));
+    }
   });
 }

@@ -1295,6 +1295,51 @@ body[data-screen="camp"] .tavern-scene{display:block;opacity:0;visibility:hidden
 body[data-screen="camp"][data-camp-scene="tavern"] .tavern-scene{opacity:1;visibility:visible;transition:opacity .36s ease-in-out,visibility 0s}
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-zones{display:block}
 .tavern-layer.is-hover{filter:url(#tavern-glow)}
+/* La Cantine (Idan, 2026-11-26 : « 10 backgrounds à mettre en plein écran (sous la barre de jeu). L'image à mettre dépend
+   du niveau de la cantine ») : le fond de son niveau (assets/cantine/cantine-<niveau>.webp, posé par canteen-ui.js), en
+   plein écran, par-dessus le décor de la taverne et sous les barres ; le contenu de l'écran passe au-dessus. */
+#tavern-canteen-view::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var(--canteen-bg,url("assets/cantine/cantine-1.webp")) center/cover no-repeat}
+#tavern-canteen-view>*{position:relative;z-index:1}
+/* L'écran (Idan, 2026-11-26 : « Retire tout le blabla actuel. On met un petit parchemin ») : pas de cadre de panneau ; le
+   parchemin du menu à gauche, entre les barres (le tavernier est à droite sur les fonds). Le parchemin de la charte
+   (creation/parchemin.webp, comme Recruter), une légère ombre portée ; « Au menu », le nom du plat, son image dans le cadre
+   carré or du kit (kit/cadres/cadre-carre.webp : l'ouverture fait 86 % du cadre, coins coupés à 10,5 %), sa phrase, et le
+   bouton capitaine (.mission-btn) « Changer le menu ». Le parchemin est calé en haut, le nom et la phrase ont chacun deux
+   lignes réservées : en faisant tourner les plats, rien ne bouge. */
+#tavern-canteen-view{position:fixed;inset:0;display:flex;align-items:flex-start;margin:0;padding:calc(var(--hud-top-z) + 70px) 0 var(--hud-bottom-z) calc(9 * var(--vw));
+  background:none;border:0;border-radius:0;box-shadow:none;pointer-events:none}
+#tavern-canteen-view .tavern-canteen{pointer-events:auto}
+.canteen-menu{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
+  box-sizing:border-box;width:500px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;
+  border-style:solid;border-width:62px;border-image:url("assets/creation/parchemin.webp") 180 fill / 62px stretch;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.45));color:var(--encre)}
+/* « Au menu » (Idan, 2026-11-26 : « une police un peu manuscrite façon brasserie parisienne ») : Yellowtail (Google Fonts).
+   La Parisienne, plus grosse, ton sur ton et penchée a été essayée, puis écartée (Idan : « Reste sur la police d'avant
+   comme tu avais fait, c'était mieux ! »). */
+.canteen-menu-kicker{margin:0;font:400 46px/1.05 "Yellowtail",cursive;color:#5a2a18}
+#tavern-canteen-view .canteen-dish-name{display:flex;align-items:center;justify-content:center;min-height:2.3em;margin:8px 0 14px;font:700 27px/1.15 var(--police-titre);color:var(--encre);text-shadow:none;text-wrap:balance}
+.canteen-dish-row{display:flex;align-items:center;justify-content:center;gap:8px}
+.canteen-dish-img{position:relative;flex:none;width:260px;aspect-ratio:596/600;margin:0}
+.canteen-dish-img img{position:absolute;left:6.6%;top:6.6%;width:86.8%;height:86.8%;object-fit:cover;
+  clip-path:polygon(10.5% 0,89.5% 0,100% 10.5%,100% 89.5%,89.5% 100%,10.5% 100%,0 89.5%,0 10.5%)}
+.canteen-dish-img::after{content:"";position:absolute;inset:0;background:url("assets/kit/cadres/cadre-carre.webp") center/100% 100% no-repeat;
+  filter:drop-shadow(0 3px 4px rgba(40,22,6,.45));pointer-events:none}
+/* Deux lignes réservées pour le nom comme pour la phrase (Idan, 2026-11-26 : « si un plat tient sur deux lignes, on a
+   anticipé et il y a la place pour deux lignes pour tous les plats. Idem pour la description ») : rien ne saute en
+   faisant tourner les plats. */
+.canteen-dish-phrase{display:flex;align-items:center;justify-content:center;min-height:2.7em;margin:16px 0 0;font:italic 20px/1.35 var(--police-texte);color:var(--encre);text-wrap:balance}
+.canteen-menu .canteen-change{margin-top:22px;min-width:250px;height:70px;font-size:16px}
+/* Changer le menu (Idan, 2026-11-26 : « des flèches apparaissent à gauche et à droite de l'icône du plat. On fait tourner et
+   on peut valider ») : les flèches du panneau des missions (kit, cadre or et velours rouge ; la gauche est la droite
+   retournée), en petit, de part et d'autre du cadre ; le bouton devient « Certain de manger ça ? ». */
+.canteen-arrow{all:unset;flex:none;width:44px;aspect-ratio:600/417;cursor:pointer;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));transition:filter .15s,translate .15s}
+.canteen-arrow--prev{transform:scaleX(-1)}
+.canteen-arrow:hover,.canteen-arrow:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 5px rgba(240,211,149,.6)) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.canteen-arrow--next:hover,.canteen-arrow--next:focus-visible{translate:3px 0}
+.canteen-arrow--prev:hover,.canteen-arrow--prev:focus-visible{translate:-3px 0}
+/* Une salle pas encore construite (la Cantine) : son calque, sa zone et son nom sont cachés ; le mur reste vide. */
+.tavern-layer.is-closed,.tavern-zone.is-closed,.tavern-label.is-closed{display:none}
 .tavern-zone{pointer-events:all;cursor:default;outline:none}
 .tavern-zones.is-pointer .tavern-zone{cursor:pointer}
 .tavern-zone polygon{fill:transparent;stroke:none}
@@ -1690,7 +1735,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    taille de l'écran d'un bloc (.recruit-carousel : zoom par --ui-scale, screen-ui.js). */
 #tavern-recruits-view{--board-w:1935.5px;
   --recruit-portrait-w:clamp(100px,calc((1080px - 364px - 81.6px * var(--bb-h) - 81.6px * var(--ht-barre) * (var(--ht-top) + 1.3)) * 9 / 16),280px);
-  --recruit-pad:50px;--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .088);
+  --recruit-pad:50px;--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .08);
   margin-top:-8px;margin-bottom:-48px}
 /* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
    à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
@@ -1728,13 +1773,13 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-track .recruit-card{flex:0 0 auto;translate:var(--recruit-shift,0px) 0;transition:translate .5s ease,opacity .4s ease}
 .recruit-track .recruit-card.is-off{opacity:0;visibility:hidden;pointer-events:none;transition:translate .5s ease,opacity .4s ease,visibility 0s .4s}
 .recruit-track .recruit-empty{flex:1}
-/* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), l'équerre de fer
-   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol comme
+/* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), la flèche du
+   kit cadre or et velours rouge à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol comme
    sur le panneau ; au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en
    grisée », sur le panneau des missions aussi) : elle garde sa place, la rangée ne bouge pas. */
-.recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:640/284;font-size:0;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+.recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:600/417;font-size:0;cursor:pointer;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;filter:drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8));transition:filter .15s,translate .15s}
 .recruit-nav[data-recruit-scroll="-1"]{transform:scaleX(-1)}
-.recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 calc(var(--board-w) * .005) rgba(240,211,149,.6)) drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8))}
 .recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
 .recruit-nav:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
@@ -2741,12 +2786,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-board-light::after{left:86%;top:22%;width:calc(var(--board-w) * .0013);animation-duration:34s;animation-delay:-12s}
 @keyframes bougie{0%,100%{opacity:1}18%{opacity:.86}24%{opacity:.97}47%{opacity:.9}61%{opacity:1}74%{opacity:.84}83%{opacity:.95}}
 @keyframes poussiere{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--board-w) * -.025),calc(var(--board-w) * -.03))}88%{opacity:1}100%{transform:translate(calc(var(--board-w) * -.05),calc(var(--board-w) * -.06));opacity:0}}
-/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre.
-   Au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en grisée »). */
-.mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .088);aspect-ratio:640/284;padding:0;border:0;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+/* Les flèches : la flèche du kit, cadre or et velours rouge (kit/boutons/fleche-rouge-droite.webp ; Idan, 2026-11-26 :
+   « nos trucs en fer ne sont pas assez lisibles », piste C, « grossit encore un peu les flèches »), sur le montant du
+   cadre ; la gauche est la même, retournée. Au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0.
+   Elle fait bizarre en grisée »). */
+.mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .08);aspect-ratio:600/417;padding:0;border:0;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8));transition:filter .15s,translate .15s}
 .mission-board-arrow--prev{left:14.2%;transform:translate(-50%,-50%) scaleX(-1)}
 .mission-board-arrow--next{left:85.8%}
-.mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 calc(var(--board-w) * .005) rgba(240,211,149,.6)) drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8))}
 .mission-board-arrow--next:hover,.mission-board-arrow--next:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .mission-board-arrow--prev:hover,.mission-board-arrow--prev:focus-visible{translate:calc(var(--board-w) * -.003) 0}
 .mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
@@ -3061,19 +3108,21 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-tabs-menu .mission-tab::after{display:none}
 .mission-tabs-menu .mission-tab:hover,.mission-tabs-menu .mission-tab[aria-pressed="true"]{background:rgba(122,31,28,.09)}
 /* La galerie : des pages de cartes entières (la grille, --cols × --card, est calculée par mission.js), qu'on tourne avec
-   les flèches de fer de sa marge droite ; jamais de défilement. */
+   les flèches de sa marge droite ; jamais de défilement. */
 .mission-roster-frame{position:relative;flex:1 1 auto;min-height:0;display:flex}
 .mission-roster{flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:repeat(var(--cols,5),var(--card,180px));justify-content:center;align-content:start;gap:18px 14px;box-sizing:border-box;padding:10px 52px 12px 6px}
 .mission-pick.is-off-page{display:none}
-/* La flèche du haut est celle du bas retournée (comme celles du panneau) : les deux sur le même axe. */
-.mission-scroll{all:unset;position:absolute;right:-22px;z-index:4;width:84px;height:38px;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(0 3px 3px rgba(0,0,0,.55));transition:filter .15s,translate .15s}
-.mission-scroll--down{top:calc(50% + 33px);transform:rotate(90deg)}
-.mission-scroll--up{top:calc(50% - 71px);transform:rotate(90deg) scaleX(-1)}
+/* Les flèches du panneau des missions (kit/boutons/fleche-rouge-droite.webp ; Idan, 2026-11-26 : « C réduite, pas de
+   flèche grisée, on la vire »), un peu plus petites (elles sont deux l'une sur l'autre) : celle du haut est celle du bas
+   retournée, sur le même axe ; au bout, elle s'efface. */
+.mission-scroll{all:unset;position:absolute;right:-36px;z-index:4;width:84px;aspect-ratio:600/417;cursor:pointer;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;filter:drop-shadow(0 2px 3px rgba(0,0,0,.8));transition:filter .15s,translate .15s}
+.mission-scroll--down{top:calc(50% + 21px);transform:rotate(90deg)}
+.mission-scroll--up{top:calc(50% - 79px);transform:rotate(90deg) scaleX(-1)}
 .mission-scroll[hidden]{display:none}
-.mission-scroll:hover,.mission-scroll:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 5px rgba(240,211,149,.55)) drop-shadow(0 3px 3px rgba(0,0,0,.55))}
+.mission-scroll:hover,.mission-scroll:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 5px rgba(240,211,149,.6)) drop-shadow(0 2px 3px rgba(0,0,0,.8))}
 .mission-scroll--down:hover{translate:0 3px}
 .mission-scroll--up:hover{translate:0 -3px}
-.mission-scroll:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(0 3px 3px rgba(0,0,0,.55))}
+.mission-scroll:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
 /* Une carte : le portrait (le « + », le cachet quand il est choisi), le nom (la fiche), les étoiles, l'état. */
 .mission-pick{position:relative;cursor:pointer;display:grid;justify-items:center;align-content:start;gap:4px;text-align:center}
 .mission-pick[hidden]{display:none}

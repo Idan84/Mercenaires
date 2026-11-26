@@ -276,7 +276,9 @@ function toggleHudJournal(open=$("hud-journal").hidden){
 // bougent pas.
 function hudContextItems(scene){
   if(scene!=="tavern"||typeof TAVERN_ZONES==="undefined"||typeof TAVERN_MENU==="undefined") return [];
-  return TAVERN_MENU.map(key=>TAVERN_ZONES.find(z=>z.key===key)).filter(Boolean).map(z=>({key:z.key,label:z.label}));
+  // Une salle pas encore construite (la Cantine) n'y est pas, comme sur le décor (tavern-scene-ui.js, tavernZoneOpen).
+  const open=typeof tavernZoneOpen==="function"?tavernZoneOpen:()=>true;
+  return TAVERN_MENU.map(key=>TAVERN_ZONES.find(z=>z.key===key)).filter(z=>z&&open(z.key)).map(z=>({key:z.key,label:z.label}));
 }
 // Le panneau se replie en se fermant (Idan, 2026-11-26 : « anim ») quand on le referme soi-même (le bouton, un clic
 // ailleurs, Échap) ; il disparaît tout de suite quand on choisit une salle ou qu'on change de lieu.

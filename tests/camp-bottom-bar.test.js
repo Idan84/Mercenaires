@@ -203,9 +203,10 @@ const TAVERN={zones:[{key:"missions",label:"Trouver une mission"},{key:"recruits
 const done=[];
 const fakeGame={campaign:{day:12,expeditions:[]}};
 let talks=[];
-const right=new Function("$","document","esc","TAVERN_ZONES","TAVERN_MENU","openTavernPlace","showTodayNews","openExpeditionDialog","pendingTalks","openTalk","game",
+const closedZones=new Set();
+const right=new Function("$","document","esc","TAVERN_ZONES","TAVERN_MENU","openTavernPlace","showTodayNews","openExpeditionDialog","pendingTalks","openTalk","game","tavernZoneOpen",
   js.slice(js.indexOf("function toggleHudJournal("),js.indexOf("function setPauseOpen("))+"return {updateHudContext,setHudContextMenu,chooseHudContext,runHudAction,updateHudCombat,updateHudTalks};")(
-  el,{body,querySelector:sel=>sel===`.hud-places [data-hud-scene="tavern"] .hud-nav-label`?{textContent:"Taverne"}:null}, x=>String(x),TAVERN.zones,TAVERN.menu,key=>done.push(["lieu",key]),()=>done.push(["nouvelles"]),id=>done.push(["combat",id]),()=>talks,key=>done.push(["parler",key]),fakeGame);
+  el,{body,querySelector:sel=>sel===`.hud-places [data-hud-scene="tavern"] .hud-nav-label`?{textContent:"Taverne"}:null}, x=>String(x),TAVERN.zones,TAVERN.menu,key=>done.push(["lieu",key]),()=>done.push(["nouvelles"]),id=>done.push(["combat",id]),()=>talks,key=>done.push(["parler",key]),fakeGame,key=>!closedZones.has(key));
 Object.assign(body.dataset,{screen:"camp",campScene:"home"});
 right.updateHudContext();
 assert.ok(!els["hud-context"].classes.has("is-active")&&els["hud-context-menu"].innerHTML==="","au château, pas de bouton du lieu (pour l'instant)");
@@ -215,6 +216,12 @@ assert.ok(els["hud-context"].classes.has("is-active"));
 assert.deepEqual([els["hud-context-name"].textContent,els["hud-context-menu"].attrs["aria-label"]],["Taverne","Taverne"],"le nom du lieu sur son bouton (Idan, 2026-11-26)");
 assert.deepEqual([...els["hud-context-menu"].innerHTML.matchAll(/data-hud-context="(\w+)">([^<]+)</g)].map(m=>[m[1],m[2]]),
   [["talk","Parler au tavernier"],["missions","Trouver une mission"],["recruits","Recruter"],["cellar","La Cave"],["canteen","La Cantine"]],"« Tavernier - missions - recrutement - cave - menu »");
+// La Cantine pas encore construite (Idan, 2026-11-26 : « le mur reste vide ») : pas de ligne non plus.
+closedZones.add("canteen");
+right.updateHudContext();
+assert.deepEqual([...els["hud-context-menu"].innerHTML.matchAll(/data-hud-context="(\w+)"/g)].map(m=>m[1]),["talk","missions","recruits","cellar"],"pas de Cantine avant sa construction");
+closedZones.clear();
+right.updateHudContext();
 right.setHudContextMenu(true);
 assert.deepEqual([els["hud-context-menu"].hidden,els["hud-context-btn"].attrs["aria-expanded"]],[false,"true"]);
 right.chooseHudContext("cellar");

@@ -305,7 +305,11 @@ function wornArmor(m){
 // La fiche repliée sous la boîte de dialogue (Idan, 2026-11-25) ; le choix tient le temps de la partie ouverte.
 function setRecruitFolded(folded){
   game.recruitFolded=folded;
-  const dialog=$("recruit-talk-dialog"),button=dialog?.querySelector?.(".conv-fold");
+  setTalkFolded($("recruit-talk-dialog"),folded);
+}
+// Replier ou déplier la fiche d'une boîte de dialogue (le candidat, le tavernier) : la classe et la languette.
+function setTalkFolded(dialog,folded){
+  const button=dialog?.querySelector?.(".conv-fold");
   dialog?.classList?.toggle("is-folded",folded);
   if(button){
     const label=folded?"Déplier la fiche":"Replier la fiche";
@@ -695,6 +699,26 @@ function tavernTalkLine(t){
 // La conversation (Idan, 2026-11-26 : « On fait une fenêtre ? » ; la boîte de dialogue de la charte) : les répliques du
 // tavernier en bulles, avec son portrait (celui qu'on avait : /media/video/Img_Tavern.jpg, son visage) ; nos questions en
 // bulles « Vous » ; ce qu'on fait (une bière, la tournée) en récit, le message du journal ; « The Black Anvil » en tête.
+// La fiche du tavernier, le faux easter egg (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui parler.
+// Par défaut, elle est repliée » ; « une image au hasard du tavernier et un texte qui correspond » ; « C'est un faux easter
+// egg… ») : à chaque conversation, une situation au hasard parmi celles qui sont écrites (tavern-keeper-scenes.json : un
+// titre et un texte), la fiche repliée ; aucun effet en jeu. Sans situation écrite : pas de fiche.
+function keeperScenes(rows=game.referenceData?.tavernKeeperScenes?.rows||[]){
+  return rows.filter(row=>row.image&&row.titre&&row.texte?.length);
+}
+function pickKeeperScene(rows=keeperScenes(),random=Math.random){
+  return rows.length?rows[Math.min(rows.length-1,Math.floor(random()*rows.length))]:null;
+}
+function showKeeperCard(){
+  const dialog=$("tavern-talk-dialog"),scene=pickKeeperScene();
+  const box=$("tavern-talk-card");
+  box.innerHTML=scene?renderKeeperCard(scene,{culture:talkCaptain()?.culture||""}):"";
+  dialog.classList.toggle("has-card",Boolean(scene));
+  setTalkFolded(dialog,true);
+  const card=box.querySelector(".hover-card");
+  if(card&&typeof fitHoverCard==="function") requestAnimationFrame(()=>fitHoverCard(card));
+}
+
 const KEEPER_NAME="Le tavernier";
 const tavernKeeper={miniHtml:`<span class="talk-mini talk-mini--keeper" aria-hidden="true"><span class="talk-mini-keeper"></span></span>`};
 function tavernKeeperSays(t,text){ if(text) t.lines.push({who:"merc",name:KEEPER_NAME,text}); }
@@ -714,6 +738,7 @@ function openTavernTalk(){
   game.tavernTalk.line=tavernTalkLine(game.tavernTalk);
   tavernKeeperSays(game.tavernTalk,game.tavernTalk.line);
   renderTavernTalk();
+  showKeeperCard();
   $("tavern-talk-dialog").showModal();
 }
 // Un choix : nos paroles en bulle (les questions, l'usurier), nos actes en récit (la bière, la tournée) ; puis sa réponse.
@@ -790,6 +815,11 @@ function openTavernPlace(key){
 function initializeTavernUi(){
   const talk=$("tavern-talk-dialog");
   talk.addEventListener("click",event=>{
+    // Déplier sa fiche (le faux easter egg), ou la replier ; par ce qui dépasse aussi.
+    if(event.target.closest(".conv-fold")||talk.classList.contains("is-folded")&&event.target.closest("#tavern-talk-card")){
+      setTalkFolded(talk,!talk.classList.contains("is-folded"));
+      return;
+    }
     const option=event.target.closest("[data-talk]");
     if(option&&!option.disabled) tavernTalk(option.dataset.talk,option.dataset.arg);
   });
@@ -844,11 +874,13 @@ function initializeTavernUi(){
   // Espace replie ou rouvre la fiche (Idan, 2026-11-25). Écouté avant tout le monde, et retenu jusqu'au relâché : il ne
   // déclenche pas en plus le bouton qui a le focus. Pas dans un champ de saisie (la négociation).
   const isSpace=event=>event.code==="Space"||event.key===" ";
-  const spaceFolds=event=>recruit.open&&isSpace(event)&&!event.target.matches?.("input,select,textarea")&&!event.ctrlKey&&!event.metaKey&&!event.altKey;
+  const spaceFolds=event=>(recruit.open||talk.open&&talk.classList.contains("has-card"))&&isSpace(event)&&!event.target.matches?.("input,select,textarea")&&!event.ctrlKey&&!event.metaKey&&!event.altKey;
   document.addEventListener("keydown",event=>{
     if(!spaceFolds(event)) return;
     event.preventDefault();
-    if(!event.repeat) setRecruitFolded(!recruit.classList.contains("is-folded"));
+    if(event.repeat) return;
+    if(recruit.open) setRecruitFolded(!recruit.classList.contains("is-folded"));
+    else setTalkFolded(talk,!talk.classList.contains("is-folded"));
   },true);
   document.addEventListener("keyup",event=>{ if(spaceFolds(event)) event.preventDefault(); },true);
   recruit.addEventListener("close",()=>{

@@ -44,14 +44,16 @@ assert.match(css,/\.talk-mini-keeper\{[^}]*url\("\/media\/video\/Img_Tavern\.jpg
 {
   const els={},el=id=>els[id]||(els[id]={innerHTML:"",scrollTop:0,scrollHeight:0,showModal(){this.open=true;},close(){this.open=false;}});
   const lines=[];
-  const conv=new Function("game","$","esc","renderTalkLines","talkCaptain","tavernTalkOptions","tavernTalkLine","buyTavernDrink","askTavernAbout","usurerTavernChoice","requestAnimationFrame",
+  let cards=0;
+  const conv=new Function("game","$","esc","renderTalkLines","talkCaptain","tavernTalkOptions","tavernTalkLine","buyTavernDrink","askTavernAbout","usurerTavernChoice","requestAnimationFrame","showKeeperCard",
     js.slice(js.indexOf("const KEEPER_NAME="),js.indexOf("// Sa réponse (doc 14 §7)"))+"return {openTavernTalk,tavernTalk};");
   const g={};
   const api=conv(g,el,x=>String(x),(ls)=>{ lines.splice(0,lines.length,...ls); return ""; },()=>({name:"Cap"}),
     t=>t.view==="what"?[{key:"ask",arg:"title",label:"Qu’est-ce qu’on dit d’elle ?"},{key:"back",label:"Retour"}]:t.view==="who"?[{key:"who",arg:7,label:"Inga"},{key:"back",label:"Retour"}]:[{key:"beer",label:"Boire une bière (1 PO)"},{key:"advice",label:"Demander des conseils"},{key:"leave",label:"Partir"}],
     t=>t.view==="who"?"Qui donc ?":t.view==="what"?"Que veux-tu savoir ?":"Salut !",
-    ()=>"Une bière : 1 PO.",kind=>{ g.tavernTalk.line="On l’appelle la Tueuse."; },null,()=>{});
+    ()=>"Une bière : 1 PO.",kind=>{ g.tavernTalk.line="On l’appelle la Tueuse."; },null,()=>{},()=>{ cards++; });
   api.openTavernTalk();
+  assert.equal(cards,1,"sa fiche (le faux easter egg) est posée à chaque conversation");
   assert.deepEqual(lines.map(l=>[l.who,l.text]),[["note","The Black Anvil"],["merc","Salut !"]]);
   assert.equal(lines[1].name,"Le tavernier");
   api.tavernTalk("beer");
@@ -66,6 +68,51 @@ assert.match(css,/\.talk-mini-keeper\{[^}]*url\("\/media\/video\/Img_Tavern\.jpg
   assert.equal(lines.length,before,"Retour : on change de choix, sans rien dire");
   api.tavernTalk("leave");
   assert.equal(els["tavern-talk-dialog"].open,false);
+}
+// Sa fiche, le faux easter egg (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui parler. Par défaut,
+// elle est repliée » ; « une image au hasard du tavernier et un texte qui correspond » ; « Nom par un titre de la photo, le
+// titre par un sous-titre » ; « un long texte de 3 ou 4 paragraphes, esprit Monty Python »).
+{
+  assert.match(talk,/<div id="tavern-talk-card" class="recruit-fiche"><\/div>\s*<div class="recruit-talk-box keeper-talk-box conv">/,"la fiche sous la boîte");
+  assert.match(talk,/<button type="button" class="conv-fold" aria-expanded="false" aria-label="Déplier la fiche"/,"repliée par défaut, la languette la déplie");
+  assert.match(css,/\.talk-dialog--keeper\.has-card\.is-folded>\.keeper-talk-box\{left:calc\(var\(--talk-marge\) \+ var\(--talk-depasse\) - 10px\)\}/,"repliée : la fiche dépasse");
+  assert.match(css,/\.talk-dialog--keeper\.has-card>\.keeper-talk-box\{left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\) - 10px\)/,"dépliée : la boîte à sa droite");
+  assert.match(css,/\.talk-dialog--keeper:not\(\.has-card\)>\.recruit-fiche,\.talk-dialog--keeper:not\(\.has-card\) \.conv-fold\{display:none\}/,"sans situation écrite : la boîte seule");
+  // Le tirage : au hasard, parmi les situations écrites seulement (un titre et un texte).
+  const pick=new Function("game",js.slice(js.indexOf("function keeperScenes("),js.indexOf("function showKeeperCard("))+"return {keeperScenes,pickKeeperScene};")({referenceData:{}});
+  const rows=[{code:"a",image:"a.webp",titre:"A",texte:["x"]},{code:"b",image:"b.webp",titre:"",texte:[]},{code:"c",image:"c.webp",titre:"C",texte:["y"]}];
+  assert.deepEqual(pick.keeperScenes(rows).map(r=>r.code),["a","c"]);
+  assert.equal(pick.pickKeeperScene(pick.keeperScenes(rows),()=>0).code,"a");
+  assert.equal(pick.pickKeeperScene(pick.keeperScenes(rows),()=>.99).code,"c");
+  assert.equal(pick.pickKeeperScene([],()=>0),null,"rien d'écrit : pas de fiche");
+  // Elle est repliée à chaque ouverture ; la languette, ce qui dépasse ou Espace la déplient.
+  const show=js.slice(js.indexOf("function showKeeperCard("),js.indexOf("const KEEPER_NAME="));
+  assert.match(show,/setTalkFolded\(dialog,true\)/);
+  assert.match(js,/talk\.classList\.contains\("is-folded"\)&&event\.target\.closest\("#tavern-talk-card"\)/);
+  assert.match(js,/else setTalkFolded\(talk,!talk\.classList\.contains\("is-folded"\)\)/,"Espace aussi");
+  // Les données : les 20 images d'Idan, chacune présente ; les situations écrites ont un titre, un sous-titre et 3 ou 4
+  // paragraphes.
+  const scenes=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-keeper-scenes.json"),"utf8"));
+  assert.equal(scenes.rows.length,20);
+  assert.equal(scenes.row_count,20);
+  for(const row of scenes.rows){
+    assert.ok(fs.existsSync(path.join(root,"prototype-web",row.image)),row.image);
+    if(row.titre||row.texte.length){
+      assert.ok(row.titre&&row.sous_titre,`${row.code} : titre et sous-titre`);
+      assert.ok(row.texte.length>=3&&row.texte.length<=4,`${row.code} : 3 ou 4 paragraphes`);
+    }
+  }
+  assert.ok(scenes.rows.some(row=>row.titre),"au moins une situation écrite");
+  // La fiche : le portrait en pied, le titre de la photo à la place du nom, le sous-titre à la place du titre, les
+  // paragraphes dans la page (espaces insécables avant les deux-points).
+  const hover=fs.readFileSync(path.join(root,"prototype-web/hover-card-ui.js"),"utf8");
+  const render=new Function("esc","hoverCultureFrame","hoverKitFrame",hover.slice(hover.indexOf("function keeperTypo("),hover.indexOf("// Le nom et le titre dans le cartouche"))+"return renderKeeperCard;")(
+    x=>String(x),()=>({key:"cites-libres",kit:null,vars:""}),()=>"");
+  const card=render({image:"assets/tavernier/scenes/homard.webp",titre:"Étude du homard",sous_titre:"ou la juste température",texte:["Un : deux.","Trois."]});
+  assert.match(card,/<article class="hover-card hover-card--keeper"/);
+  assert.match(card,/<img src="assets\/tavernier\/scenes\/homard\.webp"/);
+  assert.match(card,/<h3>Étude du homard<\/h3><p class="hc-title">[\s\S]*<span>ou la juste température<\/span>/);
+  assert.match(card,/<div class="hc-page hc-keeper"><p>Un\u00a0: deux\.<\/p><p>Trois\.<\/p><\/div>/);
 }
 // Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ? et ses deux
 // questions (doc 14 §6 bis : son titre, son affinité), avec un retour à chaque étape.

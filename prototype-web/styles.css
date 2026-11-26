@@ -1496,6 +1496,13 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    candidats ; un voile léger, sans flou, pour que le tavernier reste visible à droite dans le décor. */
 .talk-dialog--keeper::backdrop{background:rgba(0,0,0,.35);backdrop-filter:none;-webkit-backdrop-filter:none}
 .talk-dialog--keeper>.keeper-talk-box{left:calc(var(--talk-marge) - 10px);right:auto;width:900px;transition:none}
+/* Sa fiche, le faux easter egg (Idan, 2026-11-26 : « Par défaut, elle est repliée ») : la fiche des candidats, à la même
+   place ; repliée, la boîte (toujours 900 px) glisse par-dessus et la fiche dépasse de --talk-depasse ; dépliée, la boîte
+   passe à sa droite, comme celle des candidats. Sans situation écrite (has-card absent) : la boîte seule, sans languette. */
+.talk-dialog--keeper.has-card>.keeper-talk-box{left:calc(var(--talk-marge) + 860px - var(--talk-mord) - 10px);transition:left .35s ease}
+.talk-dialog--keeper.has-card.is-folded>.keeper-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse) - 10px)}
+.talk-dialog--keeper:not(.has-card)>.recruit-fiche,.talk-dialog--keeper:not(.has-card) .conv-fold{display:none}
+@media (prefers-reduced-motion:reduce){.talk-dialog--keeper.has-card>.keeper-talk-box{transition:none}}
 /* Son portrait (Idan : « On doit déjà avoir un portrait, c'est suffisant ») : son visage dans /media/video/Img_Tavern.jpg
    (1600 × 893 : le carré de 150 px en 1250, 246), taillé comme les autres vignettes. */
 .talk-mini-keeper{position:absolute;inset:0;z-index:1;background:url("/media/video/Img_Tavern.jpg") 86.2% 33.1%/1066.67% auto no-repeat;
@@ -2949,6 +2956,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-choice-hover{position:fixed;left:0;top:0;z-index:30;pointer-events:none;transform:scale(var(--hc-scale,1));transform-origin:0 0}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
+/* La page du tavernier (le faux easter egg) : ses 3 ou 4 paragraphes, à l'encre de la fiche, justifiés comme un
+   communiqué officiel ; ils tiennent dans la page sans défiler (texte d'environ 1 200 signes). À droite, la marge passe
+   aussi la boîte de dialogue qui mord sur la fiche dépliée (--talk-mord). */
+.hover-card--keeper .hc-keeper{gap:9px;padding-left:28px;padding-right:calc(28px + 24px)}
+.hc-keeper p{margin:0;font:400 16px/1.38 var(--police-texte);color:var(--encre);text-align:justify;hyphens:auto}
+.hover-card--keeper .hc-portrait .avatar-frame img{object-position:50% 50%}
 /* Sous le cartouche, deux colonnes (Idan, 2026-11-16) : à gauche les origines, à droite la réputation, l'affinité et la
    prime de mission (« Prime » : « ça va nous permettre de gagner de la place à gauche ») ; entre les deux, une fente dans
    le parchemin, plus épaisse au milieu qu'aux extrémités, fine, marron parchemin foncé (la couleur des filets), centrée

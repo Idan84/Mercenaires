@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "name": "Situations du tavernier",
+  "description": "Le faux easter egg du tavernier (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui parler. Par défaut, elle est repliée » ; « à la place de l'avatar du mercenaire, une image au hasard du tavernier et un texte qui correspond. On remplit Nom par un titre de la photo, le titre par un sous-titre de notre histoire » ; « à la place du contenu de la fiche au survol, un long texte de 3 ou 4 paragraphes, esprit Monty Python, qui essaie de justifier le sérieux de cette image que le joueur n'aurait jamais dû voir… C'est un faux easter egg »). Une situation est tirée au hasard à chaque conversation avec le tavernier, parmi celles qui ont leur titre et leur texte. Aucun effet en jeu. Les images : media/Avatar_Tavernier.zip d'Idan → scripts/build-tavern-keeper.js.",
+  "columns": [
+    {
+      "key": "code",
+      "source": "Code (scripts/build-tavern-keeper.js : d'après le nom du fichier d'Idan)"
+    },
+    {
+      "key": "image",
+      "source": "Portrait en pied de la fiche (Avatar_Tavernier.zip d'Idan, 768 × 1376)"
+    },
+    {
+      "key": "titre",
+      "source": "Le titre de la photo, à la place du nom"
+    },
+    {
+      "key": "sous_titre",
+      "source": "Le sous-titre de l'histoire, à la place du titre du mercenaire"
+    },
+    {
+      "key": "texte",
+      "source": "Les 3 ou 4 paragraphes de la page, esprit Monty Python (vide : pas encore écrit, la situation n'est pas tirée)"
+    }
+  ],
+  "row_count": 20,
+  "rows": [
+    {
+      "code": "cupcakes",
+      "image": "assets/tavernier/scenes/cupcakes.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "beurre",
+      "image": "assets/tavernier/scenes/beurre.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "banane",
+      "image": "assets/tavernier/scenes/banane.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "tutu",
+      "image": "assets/tavernier/scenes/tutu.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "homard",
+      "image": "assets/tavernier/scenes/homard.webp",
+      "titre": "Étude du homard",
+      "sous_titre": "ou la juste température du bouillon",
+      "texte": [
+        "Cette image n’existe pas. Si vous la voyez, c’est que vous avez ouvert une fiche qui ne vous était pas destinée. Le tavernier vous prie de bien vouloir la refermer, puis d’oublier les dix dernières secondes.",
+        "Il tient à préciser qu’il ne s’agit en aucun cas d’un déguisement. Il s’agit d’une tenue de travail, homologuée pour la cuisson lente, portée dans le cadre strictement professionnel d’une étude sur la température idéale du bouillon. La chope n’est là que pour mesurer : pleine, le bouillon est trop chaud ; vide, l’étude progresse.",
+        "Les pinces, elles, sont d’origine. Quiconque affirmerait avoir vu le tavernier les acheter au marché, un mardi, en demandant s’il existait le même modèle en plus grand, sera prié de reprendre ses esprits ou une bière, au choix, mais pas les deux.",
+        "Enfin, l’étude n’est pas terminée. Le tavernier est donc toujours dans la marmite. Il vous servira dès que le bouillon sera à la bonne température, c’est-à-dire jamais : à la bonne température, ce n’est plus une étude, c’est une soupe."
+      ]
+    },
+    {
+      "code": "grenouille",
+      "image": "assets/tavernier/scenes/grenouille.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "tricot",
+      "image": "assets/tavernier/scenes/tricot.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "abreuvoir",
+      "image": "assets/tavernier/scenes/abreuvoir.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "coq",
+      "image": "assets/tavernier/scenes/coq.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "miche",
+      "image": "assets/tavernier/scenes/miche.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "bouffon",
+      "image": "assets/tavernier/scenes/bouffon.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "paillettes",
+      "image": "assets/tavernier/scenes/paillettes.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "saucisses",
+      "image": "assets/tavernier/scenes/saucisses.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "bain",
+      "image": "assets/tavernier/scenes/bain.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "sortilege",
+      "image": "assets/tavernier/scenes/sortilege.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "marmite",
+      "image": "assets/tavernier/scenes/marmite.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "fee",
+      "image": "assets/tavernier/scenes/fee.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "pull",
+      "image": "assets/tavernier/scenes/pull.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "poule",
+      "image": "assets/tavernier/scenes/poule.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    },
+    {
+      "code": "armure",
+      "image": "assets/tavernier/scenes/armure.webp",
+      "titre": "",
+      "sous_titre": "",
+      "texte": []
+    }
+  ]
+}

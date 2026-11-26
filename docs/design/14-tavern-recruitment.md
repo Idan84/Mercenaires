@@ -215,6 +215,14 @@ Retirées (Idan, 2026-11-19 : « y'en a beaucoup trop ») : arme de prédilectio
 prédilection, magie de prédilection, métier avant d'être mercenaire, et les conseils du tavernier sur les
 caractéristiques (physique, mental, résistances, magie). Textes : `data/reference/tavern-dialogue.json`.
 
+**La fiche du tavernier, un faux easter egg** (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui
+parler. Par défaut, elle est repliée » ; « C'est un faux easter egg… »). Sa boîte de dialogue a la fiche repliée des
+candidats. Dépliée, elle montre une situation tirée au hasard à chaque conversation : à la place de l'avatar, une des 20
+images d'Idan (le tavernier en homard, en banane, dans son bain…) ; à la place du nom, un titre de la photo ; à la place
+du titre, un sous-titre de l'histoire ; à la place du contenu, 3 ou 4 paragraphes, esprit Monty Python, qui essaient de
+justifier le sérieux d'une image que le joueur n'aurait jamais dû voir. Aucun effet en jeu. Seules les situations écrites
+sont tirées. Textes et images : `data/reference/tavern-keeper-scenes.json`.
+
 ## 7 — La précision des réponses (Idan, 2026-11-19)
 
 Le « facteur de précision » : le candidat se vante, l'aubergiste estime.

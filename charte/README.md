@@ -49,6 +49,48 @@ Blood & Wages est un jeu de gestion de mercenaires en dark fantasy. L'écran mon
 
 - Barre de défilement du parchemin (Idan, 2026-11-25 : « on a une scrollbar pour parchemin qu'on peut réutiliser ») : le cadre du bouton d'Idan tourné à la verticale, velours brun, les flèches et le curseur du kit doré, le creusé, l'ombre portée sur le parchemin (composant Cadre doré). Aujourd'hui sur la conversation de la boîte de dialogue (`.conv .talk-log`) ; pour un autre parchemin, régénérer avec `scripts/build-parchment-scrollbar.py` en changeant le sélecteur. Le curseur se refait avec `scripts/build-scrollbar-thumb.js`.
 
+La boîte de dialogue (Idan, 2026-11-25/26, `prototype-web/styles.css`, règles `.conv*` et `.conv-*`) est le modèle des
+fenêtres du jeu. Ses pièces se reprennent pour tout écran qui en a besoin :
+
+- **Grand cadre de cuir et de métal** (`.conv::before` / `::after`) : un cadre complet fourni par Idan en une image
+  (`assets-src/Kits/cadre-dialogue/cadre-idan.webp`), découpé par `scripts/build-dialog-frame-idan.js` en deux moitiés
+  (`creation/cadre-dialogue-gauche|droite.webp`), chacune en `border-image` : 5 colonnes (coin | cuir uni qui se répète |
+  demi-ornement ‖ demi-ornement | cuir uni | coin) × 3 rangées (haut | milieu qui se répète | bas). Les coins et les
+  ornements du milieu restent entiers ; seul le cuir uni se répète (avec un fondu : aucun raccord). Il tient à toutes les
+  tailles (876 px fiche ouverte, 1612 px repliée). Pour un autre cadre : demander à Idan l'image complète (« tu as juste à
+  découper ») plutôt que de l'assembler soi-même à partir de pièces de planche.
+- **Parchemin à filet doré collé** (`.conv-page`) : le parchemin d'Idan, son contour doré (`cadre-or.webp`) collé dessus,
+  angles coupés de 11 px. Dans un grand cadre, son angle coupé se cale **en diagonale** sur la tête de la volute du coin et
+  l'angle coupé du cadre, avec de l'air entre eux (environ 30 px le long de la diagonale).
+- **Plateau des boutons** (`.conv #recruit-talk-choices`) : le cuir du fond vu à travers, assombri de 40 %, angles coupés
+  de 11 px ; un éclat diffus en haut à gauche et une pénombre en bas à droite (ombres internes très floues), une ombre
+  portée floue mais bien visible vers le bas à droite, qui suit les angles coupés et est évidée sous le plateau
+  (pseudo-élément ; une `box-shadow` serait coupée par le `clip-path`). Marges visibles de 16 à 18 px.
+- **Boutons de réponse** (`.conv .talk-options`) : le bouton d'Idan au velours brun, rouge au survol (`bouton-brun|rouge`,
+  grain du velours répété, `scripts/build-dialog-buttons.js`), le numéro dans un petit rond brun / rouge posé sur l'angle
+  du haut à gauche ; grille de 3 colonnes, 19 px entre les lignes (24 fiche repliée).
+- **Emblème** (`.conv-emblem`) : un médaillon rond au velours rouge (`kit/boutons/rond-rouge.webp`, 130 px) et une icône
+  passée à l'or du kit (`scripts/build-gold-icon.js`), centré sur le filet doré du haut du cadre et mordant sur le
+  parchemin ; de part et d'autre, les lauriers de Chatty (planche 2, 180 px) posés sur le liseré doré du parchemin.
+- **Bouton rond de coin** (la croix, `.conv-close`) : rond au velours brun (`rond-brun.webp`) et icône dorée du kit, rouge
+  au survol. Sur un coin coupé du cadre : son centre près du croisement des milieux des deux grosses barres, il dépasse un
+  peu en haut et à droite et cache l'angle (63 px ici) ; la volute de ce coin est effacée.
+- **Languette** (`.conv-fold`, replier / déplier la fiche) : le bouton d'Idan tourné à la verticale (brun, rouge au
+  survol), une flèche dorée du kit ; son milieu sur le milieu de la grosse barre du cadre, au milieu de sa hauteur.
+
+### Règles de mise en page apprises avec Idan
+
+- Les marges se comptent depuis ce qui est **dessiné** (la barre de métal, le bord doré d'un bouton, le haut d'un rond),
+  jamais depuis la boîte CSS. Autour d'un cadre, mêmes marges à droite, en haut et en bas, comptées depuis la barre de
+  métal ; un ornement qui dépasse (le losange du bas) ne compte pas.
+- « Aligné » se juge à l'œil, selon la pièce : un ornement posé sur une barre a son milieu sur le milieu de la barre ; un
+  rond de coin dépasse un peu et cache l'angle ; dans un coin, les angles cassés et la volute se suivent en diagonale, avec
+  de l'espace. Pas de règle géométrique appliquée aveuglément (une tangente, par exemple) : régler, montrer, ajuster.
+- Quand le contenu est à l'étroit, agrandir le contenant plutôt que rentrer le contenu (« ressortir la tête »).
+- Ombres et éclats : toujours dans le sens de la lumière (en haut à gauche) ; floues mais visibles.
+- Ne toucher qu'à ce qui est demandé ; quand une pièce propre manque, demander le fichier à Idan plutôt que de la
+  reconstruire. Montrer chaque étape en capture, l'ensemble et le détail.
+
 ## Pictos et images
 
 - Pictos des origines : Peuples, Cultures, Ascendances, Écoles de magie (WebP 128 × 128). Sur la fiche au survol : `picto-origine` (52 px), `ecart-pictos-origine` entre eux, ombre `ombre-picto`.

@@ -588,7 +588,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     // parchemin (elle seule défile), les réponses en dessous.
     assert.match(html, /<button type="button" class="conv-close" data-talk="leave" aria-label="Fermer"[^>]*>✕<\/button>\s*<button type="button" class="conv-fold" aria-expanded="true" aria-label="Replier la fiche"[^>]*><\/button>\s*<div class="conv-page"><div id="recruit-talk-log" class="talk-log" aria-live="polite"><\/div><\/div>\s*<div id="recruit-talk-choices"><\/div>/);
     // La fiche repliée sous la boîte (Idan, 2026-11-25) : la boîte glisse par-dessus, la fiche dépasse de --talk-depasse.
-    assert.match(css, /\.talk-dialog--fiche\.is-folded>\.recruit-talk-box\{left:calc\(var\(--talk-marge\) \+ var\(--talk-depasse\)\)\}/);
+    assert.match(css, /\.talk-dialog--fiche\.is-folded>\.recruit-talk-box\{left:calc\(var\(--talk-marge\) \+ var\(--talk-depasse\) - 10px\)\}/);
     assert.match(tavernJs, /function setRecruitFolded\(folded\)\{\s*game\.recruitFolded=folded;/);
     // Chaque réplique : la vignette et le nom de qui parle, la réplique dans une bulle ; le récit sans bulle.
     const lines = new Function("esc", "mercenaryAvatarUrl", "avatarInitials",
@@ -626,8 +626,10 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     // discussion avec la même marge en haut, en bas et à droite, qui mord sur la fiche avec une ombre douce de contact (lumière en haut à gauche).
     assert.match(css, /\.talk-dialog--fiche\{--talk-marge:104px;--talk-mord:24px;--talk-depasse:100px;width:1920px;height:1080px;/);
     assert.match(css, /\.talk-dialog--fiche\[open\]\{display:block;height:1080px\}/);
-    assert.match(css, /\.talk-dialog--fiche>\.recruit-fiche\{position:absolute;left:var\(--talk-marge\);top:calc\(50% - 282\.5px\);width:860px;height:565px\}/);
-    assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:var\(--talk-marge\);right:var\(--talk-marge\);bottom:var\(--talk-marge\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\)\);[^}]*box-shadow:0 0 16px 3px rgba\(0,0,0,\.6\),6px 18px 50px #000a/);
+    // Avec le cadre d'Idan (2026-11-25/26) : la fiche décalée de 10 px à gauche, le cadre agrandi de 10 px à gauche, à droite
+    // et en bas, puis haut, droite et bas à la même distance de la barre de métal (94 px).
+    assert.match(css, /\.talk-dialog--fiche>\.recruit-fiche\{position:absolute;left:calc\(var\(--talk-marge\) - 10px\);top:calc\(50% - 282\.5px\);width:860px;height:565px\}/);
+    assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:calc\(var\(--talk-marge\) - 10px\);right:calc\(var\(--talk-marge\) - 10px\);bottom:calc\(var\(--talk-marge\) - 21\.8px\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\) - 10px\);[^}]*box-shadow:0 0 16px 3px rgba\(0,0,0,\.6\),6px 18px 50px #000a\}/);
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.

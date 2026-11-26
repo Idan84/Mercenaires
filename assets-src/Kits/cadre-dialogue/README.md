@@ -15,5 +15,9 @@ plus tard (Idan).
 | 3 | Un second cadre, plus fin : coins (01, 03, 13, 14), barres (02, 04, 05, 15) ; plaques (06, 09), ronds (07, 08), petites équerres (10 à 12) |
 | 4 | Barres de défilement et leurs bouts (01, 02, 05, 06, 12), languettes avec flèche (03, 04), flèches (07, 08), filets et losange (09 à 11, 13) |
 
-Utilisé aujourd'hui : le cadre de la planche 1 (`scripts/build-dialog-frame.js` → `prototype-web/assets/creation/cadre-dialogue.webp`),
-les lauriers (planche 2, 01 et 03) et le losange (planche 1, 19).
+`cadre-idan.webp` : le cadre complet refait par Idan (2026-11-25), d'après la planche 1 : coins identiques, barres, filet
+au losange en haut, gros losange en bas. C'est lui qui sert : `node scripts/build-dialog-frame-idan.js` le découpe en deux
+moitiés (`prototype-web/assets/creation/cadre-dialogue-gauche.webp` et `-droite.webp`, 5 colonnes × 3 rangées, cuir uni
+répétable, volute du coin haut droit effacée pour la croix).
+
+Utilisé aujourd'hui : le cadre d'Idan, et de la planche 2 les lauriers (01 et 03) autour de l'emblème.

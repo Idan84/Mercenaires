@@ -1412,24 +1412,33 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--fiche{--talk-marge:104px;--talk-mord:24px;--talk-depasse:100px;width:1920px;height:1080px;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
 .talk-dialog--fiche[open]{display:block;height:1080px}
 .talk-dialog--fiche::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.talk-dialog--fiche>.recruit-fiche{position:absolute;left:var(--talk-marge);top:calc(50% - 282.5px);width:860px;height:565px}
+/* Idan, 2026-11-25 : « On décale la fiche au survol de 10px à gauche. On agrandit le cadre de 10px à gauche ET à droite ET en
+   bas » : le cadre s'agrandit autour du parchemin et des boutons, qui ne bougent pas (marges intérieures + 10 px).
+   Puis « on augmente la hauteur du cadre… de manière à ce que la marge à droite, en haut et en bas soit identique (on compte
+   de la barre en métal uniquement) » : 94 px de l'écran à la barre, à droite, en haut et en bas ; en bas, le losange dépasse
+   de la barre de 11,8 px (18 px de l'image d'Idan × 876 / 1337), d'où 82,2 px jusqu'au bas de la boîte.
+   Puis « le div du cadre, tu lui mets un padding de 20px sur les 4 côtés » : marges intérieures + 20 px, puis « encore 3 de padding partout », deux fois : 70 / 53 / 70 ; côtés + 15 (68) pour la diagonale des volutes. */
+.talk-dialog--fiche>.recruit-fiche{position:absolute;left:calc(var(--talk-marge) - 10px);top:calc(50% - 282.5px);width:860px;height:565px}
 /* Une seule lumière, en haut à gauche (Idan, 2026-11-25 : « décale tout, et ombre douce de contact sur la fiche ») : les
    ombres portent vers le bas à droite ; la fenêtre pose sur la fiche une ombre douce de contact, sans direction. Une lumière
    d'ambiance, à la bougie (« pas un spot de boîte de nuit ») : ombres douces, à peine décalées. */
-.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:var(--talk-marge);right:var(--talk-marge);bottom:var(--talk-marge);left:calc(var(--talk-marge) + 860px - var(--talk-mord));display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:0 0 16px 3px rgba(0,0,0,.6),6px 18px 50px #000a,inset 0 1px rgba(255,228,168,.149)}
+.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:calc(var(--talk-marge) - 10px);right:calc(var(--talk-marge) - 10px);bottom:calc(var(--talk-marge) - 21.8px);left:calc(var(--talk-marge) + 860px - var(--talk-mord) - 10px);display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:0 0 16px 3px rgba(0,0,0,.6),6px 18px 50px #000a}
 /* La fiche repliée (Idan, 2026-11-25 : « je voudrais qu'on puisse replier la fiche au survol : elle passe sous la boite de
    dialogue qui prend alors toute la largeur. La fiche au survol doit toujours dépasser de 30 / 40 px : on doit voir le début
    du portrait ») : la boîte glisse par-dessus la fiche, qui ne bouge pas et dépasse de --talk-depasse ; un clic sur ce qui
    dépasse, ou sur le bouton, la rouvre. */
 .talk-dialog--fiche>.recruit-talk-box{transition:left .35s ease}
-.talk-dialog--fiche.is-folded>.recruit-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse))}
+.talk-dialog--fiche.is-folded>.recruit-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse) - 10px)}
 .talk-dialog--fiche.is-folded>.recruit-fiche{cursor:pointer}
 /* La languette qui replie la fiche (Idan, 2026-11-25 : « un bouton capitaine fond brun, une flèche dorée du kit, rouge au
    survol ») : le bouton d'Idan tourné à la verticale (creation/bouton-brun-vertical.webp, le haut à gauche, côté lumière),
    36 px de large visibles sur 72 de haut, à la même place qu'avant ; le rouge (bouton-rouge-vertical.webp) fondu par-dessus
    au survol ; la flèche du kit (kit/fleches/gauche.webp, droite.webp quand la fiche est repliée). La boîte déborde de
    l'image visible de ses marges transparentes (échelle 36/168). */
-.conv-fold{position:absolute;top:50%;left:-26.4px;z-index:4;width:55.1px;height:72px;margin-top:-36px;padding:0;box-sizing:border-box;border-style:solid;border-width:15.4px 13.7px;border-radius:0;border-image:url("assets/creation/bouton-brun-vertical.webp") 72 64 fill / 15.4px 13.7px stretch;background:transparent;filter:drop-shadow(2px 4px 4px rgba(30,16,4,.5)) drop-shadow(1px 1px 1px rgba(30,16,4,.35));cursor:pointer;transition:transform .12s}
+/* Recalée sur le cadre d'Idan (Idan, 2026-11-26 : « recaler un peu la languette pour déplier / replier ») : comme la croix,
+   son milieu sur le milieu de la grosse barre de gauche (8,2 px du bord de la boîte) ; en hauteur, au milieu du cadre de
+   métal (le losange du bas, qui dépasse de 11,8 px, n'est pas compté). */
+.conv-fold{position:absolute;top:calc(50% - 5.9px);left:-19.4px;z-index:4;width:55.1px;height:72px;margin-top:-36px;padding:0;box-sizing:border-box;border-style:solid;border-width:15.4px 13.7px;border-radius:0;border-image:url("assets/creation/bouton-brun-vertical.webp") 72 64 fill / 15.4px 13.7px stretch;background:transparent;filter:drop-shadow(2px 4px 4px rgba(30,16,4,.5)) drop-shadow(1px 1px 1px rgba(30,16,4,.35));cursor:pointer;transition:transform .12s}
 .conv-fold::before,.conv-fold::after{content:"";position:absolute;inset:-15.4px -13.7px;box-sizing:border-box;pointer-events:none}
 .conv-fold::before{border-style:solid;border-width:15.4px 13.7px;border-image:url("assets/creation/bouton-rouge-vertical.webp") 72 64 fill / 15.4px 13.7px stretch;opacity:0;transition:opacity .12s}
 .conv-fold::after{background:url("assets/kit/fleches/gauche.webp") calc(50% - 1.2px) 50%/13px auto no-repeat}
@@ -1444,28 +1453,34 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    défile) : la vignette et le nom de qui parle, sa réplique dans une bulle, les autres à gauche, le capitaine à droite, le
    récit centré sans bulle ; en bas, les réponses, sans barre de défilement (trop de réponses : un tiroir, comme « Puis-je
    en savoir plus sur vous ? ») ; la réponse survolée prend le bouton d'Idan (ses pointes jamais déformées). */
-/* Le cadre (Idan, 2026-11-25 : kit « Cadre_dialogue » de Chatty ; « reprends son exemple… il suffit de grossir ou
-   réduire et de couper dedans ») : le cadre de la planche 1 en neuf parts (creation/cadre-dialogue.webp,
-   scripts/build-dialog-frame.js : ses coins, ses côtés tirés de ses barres et recalés sur les coins, les volutes des coins
-   remplacées par du cuir), à l'échelle 0,48, tout au fond ; par-dessus, le panneau de cuir (creation/cuir-dialogue.webp,
-   la plaque n° 6 de la planche 3) et le parchemin « coupent dedans » : on ne voit du cadre que 17 px sur les côtés,
-   44 en haut (la bande des ornements), 24 en bas. Le parchemin a son filet doré collé (le cadre doré, cadre-or.webp). */
-.conv{position:relative;gap:12px;padding:44px 17px 34px;border:0;border-radius:0;background:none;box-shadow:6px 18px 50px #000a}
+/* La boîte (Idan, 2026-11-25/26) : le cadre d'Idan découpé (plus bas), le parchemin et ses filets dorés collés (cadre-or),
+   le plateau des boutons. Marges intérieures : la marge de départ (44 / 17 px), « + 10 px à gauche, à droite et en bas »,
+   « un padding de 20 px sur les 4 côtés », « encore 3 » deux fois, « rajoute 15 px » sur les côtés (pour la diagonale
+   des volutes, voir .conv-page) : 70 / 68 / 70 px. */
+.conv{position:relative;gap:12px;padding:70px 68px 70px;border:0;border-radius:0;background:none;box-shadow:6px 18px 50px #000a}
 .conv::before,.conv::after{content:"";position:absolute;pointer-events:none}
-.conv::after{inset:0;z-index:-3;border-style:solid;border-width:75.84px 90.72px 75.84px 89.28px;border-image:url("assets/creation/cadre-dialogue.webp") 158 189 158 186 / 75.84px 90.72px 75.84px 89.28px round}
-.conv::before{inset:40px 17px 24px;z-index:-2;background:url("assets/creation/cuir-dialogue.webp") 0 0/192px auto repeat;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),inset 2px 4px 10px rgba(0,0,0,.65),0 0 0 1px rgba(201,164,97,.18)}
-/* Les ornements de Chatty, posés comme sur son exemple : les filets au losange dans la bande du haut, de part et d'autre
-   des lauriers (planche 2, n° 14, et son miroir) ; un fleuron niché dans l'angle coupé du haut à gauche (planche 1, n° 18 ;
-   rien en haut à droite : la croix couvre ce coin) ; une équerre calée dans chaque coin bas du panneau (planche 3, n° 10,
-   retournée) ; le losange au milieu de la bande du bas (planche 1, n° 19). Le panneau commence sous la bande du haut : il
-   cache le filet arrondi de l'ouverture du cadre, qui dépassait aux coins. */
-.conv-deco{position:absolute;inset:0;z-index:2;background:url("assets/kit/cadre-dialogue/planche2-14.webp") calc(50% - 199px) 21px/109px auto no-repeat,url("assets/creation/filet-losange-droit.webp") calc(50% + 199px) 21px/109px auto no-repeat,url("assets/kit/cadre-dialogue/planche1-18.webp") 19px 17px/21px auto no-repeat,url("assets/creation/equerre-bas-gauche.webp") left 17px bottom 24px/31px auto no-repeat,url("assets/creation/equerre-bas-droite.webp") right 17px bottom 24px/31px auto no-repeat;pointer-events:none}
-.conv-gem{position:absolute;bottom:-2.3px;left:50%;z-index:4;width:28.1px;height:28.5px;margin-left:-14px;background:url("assets/kit/cadre-dialogue/planche1-19.webp") 50% 50%/100% 100% no-repeat;filter:drop-shadow(1px 2px 2px rgba(30,16,4,.5));pointer-events:none}
+/* Le cadre d'Idan (assets-src/Kits/cadre-dialogue/cadre-idan.webp ; Idan, 2026-11-25 : « Tu as juste à découper : 5 parties
+   verticales et 3 parties horizontales »). Deux moitiés, chacune en border-image : coin | cuir uni qui se répète |
+   demi-ornement (filet du haut, losange du bas), sur trois rangées (haut | milieu qui se répète | bas). Échelle 876 / 1337 :
+   fiche ouverte, la largeur du cadre est celle de l'image ; repliée, le cuir uni se répète. Découpe : scripts/build-dialog-frame-idan.js. */
+.conv::before{top:0;bottom:0;left:0;right:calc(50% - .5px);z-index:-3;border-style:solid;border-width:98.28px 149.39px 279.77px 117.94px;border-image:url("assets/creation/cadre-dialogue-gauche.webp") 150 228 427 180 fill / 98.28px 149.39px 279.77px 117.94px round}
+.conv::after{top:0;bottom:0;left:calc(50% - .5px);right:0;z-index:-3;border-style:solid;border-width:98.28px 117.94px 279.77px 150.04px;border-image:url("assets/creation/cadre-dialogue-droite.webp") 150 180 427 229 fill / 98.28px 117.94px 279.77px 150.04px round}
 /* La croix (Idan, 2026-11-25 : « un rond fond brun et une croix dorée. Au survol, elle devient rouge. On la pose en haut à
    droite ») : le rond du kit au velours brun (creation/rond-brun.webp), le rouge (kit rond-rouge.webp) fondu par-dessus au
    survol, la croix dorée du kit (kit/fleches/fermer.webp) ; centrée sur le coin haut droit de la boîte. Le « ✕ » du texte
    reste pour les lecteurs d'écran, caché à l'œil. */
-.conv-close{position:absolute;top:-20px;right:-20px;z-index:4;width:48px;height:49.6px;padding:0;border:0;border-radius:50%;background:url("assets/creation/rond-brun.webp") 50% 50%/100% 100% no-repeat;color:transparent;font-size:0;filter:drop-shadow(2px 4px 4px rgba(30,16,4,.5)) drop-shadow(1px 1px 1px rgba(30,16,4,.35));cursor:pointer;transition:transform .12s}
+/* La croix sur le coin haut droit du cadre (Idan, 2026-11-25 : « on la pose sur la barre en diagonale : le rond va d'un
+   angle à l'autre », puis « il doit s'aligner avec le milieu de la grosse barre et dépasser en haut et à droite ») : le
+   centre du rond est au croisement des milieux de la grosse barre du haut et de celle de droite (12,5 px dans l'épaisseur
+   de l'image d'Idan × 876 / 1337 = 8,2 px du haut et de la droite de la boîte) ; son anneau (73 px) passe par les deux
+   coudes de la barre, au début et à la fin de l'angle cassé (chanfrein de 63 px dans l'image d'Idan). La volute de ce coin
+   est effacée (scripts/build-dialog-frame-idan.js). Puis « on réduit le cercle et la croix, on garde son centre au même
+   endroit, mais on retire 30 % » : anneau de 51 px. Puis « prends l'angle droit de la ligne extérieure et on y place le
+   cercle en tangent » : l'anneau touche le prolongement du bord extérieur du haut et celui de droite ; « le grossir de
+   quelques pixels pour cacher l'angle », puis « oublier la tangente et le refaire dépasser… on grossit de 3 pixels, on
+   remonte et on décale un tout petit peu » : anneau de 63 px, centre à 27 px du haut et de la droite de la boîte (il
+   dépasse de 4,5 px en haut et à droite). */
+.conv-close{position:absolute;top:-4.8px;right:-4.9px;z-index:4;width:63.8px;height:65.9px;padding:0;border:0;border-radius:50%;background:url("assets/creation/rond-brun.webp") 50% 50%/100% 100% no-repeat;color:transparent;font-size:0;filter:drop-shadow(2px 4px 4px rgba(30,16,4,.5)) drop-shadow(1px 1px 1px rgba(30,16,4,.35));cursor:pointer;transition:transform .12s}
 .conv-close::before,.conv-close::after{content:"";position:absolute;inset:0;pointer-events:none}
 .conv-close::before{background:url("assets/kit/boutons/rond-rouge.webp") 50% 50%/100% 100% no-repeat;opacity:0;transition:opacity .12s}
 .conv-close::after{background:url("assets/kit/fleches/fermer.webp") 50% 50%/48% auto no-repeat}
@@ -1476,9 +1491,23 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    rouge… en haut au milieu… 30 % environ au-dessus de la barre, 70 % sur le parchemin » ; à caler avec le cadre) : le rond
    du kit (rond-rouge.webp) et l'icône Discussions de la barre du bas passée à l'or du kit (creation/discussions-or.webp,
    scripts/build-gold-icon.js). L'ombre porte vers le bas à droite, comme le reste de la vue. Avec le cadre de Chatty : les
-   deux branches de laurier de sa planche 2 (n° 1 et 3), sous le rond, de part et d'autre. */
-.conv-emblem{position:absolute;top:-68px;left:50%;z-index:4;width:282px;height:118px;margin-left:-141px;background:url("assets/creation/discussions-or.webp") 50% 35px/60px 60px no-repeat,url("assets/kit/boutons/rond-rouge.webp") 50% 10.3px/104px 107.4px no-repeat,url("assets/kit/cadre-dialogue/planche2-01.webp") 0 0/104px auto no-repeat,url("assets/kit/cadre-dialogue/planche2-03.webp") right 0 top 0/104px auto no-repeat;filter:drop-shadow(3px 6px 6px rgba(30,16,4,.5)) drop-shadow(1px 2px 1.5px rgba(30,16,4,.35));pointer-events:none}
-.conv-page{position:relative;z-index:0;display:flex;flex:1;min-height:0}
+   deux branches de laurier de sa planche 2 (n° 1 et 3), sous le rond, de part et d'autre.
+   Avec le cadre d'Idan (Idan, 2026-11-25 : « l'emblème… on le descend beaucoup. Il doit passer sur le parchemin… et la ligne
+   dorée entre les deux cadres en son milieu » ; « les feuilles… restent posées sur la barre du haut, mais tout en bas de la
+   barre ») : le centre du rond sur le filet doré du cadre (à 39 px du haut de la boîte). Puis « grossis le médaillon à
+   130 px ; les lauriers, on va les poser sur la barre dorée, donc plus bas ; tu peux les grossir un peu » : rond de 130 px
+   (icône à l'échelle, 75 px), lauriers de 120 px de large, leur bout toujours glissé sous le bord du rond. Puis
+   « remonte les lauriers… », puis « non, on les repose comme avant, sur la barre du parchemin, mais ajoute leur 50 % en
+   largeur et hauteur » : lauriers de 180 px, le bas des branches sur le liseré doré du parchemin (69,6 px), leur bout glissé
+   de 25 px sous le rond. */
+.conv-emblem{position:absolute;top:-68px;left:50%;z-index:4;width:440px;height:175px;margin-left:-220px;background:url("assets/creation/discussions-or.webp") 50% 69.9px/75px 75px no-repeat,url("assets/kit/boutons/rond-rouge.webp") 50% 40px/130px 134.25px no-repeat,url("assets/kit/cadre-dialogue/planche2-01.webp") 0 6.4px/180px auto no-repeat,url("assets/kit/cadre-dialogue/planche2-03.webp") right 0 top 6.4px/180px auto no-repeat;filter:drop-shadow(3px 6px 6px rgba(30,16,4,.5)) drop-shadow(1px 2px 1.5px rgba(30,16,4,.35));pointer-events:none}
+/* Le parchemin dans l'axe des volutes du cadre (Idan, 2026-11-25 : « la tête ronde de la volute doit être en diagonale
+   avec l'angle cassé de la bordure du parchemin », « on doit avoir un alignement en diagonal entre les trois… Il faut
+   remettre de l'espace ») : l'angle cassé du cadre, la tête de la volute (bout à 52,4 ; 53,7 px du coin de la boîte) et
+   l'angle cassé du parchemin sont sur la même diagonale ; le parchemin garde les marges des côtés (68 px, comme les
+   boutons ; « rajoute 15px ») et son haut est à 69,6 px (68 + 1,6, l'axe de la volute) : ~30 px de cuir entre la volute
+   et l'angle du parchemin, le long de la diagonale. */
+.conv-page{position:relative;z-index:0;display:flex;flex:1;min-height:0;margin-top:-.4px}
 .conv-page::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:56px;border-image:url("assets/creation/parchemin.webp") 180 fill / 56px / 10px stretch;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px)}
 /* « On ajoute un dégradé pour foncer légèrement les côtés du parchemin » (Idan, 2026-11-25) : dans le filet doré collé au
    parchemin (« il a mis un cadre collé au parchemin. Ça le met en valeur ») ; le parchemin est taillé aux coins coupés
@@ -1553,7 +1582,24 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    posé sur l'angle » : centré sur le coin haut gauche de la bande de métal (bouton.webp : bande de y 39 à 59, coin du
    milieu de la bande vers x 52, à l'échelle 20/64) ; le numéro garde sa taille, centré dans le rond ; le texte reste doré (« on oublie le texte en gris / métal ici »), « la
    police à 18 », « on remplit par ligne » et seules les rangées utiles sont posées : la conversation prend la place. */
-.conv .talk-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:64px;grid-auto-flow:row;gap:14px 12px;padding:16px 6px 12px}
+/* Le plateau des boutons (Idan, 2026-11-26 : « un div qui englobe tous les boutons du bas avec le même cuir que le
+   background, mais on le fonce un tout petit peu. On met 10-15 de padding… une ombre portée très légère et un tout petit
+   peu d'éclairé dans le sens de la lumière… très subtil ») : le cuir du cadre vu à travers, assombri ; la lumière vient du
+   haut à gauche : un éclat diffus en haut et à gauche, l'ombre portée vers le bas à droite. Puis « augmente encore un
+   peu le padding, fonce un peu le cuir… l'éclaircissement ou l'ombre portée, beaucoup plus flou et léger » : cuir assombri
+   de 30 %, éclat et ombre très flous ; puis « fonce encore un peu le plateau et augmente la taille de l'ombre et de
+   l'éclaircissement » : 40 %, ombre et éclat plus étendus ; « l'ombre doit être floue mais beaucoup plus visible, idem
+   pour l'éclaircissement » : ombre et éclat bien plus intenses, toujours flous ; marges visibles de 16-18 px, comptées depuis ce qui est dessiné : le haut des ronds
+   des numéros, le bord doré des boutons sur les côtés et en bas (avec les marges de la liste, 16 / 6 / 12 px). */
+/* Puis « mets-lui des bords cassés » (angles coupés de 11 px, comme le parchemin) : le cuir assombri et ses éclat et pénombre
+   intérieurs sont sur ::before, découpé ; l'ombre portée est sur ::after, une forme aux mêmes angles coupés (dégradés aux
+   coins) floutée et décalée vers le bas à droite, pour qu'elle suive les angles ; elle est évidée sous le plateau (comme
+   une ombre portée), pour ne pas assombrir le cuir vu à travers. */
+.conv #recruit-talk-choices{position:relative;z-index:0;padding:11px 7.5px 4px}
+.conv #recruit-talk-choices::before,.conv #recruit-talk-choices::after{content:"";position:absolute;inset:0;pointer-events:none}
+.conv #recruit-talk-choices::before{z-index:-1;background:rgba(12,6,2,.4);box-shadow:inset 12px 12px 30px -10px rgba(255,228,168,.2),inset -12px -12px 30px -10px rgba(0,0,0,.42);clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px)}
+.conv #recruit-talk-choices::after{z-index:-2;background:linear-gradient(135deg,transparent 11px,#000 0) top left,linear-gradient(225deg,transparent 11px,#000 0) top right,linear-gradient(315deg,transparent 11px,#000 0) bottom right,linear-gradient(45deg,transparent 11px,#000 0) bottom left;background-size:51% 51%;background-repeat:no-repeat;opacity:.62;filter:blur(15px);transform:translate(6px,12px);clip-path:polygon(evenodd,-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) calc(100% + 80px),-80px calc(100% + 80px),-80px -80px,5px -12px,calc(100% - 17px) -12px,calc(100% - 6px) -1px,calc(100% - 6px) calc(100% - 23px),calc(100% - 17px) calc(100% - 12px),5px calc(100% - 12px),-6px calc(100% - 23px),-6px -1px,5px -12px,-80px -80px)}
+.conv .talk-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:64px;grid-auto-flow:row;gap:19px 12px;padding:16px 6px 12px}
 .conv .talk-options li{display:flex;min-width:0}
 .conv .talk-options button{position:relative;isolation:isolate;flex:1;display:flex;align-items:center;justify-content:center;min-width:0;height:100%;padding:2px 30px 4px;border:0;border-radius:0;background:transparent;color:#f0d395;font:700 18px/1.12 "EB Garamond",Georgia,serif;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.85);transition:color .12s,transform .12s}
 .conv .talk-options button::before,.conv .talk-choice::before{content:"";position:absolute;inset:-12px 0 -16px;z-index:-1;min-width:0;box-sizing:border-box;border-style:solid;border-width:20px 40px;border-image:url("assets/creation/bouton-brun.webp") 64 128 fill / 20px 40px stretch;pointer-events:none}
@@ -1576,7 +1622,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .conv .talk-options button:disabled .talk-num{color:rgba(201,164,97,.45);filter:saturate(.6) brightness(.82)}
 /* Fiche repliée (Idan, 2026-11-25 : « c'est trop serré… on augmente de 5 px l'espace entre les lignes et également 5 entre
    les colonnes… réduire la police d'1 px ») ; la fiche ouverte garde ses réglages. */
-.is-folded .conv .talk-options{gap:19px 17px}
+.is-folded .conv .talk-options{gap:24px 17px}
 .is-folded .conv .talk-options button{font-size:17px}
 .talk-nobr{white-space:nowrap}
 .conv .talk-offer{padding:4px 6px 2px}

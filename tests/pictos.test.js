@@ -28,6 +28,27 @@ assert.deepEqual([...goutte.matchAll(/<img class="([^"]+)" src="([^"]+)"/g)].map
 assert.match(renderPicto("ascendance","",{none:true,size:null}),/^<img class="picto picto-goutte-sombre" src="assets\/pictos\/goutte-sombre\.webp"/);
 assert.doesNotMatch(renderPicto("people","Nain",{size:null,tip:false}),/data-picto-name|picto-sm/);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","pictos.css"),"utf8");
+// Le recalage optique (Idan, 2026-11-26) : les pentagones des cinq cultures humaines remontés et réduits (« ils sont
+// tronqués » et « paraissent trop gros »), les Cités libres étirés à la hauteur des autres, les triangles des nains
+// descendus et réduits ; jamais plus grands que leur boîte. Les elfes, les autres cultures et les peuples ne bougent pas.
+{
+  const {PICTO_OPTIQUE}=require("../prototype-web/picto-ui.js");
+  const humains=["Cités libres","Empire de la nuit blanche","Royaumes du Soleil Levant","Terres des Deux Fleuves","Tribus de la jungle"];
+  const nains=["Nains des montagnes","Nains du chaos","Nains esclaves"];
+  for(const culture of [...humains,...nains]){
+    const o=PICTO_OPTIQUE.culture[pictoSlug(culture)];
+    assert.ok(o&&o.s<1&&o.s*(o.sy??1)<=1,culture);
+    assert.ok(humains.includes(culture)?o.dy<0:o.dy>0,culture+" : sens du décalage");
+    assert.match(renderPicto("culture",culture,{tip:false}),
+      new RegExp(` data-picto-optique style="--picto-s:${o.s};--picto-sy:${o.sy??1};--picto-dy:${o.dy}%" `),culture);
+  }
+  assert.ok(PICTO_OPTIQUE.culture["cites-libres"].sy>1,"les Cités libres, étirés en hauteur");
+  assert.equal(Object.keys(PICTO_OPTIQUE.culture).length,humains.length+nains.length);
+  for(const [kind,name] of [["culture","Elfes noirs"],["culture","Orcs noirs"],["people","Humain"],["people","Nain"]])
+    assert.doesNotMatch(renderPicto(kind,name),/data-picto-optique|style=/,name);
+  assert.match(css,/\.picto\[data-picto-optique\]\{scale:var\(--picto-s\) calc\(var\(--picto-s\) \* var\(--picto-sy\)\);translate:0 var\(--picto-dy\)\}/);
+  assert.doesNotMatch(css,/data-picto-remonte/);
+}
 assert.match(css,/\.picto-goutte>\.goutte-embleme\{animation:goutte-apparait 1s/,"l'emblème arrive en une seconde");
 assert.match(css,/\.picto-goutte\.is-still>\.goutte-embleme\{animation:none\}/,"pas de fondu quand le jeu redessine");
 // En ligne, chaque image porte le numéro de la mise en ligne, lu sur le script (« picto-ui.js?v=<commit> ») : sinon le

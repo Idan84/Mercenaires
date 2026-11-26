@@ -67,7 +67,7 @@
       "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
-  "row_count": 27,
+  "row_count": 28,
   "rows": [
     {
       "cle": "fond-camp",
@@ -191,6 +191,27 @@
       ],
       "motifs": [
         "assets/cantine/plats/*.webp"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "tavernier-situations",
+      "famille": "Situations du tavernier",
+      "nombre": 20,
+      "ou": "La conversation avec le tavernier : le portrait en pied de sa fiche repliée (le faux easter egg), une situation au hasard à chaque conversation.",
+      "pourquoi": "Surprendre le joueur qui déplie la fiche : le tavernier dans une situation qu'il n'aurait jamais dû voir.",
+      "fichiers": "assets/tavernier/scenes/<code>.webp (tavern-keeper-scenes.json, colonne image)",
+      "affichage": "Environ 292 × 548 px, la colonne du portrait de la fiche au survol (1920 × 1080).",
+      "depot": "Image verticale en pied, 768 × 1376 ; un fichier par situation.",
+      "format_jeu": "WebP qualité 92, tous les pixels d'Idan (768 × 1376).",
+      "alternates": "Non : une image par situation.",
+      "source": "Hostinger media/Avatar_Tavernier.zip (Idan) → scripts/build-tavern-keeper.js.",
+      "exemples": [
+        "assets/tavernier/scenes/homard.webp",
+        "assets/tavernier/scenes/bain.webp"
+      ],
+      "motifs": [
+        "assets/tavernier/scenes/*.webp"
       ],
       "variantes": false
     },

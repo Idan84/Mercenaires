@@ -53,6 +53,10 @@ assert.match(css,/\.hud-context \.hud-menu-list::after\{[^}]*border-image:url\("
 assert.match(css,/\.hud-context \.hud-menu-list::before\{[^}]*url\("assets\/hud\/metal-brosse\.webp"\) 0 0 \/ 256px 128px repeat/,"sa plaque de métal répétée, jamais étirée");
 assert.match(css,/\.hud-context \.hud-menu-list\{[^}]*animation:hud-panneau /,"il se déplie à l'ouverture");
 assert.match(css,/\.hud-context-grave\{display:flex;align-items:baseline;/,"le nom posé sur le bas de la flèche");
+assert.match(css,/\.hud-context-name\{font:700 calc\(var\(--hb-B\) \* \.24 \* var\(--hc-taille,1\)\)/,"un nom long rapetisse (Construction)");
+assert.match(js,/--hc-taille",String\(\+Math\.min\(1,10\/\[\.\.\.name\]\.length\)/,"au-delà de 10 lettres");
+assert.match(css,/\.hud-context \.hud-menu-list button\{[^}]*white-space:normal;text-wrap:balance;/,"une salle au nom long passe sur deux lignes");
+assert.match(css,/\.hud-context \.hud-menu-list\.is-closing\{pointer-events:none;animation:hud-panneau-ferme /,"le panneau se replie à la fermeture");
 assert.match(actionsNav,/<ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden><\/ul>/);
 assert.match(actionsNav,/id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal"/);
 assert.ok(bottom.indexOf('class="hud-play"')<bottom.indexOf('class="hud-actions"'),"à droite du bouton play");

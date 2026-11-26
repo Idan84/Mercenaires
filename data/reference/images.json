@@ -67,7 +67,7 @@
       "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
-  "row_count": 26,
+  "row_count": 27,
   "rows": [
     {
       "cle": "fond-camp",
@@ -170,6 +170,27 @@
       ],
       "motifs": [
         "assets/cantine/cantine-*.webp"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "plats-cantine",
+      "famille": "Plats de la Cantine",
+      "nombre": 10,
+      "ou": "La Cantine : l'image du plat du jour, dans le cadre carré or du kit, sur le parchemin « Au menu ».",
+      "pourquoi": "Montrer le plat que mange toute la compagnie.",
+      "fichiers": "assets/cantine/plats/<code>.webp (canteen-dishes.json, colonne image)",
+      "affichage": "Environ 235 × 235 px dans un cadre de 270 px (1920 × 1080), coins coupés.",
+      "depot": "Image carrée (le centre est gardé si elle ne l'est pas) ; un fichier par plat.",
+      "format_jeu": "WebP qualité 92, 640 × 640.",
+      "alternates": "Non : une image par plat.",
+      "source": "Hostinger media/plats_cuisine.zip (Idan) → scripts/build-canteen-dishes.js.",
+      "exemples": [
+        "assets/cantine/plats/ragout_mamie_ogresse.webp",
+        "assets/cantine/plats/tourte_aux_trefles.webp"
+      ],
+      "motifs": [
+        "assets/cantine/plats/*.webp"
       ],
       "variantes": false
     },

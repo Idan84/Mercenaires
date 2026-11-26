@@ -18,6 +18,14 @@
     {
       "key": "peuple",
       "source": "Peuple dont c'est le plat"
+    },
+    {
+      "key": "phrase",
+      "source": "Phrase du menu (Idan, 2026-11-26 : pas de chiffres ; le modèle d'Idan pour le Ragoût, les autres proposées par JC, à valider)"
+    },
+    {
+      "key": "image",
+      "source": "Image du plat (media/plats_cuisine.zip d'Idan → scripts/build-canteen-dishes.js)"
     }
   ],
   "row_count": 10,
@@ -26,61 +34,81 @@
       "code": "ragout_mamie_ogresse",
       "nom": "Ragoût de Mamie Ogresse",
       "caracteristique": "Force",
-      "peuple": "Ogre"
+      "peuple": "Ogre",
+      "phrase": "Le Ragoût de Mamie Ogresse, au bon goût de Mamie, rendra toute la compagnie plus forte !",
+      "image": "assets/cantine/plats/ragout_mamie_ogresse.webp"
     },
     {
       "code": "fromage_lait_de_poule",
       "nom": "Fromage au lait de poule",
       "caracteristique": "Endurance",
-      "peuple": "Nain"
+      "peuple": "Nain",
+      "phrase": "Le Fromage au lait de poule, affiné au fond d’une mine naine, rendra toute la compagnie plus endurante !",
+      "image": "assets/cantine/plats/fromage_lait_de_poule.webp"
     },
     {
       "code": "herisson_roti",
       "nom": "Hérisson rôti à la sauce des bois",
       "caracteristique": "Vitesse",
-      "peuple": "Reptilien"
+      "peuple": "Reptilien",
+      "phrase": "Le Hérisson rôti à la sauce des bois, attrapé à la course, rendra toute la compagnie plus rapide !",
+      "image": "assets/cantine/plats/herisson_roti.webp"
     },
     {
       "code": "poelee_champignons",
       "nom": "Poêlée de champignons",
       "caracteristique": "Perception",
-      "peuple": "Gnome"
+      "peuple": "Gnome",
+      "phrase": "La Poêlée de champignons, cueillis à la lanterne par un gnome, rendra toute la compagnie plus attentive !",
+      "image": "assets/cantine/plats/poelee_champignons.webp"
     },
     {
       "code": "lapin_roti",
       "nom": "Lapin rôti et ses carottes confites",
       "caracteristique": "Esquive",
-      "peuple": "Gobelin"
+      "peuple": "Gobelin",
+      "phrase": "Le Lapin rôti et ses carottes confites, chapardé par un gobelin, rendra toute la compagnie plus insaisissable !",
+      "image": "assets/cantine/plats/lapin_roti.webp"
     },
     {
       "code": "tourte_aux_trefles",
       "nom": "Tourte aux trèfles",
       "caracteristique": "Chance",
-      "peuple": "Halfling"
+      "peuple": "Halfling",
+      "phrase": "La Tourte aux trèfles, à quatre feuilles bien sûr, rendra toute la compagnie plus chanceuse !",
+      "image": "assets/cantine/plats/tourte_aux_trefles.webp"
     },
     {
       "code": "soupe_geant_vert",
       "nom": "Soupe de Géant Vert",
       "caracteristique": "Constitution",
-      "peuple": "Orc"
+      "peuple": "Orc",
+      "phrase": "La Soupe de Géant Vert, épaisse comme un rempart orc, rendra toute la compagnie plus robuste !",
+      "image": "assets/cantine/plats/soupe_geant_vert.webp"
     },
     {
       "code": "tetes_de_harengs",
       "nom": "Têtes de harengs",
       "caracteristique": "Intelligence",
-      "peuple": "Elfe"
+      "peuple": "Elfe",
+      "phrase": "Les Têtes de harengs, délice des elfes lettrés, rendront toute la compagnie plus maligne !",
+      "image": "assets/cantine/plats/tetes_de_harengs.webp"
     },
     {
       "code": "chili_piments_doux",
       "nom": "Chili aux piments doux",
       "caracteristique": "Courage",
-      "peuple": "Homme-bête"
+      "peuple": "Homme-bête",
+      "phrase": "Le Chili aux piments doux, doux d’après le tavernier, rendra toute la compagnie plus courageuse !",
+      "image": "assets/cantine/plats/chili_piments_doux.webp"
     },
     {
       "code": "tataki_hirondelle",
       "nom": "Tataki d'hirondelle",
       "caracteristique": "Dextérité",
-      "peuple": "Humain"
+      "peuple": "Humain",
+      "phrase": "Le Tataki d'hirondelle, tranché d’une main sûre, rendra toute la compagnie plus adroite !",
+      "image": "assets/cantine/plats/tataki_hirondelle.webp"
     }
   ]
 }

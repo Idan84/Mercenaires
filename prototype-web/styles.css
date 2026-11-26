@@ -1300,6 +1300,35 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    plein écran, par-dessus le décor de la taverne et sous les barres ; le contenu de l'écran passe au-dessus. */
 #tavern-canteen-view::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var(--canteen-bg,url("assets/cantine/cantine-1.webp")) center/cover no-repeat}
 #tavern-canteen-view>*{position:relative;z-index:1}
+/* L'écran (Idan, 2026-11-26 : « Retire tout le blabla actuel. On met un petit parchemin ») : pas de cadre de panneau ; le
+   parchemin du menu à gauche, entre les barres (le tavernier est à droite sur les fonds). Le parchemin de la charte
+   (creation/parchemin.webp, comme Recruter), une légère ombre portée ; « Au menu », le nom du plat, son image dans le cadre
+   carré or du kit (kit/cadres/cadre-carre.webp : l'ouverture fait 86 % du cadre, coins coupés à 10,5 %), sa phrase, et le
+   bouton capitaine (.mission-btn) « Changer le menu ». */
+#tavern-canteen-view{position:fixed;inset:0;display:flex;align-items:center;margin:0;padding:var(--hud-top-z) 0 var(--hud-bottom-z) calc(9 * var(--vw));
+  background:none;border:0;border-radius:0;box-shadow:none;pointer-events:none}
+#tavern-canteen-view .tavern-canteen{pointer-events:auto}
+.canteen-menu{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
+  box-sizing:border-box;width:500px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;
+  border-style:solid;border-width:62px;border-image:url("assets/creation/parchemin.webp") 180 fill / 62px stretch;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.45));color:var(--encre)}
+.canteen-menu-kicker{margin:0;font:600 15px/1 var(--police-titre);letter-spacing:.32em;text-transform:uppercase;color:var(--encre-2)}
+#tavern-canteen-view .canteen-dish-name{margin:10px 0 18px;font:700 27px/1.15 var(--police-titre);color:var(--encre);text-shadow:none;text-wrap:balance}
+.canteen-dish-img{position:relative;width:270px;aspect-ratio:596/600;margin:0}
+.canteen-dish-img img{position:absolute;left:6.6%;top:6.6%;width:86.8%;height:86.8%;object-fit:cover;
+  clip-path:polygon(10.5% 0,89.5% 0,100% 10.5%,100% 89.5%,89.5% 100%,10.5% 100%,0 89.5%,0 10.5%)}
+.canteen-dish-img::after{content:"";position:absolute;inset:0;background:url("assets/kit/cadres/cadre-carre.webp") center/100% 100% no-repeat;
+  filter:drop-shadow(0 3px 4px rgba(40,22,6,.45));pointer-events:none}
+.canteen-dish-phrase{margin:18px 0 0;font:italic 20px/1.35 var(--police-texte);color:var(--encre);text-wrap:balance}
+.canteen-menu .canteen-change{margin-top:22px;min-width:250px;height:70px;font-size:16px}
+/* Changer le menu : les plats goûtés, gravés et séparés par des filets ; celui du jour en rouge ; le nouveau plat du
+   tavernier, avec sa mention. Un clic sur un plat le met au menu (sur celui du jour : on referme). */
+.canteen-choices{list-style:none;margin:16px 0 0;padding:0;width:100%}
+.canteen-choices li+li{border-top:1px solid rgba(100,73,46,.35)}
+.canteen-choice{all:unset;box-sizing:border-box;display:block;width:100%;padding:11px 8px;cursor:pointer;font:600 18px/1.2 var(--police-titre);color:var(--encre);transition:background .15s,color .15s}
+.canteen-choice small{display:block;margin-top:3px;font:italic 15px/1.2 var(--police-texte);color:var(--encre-2)}
+.canteen-choice:hover,.canteen-choice:focus-visible{background:rgba(122,31,28,.09);color:#7a1f1c;outline:none}
+.canteen-choice.is-current{color:#7a1f1c}
 /* Une salle pas encore construite (la Cantine) : son calque, sa zone et son nom sont cachés ; le mur reste vide. */
 .tavern-layer.is-closed,.tavern-zone.is-closed,.tavern-label.is-closed{display:none}
 .tavern-zone{pointer-events:all;cursor:default;outline:none}

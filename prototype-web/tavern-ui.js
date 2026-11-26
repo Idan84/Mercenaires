@@ -632,7 +632,8 @@ function showTavernView(view="home"){
   }
   if(view==="missions") renderContractBoard();
   if(view==="recruits") updateRecruitCarousel();
-  if(view==="canteen"&&typeof renderCanteen==="function") renderCanteen();
+  // La Cantine s'ouvre sur le plat du jour (le choix d'un autre plat se referme).
+  if(view==="canteen"&&typeof openCanteenChoice==="function") openCanteenChoice(false);
   if(view==="cellar"&&typeof renderCellar==="function") renderCellar();
   document.body.dataset.tavernView=view;
 }

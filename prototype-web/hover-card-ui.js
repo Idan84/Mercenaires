@@ -389,15 +389,16 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=n
 // elle (960 px, la largeur d'une rangée de trois boutons capitaine) ; le cartouche et la page gardent leur largeur de la
 // fiche au survol, la carte prend la hauteur du portrait (mêmes marges en haut et en bas). Le même cadre du kit
 // (hoverKitFrame, à cette taille : les ornements gardent leur place par rapport à la page et à la séparation). La page
-// claire est vide : chaque pop-up y met son contenu (body), avec ses classes (pageClass).
+// claire est vide : chaque pop-up y met son contenu (body), avec ses classes (pageClass) ; cardClass : une classe de plus
+// sur la carte (la fiche renversée du départ) ; overPortrait : ce qui se pose sur le portrait (la croix du départ).
 const POPUP_DX=100;
 const POPUP_CARD={...HOVER_CARD,w:HOVER_CARD.w+POPUP_DX,h:+(HOVER_CARD.w*.34+POPUP_DX+HOVER_CARD.h*.015*2).toFixed(2),
   sepX:HOVER_CARD.sepX+POPUP_DX,pageCx:HOVER_CARD.pageCx+POPUP_DX,portraitCx:HOVER_CARD.portraitCx+POPUP_DX/2,cx:HOVER_CARD.cx+POPUP_DX};
-function renderPopupCard(c,{body="",pageClass=""}={}){
+function renderPopupCard(c,{body="",pageClass="",cardClass="",overPortrait=""}={}){
   const d=mercenaryHoverData(c),frame=hoverCultureFrame(d.culture);
   const nameFit=Math.max(.6,Math.min(1,20/d.name.length));
-  return `<article class="hover-card hover-card--popup" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)};--hc-popup-w:${POPUP_CARD.w}px;--hc-popup-h:${POPUP_CARD.h}px;--hc-popup-dx:${POPUP_DX}px' aria-label="${esc(d.name)}">
-    <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"portrait"})}</div>
+  return `<article class="hover-card hover-card--popup${cardClass?" "+cardClass:""}" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)};--hc-popup-w:${POPUP_CARD.w}px;--hc-popup-h:${POPUP_CARD.h}px;--hc-popup-dx:${POPUP_DX}px' aria-label="${esc(d.name)}">
+    <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"portrait"})}${overPortrait}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page${pageClass?" "+pageClass:""}">${body}</div>
     ${hoverKitFrame(frame.kit,POPUP_CARD)}
@@ -416,6 +417,38 @@ function renderWelcomeCard(c,{line="",join="",salary=0,bonus=0}={}){
       <p class="hc-welcome-join">${esc(join)}</p>
       <i class="hc-fente hc-fente--h" aria-hidden="true"></i>
       <div class="hc-welcome-pay">${pay("Salaire","Salaire journalier",salary)}<i class="hc-fente" aria-hidden="true"></i>${pay("Prime","Prime de mission",bonus)}</div>
+    `});
+}
+
+// Le pop-up du départ, quand un candidat renverse la table (Idan, 2026-11-26 : « le renversement de table. Je cherche une
+// idée graphique pour que ça soit sympa (certainement en mode pop up pour forcer à quitter...) » ; idée 1, « Vas-y pour la
+// 1 ») : la fiche pop-up, tombée de travers, son portrait passé en gris (styles.css, .hover-card--left) ; dans sa page, ce
+// qu'il fait en partant (line) et « Prénom a quitté la taverne » (gone). Sur le portrait, une grosse croix rouge comme
+// faite au feutre (Idan, 2026-11-26 : « ajouter sur le portrait une grosse croix rouge comme faite au feutre ») : deux
+// traits épais, un peu courbes, à main levée ; les bords bavent un peu et l'encre varie (filtre) ; là où ils se croisent,
+// l'encre est plus foncée. Elle se trace une fois la fiche tombée (styles.css).
+const HC_FEUTRE=`<svg class="hc-croix" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+  <filter id="hc-feutre" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="2" seed="3" result="grain"/>
+    <feDisplacementMap in="SourceGraphic" in2="grain" scale=".8" xChannelSelector="R" yChannelSelector="G" result="bord"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="2" seed="8" result="nuance"/>
+    <feColorMatrix in="nuance" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -.3 1.05" result="encre"/>
+    <feComposite in="bord" in2="encre" operator="in" result="corps"/>
+    <feMorphology in="bord" operator="erode" radius=".8" result="dedans"/>
+    <feComposite in="bord" in2="dedans" operator="out" result="lisere"/>
+    <feFlood flood-color="#6e0a10" flood-opacity=".5"/>
+    <feComposite in2="lisere" operator="in" result="bordfonce"/>
+    <feMerge><feMergeNode in="corps"/><feMergeNode in="bordfonce"/></feMerge>
+  </filter>
+  <g filter="url(#hc-feutre)" fill="none" stroke="#c4121b" stroke-linecap="round" stroke-linejoin="round">
+    <path pathLength="1" d="M15 15C33 33 57 58 86 85" stroke-width="7.5"/>
+    <path pathLength="1" d="M85 13C66 35 44 60 13 87" stroke-width="7"/>
+  </g>
+</svg>`;
+function renderLeftCard(c,{line="",gone=""}={}){
+  return renderPopupCard(c,{pageClass:"hc-welcome",cardClass:"hover-card--left",overPortrait:HC_FEUTRE,body:`
+      <p class="hc-welcome-line">${esc(line)}</p>
+      <p class="hc-welcome-join">${esc(gone)}</p>
     `});
 }
 
@@ -466,4 +499,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverSchoolRows,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase,HOVER_CARD,POPUP_CARD,POPUP_DX,renderPopupCard,renderWelcomeCard};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverSchoolRows,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase,HOVER_CARD,POPUP_CARD,POPUP_DX,renderPopupCard,renderWelcomeCard,renderLeftCard};

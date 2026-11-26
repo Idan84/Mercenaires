@@ -121,10 +121,19 @@ const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>
 const log=[];
 const game={campaign:null};
 const ui=new Function("game","$","fmt","esc","campaignRules","tavernLog","saveGame","renderGame","campBuildingAction",
-  fs.readFileSync(path.join(ROOT,"prototype-web","canteen-ui.js"),"utf8")+"\nreturn {renderCanteen,chooseCanteenDish,tasteCanteenDish,logCanteen,canteenEffect};")(
+  fs.readFileSync(path.join(ROOT,"prototype-web","canteen-ui.js"),"utf8")+"\nreturn {renderCanteen,chooseCanteenDish,tasteCanteenDish,logCanteen,canteenEffect,canteenBackground};")(
   game,$,fmt,esc,()=>rules,(message,kind)=>log.push({message,kind}),()=>{},()=>{},(c,code,level)=>`<button data-camp-build="${code}">${level?"Améliorer":"Construire"}</button>`);
 assert.deepEqual(["Force","Endurance","Courage","Intelligence","Dextérité"].map(ui.canteenEffect),
   ["augmente la Force","augmente l’Endurance","augmente le Courage","augmente l’Intelligence","augmente la Dextérité"]);
+// Le fond de l'écran (Idan, 2026-11-26 : « 10 backgrounds à mettre en plein écran (sous la barre de jeu). L'image à mettre
+// dépend du niveau de la cantine ») : celle de son niveau, de 1 à 10, en plein écran sous les barres.
+assert.deepEqual([0,1,5,10,12].map(n=>ui.canteenBackground(n)),
+  ["assets/cantine/cantine-1.webp","assets/cantine/cantine-1.webp","assets/cantine/cantine-5.webp","assets/cantine/cantine-10.webp","assets/cantine/cantine-10.webp"]);
+for(let n=1;n<=10;n++) assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",ui.canteenBackground(n))),"le fond du niveau "+n);
+const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
+assert.match(css,/#tavern-canteen-view::before\{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var\(--canteen-bg,url\("assets\/cantine\/cantine-1\.webp"\)\) center\/cover no-repeat\}/,"plein écran, sous les barres");
+const props={};
+elements["tavern-canteen-view"]={innerHTML:"",style:{setProperty:(k,v)=>{props[k]=v;}}};
 const fresh=rules.createCampaign({captain,squad:[]});
 game.campaign=fresh;
 ui.renderCanteen();
@@ -132,6 +141,7 @@ assert.match(elements["tavern-canteen"].innerHTML,/À construire[\s\S]*data-camp
 fresh.company.camp.buildings={canteen:{level:2,construction:null},alchemy_lab:{level:2,construction:null}};
 ui.renderCanteen();
 const screen=elements["tavern-canteen"].innerHTML;
+assert.equal(props["--canteen-bg"],'url("assets/cantine/cantine-2.webp")',"le fond du niveau 2");
 assert.match(screen,/Niveau 2 · \+80 XP par jour/);
 assert.match(screen,/<option value="fromage_lait_de_poule" selected>Fromage au lait de poule — augmente l’Endurance \(\+80 XP par jour\)<\/option>/);
 const offered=canteen.offer(fresh);

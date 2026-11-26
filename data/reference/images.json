@@ -67,7 +67,7 @@
       "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
-  "row_count": 25,
+  "row_count": 26,
   "rows": [
     {
       "cle": "fond-camp",
@@ -148,6 +148,28 @@
       ],
       "motifs": [
         "assets/dormitory/dortoir-*.jpg"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "cantine",
+      "famille": "Fonds de la Cantine",
+      "nombre": 10,
+      "ou": "La Cantine (une salle de la Taverne) : un fond par niveau de la Cantine (1 à 10), le tavernier en cuisinier.",
+      "pourquoi": "Montrer la cuisine qui s'embellit avec le niveau de la Cantine, de la cave enfumée au palais doré.",
+      "fichiers": "assets/cantine/cantine-<niveau>.webp (canteen-ui.js, canteenBackground)",
+      "affichage": "Plein écran (cover), sous les barres du camp.",
+      "depot": "JPEG 16:9 sans transparence ; un fichier par niveau, cantine_<niveau>.jpg.",
+      "format_jeu": "WebP qualité 95, tous les pixels d'Idan (2752 × 1536).",
+      "alternates": "Non : un fichier par niveau, ce ne sont pas des alternates.",
+      "source": "Hostinger media/cantine_taverne.zip (Idan) → scripts/build-canteen-bg.js.",
+      "exemples": [
+        "assets/cantine/cantine-1.webp",
+        "assets/cantine/cantine-5.webp",
+        "assets/cantine/cantine-10.webp"
+      ],
+      "motifs": [
+        "assets/cantine/cantine-*.webp"
       ],
       "variantes": false
     },

@@ -1295,6 +1295,11 @@ body[data-screen="camp"] .tavern-scene{display:block;opacity:0;visibility:hidden
 body[data-screen="camp"][data-camp-scene="tavern"] .tavern-scene{opacity:1;visibility:visible;transition:opacity .36s ease-in-out,visibility 0s}
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-zones{display:block}
 .tavern-layer.is-hover{filter:url(#tavern-glow)}
+/* La Cantine (Idan, 2026-11-26 : « 10 backgrounds à mettre en plein écran (sous la barre de jeu). L'image à mettre dépend
+   du niveau de la cantine ») : le fond de son niveau (assets/cantine/cantine-<niveau>.webp, posé par canteen-ui.js), en
+   plein écran, par-dessus le décor de la taverne et sous les barres ; le contenu de l'écran passe au-dessus. */
+#tavern-canteen-view::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var(--canteen-bg,url("assets/cantine/cantine-1.webp")) center/cover no-repeat}
+#tavern-canteen-view>*{position:relative;z-index:1}
 /* Une salle pas encore construite (la Cantine) : son calque, sa zone et son nom sont cachés ; le mur reste vide. */
 .tavern-layer.is-closed,.tavern-zone.is-closed,.tavern-label.is-closed{display:none}
 .tavern-zone{pointer-events:all;cursor:default;outline:none}

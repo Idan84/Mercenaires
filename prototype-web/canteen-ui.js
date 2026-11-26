@@ -13,11 +13,25 @@ function canteenDishLabel(dish,xp){
   return `${dish.nom} — ${canteenEffect(dish.caracteristique)}${xp?` (+${fmt(xp)} XP par jour)`:""}`;
 }
 
+// Le fond de l'écran (Idan, 2026-11-26 : « 10 backgrounds à mettre en plein écran (sous la barre de jeu). L'image à
+// mettre dépend du niveau de la cantine ») : celle de son niveau, de 1 à 10 (scripts/build-canteen-bg.js) ; plein écran,
+// sous les barres (styles.css, #tavern-canteen-view::before).
+const CANTEEN_BG_DIR="assets/cantine/";
+function canteenBackground(level,levels=10){
+  return `${CANTEEN_BG_DIR}cantine-${Math.max(1,Math.min(levels,Math.round(Number(level)||1)))}.webp`;
+}
+function setCanteenBackground(level,levels){
+  const view=$("tavern-canteen-view"),src=canteenBackground(level,levels);
+  const url=typeof document!=="undefined"&&document.baseURI?new URL(src,document.baseURI).href:src;
+  view?.style?.setProperty("--canteen-bg",`url("${url}")`);
+}
+
 function renderCanteen(){
   const box=$("tavern-canteen"),c=game.campaign,canteen=canteenRulesOf();
   if(!box) return;
   if(!c||!canteen){ box.innerHTML=""; return; }
   const rules=campaignRules(),row=rules.campBuildingRow(canteen.HALL),level=rules.buildingLevel(c,canteen.HALL);
+  setCanteenBackground(level,row?.niveaux||10);
   const action=typeof campBuildingAction==="function"?campBuildingAction(c,canteen.HALL,level):"";
   const head=`<p class="building-info"><span>${level?`Niveau ${fmt(level)} · +${fmt(canteen.xpPerDay(c))} XP par jour pour chaque mercenaire au camp, blessés et fatigués compris`:"À construire"}</span></p>
     <div class="building-actions">${action}</div>`;

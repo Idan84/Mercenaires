@@ -43,6 +43,9 @@ les « Nains du chaos ».
 | Tribus des forêts anciennes | `tribus-des-forets-anciennes.jpg` | Stag_skull_emblem_with_dagger_20261022215821.jpg | validé |
 | Tribus nordiques | `tribus-nordiques.jpg` | Dark_fantasy_emblem_with_horns_20261022215821.jpg | validé |
 
-Les logos des cinq cultures humaines sont des pentagones pointe en haut : leur poids est en bas. Centrés sur leur boîte comme
-les autres, ils paraissaient trop bas (Idan, 2026-11-26). Le jeu les remonte de 7 % de leur hauteur, sans toucher aux images
-(`prototype-web/picto-ui.js`, `PICTO_REMONTES` ; `pictos.css`). Un nouveau logo de la même forme s'ajoute à cette liste.
+Les logos des cinq cultures humaines sont des pentagones pointe en haut (leur poids en bas), ceux des nains des triangles
+pointe en bas (leur poids en haut). Centrés sur leur boîte comme les autres, les premiers paraissaient trop bas et trop
+gros, et le logo des Cités libres moins haut que les autres (Idan, 2026-11-26). Le jeu les réduit, étire les Cités libres
+à la hauteur des autres pentagones, et les décale pour que leur centre perçu rejoigne celui des losanges des elfes, sans
+sortir de leur boîte et sans toucher aux images (`prototype-web/picto-ui.js`, `PICTO_OPTIQUE` ; `pictos.css`). Un nouveau
+logo d'une autre forme s'ajoute à cette table, avec ses valeurs mesurées sur sa toile de 256.

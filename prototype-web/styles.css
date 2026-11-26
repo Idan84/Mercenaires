@@ -1295,6 +1295,8 @@ body[data-screen="camp"] .tavern-scene{display:block;opacity:0;visibility:hidden
 body[data-screen="camp"][data-camp-scene="tavern"] .tavern-scene{opacity:1;visibility:visible;transition:opacity .36s ease-in-out,visibility 0s}
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-zones{display:block}
 .tavern-layer.is-hover{filter:url(#tavern-glow)}
+/* Une salle pas encore construite (la Cantine) : son calque, sa zone et son nom sont cachés ; le mur reste vide. */
+.tavern-layer.is-closed,.tavern-zone.is-closed,.tavern-label.is-closed{display:none}
 .tavern-zone{pointer-events:all;cursor:default;outline:none}
 .tavern-zones.is-pointer .tavern-zone{cursor:pointer}
 .tavern-zone polygon{fill:transparent;stroke:none}

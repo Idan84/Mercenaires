@@ -108,7 +108,7 @@ while(canteen.offer(state)) canteen.unlock(state);
 assert.equal(state.company.canteen.dishes.length,10);
 assert.equal(canteen.lockedDishes(state).length,0);
 
-// Écran : la Cantine dans la Taverne (zone de l'accueil de la taverne, vue), pas dans Ma Compagnie.
+// Écran : la Cantine dans la Taverne (zone de l'accueil de la taverne, vue, une fois construite).
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-scene-ui.js"),"utf8"),/\{key:"canteen",label:"La Cantine"\}/,"une zone de l'accueil de la taverne");
 assert.match(html,/<section id="tavern-canteen-view"[\s\S]*<div id="tavern-canteen"/);
@@ -144,6 +144,9 @@ assert.equal(fresh.company.canteen.current,offered.code);
 ui.logCanteen({dish:offered,xp:80,eaters:[{id:1,changes:[{before:40,after:41}]},{id:2,changes:[]}]});
 assert.equal(log.at(-1).message,`La Cantine sert ${offered.nom} : +80 XP de ${offered.caracteristique} pour 2 mercenaires (1 gagne un point).`);
 const buildings=fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8");
-assert.match(buildings,/if\(!row\|\|row\.requiert\|\|row\.lieu\) return "";/,"pas dans Ma Compagnie");
+// Elle se construit dans la fenêtre Construction (Idan, 2026-11-26 : « On ajoute la possibilité de construire dans la
+// fenêtre construction ») ; les autres salles de la Taverne (la Cave) restent à la Taverne.
+assert.match(buildings,/const CAMP_BUILT_HERE=new Set\(\["canteen"\]\);/,"la Cantine dans la fenêtre Construction");
+assert.match(buildings,/if\(!row\|\|row\.requiert\|\|\(row\.lieu&&!CAMP_BUILT_HERE\.has\(code\)\)\) return "";/,"la Cave, non");
 
 console.log("La Cantine : salle de la Taverne, 10 plats, 40 × niveau XP par jour, nouveaux plats avec le Labo, écran — OK");

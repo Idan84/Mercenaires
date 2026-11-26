@@ -59,6 +59,17 @@ const tavernTaverniers=()=>tavernVariants("tavernier");
 const pickTavernier=(random=Math.random)=>pickTavernVariant("tavernier",random);
 const tavernLayerSrc=L=>L.src||TAVERN_ASSETS+L.key+".webp";
 const TAVERN_MENU=["talk","missions","recruits","cellar","canteen"];
+// Une salle à construire n'apparaît qu'une fois construite (Idan, 2026-11-26 : « l'image du menu n'apparaît pas si on n'a
+// pas construit la cantine (le mur reste vide) ») : son calque, sa zone, son nom et sa ligne du bouton du lieu. La zone et
+// le bâtiment qui l'ouvre (camp-buildings.json) ; elle se construit dans la fenêtre Construction (camp-buildings-ui.js).
+const TAVERN_ZONE_BUILDINGS={canteen:"canteen"};
+function tavernZoneOpen(key,campaign=typeof game!=="undefined"?game.campaign:null){
+  const code=TAVERN_ZONE_BUILDINGS[key];
+  if(!code) return true;
+  if(!campaign||typeof campaignRules!=="function") return false;
+  return campaignRules().buildingLevel(campaign,code)>0;
+}
+const tavernClosedZones=campaign=>new Set(Object.keys(TAVERN_ZONE_BUILDINGS).filter(key=>!tavernZoneOpen(key,campaign)));
 
 // Le contour lumineux (celui de l'artefact : un peu plus clair, un liseré doré, un halo plus large).
 const TAVERN_GLOW=`<filter id="tavern-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
@@ -82,9 +93,11 @@ function tavernZonesSvg(){
 
 // Le calque le plus haut qui est opaque en (x, y) : sa zone, ou rien (le fond, ou un calque qui n'ouvre rien et cache ce
 // qui est derrière). alpha(L, px, py) : l'opacité (0-255) du pixel du calque L ; null tant que l'image n'est pas lue.
-function tavernPick(x,y,alpha){
+// closed : les zones pas encore construites, dont le calque est caché (il ne capte rien et ne cache rien).
+function tavernPick(x,y,alpha,closed=new Set()){
   for(let i=TAVERN_LAYERS.length-1;i>0;i--){
     const L=TAVERN_LAYERS[i],[bx,by,bw,bh]=L.box;
+    if(L.zone&&closed.has(L.zone)) continue;
     if(x<bx||y<by||x>=bx+bw||y>=by+bh) continue;
     const a=alpha(L,Math.floor(x-bx),Math.floor(y-by));
     if(a==null) return undefined;
@@ -93,6 +106,15 @@ function tavernPick(x,y,alpha){
   return null;
 }
 
+// Le décor suit ce qui est construit : les calques, zones et noms d'une salle pas encore construite sont cachés.
+function updateTavernScene(campaign=typeof game!=="undefined"?game.campaign:null){
+  if(typeof document==="undefined") return;
+  const closed=tavernClosedZones(campaign);
+  for(const el of document.querySelectorAll("[data-layer-zone],[data-tavern-zone],[data-tavern-label]")){
+    const key=el.dataset.layerZone||el.dataset.tavernZone||el.dataset.tavernLabel;
+    el.classList.toggle("is-closed",closed.has(key));
+  }
+}
 function initializeTavernScene(){
   const scene=document.getElementById("tavern-scene"),svg=document.getElementById("tavern-zones");
   if(!scene||!svg) return;
@@ -140,6 +162,7 @@ function initializeTavernScene(){
     }
   };
   chooseVariants();
+  updateTavernScene();
   // À chaque entrée dans la taverne.
   let lastScene=document.body?.dataset.campScene;
   if(typeof MutationObserver!=="undefined"&&document.body) new MutationObserver(()=>{
@@ -160,10 +183,11 @@ function initializeTavernScene(){
     const m=svg.getScreenCTM?.();
     if(!m) return event.target.closest?.("[data-tavern-zone]")?.dataset.tavernZone||null;
     const p=new DOMPoint(event.clientX,event.clientY).matrixTransform(m.inverse());
-    const zone=tavernPick(p.x,p.y,alpha);
-    return zone===undefined?event.target.closest?.("[data-tavern-zone]")?.dataset.tavernZone||null:zone;
+    const zone=tavernPick(p.x,p.y,alpha,tavernClosedZones(game.campaign));
+    const any=event.target.closest?.("[data-tavern-zone]:not(.is-closed)")?.dataset.tavernZone||null;
+    return zone===undefined?any:zone;
   };
-  const open=key=>{ setHover(null); if(key&&typeof openTavernPlace==="function") openTavernPlace(key); };
+  const open=key=>{ setHover(null); if(key&&tavernZoneOpen(key)&&typeof openTavernPlace==="function") openTavernPlace(key); };
   svg.addEventListener("pointermove",event=>setHover(pick(event)));
   svg.addEventListener("pointerleave",()=>setHover(null));
   svg.addEventListener("click",event=>open(pick(event)));

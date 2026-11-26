@@ -108,12 +108,15 @@ function campRoomsList(c,code){
       </div>`;
   }).join("")}</div>`;
 }
+const CAMP_BUILT_HERE=new Set(["canteen"]);
 // Ma Compagnie : un encart par bâtiment (à construire, puis ses niveaux ; un chantier par bâtiment), les salles de
 // l'École de magie dans le sien.
 function campBuildingCard(c,code){
   const rules=campaignRules(),row=rules.campBuildingRow(code);
-  // Une salle de la Taverne (La Cantine, lieu taverne) se gère à la Taverne, pas dans Ma Compagnie.
-  if(!row||row.requiert||row.lieu) return "";
+  // Une salle de la Taverne (lieu taverne) se gère à la Taverne, pas ici ; sauf la Cantine, qui se construit ici (Idan,
+  // 2026-11-26 : « On ajoute la possibilité de construire dans la fenêtre construction ») : son menu n'apparaît au mur
+  // de la taverne qu'une fois construite (tavern-scene-ui.js).
+  if(!row||row.requiert||(row.lieu&&!CAMP_BUILT_HERE.has(code))) return "";
   const level=rules.buildingLevel(c,code);
   return `<article class="building-card building-card--care building-card--${esc(code)}">
       <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,code,level)}</span></div>

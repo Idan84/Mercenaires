@@ -116,6 +116,7 @@ function renderTavern(){
     ?c.tavern.candidates.map(renderTavernCard).join("")
     :`<p class="recruit-empty">Personne à l’auberge.</p>`;
   updateRecruitCarousel();
+  if(typeof updateTavernScene==="function") updateTavernScene(c);
 }
 
 // Les candidats en carrousel (Idan, 2026-11-04 : « fais un système qui défile comme un carousel »), trois par écran (Idan,

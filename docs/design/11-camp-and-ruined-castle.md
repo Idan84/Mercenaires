@@ -38,6 +38,8 @@ d'où les candidats qui traînent longtemps à la taverne faute de succès.
 
 - **Une salle de la Taverne**, où cuisine le tavernier. **10 niveaux, 500 × n² PO** (500, 2 000, 4 500… 50 000) et
   **4 × n jours**.
+- **Elle se construit dans la fenêtre Construction** (Idan, 2026-11-26). Tant qu'elle n'est pas construite, **le menu
+  n'est pas au mur** de la taverne : ni image, ni zone cliquable, ni ligne dans le bouton du lieu.
 - **Chaque matin**, le **plat du jour** donne **40 × niveau XP** dans sa caractéristique à **chaque mercenaire au camp**
   (blessés, fatigués et prisonniers du Cachot compris ; pas ceux partis en contrat, chasse ou garde du corps). Pas de
   multiplicateur.

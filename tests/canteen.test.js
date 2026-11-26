@@ -121,7 +121,7 @@ const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>
 const log=[];
 const game={campaign:null};
 const ui=new Function("game","$","fmt","esc","campaignRules","tavernLog","saveGame","renderGame","campBuildingAction",
-  fs.readFileSync(path.join(ROOT,"prototype-web","canteen-ui.js"),"utf8")+"\nreturn {renderCanteen,chooseCanteenDish,tasteCanteenDish,logCanteen,canteenEffect,canteenBackground,openCanteenChoice};")(
+  fs.readFileSync(path.join(ROOT,"prototype-web","canteen-ui.js"),"utf8")+"\nreturn {renderCanteen,chooseCanteenDish,tasteCanteenDish,logCanteen,canteenEffect,canteenBackground,openCanteenChoice,turnCanteenDish,confirmCanteenDish};")(
   game,$,fmt,esc,()=>rules,(message,kind)=>log.push({message,kind}),()=>{},()=>{},(c,code,level)=>`<button data-camp-build="${code}">${level?"Améliorer":"Construire"}</button>`);
 assert.deepEqual(["Force","Endurance","Courage","Intelligence","Dextérité"].map(ui.canteenEffect),
   ["augmente la Force","augmente l’Endurance","augmente le Courage","augmente l’Intelligence","augmente la Dextérité"]);
@@ -146,31 +146,53 @@ ui.renderCanteen();
 let screen=elements["tavern-canteen"].innerHTML;
 assert.equal(props["--canteen-bg"],'url("assets/cantine/cantine-2.webp")',"le fond du niveau 2");
 const fromage=canteen.dish("fromage_lait_de_poule");
-assert.match(screen,/<p class="canteen-menu-kicker">Au menu<\/p>\s*<h2 class="canteen-dish-name">Fromage au lait de poule<\/h2>\s*<figure class="canteen-dish-img"><img src="assets\/cantine\/plats\/fromage_lait_de_poule\.webp" alt="Fromage au lait de poule"><\/figure>/);
+assert.match(screen,/<p class="canteen-menu-kicker">Au menu<\/p>\s*<h2 class="canteen-dish-name">Fromage au lait de poule<\/h2>\s*<div class="canteen-dish-row"><figure class="canteen-dish-img"><img src="assets\/cantine\/plats\/fromage_lait_de_poule\.webp" alt="Fromage au lait de poule"><\/figure>/);
 assert.ok(screen.includes(`<p class="canteen-dish-phrase">${esc(fromage.phrase)}</p>`),"sa phrase");
 assert.ok(!/XP|Niveau|Améliorer|data-camp-build|<select/.test(screen),"plus de blabla : ni chiffres, ni niveau, ni amélioration, ni liste");
 assert.ok(!screen.includes("data-canteen-change"),"un seul plat, rien d'autre au menu : pas de bouton");
-// Le Labo de niveau 2 : le tavernier propose un plat ; « Changer le menu » montre les plats goûtés et le sien.
+// Le Labo de niveau 2 : le tavernier propose un plat ; le bouton capitaine « Changer le menu » apparaît.
 fresh.company.camp.buildings.alchemy_lab={level:2,construction:null};
 ui.renderCanteen();
 screen=elements["tavern-canteen"].innerHTML;
 assert.match(screen,/<button type="button" class="mission-btn canteen-change" data-canteen-change>Changer le menu<\/button>/,"le bouton capitaine");
+assert.ok(!screen.includes("data-canteen-turn"),"pas de flèches avant le clic");
 const offered=canteen.offer(fresh);
+// « Le clic transforme le bouton en Certain de manger ça ? et des flèches apparaissent à gauche et à droite de l'icône du
+// plat. On fait tourner et on peut valider » : le choix commence sur le plat du jour.
 ui.openCanteenChoice(true);
 screen=elements["tavern-canteen"].innerHTML;
-assert.match(screen,/data-canteen-pick="fromage_lait_de_poule">Fromage au lait de poule<\/button>/);
-assert.match(screen,/canteen-choice is-current" data-canteen-pick="fromage_lait_de_poule"/,"le plat du jour");
-assert.ok(screen.includes(`data-canteen-taste>${esc(offered.nom)}<small>Le nouveau plat du tavernier</small></button>`),"le plat du tavernier, son nom seul");
-assert.ok(!screen.includes(offered.caracteristique)&&!screen.includes(esc(offered.phrase)),"son effet reste caché");
-ui.chooseCanteenDish("fromage_lait_de_poule");
-assert.match(elements["tavern-canteen"].innerHTML,/Au menu/,"le plat du jour : on referme le choix");
-// Choisir le plat du tavernier, c'est le goûter : son effet est connu et il passe au menu.
-ui.tasteCanteenDish();
+assert.match(screen,/data-canteen-turn="-1" aria-label="Plat précédent"><\/button><figure class="canteen-dish-img"><img src="assets\/cantine\/plats\/fromage_lait_de_poule\.webp"[^>]*><\/figure><button type="button" class="canteen-arrow canteen-arrow--next" data-canteen-turn="1"/,"les flèches de part et d'autre du plat");
+assert.match(screen,/data-canteen-confirm>Certain de manger ça \?<\/button>/);
+assert.ok(!screen.includes("data-canteen-change"),"le bouton s'est transformé");
+// Le plat suivant : celui du tavernier, son nom et son image ; son effet reste caché.
+ui.turnCanteenDish(1);
+screen=elements["tavern-canteen"].innerHTML;
+assert.ok(screen.includes(`<h2 class="canteen-dish-name">${esc(offered.nom)}</h2>`)&&screen.includes(offered.image),"le plat du tavernier");
+assert.ok(!screen.includes(esc(offered.phrase))&&!screen.includes(offered.caracteristique),"son effet reste caché");
+assert.match(screen,/canteen-dish-phrase is-new">Le nouveau plat du tavernier/);
+// On fait tourner : on revient au fromage, dans un sens comme dans l'autre.
+ui.turnCanteenDish(1);
+assert.match(elements["tavern-canteen"].innerHTML,/fromage_lait_de_poule\.webp/,"en tournant");
+ui.turnCanteenDish(-1);
+assert.ok(elements["tavern-canteen"].innerHTML.includes(offered.image));
+ui.turnCanteenDish(-1);
+// Valider le plat du jour : on referme, rien ne change.
+ui.confirmCanteenDish();
+assert.match(elements["tavern-canteen"].innerHTML,/data-canteen-change>Changer le menu/,"on referme");
+assert.equal(fresh.company.canteen.current,"fromage_lait_de_poule");
+// Valider le plat du tavernier : il est goûté (son effet est connu) et passe au menu.
+ui.openCanteenChoice(true);
+ui.turnCanteenDish(1);
+ui.confirmCanteenDish();
 assert.match(log.at(-1).message,new RegExp(`^Le tavernier fait goûter un nouveau plat : ${offered.nom}\\. Il augmente`));
 assert.equal(fresh.company.canteen.current,offered.code,"au menu");
 assert.deepEqual(fresh.company.canteen.dishes,["fromage_lait_de_poule",offered.code]);
-ui.chooseCanteenDish("fromage_lait_de_poule");
+// Puis un autre plat goûté : il passe au menu.
+ui.openCanteenChoice(true);
+ui.turnCanteenDish(-1);
+ui.confirmCanteenDish();
 assert.equal(fresh.company.canteen.current,"fromage_lait_de_poule","on revient au fromage");
+assert.match(log.at(-1).message,/^La Cantine : dès demain, Fromage au lait de poule au menu/);
 ui.chooseCanteenDish(offered.code);
 assert.equal(fresh.company.canteen.current,offered.code);
 // Les phrases du menu : une par plat, sans chiffres ; les images, une par plat.

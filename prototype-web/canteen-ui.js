@@ -27,26 +27,27 @@ function setCanteenBackground(level,levels){
 // L'écran (Idan, 2026-11-26 : « Retire tout le blabla actuel. On met un petit parchemin […] Au menu ; titre du plat ; image
 // du plat dans un cadre doré ; phrase explicative du plat (pas une phrase qui dit ce plat vous donne +40 xp par jour) ; en
 // dessous, un bouton capitaine : changer le menu, uniquement si un autre plat est dispo ») : le parchemin de la charte, le
-// plat du jour (canteen-dishes.json : nom, image, phrase), le cadre carré or du kit. « Changer le menu » montre, sur le même
-// parchemin, les autres plats goûtés et le plat que propose le tavernier (choisir celui-ci, c'est le goûter : son effet est
-// alors connu, game-core/canteen.js) ; un clic sur un plat le met au menu. Le niveau et l'amélioration de la salle sont
-// dans la fenêtre Construction.
-let canteenChoosing=false;
-function canteenMenuHtml(dish,{change=false}={}){
-  return `<article class="canteen-menu">
+// plat du jour (canteen-dishes.json : nom, image, phrase), le cadre carré or du kit. Changer le menu (Idan : « le clic
+// transforme le bouton en Certain de manger ça ? et des flèches apparaissent à gauche et à droite de l'icône du plat. On
+// fait tourner et on peut valider ») : les flèches font tourner les plats disponibles (les plats goûtés, puis celui que
+// propose le tavernier, dont on ne voit que le nom et l'image) ; « Certain de manger ça ? » met au menu le plat montré
+// (celui du tavernier : il est goûté, son effet est alors connu ; game-core/canteen.js). Le niveau et l'amélioration de
+// la salle sont dans la fenêtre Construction.
+let canteenBrowse=null; // pendant le choix : l'index du plat montré dans canteenChoices ; null sinon
+// Les plats qu'on peut mettre au menu : les plats goûtés, puis celui que propose le tavernier.
+function canteenChoices(state,offer){ return [...state.dishes,...(offer&&!state.dishes.includes(offer.code)?[offer.code]:[])]; }
+function canteenMenuHtml(dish,{change=false,browsing=false,fresh=false}={}){
+  const arrow=(dir,label)=>browsing?`<button type="button" class="canteen-arrow canteen-arrow--${dir>0?"next":"prev"}" data-canteen-turn="${dir}" aria-label="${label}"></button>`:"";
+  const phrase=fresh?"Le nouveau plat du tavernier : on ne sait ce qu’il fait qu’une fois goûté !":dish.phrase||"";
+  const button=browsing
+    ?`<button type="button" class="mission-btn canteen-change" data-canteen-confirm>Certain de manger ça ?</button>`
+    :change?`<button type="button" class="mission-btn canteen-change" data-canteen-change>Changer le menu</button>`:"";
+  return `<article class="canteen-menu${browsing?" is-choosing":""}">
       <p class="canteen-menu-kicker">Au menu</p>
       <h2 class="canteen-dish-name">${esc(dish.nom)}</h2>
-      <figure class="canteen-dish-img"><img src="${esc(dish.image||"")}" alt="${esc(dish.nom)}"></figure>
-      <p class="canteen-dish-phrase">${esc(dish.phrase||"")}</p>
-      ${change?`<button type="button" class="mission-btn canteen-change" data-canteen-change>Changer le menu</button>`:""}
-    </article>`;
-}
-function canteenChoiceHtml(state,canteen,offer){
-  const pick=code=>{ const dish=canteen.dish(code); return dish?`<li><button type="button" class="canteen-choice${code===state.current?" is-current":""}" data-canteen-pick="${esc(code)}">${esc(dish.nom)}</button></li>`:""; };
-  const fresh=offer?`<li><button type="button" class="canteen-choice is-new" data-canteen-taste>${esc(offer.nom)}<small>Le nouveau plat du tavernier</small></button></li>`:"";
-  return `<article class="canteen-menu is-choosing">
-      <p class="canteen-menu-kicker">Changer le menu</p>
-      <ul class="canteen-choices">${state.dishes.map(pick).join("")}${fresh}</ul>
+      <div class="canteen-dish-row">${arrow(-1,"Plat précédent")}<figure class="canteen-dish-img"><img src="${esc(dish.image||"")}" alt="${esc(dish.nom)}"></figure>${arrow(1,"Plat suivant")}</div>
+      <p class="canteen-dish-phrase${fresh?" is-new":""}">${esc(phrase)}</p>
+      ${button}
     </article>`;
 }
 
@@ -56,25 +57,44 @@ function renderCanteen(){
   if(!c||!canteen){ box.innerHTML=""; return; }
   const rules=campaignRules(),row=rules.campBuildingRow(canteen.HALL),level=rules.buildingLevel(c,canteen.HALL);
   setCanteenBackground(level,row?.niveaux||10);
-  const state=level?canteen.canteenOf(c):null,dish=state?canteen.dish(state.current):null;
-  if(!dish){ canteenChoosing=false; box.innerHTML=""; return; }
-  const offer=canteen.offer(c);
+  const state=level?canteen.canteenOf(c):null,current=state?canteen.dish(state.current):null;
+  if(!current){ canteenBrowse=null; box.innerHTML=""; return; }
+  const offer=canteen.offer(c),choices=canteenChoices(state,offer);
   // « Uniquement si un autre plat est dispo » : un autre plat goûté, ou celui que propose le tavernier.
-  const other=state.dishes.length>1||Boolean(offer);
-  if(!other) canteenChoosing=false;
-  box.innerHTML=canteenChoosing?canteenChoiceHtml(state,canteen,offer):canteenMenuHtml(dish,{change:other});
+  if(choices.length<2) canteenBrowse=null;
+  if(canteenBrowse==null){ box.innerHTML=canteenMenuHtml(current,{change:choices.length>1}); return; }
+  const code=choices[(canteenBrowse%choices.length+choices.length)%choices.length];
+  box.innerHTML=canteenMenuHtml(canteen.dish(code),{browsing:true,fresh:Boolean(offer&&code===offer.code)});
 }
 
+// Le clic sur « Changer le menu » : le choix commence sur le plat du jour (open = false : il se referme).
 function openCanteenChoice(open=true){
-  canteenChoosing=open;
+  const c=game.campaign,canteen=canteenRulesOf(),state=open&&c&&canteen?canteen.canteenOf(c):null;
+  canteenBrowse=state?Math.max(0,canteenChoices(state,canteen.offer(c)).indexOf(state.current)):null;
   renderCanteen();
+}
+// Les flèches : le plat d'avant ou d'après, en tournant.
+function turnCanteenDish(dir){
+  const c=game.campaign,canteen=canteenRulesOf(),state=c&&canteen?canteen.canteenOf(c):null;
+  if(canteenBrowse==null||!state) return;
+  const n=canteenChoices(state,canteen.offer(c)).length;
+  canteenBrowse=((canteenBrowse+Math.sign(dir))%n+n)%n;
+  renderCanteen();
+}
+// « Certain de manger ça ? » : le plat montré passe au menu (celui du tavernier est goûté).
+function confirmCanteenDish(){
+  const c=game.campaign,canteen=canteenRulesOf(),state=c&&canteen?canteen.canteenOf(c):null;
+  if(canteenBrowse==null||!state) return;
+  const offer=canteen.offer(c),choices=canteenChoices(state,offer),code=choices[canteenBrowse];
+  if(offer&&code===offer.code) tasteCanteenDish();
+  else chooseCanteenDish(code);
 }
 
 function chooseCanteenDish(code){
+  canteenBrowse=null;
   // Le plat déjà au menu : on referme le choix, sans rien changer.
-  if(code===game.campaign?.company?.canteen?.current){ openCanteenChoice(false); return; }
+  if(code===game.campaign?.company?.canteen?.current){ renderCanteen(); return; }
   const result=canteenRulesOf()?.setDish(game.campaign,code);
-  canteenChoosing=false;
   if(!result) return;
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCanteen(); return; }
   tavernLog(`La Cantine : dès demain, ${result.dish.nom} au menu (${result.dish.caracteristique}).`,"info");
@@ -85,7 +105,7 @@ function chooseCanteenDish(code){
 // Le plat que propose le tavernier : on le goûte (gratuit, son effet est connu) et il passe au menu.
 function tasteCanteenDish(){
   const canteen=canteenRulesOf(),result=canteen?.unlock(game.campaign);
-  canteenChoosing=false;
+  canteenBrowse=null;
   if(!result) return;
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCanteen(); return; }
   tavernLog(`Le tavernier fait goûter un nouveau plat : ${result.dish.nom}. Il ${canteenEffect(result.dish.caracteristique)}.`,"gear");
@@ -103,11 +123,11 @@ function logCanteen(report){
 
 function initializeCanteenUi(){
   document.addEventListener("click",event=>{
-    if(event.target.closest("[data-canteen-taste]")) tasteCanteenDish();
-    else if(event.target.closest("[data-canteen-change]")) openCanteenChoice(true);
+    if(event.target.closest("[data-canteen-change]")) openCanteenChoice(true);
+    else if(event.target.closest("[data-canteen-confirm]")) confirmCanteenDish();
     else{
-      const pick=event.target.closest("[data-canteen-pick]");
-      if(pick) chooseCanteenDish(pick.dataset.canteenPick);
+      const turn=event.target.closest("[data-canteen-turn]");
+      if(turn) turnCanteenDish(Number(turn.dataset.canteenTurn));
     }
   });
 }

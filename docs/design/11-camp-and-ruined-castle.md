@@ -44,8 +44,10 @@ d'où les candidats qui traînent longtemps à la taverne faute de succès.
   et le tavernier s'embellissent du niveau 1 au niveau 10.
 - **Le menu** (Idan, 2026-11-26) : un petit parchemin « Au menu », le nom du plat du jour, son image dans un cadre or, une
   phrase sans chiffres ; le bouton « Changer le menu » n'apparaît que si un autre plat est disponible (un autre plat
-  goûté, ou celui que propose le tavernier : le choisir, c'est le goûter). Le niveau et l'amélioration de la salle sont
-  dans la fenêtre Construction.
+  goûté, ou celui que propose le tavernier). Au clic, il devient « Certain de manger ça ? » et des flèches apparaissent de
+  part et d'autre du plat : on fait tourner les plats disponibles (celui du tavernier : son nom et son image, pas son
+  effet), puis on valide (le plat du tavernier est alors goûté). Le niveau et l'amélioration de la salle sont dans la
+  fenêtre Construction.
 - **Chaque matin**, le **plat du jour** donne **40 × niveau XP** dans sa caractéristique à **chaque mercenaire au camp**
   (blessés, fatigués et prisonniers du Cachot compris ; pas ceux partis en contrat, chasse ou garde du corps). Pas de
   multiplicateur.

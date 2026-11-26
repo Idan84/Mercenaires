@@ -1304,8 +1304,9 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    parchemin du menu à gauche, entre les barres (le tavernier est à droite sur les fonds). Le parchemin de la charte
    (creation/parchemin.webp, comme Recruter), une légère ombre portée ; « Au menu », le nom du plat, son image dans le cadre
    carré or du kit (kit/cadres/cadre-carre.webp : l'ouverture fait 86 % du cadre, coins coupés à 10,5 %), sa phrase, et le
-   bouton capitaine (.mission-btn) « Changer le menu ». */
-#tavern-canteen-view{position:fixed;inset:0;display:flex;align-items:center;margin:0;padding:var(--hud-top-z) 0 var(--hud-bottom-z) calc(9 * var(--vw));
+   bouton capitaine (.mission-btn) « Changer le menu ». Le parchemin est calé en haut et le nom tient sur deux lignes : en
+   faisant tourner les plats, l'image et ses flèches ne bougent pas sous le pointeur. */
+#tavern-canteen-view{position:fixed;inset:0;display:flex;align-items:flex-start;margin:0;padding:calc(var(--hud-top-z) + 70px) 0 var(--hud-bottom-z) calc(9 * var(--vw));
   background:none;border:0;border-radius:0;box-shadow:none;pointer-events:none}
 #tavern-canteen-view .tavern-canteen{pointer-events:auto}
 .canteen-menu{--encre:#2c1b10;--encre-2:#64492e;--or-clair:#f0d395;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
@@ -1313,22 +1314,25 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
   border-style:solid;border-width:62px;border-image:url("assets/creation/parchemin.webp") 180 fill / 62px stretch;
   filter:drop-shadow(0 12px 18px rgba(0,0,0,.45));color:var(--encre)}
 .canteen-menu-kicker{margin:0;font:600 15px/1 var(--police-titre);letter-spacing:.32em;text-transform:uppercase;color:var(--encre-2)}
-#tavern-canteen-view .canteen-dish-name{margin:10px 0 18px;font:700 27px/1.15 var(--police-titre);color:var(--encre);text-shadow:none;text-wrap:balance}
-.canteen-dish-img{position:relative;width:270px;aspect-ratio:596/600;margin:0}
+#tavern-canteen-view .canteen-dish-name{display:flex;align-items:center;justify-content:center;min-height:2.3em;margin:8px 0 14px;font:700 27px/1.15 var(--police-titre);color:var(--encre);text-shadow:none;text-wrap:balance}
+.canteen-dish-row{display:flex;align-items:center;justify-content:center;gap:8px}
+.canteen-dish-img{position:relative;flex:none;width:260px;aspect-ratio:596/600;margin:0}
 .canteen-dish-img img{position:absolute;left:6.6%;top:6.6%;width:86.8%;height:86.8%;object-fit:cover;
   clip-path:polygon(10.5% 0,89.5% 0,100% 10.5%,100% 89.5%,89.5% 100%,10.5% 100%,0 89.5%,0 10.5%)}
 .canteen-dish-img::after{content:"";position:absolute;inset:0;background:url("assets/kit/cadres/cadre-carre.webp") center/100% 100% no-repeat;
   filter:drop-shadow(0 3px 4px rgba(40,22,6,.45));pointer-events:none}
 .canteen-dish-phrase{margin:18px 0 0;font:italic 20px/1.35 var(--police-texte);color:var(--encre);text-wrap:balance}
+.canteen-dish-phrase.is-new{color:var(--encre-2)}
 .canteen-menu .canteen-change{margin-top:22px;min-width:250px;height:70px;font-size:16px}
-/* Changer le menu : les plats goûtés, gravés et séparés par des filets ; celui du jour en rouge ; le nouveau plat du
-   tavernier, avec sa mention. Un clic sur un plat le met au menu (sur celui du jour : on referme). */
-.canteen-choices{list-style:none;margin:16px 0 0;padding:0;width:100%}
-.canteen-choices li+li{border-top:1px solid rgba(100,73,46,.35)}
-.canteen-choice{all:unset;box-sizing:border-box;display:block;width:100%;padding:11px 8px;cursor:pointer;font:600 18px/1.2 var(--police-titre);color:var(--encre);transition:background .15s,color .15s}
-.canteen-choice small{display:block;margin-top:3px;font:italic 15px/1.2 var(--police-texte);color:var(--encre-2)}
-.canteen-choice:hover,.canteen-choice:focus-visible{background:rgba(122,31,28,.09);color:#7a1f1c;outline:none}
-.canteen-choice.is-current{color:#7a1f1c}
+/* Changer le menu (Idan, 2026-11-26 : « des flèches apparaissent à gauche et à droite de l'icône du plat. On fait tourner et
+   on peut valider ») : les flèches du panneau des missions (kit, cadre or et velours rouge ; la gauche est la droite
+   retournée), en petit, de part et d'autre du cadre ; le bouton devient « Certain de manger ça ? ». */
+.canteen-arrow{all:unset;flex:none;width:44px;aspect-ratio:600/417;cursor:pointer;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));transition:filter .15s,translate .15s}
+.canteen-arrow--prev{transform:scaleX(-1)}
+.canteen-arrow:hover,.canteen-arrow:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 5px rgba(240,211,149,.6)) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.canteen-arrow--next:hover,.canteen-arrow--next:focus-visible{translate:3px 0}
+.canteen-arrow--prev:hover,.canteen-arrow--prev:focus-visible{translate:-3px 0}
 /* Une salle pas encore construite (la Cantine) : son calque, sa zone et son nom sont cachés ; le mur reste vide. */
 .tavern-layer.is-closed,.tavern-zone.is-closed,.tavern-label.is-closed{display:none}
 .tavern-zone{pointer-events:all;cursor:default;outline:none}

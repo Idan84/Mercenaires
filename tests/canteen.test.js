@@ -205,7 +205,8 @@ for(const d of canteen.dishes()){
   assert.equal(d.image,`assets/cantine/plats/${d.code}.webp`);
   assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",d.image)),d.image);
 }
-assert.equal(canteen.dish("ragout_mamie_ogresse").phrase,"Le Ragoût de Mamie Ogresse, au bon goût de Mamie, rendra toute la compagnie plus forte !","la phrase d'Idan");
+assert.equal(canteen.dish("ragout_mamie_ogresse").phrase,"Au bon goût de Mamie, il rendra toute la compagnie plus forte !","la phrase d'Idan, sans le nom du plat");
+for(const d of canteen.dishes()) assert.ok(!d.phrase.includes(d.nom),d.code+" : la phrase ne répète pas le nom (il est au-dessus)");
 // Les phrases d'Idan (2026-11-26), sous le nom du plat.
 assert.deepEqual(["fromage_lait_de_poule","herisson_roti","lapin_roti","tataki_hirondelle"].map(code=>canteen.dish(code).phrase),
   ["Après en avoir mangé, vous pouvez tout endurer !","Un peu piquant, mais il vous fera aller plus vite… aux toilettes !","Attrapez-le si vous pouvez !","Sauvage, attrapée à la main !"]);

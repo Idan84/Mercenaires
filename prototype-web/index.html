@@ -44,7 +44,8 @@
          celui du lieu où l'on est est grisé. À droite (Idan, 2026-11-14) : Combat (les combats du jour : grisé s'il n'y en a pas), Nouvelles (le pigeon : les
          nouvelles du jour), Journal (il remplace le journal au-dessus de la barre), Discussions (ceux qui attendent une
          réponse : discussions-ui.js), puis le bouton du lieu (« à droite des pictos » ; son menu : dans la taverne, ses
-         cinq zones ; ailleurs, rien pour l'instant). -->
+         cinq zones ; ailleurs, rien pour l'instant). Le bouton du lieu (Idan, 2026-11-26) : le bouton capitaine en argent, fond
+         de métal, le nom du lieu (« Taverne ») et une flèche vers le haut gravés dessus. -->
     <div class="game-bottom-bar">
       <div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-center"></span></div>
       <div class="hud-kit" aria-hidden="true"></div>
@@ -64,7 +65,7 @@
         <button id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal" title="Journal"><img class="hud-nav-img" src="assets/hud/pictos-bas/journal.webp" alt="" width="200" height="200"><span class="hud-nav-label">Journal</span></button>
         <button id="hud-talk-btn" class="hud-nav" type="button" data-hud-action="talk" title="Personne ne vous attend" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/discussions.webp" alt="" width="200" height="200"><span class="hud-nav-label">Discussions</span></button>
         <div id="hud-context" class="hud-context">
-          <button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu" title="Ce lieu"><span class="hud-context-dots" aria-hidden="true">•••</span><span class="hud-nav-label">Ce lieu</span></button>
+          <button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu"><span class="hud-context-grave"><span id="hud-context-name" class="hud-context-name">Ce lieu</span><span class="hud-context-fleche" aria-hidden="true"></span></span></button>
           <ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden></ul>
         </div>
         <ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden></ul>

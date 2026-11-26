@@ -278,18 +278,37 @@ function hudContextItems(scene){
   if(scene!=="tavern"||typeof TAVERN_ZONES==="undefined"||typeof TAVERN_MENU==="undefined") return [];
   return TAVERN_MENU.map(key=>TAVERN_ZONES.find(z=>z.key===key)).filter(Boolean).map(z=>({key:z.key,label:z.label}));
 }
-function setHudContextMenu(open){
+// Le panneau se replie en se fermant (Idan, 2026-11-26 : « anim ») quand on le referme soi-même (le bouton, un clic
+// ailleurs, Échap) ; il disparaît tout de suite quand on choisit une salle ou qu'on change de lieu.
+function setHudContextMenu(open,anime=false){
   const menu=$("hud-context-menu"),button=$("hud-context-btn");
   if(!menu||!button) return;
-  menu.hidden=!open;
+  clearTimeout(setHudContextMenu.fin);
+  menu.classList.remove?.("is-closing");
+  const calme=typeof window!=="undefined"&&window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if(!open&&anime&&!menu.hidden&&!calme){
+    menu.classList.add?.("is-closing");
+    setHudContextMenu.fin=setTimeout(()=>{menu.classList.remove?.("is-closing");menu.hidden=true;},170);
+  }
+  else menu.hidden=!open;
   button.setAttribute("aria-expanded",String(open));
   $("hud-context")?.classList.toggle("is-open",open);
+}
+// Le nom du lieu sur son bouton (Idan, 2026-11-26 : « indiquer, par exemple Taverne ») : celui de son picto à gauche.
+function hudContextName(scene){
+  return document.querySelector?.(`.hud-places [data-hud-scene="${scene}"] .hud-nav-label`)?.textContent||"Ce lieu";
 }
 function updateHudContext(){
   const box=$("hud-context"),menu=$("hud-context-menu");
   if(!box||!menu) return;
-  const items=hudContextItems(document.body.dataset.screen==="camp"?document.body.dataset.campScene:"");
+  const scene=document.body.dataset.screen==="camp"?document.body.dataset.campScene:"";
+  const items=hudContextItems(scene),name=hudContextName(scene);
   box.classList.toggle("is-active",items.length>0);
+  const label=$("hud-context-name");
+  if(label) label.textContent=name;
+  // Un nom de plus de 10 lettres (Intendance tient, Construction non) rapetisse pour rester sur la plaque du bouton.
+  $("hud-context-btn")?.style?.setProperty("--hc-taille",String(+Math.min(1,10/[...name].length).toFixed(3)));
+  menu.setAttribute("aria-label",name);
   menu.innerHTML=items.map(x=>`<li role="none"><button type="button" role="menuitem" data-hud-context="${esc(x.key)}">${esc(x.label)}</button></li>`).join("");
   setHudContextMenu(false);
 }
@@ -432,7 +451,10 @@ function initializeScreenUi(){
     openHudScene(button);
   });
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
-  $("hud-context-btn").addEventListener("click",()=>setHudContextMenu($("hud-context-menu").hidden));
+  $("hud-context-btn").addEventListener("click",()=>{
+    const menu=$("hud-context-menu");
+    setHudContextMenu(menu.hidden||menu.classList.contains("is-closing"),true);
+  });
   $("hud-context-menu").addEventListener("click",event=>{
     const item=event.target.closest("[data-hud-context]");
     if(item) chooseHudContext(item.dataset.hudContext);
@@ -447,7 +469,7 @@ function initializeScreenUi(){
   });
   // Un clic ailleurs ou Échap referme les menus et le journal (Échap n'ouvre pas alors le menu de pause).
   document.addEventListener("click",event=>{
-    if(!$("hud-context-menu").hidden&&!event.target.closest?.("#hud-context")) setHudContextMenu(false);
+    if(!$("hud-context-menu").hidden&&!event.target.closest?.("#hud-context")) setHudContextMenu(false,true);
     if(!$("hud-action-menu").hidden&&!event.target.closest?.("#hud-action-menu, [data-hud-action]")) setHudActionMenu(null);
     if(!$("hud-journal").hidden&&!event.target.closest?.("#hud-journal, #hud-journal-btn")) toggleHudJournal(false);
   });
@@ -456,7 +478,7 @@ function initializeScreenUi(){
     if($("hud-context-menu").hidden&&$("hud-action-menu").hidden&&$("hud-journal").hidden) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    setHudContextMenu(false);
+    setHudContextMenu(false,true);
     setHudActionMenu(null);
     toggleHudJournal(false);
   },true);

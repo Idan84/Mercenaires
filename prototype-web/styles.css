@@ -1911,12 +1911,52 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .game-bottom-bar.is-dore .hud-nav-img{filter:sepia(1) saturate(2.4) hue-rotate(-8deg) brightness(1.02) drop-shadow(0 1px 1.5px #0006)}
 /* Le bouton du lieu, à droite des pictos (Idan, 2026-11-14) : caché là où il n'y a rien ; un rond sombre provisoire, en
    attendant son dessin (« on va le designer ce bouton pour qu'il soit joli »). Son menu s'ouvre vers le haut, calé à droite. */
-.hud-context{position:relative;flex:none;width:calc(var(--hb-B) * var(--bb-picto));height:calc(var(--hb-B) * var(--bb-picto))}
+/* Le bouton du lieu (Idan, 2026-11-26 : « une forme de bouton capitaine version argent. Fond métal. On grave le nom
+   taverne ainsi qu'une flèche qui va vers le haut ») : le bouton capitaine passé en argent, sa plaque de métal brossé
+   (assets/hud/bouton-lieu.webp, scripts/build-bouton-lieu.sh ; jamais déformé), la plaque à la hauteur des pictos ; le
+   nom du lieu en capitales et une flèche vers le haut gravés (creux sombre, reflet clair dessous). Survol, appui et
+   focus comme le bouton capitaine ; doré sur la barre dorée, comme les pictos. */
+.hud-context{position:relative;flex:none;display:flex;align-items:center;height:calc(var(--hb-B) * var(--bb-picto))}
 .hud-context:not(.is-active){visibility:hidden}
-.hud-context-btn{display:grid;place-items:center;width:100%;height:100%;padding:0;border:1px solid #b58a45;border-radius:50%;background:radial-gradient(circle at 50% 35%,#3b2a1b,#15100c);color:#f0c050;font:700 calc(var(--hb-B) * .2) Georgia,serif;letter-spacing:.05em;cursor:pointer;box-shadow:0 4px 8px #000c,inset 0 1px rgba(255,228,168,.149);transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .15s}
-.hud-context-btn:hover,.hud-context-btn:focus-visible,.hud-context.is-open .hud-context-btn{transform:scale(1.08);filter:brightness(1.2);outline:none}
-.hud-context-btn:active{transform:scale(.94);transition-duration:.06s}
-.hud-context-btn:focus-visible{box-shadow:0 0 0 2px #f0c050aa}
+.hud-context-btn{--hc-ombre:drop-shadow(0 4px 5px #000b);all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;height:calc(var(--hb-B) * var(--bb-picto) * 1.3);aspect-ratio:760/257;padding:0 0 calc(var(--hb-B) * .015);background:url("assets/hud/bouton-lieu.webp") center/100% 100% no-repeat;filter:var(--hc-ombre);cursor:pointer;transition:transform .12s,filter .12s}
+.hud-context-grave{display:flex;align-items:baseline;gap:calc(var(--hb-B) * .1);filter:drop-shadow(0 1px 0 rgba(255,255,255,.55)) drop-shadow(0 -1px 0 rgba(0,0,0,.3))}
+.hud-context-name{font:700 calc(var(--hb-B) * .24 * var(--hc-taille,1))/1 Cinzel,Georgia,serif;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:#3a3530}
+.hud-context-fleche{width:calc(var(--hb-B) * .17);height:calc(var(--hb-B) * .2);background:#3a3530;clip-path:polygon(50% 0,100% 52%,66% 52%,66% 100%,34% 100%,34% 52%,0 52%)}
+.hud-context-btn:hover,.hud-context-btn:focus-visible,.hud-context.is-open .hud-context-btn{filter:brightness(1.13) var(--hc-ombre)}
+.hud-context-btn:active{transform:translateY(2px);filter:brightness(.84) drop-shadow(0 2px 3px #000b)}
+.hud-context-btn:focus-visible{outline:2px solid #f0d395;outline-offset:2px}
+/* Le texte posé sur le bas de la flèche (Idan, 2026-11-26 : « baisse le texte pour l'aligner avec le bas de la flèche ») :
+   la flèche est alignée sur la ligne de base des capitales. Sur la barre dorée, le bouton doré foncé d'un ton (Idan,
+   même jour : « fonce un peu le bouton grandes cités »). */
+.game-bottom-bar.is-dore .hud-context-btn{--hc-ombre:sepia(1) saturate(1.7) hue-rotate(-10deg) brightness(.8) drop-shadow(0 4px 5px #0008)}
+/* Le sous-menu du lieu (Idan, 2026-11-26 : « un seul panneau argent avec les cinq noms gravés et séparés par des
+   filets » ; « fait une animation d'ouverture ») : le bouton capitaine en argent étiré en panneau, à la largeur du bouton
+   du lieu, découpé en tranches autour de ses coins coupés (border-image 92 / 52 / 102 : les pans coupés restent entiers,
+   seuls les bords droits s'allongent, par répétition : Idan, même jour, « répéter au lieu d'étirer »), sur une plaque de
+   métal brossé répétée (assets/hud/metal-brosse.webp, raccordée bout à bout) et éclairée par un dégradé. Les salles gravées comme le nom du lieu, séparées par un filet creusé
+   (trait sombre, reflet clair dessous) ; au survol, la ligne s'éclaire. À l'ouverture, le panneau se déplie depuis le
+   bouton (de bas en haut), puis les noms apparaissent l'un après l'autre. */
+.hud-context .hud-menu-list{isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr);gap:0;bottom:calc(100% + var(--hb-B-z) * .4);width:calc(var(--hb-B-z) * var(--bb-picto) * 1.3 * 760 / 257);min-width:0;box-sizing:border-box;padding:14px 18px 15px;border:0;border-radius:0;background:none;box-shadow:none;transform-origin:50% 100%;animation:hud-panneau .2s cubic-bezier(.2,.8,.3,1) both}
+.hud-context .hud-menu-list::before{content:"";position:absolute;inset:2px;z-index:-1;background:linear-gradient(180deg,#ffffff38,#ffffff00 38%,#00000000 62%,#0000002e),url("assets/hud/metal-brosse.webp") 0 0 / 256px 128px repeat;box-shadow:inset 0 0 9px #0000004d,0 6px 14px #000a;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 13px) 100%,13px 100%,0 calc(100% - 12px),0 12px);pointer-events:none}
+.hud-context .hud-menu-list::after{content:"";position:absolute;inset:-13px -1px -16px;z-index:-1;box-sizing:border-box;border-style:solid;border-width:30px 17px 34px;border-image:url("assets/hud/bouton-lieu-cadre.webp") 92 52 102 / 30px 17px 34px round;filter:drop-shadow(0 4px 5px #000b);pointer-events:none}
+.hud-context .hud-menu-list li{position:relative;animation:hud-salle .18s ease-out both}
+.hud-context .hud-menu-list li+li::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,#2a262200,#2a2622a6 18%,#2a2622a6 82%,#2a262200);box-shadow:0 1px rgba(255,255,255,.5)}
+.hud-context .hud-menu-list li:nth-child(1){animation-delay:.08s}
+.hud-context .hud-menu-list li:nth-child(2){animation-delay:.12s}
+.hud-context .hud-menu-list li:nth-child(3){animation-delay:.16s}
+.hud-context .hud-menu-list li:nth-child(4){animation-delay:.2s}
+.hud-context .hud-menu-list li:nth-child(5){animation-delay:.24s}
+.hud-context .hud-menu-list li:nth-child(n+6){animation-delay:.28s}
+.hud-context .hud-menu-list button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;min-height:38px;padding:8px 6px 7px;border-radius:0;background:none;font:700 13px/1.25 Cinzel,Georgia,serif;letter-spacing:.07em;text-transform:uppercase;text-align:center;white-space:normal;text-wrap:balance;overflow-wrap:anywhere;color:#3a3530;text-shadow:0 1px 0 rgba(255,255,255,.55),0 -1px 0 rgba(0,0,0,.3);transition:color .12s,background .12s}
+.hud-context .hud-menu-list button:hover,.hud-context .hud-menu-list button:focus-visible{background:linear-gradient(90deg,#fff0,#ffffff38 25%,#ffffff38 75%,#fff0);color:#1f1c19;outline:none}
+.hud-context .hud-menu-list button:active{background:linear-gradient(90deg,#0000,#0000001f 25%,#0000001f 75%,#0000)}
+.hud-context .hud-menu-list button:focus-visible{box-shadow:inset 0 0 0 2px #f0d395}
+.game-bottom-bar.is-dore .hud-context .hud-menu-list{filter:sepia(1) saturate(1.7) hue-rotate(-10deg) brightness(.8)}
+.hud-context .hud-menu-list.is-closing{pointer-events:none;animation:hud-panneau-ferme .17s cubic-bezier(.5,0,.8,.4) both}
+@keyframes hud-panneau{from{opacity:0;transform:translateY(14px) scaleY(.55)}to{opacity:1;transform:none}}
+@keyframes hud-panneau-ferme{from{opacity:1;transform:none}to{opacity:0;transform:translateY(12px) scaleY(.6)}}
+@keyframes hud-salle{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hud-context .hud-menu-list,.hud-context .hud-menu-list li{animation:none}}
 .hud-menu-list{position:absolute;left:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#2e231c,#15100c);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826;zoom:var(--ui-scale,1)}
 .hud-menu-list[hidden]{display:none}
 .hud-context .hud-menu-list{left:auto;right:0}

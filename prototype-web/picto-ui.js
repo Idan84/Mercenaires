@@ -46,11 +46,12 @@ const pictoUrl=path=>PICTO_VERSION?`${path}?v=${encodeURIComponent(PICTO_VERSION
 // « non seulement ils sont tronqués mais ils paraissent trop gros » ; le logo des Cités libres, moins haut que les autres,
 // « tu peux l'étirer un peu » ; les triangles des nains (pointe en bas, leur poids en haut) : « Essaie de faire les nains
 // également ». Mesuré sur la toile de 256 : chaque logo est réduit (s : 0,88 les pentagones, 0,9 les triangles), étiré en
-// hauteur s'il le faut (sy : les Cités libres prennent la hauteur des autres pentagones), puis décalé (dy, en % de sa boîte,
-// négatif vers le haut) pour que son centre perçu (à mi-chemin entre le milieu de sa forme et son centre de masse) tombe à
-// la hauteur de celui des losanges des elfes, sans sortir de sa boîte. Les images ne changent pas (pictos.css).
+// hauteur s'il le faut (sy : les Cités libres, moins hauts, un peu au-delà de la hauteur des autres pentagones, « Il
+// gagnerait peut-être à être encore un peu déformé en longueur »), puis décalé (dy, en % de sa boîte, négatif vers le haut)
+// pour que son centre perçu (à mi-chemin entre le milieu de sa forme et son centre de masse) tombe à la hauteur de celui
+// des losanges des elfes, sans sortir de sa boîte. Les images ne changent pas (pictos.css).
 const PICTO_OPTIQUE={culture:{
-  "cites-libres":{s:.88,sy:1.06,dy:-3.6},
+  "cites-libres":{s:.88,sy:1.1,dy:-3.7},
   "empire-de-la-nuit-blanche":{s:.88,dy:-3.2},
   "royaumes-du-soleil-levant":{s:.88,dy:-3},
   "terres-des-deux-fleuves":{s:.88,dy:-3.3},

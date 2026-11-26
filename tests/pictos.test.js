@@ -28,6 +28,13 @@ assert.deepEqual([...goutte.matchAll(/<img class="([^"]+)" src="([^"]+)"/g)].map
 assert.match(renderPicto("ascendance","",{none:true,size:null}),/^<img class="picto picto-goutte-sombre" src="assets\/pictos\/goutte-sombre\.webp"/);
 assert.doesNotMatch(renderPicto("people","Nain",{size:null,tip:false}),/data-picto-name|picto-sm/);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","pictos.css"),"utf8");
+// Les logos des cinq cultures humaines, des pentagones pointe en haut (Idan, 2026-11-26 : « il paraissent descendre trop
+// bas ») : remontés de 7 % de leur hauteur ; les autres pictos ne bougent pas.
+for(const culture of ["Cités libres","Empire de la nuit blanche","Royaumes du Soleil Levant","Terres des Deux Fleuves","Tribus de la jungle"])
+  assert.match(renderPicto("culture",culture,{tip:false}),/ data-picto-remonte /,culture);
+for(const [kind,name] of [["culture","Nains des montagnes"],["culture","Elfes noirs"],["people","Humain"]])
+  assert.doesNotMatch(renderPicto(kind,name),/data-picto-remonte/,name);
+assert.match(css,/\.picto\[data-picto-remonte\]\{translate:0 -7%\}/);
 assert.match(css,/\.picto-goutte>\.goutte-embleme\{animation:goutte-apparait 1s/,"l'emblème arrive en une seconde");
 assert.match(css,/\.picto-goutte\.is-still>\.goutte-embleme\{animation:none\}/,"pas de fondu quand le jeu redessine");
 // En ligne, chaque image porte le numéro de la mise en ligne, lu sur le script (« picto-ui.js?v=<commit> ») : sinon le

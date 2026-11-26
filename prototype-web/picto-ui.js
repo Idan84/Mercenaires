@@ -41,6 +41,12 @@ const PICTO_VERSION=(()=>{
 })();
 const pictoUrl=path=>PICTO_VERSION?`${path}?v=${encodeURIComponent(PICTO_VERSION)}`:path;
 
+// Les logos des cinq cultures humaines (Idan, 2026-11-26 : « A l'oeil, il paraissent descendre trop bas. Il faut peut-être
+// les remonter un peu ») : des pentagones pointe en haut, leur poids en bas ; centrés sur leur boîte comme les autres, leur
+// centre de masse tombe 12 à 14 px sous le milieu (sur 256), quand celui des losanges des elfes est 5 px au-dessus. Remontés
+// de 7 % de leur hauteur (pictos.css, data-picto-remonte), sans changer de taille : ils rejoignent les elfes.
+const PICTO_REMONTES={culture:new Set(["cites-libres","empire-de-la-nuit-blanche","royaumes-du-soleil-levant","terres-des-deux-fleuves","tribus-de-la-jungle"])};
+
 // Le picto prêt à insérer, ou "" sans nom (pas d'ascendance). Une image manquante se masque.
 // size : xs, sm, md… (styles.css), ou null pour laisser la page le dimensionner (création du capitaine) ;
 // tip : false, sans la bulle au survol ; none : true, la goutte sombre d'une ascendance absente (« Aucune »).
@@ -51,7 +57,7 @@ function renderPicto(kind,name,{size="sm",tip=true,none=false}={}){
   const path=pictoPath(kind,name);
   if(!path) return "";
   const src=pictoUrl(path);
-  const data=` data-picto-kind="${kind}"`+(tip?` data-picto-name="${attr(name)}"`:"");
+  const data=` data-picto-kind="${kind}"`+(tip?` data-picto-name="${attr(name)}"`:"")+(PICTO_REMONTES[kind]?.has(pictoSlug(name))?" data-picto-remonte":"");
   if(kind==="ascendance"){
     return `<span class="${cls} picto-goutte"${data} data-goutte="${pictoSlug(name)}">`
       +`<img class="goutte-halo" src="${pictoUrl(PICTO_GOUTTE.halo)}" alt="" loading="lazy">`

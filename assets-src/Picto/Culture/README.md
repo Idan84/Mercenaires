@@ -42,3 +42,7 @@ les « Nains du chaos ».
 | Tribus de la jungle | `tribus-de-la-jungle.jpg` (remplacé le 2026-11-26 par le logo de son kit, `assets-src/Kits/tribus-de-la-jungle/logo.png`) | Dark_fantasy_tribal_emblem_logo_20261022215821.jpg | oui |
 | Tribus des forêts anciennes | `tribus-des-forets-anciennes.jpg` | Stag_skull_emblem_with_dagger_20261022215821.jpg | validé |
 | Tribus nordiques | `tribus-nordiques.jpg` | Dark_fantasy_emblem_with_horns_20261022215821.jpg | validé |
+
+Les logos des cinq cultures humaines sont des pentagones pointe en haut : leur poids est en bas. Centrés sur leur boîte comme
+les autres, ils paraissaient trop bas (Idan, 2026-11-26). Le jeu les remonte de 7 % de leur hauteur, sans toucher aux images
+(`prototype-web/picto-ui.js`, `PICTO_REMONTES` ; `pictos.css`). Un nouveau logo de la même forme s'ajoute à cette liste.

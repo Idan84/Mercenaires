@@ -14,3 +14,7 @@
   .picto-goutte>.goutte-halo{display:none}
   .picto-goutte>.goutte-embleme{animation:none}
 }
+
+/* Les logos des cinq cultures humaines (Idan, 2026-11-26 : « il paraissent descendre trop bas ») : des pentagones pointe en
+   haut, remontés de 7 % de leur hauteur pour que leur centre rejoigne celui des autres pictos (picto-ui.js, PICTO_REMONTES). */
+.picto[data-picto-remonte]{translate:0 -7%}

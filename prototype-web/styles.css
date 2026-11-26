@@ -1503,6 +1503,8 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--keeper.has-card.is-folded>.keeper-talk-box{left:calc(var(--talk-marge) + var(--talk-depasse) - 10px)}
 .talk-dialog--keeper:not(.has-card)>.recruit-fiche,.talk-dialog--keeper:not(.has-card) .conv-fold{display:none}
 @media (prefers-reduced-motion:reduce){.talk-dialog--keeper.has-card>.keeper-talk-box{transition:none}}
+/* Une réponse longue prend deux colonnes (Idan, 2026-11-26 : « Bouton sur 2 colonnes »). */
+.conv #tavern-talk-choices .talk-options li.is-wide{grid-column:span 2}
 /* Son portrait (Idan : « On doit déjà avoir un portrait, c'est suffisant ») : son visage dans /media/video/Img_Tavern.jpg
    (1600 × 893 : le carré de 150 px en 1250, 246), taillé comme les autres vignettes. */
 .talk-mini-keeper{position:absolute;inset:0;z-index:1;background:url("/media/video/Img_Tavern.jpg") 86.2% 33.1%/1066.67% auto no-repeat;
@@ -2956,6 +2958,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-choice-hover{position:fixed;left:0;top:0;z-index:30;pointer-events:none;transform:scale(var(--hc-scale,1));transform-origin:0 0}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
+/* Le cadre fixe de la fiche du tavernier (Idan, 2026-11-26 : « Cadre fixe très simple : juste une baguette du bouton
+   capitaine pour que ça soit propre ») : la baguette du kit (kit/boutons/bouton-cadre.webp, 1200 × 266 : 3 px de marge,
+   29 px de côté, 33 px en haut et en bas, pans coupés de 76 px), à 27 % : l'épaisseur des marges sombres de la fiche ;
+   la fiche suit ses pans coupés (clip-path), l'ombre passe sur le conteneur. Le cartouche : le velours brun des boutons,
+   sans ornements. */
+.hover-card--keeper{--hc-pan:22px;box-shadow:none;clip-path:polygon(var(--hc-pan) 0,calc(100% - var(--hc-pan)) 0,100% var(--hc-pan),100% calc(100% - var(--hc-pan)),calc(100% - var(--hc-pan)) 100%,var(--hc-pan) 100%,0 calc(100% - var(--hc-pan)),0 var(--hc-pan))}
+#tavern-talk-card{filter:drop-shadow(0 22px 26px rgba(0,0,0,.72))}
+.hc-baguette{position:absolute;z-index:3;inset:-.8px;box-sizing:border-box;border-style:solid;border-width:27px;border-image:url("assets/kit/boutons/bouton-cadre.webp") 100 / 27px stretch;pointer-events:none}
+.hover-card--keeper .hc-banner{background:url("assets/creation/velours-brun.webp") center/cover,#402e1e}
 /* La page du tavernier (le faux easter egg) : ses 3 ou 4 paragraphes, à l'encre de la fiche, justifiés comme un
    communiqué officiel ; ils tiennent dans la page sans défiler (texte d'environ 1 200 signes). À droite, la marge passe
    aussi la boîte de dialogue qui mord sur la fiche dépliée (--talk-mord). */

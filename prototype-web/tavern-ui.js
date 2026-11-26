@@ -712,7 +712,7 @@ function pickKeeperScene(rows=keeperScenes(),random=Math.random){
 function showKeeperCard(){
   const dialog=$("tavern-talk-dialog"),scene=pickKeeperScene();
   const box=$("tavern-talk-card");
-  box.innerHTML=scene?renderKeeperCard(scene,{culture:talkCaptain()?.culture||""}):"";
+  box.innerHTML=scene?renderKeeperCard(scene):"";
   dialog.classList.toggle("has-card",Boolean(scene));
   setTalkFolded(dialog,true);
   const card=box.querySelector(".hover-card");
@@ -720,6 +720,8 @@ function showKeeperCard(){
 }
 
 const KEEPER_NAME="Le tavernier";
+// Au-delà de ce nombre de signes, une réponse ne tient plus dans un bouton : elle prend deux colonnes.
+const TALK_WIDE_LABEL=48;
 const tavernKeeper={miniHtml:`<span class="talk-mini talk-mini--keeper" aria-hidden="true"><span class="talk-mini-keeper"></span></span>`};
 function tavernKeeperSays(t,text){ if(text) t.lines.push({who:"merc",name:KEEPER_NAME,text}); }
 function renderTavernTalk(){
@@ -730,8 +732,9 @@ function renderTavernTalk(){
   log.scrollTop=log.scrollHeight;
   requestAnimationFrame(()=>{ log.scrollTop=log.scrollHeight; });
   const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`).replace(/ ([?!:;»])/g,"\u00a0$1");
+  // Une réponse longue (la demande à l'usurier) prend deux colonnes (Idan, 2026-11-26 : « Bouton sur 2 colonnes »).
   $("tavern-talk-choices").innerHTML=`<ol class="talk-options">${tavernTalkOptions(t).map((o,i)=>
-    `<li><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}><span class="talk-num" aria-hidden="true">${i+1}</span><span class="talk-choice">${unbroken(o.label)}</span></button></li>`).join("")}</ol>`;
+    `<li${o.label.length>TALK_WIDE_LABEL?' class="is-wide"':""}><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}><span class="talk-num" aria-hidden="true">${i+1}</span><span class="talk-choice">${unbroken(o.label)}</span></button></li>`).join("")}</ol>`;
 }
 function openTavernTalk(){
   game.tavernTalk={view:"main",candidateId:null,lines:[{who:"note",text:"The Black Anvil"}]};

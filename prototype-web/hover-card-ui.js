@@ -455,22 +455,23 @@ function renderLeftCard(c,{line="",gone=""}={}){
 // La fiche du tavernier, le faux easter egg (Idan, 2026-11-26 : « à la place de l'avatar du mercenaire, une image au
 // hasard du tavernier et un texte qui correspond. On remplit Nom par un titre de la photo, le titre par un sous-titre de
 // notre histoire » ; « à la place du contenu de la fiche au survol, un long texte de 3 ou 4 paragraphes ») : la fiche au
-// survol, au cadre de culture (culture : celle du capitaine), son portrait en pied (scene.image), le titre de la photo dans
-// le cartouche, le sous-titre dessous ; dans la page, les paragraphes (tavern-keeper-scenes.json).
+// survol, son portrait en pied (scene.image), le titre de la photo dans le cartouche, le sous-titre dessous ; dans la page,
+// les paragraphes (tavern-keeper-scenes.json). Un cadre fixe, sans culture (Idan : « Cadre fixe très simple : juste une
+// baguette du bouton capitaine pour que ça soit propre ») : la baguette du kit (styles.css, .hc-baguette), le cartouche
+// au velours brun des boutons, sans ornements.
 // La typographie française : une espace insécable avant « : ; ! ? » et dans les guillemets (jamais de « : » en début de
 // ligne).
 function keeperTypo(text){
   return text.replace(/ ([:;!?»])/g,"\u00a0$1").replace(/« /g,"«\u00a0");
 }
-function renderKeeperCard(scene,{culture=""}={}){
-  const frame=hoverCultureFrame(culture);
+function renderKeeperCard(scene){
   const name=scene.titre||"";
   const nameFit=Math.max(.6,Math.min(1,20/Math.max(1,name.length)));
-  return `<article class="hover-card hover-card--keeper" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(name)}">
+  return `<article class="hover-card hover-card--keeper" style="--hc-name-fit:${nameFit.toFixed(3)}" aria-label="${esc(name)}">
     <div class="hc-portrait"><figure class="avatar-frame avatar-frame--detail avatar-frame--full"><img src="${esc(scene.image)}" alt="" decoding="async"></figure></div>
-    <header class="hc-banner"><h3>${esc(name)}</h3>${scene.sous_titre?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(scene.sous_titre)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
+    <header class="hc-banner"><h3>${esc(name)}</h3>${scene.sous_titre?`<p class="hc-title"><span>${esc(scene.sous_titre)}</span></p>`:""}</header>
     <div class="hc-page hc-keeper">${(scene.texte||[]).map(text=>`<p>${keeperTypo(esc(text))}</p>`).join("")}</div>
-    ${hoverKitFrame(frame.kit)}
+    <i class="hc-baguette" aria-hidden="true"></i>
   </article>`;
 }
 

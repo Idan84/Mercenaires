@@ -220,8 +220,11 @@ parler. Par défaut, elle est repliée » ; « C'est un faux easter egg… »). 
 candidats. Dépliée, elle montre une situation tirée au hasard à chaque conversation : à la place de l'avatar, une des 20
 images d'Idan (le tavernier en homard, en banane, dans son bain…) ; à la place du nom, un titre de la photo ; à la place
 du titre, un sous-titre de l'histoire ; à la place du contenu, 3 ou 4 paragraphes, esprit Monty Python, qui essaient de
-justifier le sérieux d'une image que le joueur n'aurait jamais dû voir. Aucun effet en jeu. Seules les situations écrites
-sont tirées. Textes et images : `data/reference/tavern-keeper-scenes.json`.
+justifier le sérieux d'une image que le joueur n'aurait jamais dû voir. Aucun effet en jeu. Les 20 sont écrites (Idan :
+« écris les 20 ! »). Un cadre fixe, sans culture (Idan : « juste une baguette du bouton capitaine pour que ça soit
+propre ») : la baguette dorée du kit, le cartouche au velours brun des boutons. Textes et images :
+`data/reference/tavern-keeper-scenes.json`. Dans sa boîte, une réponse longue (la demande à l'usurier) prend deux
+colonnes (Idan : « Bouton sur 2 colonnes »).
 
 ## 7 — La précision des réponses (Idan, 2026-11-19)
 

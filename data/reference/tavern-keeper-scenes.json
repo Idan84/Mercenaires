@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "Situations du tavernier",
-  "description": "Le faux easter egg du tavernier (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui parler. Par défaut, elle est repliée » ; « à la place de l'avatar du mercenaire, une image au hasard du tavernier et un texte qui correspond. On remplit Nom par un titre de la photo, le titre par un sous-titre de notre histoire » ; « à la place du contenu de la fiche au survol, un long texte de 3 ou 4 paragraphes, esprit Monty Python, qui essaie de justifier le sérieux de cette image que le joueur n'aurait jamais dû voir… C'est un faux easter egg »). Une situation est tirée au hasard à chaque conversation avec le tavernier, parmi celles qui ont leur titre et leur texte. Aucun effet en jeu. Les images : media/Avatar_Tavernier.zip d'Idan → scripts/build-tavern-keeper.js.",
+  "description": "Le faux easter egg du tavernier (Idan, 2026-11-26 : « une fiche au survol du tavernier quand on va lui parler. Par défaut, elle est repliée » ; « à la place de l'avatar du mercenaire, une image au hasard du tavernier et un texte qui correspond. On remplit Nom par un titre de la photo, le titre par un sous-titre de notre histoire » ; « à la place du contenu de la fiche au survol, un long texte de 3 ou 4 paragraphes, esprit Monty Python, qui essaie de justifier le sérieux de cette image que le joueur n'aurait jamais dû voir… C'est un faux easter egg »). Une situation est tirée au hasard à chaque conversation avec le tavernier, parmi celles qui ont leur titre et leur texte (les 20 écrites le 2026-11-26 : « écris les 20 ! »). Le cadre est fixe (Idan : « juste une baguette du bouton capitaine »). Aucun effet en jeu. Les images : media/Avatar_Tavernier.zip d'Idan → scripts/build-tavern-keeper.js.",
   "columns": [
     {
       "key": "code",
@@ -29,30 +29,50 @@
     {
       "code": "cupcakes",
       "image": "assets/tavernier/scenes/cupcakes.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Opération Glaçage",
+      "sous_titre": "ou l’art délicat de la dissuasion",
+      "texte": [
+        "Ce que vous voyez là n’est pas un tavernier qui décore des petits gâteaux. C’est un tavernier qui prépare la défense de la taverne. La nuance est subtile, mais capitale, et il vous saurait gré de la saisir sans poser de questions.",
+        "Le tablier rose est un camouflage. Aucun voleur ne se méfie d’un tablier rose. Les fleurs brodées dessus ont été choisies par un expert en stratégie, qui se trouve aussi être sa tante. La capuche noire, elle, sert à garder son sérieux pendant l’opération.",
+        "Les gâteaux sont des leurres. Un brigand affamé qui en mange un est aussitôt submergé par la culpabilité, avoue tout et rend ce qu’il a volé. La méthode a fait ses preuves une fois, sur un neveu.",
+        "Toute personne qui prétendrait avoir entendu le tavernier fredonner en travaillant est priée de garder cette calomnie pour elle. Il réfléchissait. À voix haute. En rythme."
+      ]
     },
     {
       "code": "beurre",
       "image": "assets/tavernier/scenes/beurre.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Inventaire de minuit",
+      "sous_titre": "ou la vérification du beurre",
+      "texte": [
+        "Il est des tâches qu’un tavernier consciencieux ne confie à personne. La vérification nocturne du beurre en fait partie. Elle se pratique seul, à la bougie, en tenue réglementaire, c’est-à-dire en pyjama à pois.",
+        "Le protocole est simple : on plonge la main dans le baquet, on prélève un échantillon, on le goûte. Si le beurre est bon, on recommence pour confirmer. S’il est très bon, on recommence pour confirmer la confirmation.",
+        "Le baquet était plein à minuit. Il est vide à minuit vingt. Le tavernier y voit la preuve d’un contrôle rigoureux, et en aucun cas celle d’une fringale. Il rappelle d’ailleurs qu’il n’a jamais faim la nuit, sauf entre minuit et minuit vingt.",
+        "Si vous trouvez du pain sec au petit déjeuner demain, ce n’est pas un manque de beurre. C’est un régime. Le vôtre."
+      ]
     },
     {
       "code": "banane",
       "image": "assets/tavernier/scenes/banane.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "La Banane furtive",
+      "sous_titre": "ou l’infiltration par les fruits",
+      "texte": [
+        "Le tavernier n’est pas caché dans une caisse. Le tavernier est en mission d’observation, dissimulé parmi les fruits, dans le cadre d’une enquête sur la disparition répétée des pommes.",
+        "Le choix du costume a fait débat. La pomme était trop petite, la poire trop voyante, le melon trop prétentieux. La banane s’est imposée : personne ne soupçonne une banane, surtout dans une caisse de pommes, où elle n’a strictement rien à faire.",
+        "L’enquête progresse. Le tavernier a déjà identifié un suspect : quelqu’un qui mange des pommes. Il n’en dira pas plus. Il ne sortira pas de la caisse tant que le coupable n’aura pas été pris, ou tant qu’il n’aura pas de crampe.",
+        "Si vous croisez une banane qui vous regarde, ne la saluez pas. Faites comme si de rien n’était. Et rendez les pommes."
+      ]
     },
     {
       "code": "tutu",
       "image": "assets/tavernier/scenes/tutu.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Lac des saucisses",
+      "sous_titre": "ou la répétition générale",
+      "texte": [
+        "Contrairement à ce que cette image pourrait laisser croire, le tavernier ne vole pas de saucisses. Il répète. Le spectacle de la taverne approche, et il y tient le rôle principal : celui du cygne affamé.",
+        "Le tutu est d’époque. Le tonneau remplace la scène, trop chère à louer. Les saucisses sont des accessoires, et au théâtre, un accessoire doit être vrai. Il doit même être goûté, pour s’assurer qu’il est vrai. Plusieurs fois.",
+        "Les clients que l’on aperçoit au fond ne se moquent pas. Ils sont émus. Certains pleurent, ce qui prouve la puissance dramatique de la scène. Le tavernier a demandé qu’on ne les dérange pas : ils assistent à une œuvre.",
+        "La première aura lieu un soir de pleine lune. L’entrée est gratuite. La sortie, en revanche, est payante."
+      ]
     },
     {
       "code": "homard",
@@ -69,107 +89,182 @@
     {
       "code": "grenouille",
       "image": "assets/tavernier/scenes/grenouille.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Saut réglementaire",
+      "sous_titre": "ou la chasse à la mouche",
+      "texte": [
+        "L’hygiène est une affaire sérieuse au Black Anvil. Chaque mouche qui entre dans la taverne fait l’objet d’une procédure d’expulsion stricte, et cette procédure, depuis l’hiver dernier, exige un costume de grenouille.",
+        "Pourquoi une grenouille ? Parce que la grenouille est l’ennemie naturelle de la mouche. Le torchon l’est aussi, mais le torchon n’impressionne personne. La grenouille inspire le respect, surtout quand elle a une barbe.",
+        "La méthode consiste à bondir par-dessus le comptoir en poussant un coassement d’avertissement. La mouche, saisie, quitte les lieux d’elle-même. En théorie. En pratique, elle tourne autour de la grenouille pendant que la grenouille tourne autour de la taverne, et tout le monde finit épuisé, sauf la mouche.",
+        "Le tavernier vous prie de ne pas applaudir : cela encourage la mouche."
+      ]
     },
     {
       "code": "tricot",
       "image": "assets/tavernier/scenes/tricot.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "La Chaussette de guerre",
+      "sous_titre": "ou l’effort de guerre en lapin",
+      "texte": [
+        "En ces temps troublés, chacun doit faire sa part. Les mercenaires partent au combat, les intendants comptent l’or, et le tavernier tricote. Une chaussette. Pour la guerre.",
+        "Ce n’est pas une chaussette ordinaire. C’est une chaussette de combat, à mailles renforcées, capable d’arrêter une flèche si la flèche est très fatiguée. Elle sera remise au mercenaire le plus méritant, à condition qu’il n’ait qu’un pied, car le tavernier n’en fera qu’une.",
+        "Le pyjama n’a rien à voir avec l’affaire. Le tavernier a simplement froid. Les oreilles de lapin servent à entendre arriver les clients : c’est donc un équipement professionnel.",
+        "Si vous le surprenez à compter ses mailles à voix haute, ne l’interrompez pas. La dernière fois, il a dû tout recommencer, et la guerre a failli se terminer sans chaussette."
+      ]
     },
     {
       "code": "abreuvoir",
       "image": "assets/tavernier/scenes/abreuvoir.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Bain de bière",
+      "sous_titre": "ou le contrôle qualité intégral",
+      "texte": [
+        "Un bon tavernier goûte sa bière. Un excellent tavernier la goûte entièrement. Ce que vous voyez ici est le contrôle qualité intégral : une méthode exigeante qui consiste à s’immerger dans la cuvée pour en apprécier chaque nuance, y compris par les coudes.",
+        "Les lunettes protègent les yeux de la mousse. Le collier de fleurs est le paiement d’un client venu de très loin, qui n’avait rien d’autre sur lui. Le tavernier l’a accepté par politesse et le porte par diplomatie.",
+        "L’opération se déroule dehors, parce que la taverne n’a pas de baquet assez grand, et parce que la lumière du soir est meilleure pour juger la couleur. Les passants sont priés de ne pas y tremper leur chope. Cette bière n’est pas à vendre. Pas encore.",
+        "Toute ressemblance avec des vacances serait fortuite. Le tavernier ne prend jamais de vacances. Il prend des bains de bière, ce qui, comme chacun sait, est un travail."
+      ]
     },
     {
       "code": "coq",
       "image": "assets/tavernier/scenes/coq.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Grand Prix du comptoir",
+      "sous_titre": "ou le dressage du coq de garde",
+      "texte": [
+        "Toute taverne digne de ce nom possède un animal de garde. Certaines ont un chien. D’autres ont un ours. Le Black Anvil a un coq, et ce coq, comme tout animal de garde, doit être dressé.",
+        "Le dressage se fait à dos de coq, en casaque de jockey, tenue réglementaire pour monter un animal qui court vite et ne sait pas où il va. Le coq apprend ainsi à foncer sur les intrus. Il ne sait pas encore les distinguer des clients, mais c’est en bonne voie.",
+        "Les tables renversées et les chopes au sol font partie de l’exercice : elles simulent une bagarre. Les clients qui crient aussi. Ceux qui sont partis sans payer, en revanche, ne faisaient pas partie de l’exercice, et le coq les retrouvera.",
+        "Il est interdit de parier sur le coq. Sauf avec le tavernier. Et seulement s’il gagne."
+      ]
     },
     {
       "code": "miche",
       "image": "assets/tavernier/scenes/miche.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "La Levée de la pâte",
+      "sous_titre": "ou la surveillance du pain",
+      "texte": [
+        "La fabrication du pain ne saurait être laissée au hasard. La pâte doit lever à la bonne température, sans courant d’air, sous une surveillance constante. Le tavernier a donc décidé de la surveiller de l’intérieur.",
+        "Il ne dort pas. Il écoute la mie. Les yeux fermés permettent de mieux entendre, et les ronflements, que certains auraient cru percevoir, sont une technique ancestrale pour garder la croûte à bonne température.",
+        "L’expérience a donné des résultats remarquables. Le pain a levé. Le tavernier aussi, mais plus tard, vers midi. Entre-temps, il a mangé une partie de son poste d’observation, ce qu’il présente comme un prélèvement scientifique.",
+        "Ce pain ne sera pas servi. Ou alors en tranches très fines, du côté qui n’a pas de barbe."
+      ]
     },
     {
       "code": "bouffon",
       "image": "assets/tavernier/scenes/bouffon.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Tonneau des fous",
+      "sous_titre": "ou l’inspection des douelles",
+      "texte": [
+        "Chaque tonneau de la taverne est inspecté une fois l’an, de l’intérieur, pour vérifier qu’il ne fuit pas. Ce travail ingrat revient au tavernier, qui s’en acquitte avec rigueur et, comme l’exige la tradition, en costume de bouffon.",
+        "Pourquoi un bouffon ? Parce qu’un tonneau inspecté par un bouffon n’ose plus jamais fuir, de honte. C’est du moins ce qu’affirme un vieux proverbe, que le tavernier a inventé ce matin.",
+        "L’inspection s’est bien passée jusqu’au moment de ressortir. Le tavernier a alors constaté que le tonneau avait rétréci. Il a choisi de sortir par le côté, une option que le tonneau n’avait pas prévue. Le tonneau est désormais déclaré non conforme : il fuit.",
+        "Les clients que l’on voit rire ont été priés de se calmer. Ils ont aussi été facturés pour le spectacle."
+      ]
     },
     {
       "code": "paillettes",
       "image": "assets/tavernier/scenes/paillettes.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Bal du balai",
+      "sous_titre": "ou le grand ménage de gala",
+      "texte": [
+        "On ne balaie pas une taverne comme on balaie une étable. Le Black Anvil a une réputation à tenir, et cette réputation exige que le ménage soit fait en tenue de soirée.",
+        "La robe à paillettes n’est donc pas une fantaisie. C’est un uniforme de cérémonie, prévu pour les grandes occasions, comme le coup de balai après une soirée difficile. Les paillettes ont en outre une fonction pratique : elles éclairent les coins sombres où se cachent les miettes.",
+        "Le tavernier tient à préciser que cette robe lui a été léguée par un oncle, et que cet oncle était, lui aussi, tavernier. Il ne souhaite pas qu’on lui pose de questions sur cet oncle.",
+        "Si vous dansez pendant qu’il balaie, vous serez balayé. Avec élégance, certes. Mais balayé."
+      ]
     },
     {
       "code": "saucisses",
       "image": "assets/tavernier/scenes/saucisses.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "La Chaîne du froid",
+      "sous_titre": "ou le transport des saucisses",
+      "texte": [
+        "Le transport des saucisses est une opération délicate. Trop serrées, elles s’abîment. Trop lâches, elles s’enfuient. Le tavernier a donc mis au point une technique de portage personnel : porter toutes les saucisses sur soi, en une seule fois.",
+        "La technique fonctionne. Les saucisses sont bien arrivées. Le tavernier aussi. Simplement, ils sont arrivés ensemble, et ils n’arrivent plus à se séparer.",
+        "Contrairement aux rumeurs, il n’est pas prisonnier. Il est en fusion avec la marchandise, un état que certains bouchers mettent toute une vie à atteindre. Il en profite pour vérifier, une par une, que chaque saucisse est bien fraîche, en commençant par celles qui sont près de sa bouche.",
+        "Les clients sont priés de ne pas tirer. Le tavernier s’en charge. Lentement."
+      ]
     },
     {
       "code": "bain",
       "image": "assets/tavernier/scenes/bain.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "La Cuve d’essai",
+      "sous_titre": "ou le baptême du canard",
+      "texte": [
+        "Le Black Anvil s’apprête à brasser une nouvelle bière, et toute nouvelle bière commence par une nouvelle cuve. Avant de la remplir, il faut s’assurer qu’elle est étanche. La méthode traditionnelle consiste à y prendre un bain.",
+        "Le tavernier procède donc à l’essai en public, pour que chacun puisse témoigner. Le bonnet à fleurs protège la cuve de la barbe, et non l’inverse.",
+        "Le canard, lui, est un employé de la taverne. Il est chargé de signaler toute fuite en coulant. Il n’a jamais coulé. C’est donc un excellent canard, ou une excellente cuve : la question fait encore débat.",
+        "La nouvelle bière sera brassée dans cette cuve dès demain. Elle sera, comme toujours, d’excellente qualité, et vous n’êtes pas obligé de repenser à cette image en la buvant."
+      ]
     },
     {
       "code": "sortilege",
       "image": "assets/tavernier/scenes/sortilege.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Mage du comptoir",
+      "sous_titre": "ou la mousse ensorcelée",
+      "texte": [
+        "Peu de gens le savent, mais le tavernier a fait des études de magie. Trois jours, dans une école très réputée, dont il a été renvoyé pour des raisons qu’il juge injustes et que l’école juge incendiaires.",
+        "Il n’a pas perdu la main pour autant. Le sort que vous voyez ici est un enchantement de sa composition, destiné à donner à la bière une mousse parfaite. Il le lance chaque soir en robe d’apparat, car un sort lancé en tablier n’a aucune tenue.",
+        "Les résultats sont spectaculaires. La mousse reste à peu près la même, mais la cheminée s’allume toute seule, ce qui n’était pas prévu, et les clients rient très fort, ce qui ne l’était pas non plus. Le tavernier y voit un effet secondaire, et un sort de bonne humeur offert par la maison.",
+        "Il est formellement interdit de lui demander de faire apparaître un lapin. La dernière fois, c’est le lapin qui l’a fait disparaître."
+      ]
     },
     {
       "code": "marmite",
       "image": "assets/tavernier/scenes/marmite.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Service en vol",
+      "sous_titre": "ou la soupe à la volée",
+      "texte": [
+        "Le Black Anvil innove. Après des années de service à table, la taverne inaugure le service en vol : la soupe part directement de la cuisine vers l’assiette du client, sans passer par les étapes inutiles du plateau et de la louche.",
+        "La toque sert à viser. Plus elle est haute, plus le tir est précis. Celle-ci mesure deux pieds, ce qui garantit, selon le tavernier, une précision à une toise près.",
+        "La chute que vous croyez voir n’en est pas une. C’est l’élan. Toute soupe lancée a besoin d’élan, et cet élan s’obtient en se prenant le pied dans un tabouret, une technique transmise de cuisinier en cuisinier depuis la nuit des temps.",
+        "Les clients des premiers rangs sont servis en priorité. Ceux du fond aussi, mais plus tard, et sur la tête. Le service est compris. Le nettoyage, non."
+      ]
     },
     {
       "code": "fee",
       "image": "assets/tavernier/scenes/fee.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "La Fée des chandelles",
+      "sous_titre": "ou l’entretien des mèches",
+      "texte": [
+        "L’entretien des chandelles demande de la hauteur. Le tavernier, qui n’en a pas beaucoup, dispose pour cela d’un tabouret. Et d’une paire d’ailes.",
+        "Les ailes ne servent pas à voler. Elles servent à rassurer. Un nain sur un tabouret, un couteau à la main, près d’une flamme, inquiète la clientèle. Une fée sur un tabouret, un couteau à la main, près d’une flamme, l’émerveille. Toute la différence tient à deux ailes de gaze et à beaucoup de confiance en soi.",
+        "Le tavernier taille les mèches une à une, avec la délicatesse d’un orfèvre et la prudence d’un nain qui a promis de ne plus jamais mettre le feu à la taverne. Il l’a promis trois fois cette année.",
+        "Si une fée vous accorde un vœu ce soir, ce n’est pas lui. Il ne fait pas les vœux. Il fait les chandelles."
+      ]
     },
     {
       "code": "pull",
       "image": "assets/tavernier/scenes/pull.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "Le Pull du troll",
+      "sous_titre": "ou le cadeau de famille",
+      "texte": [
+        "Ce pull a été tricoté par la grand-mère du tavernier, qui tricotait comme elle cuisinait : avec énormément d’amour et sans jamais regarder ce qu’elle faisait.",
+        "Le visage qui orne le devant n’est pas un troll. C’est un portrait du grand-père. La ressemblance, d’après la famille, est saisissante. Les chopes tout autour représentent les grands moments de sa vie. Il y en a beaucoup.",
+        "Le tavernier le porte une fois par an, le jour de l’anniversaire de sa grand-mère, par respect. Il le porte aussi les autres jours, parce qu’il tient chaud, mais il refuse de l’admettre. Les clients qui rient sont priés de se souvenir qu’ils ont, eux aussi, une grand-mère, et qu’elle tricote peut-être en ce moment même.",
+        "Toute remarque sur ce pull sera transmise à la grand-mère. Elle répondra par un deuxième pull."
+      ]
     },
     {
       "code": "poule",
       "image": "assets/tavernier/scenes/poule.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "L’Œuf du jour",
+      "sous_titre": "ou les circuits très courts",
+      "texte": [
+        "Le Black Anvil a toujours tenu à servir des produits frais. Mais le marché est loin, le fermier est malhonnête et les poules sont capricieuses. Le tavernier a donc pris la seule décision raisonnable : il s’en occupe lui-même.",
+        "Nous ne détaillerons pas la méthode. Le tavernier tient à ce qu’elle reste un secret de fabrication. Disons simplement qu’elle demande un costume, de la paille fraîche, beaucoup de concentration, et qu’elle n’a fonctionné qu’une fois.",
+        "L’œuf que vous voyez est donc unique. Certains prétendent qu’il a été acheté au marché et posé là pour le tableau. Le tavernier oppose à ces rumeurs un démenti formel, une plume et un regard très appuyé.",
+        "Cet œuf sera servi demain à la table d’honneur, au plat ou à la coque. Le client qui le commandera recevra un certificat d’origine. Il lui est vivement conseillé de ne pas le lire."
+      ]
     },
     {
       "code": "armure",
       "image": "assets/tavernier/scenes/armure.webp",
-      "titre": "",
-      "sous_titre": "",
-      "texte": []
+      "titre": "L’Armure de l’ancêtre",
+      "sous_titre": "ou la défense du comptoir",
+      "texte": [
+        "En cas d’attaque, le tavernier est le dernier rempart du comptoir. Il a donc revêtu l’armure de son ancêtre, un héros dont la famille a oublié le nom mais dont elle se rappelle très bien la taille : nettement plus grande.",
+        "L’armure n’est pas trop grande. C’est le tavernier qui n’a pas fini de grandir. Il compte y arriver d’ici quelques siècles, ce qui, pour un nain, est tout à fait raisonnable.",
+        "En attendant, elle offre une protection remarquable : aucune flèche ne peut l’atteindre, puisqu’il est quelque part au fond. Elle présente toutefois un inconvénient. Le tavernier ne peut plus lever le bras, ni servir, ni s’asseoir, et il a perdu une botte à l’intérieur.",
+        "Le service reprendra dès que quelqu’un l’aura aidé à sortir. Les volontaires sont priés de se présenter au comptoir avec un ouvre-boîte."
+      ]
     }
   ]
 }

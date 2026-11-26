@@ -102,18 +102,28 @@ assert.match(css,/\.talk-mini-keeper\{[^}]*url\("\/media\/video\/Img_Tavern\.jpg
       assert.ok(row.texte.length>=3&&row.texte.length<=4,`${row.code} : 3 ou 4 paragraphes`);
     }
   }
-  assert.ok(scenes.rows.some(row=>row.titre),"au moins une situation écrite");
+  assert.ok(scenes.rows.every(row=>row.titre),"les 20 situations sont écrites (Idan : « écris les 20 ! »)");
   // La fiche : le portrait en pied, le titre de la photo à la place du nom, le sous-titre à la place du titre, les
   // paragraphes dans la page (espaces insécables avant les deux-points).
   const hover=fs.readFileSync(path.join(root,"prototype-web/hover-card-ui.js"),"utf8");
-  const render=new Function("esc","hoverCultureFrame","hoverKitFrame",hover.slice(hover.indexOf("function keeperTypo("),hover.indexOf("// Le nom et le titre dans le cartouche"))+"return renderKeeperCard;")(
-    x=>String(x),()=>({key:"cites-libres",kit:null,vars:""}),()=>"");
+  const render=new Function("esc",hover.slice(hover.indexOf("function keeperTypo("),hover.indexOf("// Le nom et le titre dans le cartouche"))+"return renderKeeperCard;")(x=>String(x));
   const card=render({image:"assets/tavernier/scenes/homard.webp",titre:"Étude du homard",sous_titre:"ou la juste température",texte:["Un : deux.","Trois."]});
   assert.match(card,/<article class="hover-card hover-card--keeper"/);
   assert.match(card,/<img src="assets\/tavernier\/scenes\/homard\.webp"/);
-  assert.match(card,/<h3>Étude du homard<\/h3><p class="hc-title">[\s\S]*<span>ou la juste température<\/span>/);
+  assert.match(card,/<h3>Étude du homard<\/h3><p class="hc-title"><span>ou la juste température<\/span><\/p>/,"sans ornements");
+  // Le cadre fixe (Idan : « juste une baguette du bouton capitaine pour que ça soit propre ») : pas de culture, la
+  // baguette du kit par-dessus, la fiche taillée à ses pans coupés.
+  assert.doesNotMatch(card,/data-culture|data-kit/);
+  assert.match(card,/<i class="hc-baguette" aria-hidden="true"><\/i>/);
+  assert.match(css,/\.hc-baguette\{[^}]*border-image:url\("assets\/kit\/boutons\/bouton-cadre\.webp"\) 100 \/ 27px stretch/);
+  assert.match(css,/\.hover-card--keeper\{--hc-pan:22px;box-shadow:none;clip-path:polygon\(/);
+  assert.match(css,/\.hover-card--keeper \.hc-banner\{background:url\("assets\/creation\/velours-brun\.webp"\)/);
   assert.match(card,/<div class="hc-page hc-keeper"><p>Un\u00a0: deux\.<\/p><p>Trois\.<\/p><\/div>/);
 }
+// Une réponse longue (la demande à l'usurier) prend deux colonnes (Idan, 2026-11-26 : « Bouton sur 2 colonnes »).
+assert.match(js,/const TALK_WIDE_LABEL=48;/);
+assert.match(js,/<li\$\{o\.label\.length>TALK_WIDE_LABEL\?' class="is-wide"':""\}>/);
+assert.match(css,/\.conv #tavern-talk-choices \.talk-options li\.is-wide\{grid-column:span 2\}/);
 // Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ? et ses deux
 // questions (doc 14 §6 bis : son titre, son affinité), avec un retour à chaque étape.
 const dialogueCopy=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-dialogue.json"),"utf8"));

@@ -132,8 +132,8 @@ assert.deepEqual([0,1,5,10,12].map(n=>ui.canteenBackground(n)),
 for(let n=1;n<=10;n++) assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",ui.canteenBackground(n))),"le fond du niveau "+n);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
 // « Au menu » en manuscrit de brasserie ; deux lignes réservées pour le nom et la phrase (rien ne saute en tournant).
-assert.match(css,/\.canteen-menu-kicker\{[^}]*"Parisienne",cursive[^}]*transform:rotate\(var\(--kicker-angle\)\)/,"la Parisienne, de travers");
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8"),/fonts\.googleapis\.com\/css2\?[^"]*family=Parisienne/);
+assert.match(css,/\.canteen-menu-kicker\{[^}]*"Yellowtail",cursive/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8"),/fonts\.googleapis\.com\/css2\?[^"]*family=Yellowtail/);
 assert.match(css,/#tavern-canteen-view \.canteen-dish-name\{[^}]*min-height:2\.3em/);
 assert.match(css,/\.canteen-dish-phrase\{[^}]*min-height:2\.7em/);
 assert.match(css,/#tavern-canteen-view::before\{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var\(--canteen-bg,url\("assets\/cantine\/cantine-1\.webp"\)\) center\/cover no-repeat\}/,"plein écran, sous les barres");

@@ -11,9 +11,9 @@
 //   lues telles quelles dans le code du jeu (creation-capitaine.css, styles.css) ; les 3 tons des 32 cultures ;
 // - charte/assets.json (généré ici) : l'inventaire des images par famille (pictos, ornements, textures…), avec leur
 //   fichier source dans prototype-web/assets/ ;
-// - charte/components/bundle.css (généré ici) : les règles du bouton, du parchemin, des filets et de la fiche au survol,
-//   copiées du jeu, les couleurs et les polices branchées sur les jetons ;
-// - charte/components/Cultures|FicheAuSurvol/preview.html (générés ici) ; les autres aperçus et les README sont écrits
+// - charte/components/bundle.css (généré ici) : les règles du bouton, du parchemin, des filets, de la fiche au survol et
+//   de la fiche pop-up, copiées du jeu, les couleurs et les polices branchées sur les jetons ;
+// - charte/components/Cultures|FicheAuSurvol|FichePopUp/preview.html (générés ici) ; les autres aperçus et les README sont écrits
 //   à la main.
 // Les images restent dans prototype-web/assets/ ; --out les copie dans les fichiers de la page (son adresse est dans
 // charte/publication.json).
@@ -258,7 +258,9 @@ const BUNDLE_RULES = [
     ".btn", ".btn::before", ".btn .fl", ".btn:hover", ".btn:hover::before", ".btn:active", ".btn:active::before", ".btn:focus-visible",
     ".btn[disabled]", ".btn[disabled]::before"],
   [ST, ".hover-card", ".hc-portrait", ".hc-banner", ".hc-banner h3", ".hc-title", ".hc-title span", ".hc-title.is-two-lines span",
-    ".hc-orn", ".hc-orn--r", ".hc-page", ".hc-origins", ".hc-emblems", ".hc-emblem", ".hc-emblem .picto", ".hc-origin"],
+    ".hc-orn", ".hc-orn--r", ".hc-page", ".hc-origins", ".hc-emblems", ".hc-emblem", ".hc-emblem .picto", ".hc-origin",
+    ".hover-card--popup", ".hover-card--popup .hc-portrait", ".hover-card--popup :is(.hc-banner,.hc-page)", ".hover-card--popup .hc-banner",
+    ".hover-card--popup .hc-page"],
 ];
 const TOKEN_PROPS = ["--hc-parchemin", "--or", "--or-clair", "--encre", "--encre-2", "--police-titre", "--police-texte"];
 const STATES = {":hover": ".etat-survol", ":active": ".etat-appui", ":focus-visible": ".etat-focus", ":focus": ".etat-focus"};
@@ -385,6 +387,28 @@ ${cards}
 `;
 }
 
+// La fiche pop-up (Idan, 2026-11-26 : « enregistrer cette fiche (sans le texte) comme fiche pop up ») : le portrait carré,
+// le cartouche et la page vide, sur les trois cultures de la fiche au survol (sans le cadre du kit, posé par le jeu).
+function popupPreview() {
+  const P = HOVER.POPUP_CARD;
+  const cards = FICHE_EXAMPLES.map(e => `<article class="hover-card hover-card--popup" style="${esc(cultureFrameVars(e.cle))};--hc-popup-w:${P.w}px;--hc-popup-h:${P.h}px;--hc-popup-dx:${HOVER.POPUP_DX}px">
+  <div class="hc-portrait"></div>
+  <header class="hc-banner"><h3>${esc(e.name)}</h3><p class="hc-title"><i class="hc-orn"></i><span>${esc(e.title)}</span><i class="hc-orn hc-orn--r"></i></p></header>
+  <div class="hc-page"></div>
+</article>`).join("\n");
+  return `<!-- @dsCard group="Fiches" height=${Math.ceil(FICHE_EXAMPLES.length * (P.h + 20) + 20)} subtitle="Le modèle des pop-ups sur un mercenaire : portrait carré, cartouche, page vide (${P.w} × ${Math.round(P.h)})" -->
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Fiche pop-up</title>
+${FONTS_LINK}
+<style>body{margin:0;padding:20px 0;background:var(--ink);display:grid;gap:20px;justify-content:center}</style></head>
+<body>
+${cards}
+</body>
+</html>
+`;
+}
+
 // ---------------------------------------------------------------- écriture
 
 const json = data => JSON.stringify(data, null, 2) + "\n";
@@ -405,6 +429,7 @@ function generatedFiles() {
     "components/bundle.css": buildBundleCss(assets),
     "components/Cultures/preview.html": culturesPreview(),
     "components/FicheAuSurvol/preview.html": fichePreview(),
+    "components/FichePopUp/preview.html": popupPreview(),
     _assets: assets,
   };
 }

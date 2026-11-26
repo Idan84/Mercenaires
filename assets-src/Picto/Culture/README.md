@@ -11,7 +11,7 @@ les « Nains du chaos ».
 | Culture | Master | Fichier déposé | Sûr |
 |---|---|---|---|
 | Caravanes de ferrailleurs | `caravanes-de-ferrailleurs.jpg` | Dark_fantasy_goblin_emblem_20261022215821.jpg | oui |
-| Cités libres | `cites-libres.jpg` | Dark_fantasy_heraldic_emblem_sword_20261022215821.jpg | oui |
+| Cités libres | `cites-libres.jpg` (remplacé le 2026-11-26 par le logo de son kit, `assets-src/Kits/cites-libres/logo.png`) | Dark_fantasy_heraldic_emblem_sword_20261022215821.jpg | oui |
 | Clans des grandes steppes | `clans-des-grandes-steppes.jpg` | Ram_skull_emblem_with_spears_20261022215821.jpg | validé |
 | Elfes des grandes cités | `elfes-des-grandes-cites.jpg` (remplacé le 2026-11-18 par le logo de son kit, `assets-src/Kits/elfes-des-grandes-cites/logo.png`) | Dark_fantasy_sun_emblem_20261022215821.jpg | validé |
 | Elfes noirs | `elfes-noirs.jpg` (remplacé le 2026-11-16 par le logo de son kit, `assets-src/Kits/elfes-noirs/logo.png`) | Dark_Elf_heraldic_logo_emblem_20261022215821.jpg | oui |
@@ -24,7 +24,7 @@ les « Nains du chaos ».
 | Gobelins des villes | `gobelins-des-villes.jpg` | City_Goblins_emblem_with_dagger_20261022215821.jpg | oui |
 | Halflings des cités humaines | `halflings-des-cites-humaines.jpg` | Dark_fantasy_emblem_logo_20261022215821.jpg | validé |
 | Halflings des villages isolés | `halflings-des-villages-isoles.jpg` | Dark_fantasy_village_emblem_20261022215821.jpg | validé |
-| Empire de la nuit blanche | `empire-de-la-nuit-blanche.jpg` | Axe_and_wolf_emblem_design_20261022215821.jpg | validé |
+| Empire de la nuit blanche | `empire-de-la-nuit-blanche.jpg` (remplacé le 2026-11-26 par le logo de son kit, `assets-src/Kits/empire-de-la-nuit-blanche/logo.png`) | Axe_and_wolf_emblem_design_20261022215821.jpg | validé |
 | Nains des montagnes | `nains-des-montagnes.jpg` (remplacé le 2026-11-19 par le logo de son kit, `assets-src/Kits/nains-des-montagnes/logo.png`) | Mountain_dwarf_heraldic_logo_20261022215821.jpg | oui |
 | Nains du chaos | `nains-du-chaos.jpg` (remplacé le 2026-11-19 par le logo de son kit, `assets-src/Kits/nains-du-chaos/logo.png`) | Chaos_Dwarf_demonic_skull_emblem_20261022215821.jpg | validé |
 | Nains esclaves | `nains-esclaves.jpg` (remplacé le 2026-11-19 par le logo de son kit, `assets-src/Kits/nains-esclaves/logo.png`) | Iron_shackle_and_broken_hammer_20261022215821.jpg | oui |
@@ -37,8 +37,8 @@ les « Nains du chaos ».
 | Reptiliens des cités-temples | `reptiliens-des-cites-temples.jpg` | Temple_Reptilians_heraldic_logo_…_20261022215821.jpg | oui |
 | Reptiliens des marécages | `reptiliens-des-marecages.jpg` | Snake_and_dagger_emblem_20261022215821.jpg | oui |
 | Reptiliens des villes | `reptiliens-des-villes.jpg` | Snake_and_gear_emblem_20261022215821.jpg | oui |
-| Royaumes du Soleil Levant | `royaumes-du-soleil-levant.jpg` | Katana_emblem_with_sun_disc_20261022215821.jpg | oui |
-| Terres des Deux Fleuves | `terres-des-deux-fleuves.jpg` | Tulwar_sword_and_lotus_emblem_20261022215821.jpg | oui |
-| Tribus de la jungle | `tribus-de-la-jungle.jpg` | Dark_fantasy_tribal_emblem_logo_20261022215821.jpg | oui |
+| Royaumes du Soleil Levant | `royaumes-du-soleil-levant.jpg` (remplacé le 2026-11-26 par le logo de son kit, `assets-src/Kits/royaumes-du-soleil-levant/logo.png`) | Katana_emblem_with_sun_disc_20261022215821.jpg | oui |
+| Terres des Deux Fleuves | `terres-des-deux-fleuves.jpg` (remplacé le 2026-11-26 par le logo de son kit, `assets-src/Kits/terres-des-deux-fleuves/logo.png`) | Tulwar_sword_and_lotus_emblem_20261022215821.jpg | oui |
+| Tribus de la jungle | `tribus-de-la-jungle.jpg` (remplacé le 2026-11-26 par le logo de son kit, `assets-src/Kits/tribus-de-la-jungle/logo.png`) | Dark_fantasy_tribal_emblem_logo_20261022215821.jpg | oui |
 | Tribus des forêts anciennes | `tribus-des-forets-anciennes.jpg` | Stag_skull_emblem_with_dagger_20261022215821.jpg | validé |
 | Tribus nordiques | `tribus-nordiques.jpg` | Dark_fantasy_emblem_with_horns_20261022215821.jpg | validé |

@@ -4,6 +4,8 @@
 # prototype-web/hud-kit-ui.js (les barres du camp) d'après data/reference/culture-kits.json (mesures et réglages).
 # Les trois cultures elfes (Idan, 2026-11-18, Elfes.zip) : les Elfes noirs, les Elfes sylvains, les Elfes des grandes cités.
 # Les trois cultures naines (Idan, 2026-11-19, nains.zip) : les Nains des montagnes, les Nains du chaos, les Nains esclaves.
+# Cinq cultures humaines (Idan, 2026-11-26, humains.zip) : les Royaumes du Soleil Levant, l'Empire de la nuit blanche, les
+# Terres des Deux Fleuves, les Tribus de la jungle, les Cités libres.
 # Le cadre de chacun vient d'un « cadre en une pièce » (Idan : « J'ai fait faire un nouveau cadre en une partie à découper
 # nous-même »), découpé ici aux mesures relevées sur le master (assets-src/Kits/<cle>/README.md) : un coin (son angle
 # extérieur en haut à gauche de l'image), une cellule de la bande du haut, de la bande de gauche et de la barre du milieu
@@ -71,6 +73,23 @@ cadre nains-du-chaos 110x110+47+28 400x87+150+28 flop 93x305+47+130 flip 120x90+
 # Maillons au pas de 132 (un de face, un de chant) : cellules d'un pas, d'un milieu de maillon de chant au suivant, sans
 # reflet (comme les clous des Elfes noirs) ; jonction en T réduite au bas de la plaque.
 cadre nains-esclaves 280x280+40+37 132x101+307+37 "" 109x132+40+266 "" 106x132+715+264 "" 37 101 715 820 88 12 30 15 6 8
+# Les cinq cultures humaines (humains.zip) : des cadres sans motif régulier (un morceau et son reflet, pas de 240) ; mesures
+# dans assets-src/Kits/<cle>/README.md. Le coin pris depuis l'angle extérieur de son bloc quand il déborde des bandes
+# (Soleil Levant, Cités libres : le décalage est rattrapé par les réglages des coins, fiche.coins).
+# Royaumes du Soleil Levant : laque noire et or ; bande du haut y 20–91, de gauche x 24–99, barre du milieu x 729–806 ; le
+# bloc doré au sakura du coin déborde de 6 et 5 px.
+cadre royaumes-du-soleil-levant 140x140+18+15 120x72+150+20 flop 76x120+24+120 flip 78x120+729+300 flip 20 72 729 806 48 40 40 20 12 20
+# Empire de la nuit blanche : argent et cristal ; bande du haut y 61–124, de gauche x 54–119, barre du milieu x 742–793.
+cadre empire-de-la-nuit-blanche 150x150+54+61 120x64+195+61 flop 66x120+54+200 flip 52x120+742+400 flip 61 64 742 793 30 35 35 15 10 15
+# Terres des Deux Fleuves : or, sarcelle et ivoire ; bande du haut y 31–94, de gauche x 27–88, barre du milieu x 737–798 ;
+# la jonction en T est un chapiteau.
+cadre terres-des-deux-fleuves 100x100+27+31 120x64+117+31 flop 62x120+27+121 flip 62x120+737+300 flip 31 64 737 798 48 45 30 12 8 15
+# Tribus de la jungle : acajou, corde et perles ; bande du haut y 39–91, de gauche x 24–75, barre du milieu x 743–793 ; la
+# jonction en T, des encoches en V et un triangle de nacre.
+cadre tribus-de-la-jungle 200x200+24+39 120x53+215+39 flop 52x120+24+110 flip 51x120+743+400 flip 39 53 743 793 2 45 65 12 3 15
+# Cités libres : ivoire et or perlé ; bande du haut y 54–104, de gauche x 47–102, barre du milieu x 742–794 ; le bloc doré
+# à la palmette du coin et de la jonction en T déborde de 7 px (la jonction prise 8 px au-dessus de la bande).
+cadre cites-libres 115x115+40+47 120x51+150+54 flop 56x120+47+155 flip 53x120+742+300 flip 54 51 742 794 -8 16 9 3 1 5
 
 # ---- Ornements, cuir, ornement du titre, pièces des barres ----
 # Elfes noirs : les pièces du premier kit (2026-11-16), validées dans le jeu.
@@ -116,7 +135,7 @@ orn(){ rogne "$1" "$tmp/o.png"; webp "$tmp/o.png" -resize 700x700\> -strip -qual
 communs(){
   local key=$1; local src=assets-src/Kits/$key out=prototype-web/assets/fiche/kits/$key
   webp "$src/texture.png" -resize 512x512 -strip -quality 85 "$out/texture.webp"
-  rogne "$src/ornement-titre.png" "$tmp/t.png"; webp "$tmp/t.png" -resize 500x -strip -quality 90 "$out/titre.webp"
+  if [[ -f $src/ornement-titre.png ]]; then rogne "$src/ornement-titre.png" "$tmp/t.png"; webp "$tmp/t.png" -resize 500x -strip -quality 90 "$out/titre.webp"; fi
   rogne "$src/rond-central.png" "$tmp/r.png"; webp "$tmp/r.png" -resize 1200x -strip -quality 90 "$out/rond-central.webp"
   rogne "$src/bouton-jour-suivant.png" "$tmp/b.png"
   webp "$tmp/b.png" -resize 320x320 -gravity center -background none -extent 320x320 -strip -quality 90 "$out/bouton-jour-suivant.webp"
@@ -176,3 +195,28 @@ orn "$SRC/ornement-chopes.png" "$OUT/pose-chopes.webp"
 orn "$SRC/ornement-outils.png" "$OUT/pose-outils.webp"
 orn "$SRC/ornement-lanterne.png" "$OUT/suspendu.webp"
 orn "$SRC/ornement-pioche.png" "$OUT/allonge.webp"
+
+# Les cinq cultures humaines (humains.zip) : comme les nains, sans ornement du titre (elles gardent le leur, de la charte).
+# Plusieurs ornements de coin et de pose par culture, tous proposés au Design Lab. Chaque ornement de coin est ramené au
+# coin haut gauche (le sens des pièces du jeu) : celui dessiné pour le coin haut droit retourné de gauche à droite, celui du
+# bas gauche de haut en bas, celui du bas droit des deux (coin <master> <son coin : hg | hd | bg | bd> <sortie>).
+coin(){
+  case $2 in hd) convert "$1" -flop "$tmp/k.png" ;; bg) convert "$1" -flip "$tmp/k.png" ;; bd) convert "$1" -rotate 180 "$tmp/k.png" ;; *) cp "$1" "$tmp/k.png" ;; esac
+  orn "$tmp/k.png" "$3"
+}
+humain(){
+  local key=$1; shift; SRC=assets-src/Kits/$key; OUT=prototype-web/assets/fiche/kits/$key
+  communs "$key"
+  for c in "$@"; do coin "$SRC/coin-orne-${c%%:*}.png" "${c##*:}" "$OUT/coin-orne-${c%%:*}.webp"; done
+}
+humain royaumes-du-soleil-levant eventail:hg dragon:hg kabuto:hd kitsune:bg taiko:bd
+orn "$SRC/ornement-dragon.png" "$OUT/pose-dragon.webp"; orn "$SRC/ornement-suspendu.png" "$OUT/suspendu.webp"; orn "$SRC/ornement-katana.png" "$OUT/allonge.webp"
+humain empire-de-la-nuit-blanche casque:hg statue:hg corbeau:hd cor:bg ours:bd
+orn "$SRC/ornement-loup.png" "$OUT/pose-loup.webp"; orn "$SRC/ornement-guirlande.png" "$OUT/suspendu.webp"; orn "$SRC/ornement-hache.png" "$OUT/allonge.webp"
+humain terres-des-deux-fleuves sculpte:hg lotus:hg elephant:hg paon:hd bouclier:bg veena:bd
+orn "$SRC/ornement-tigre.png" "$OUT/pose-tigre.webp"; orn "$SRC/ornement-toran.png" "$OUT/suspendu.webp"; orn "$SRC/ornement-masse.png" "$OUT/allonge.webp"
+humain tribus-de-la-jungle masque:hg tortue:hg serpent:hd tambour:bg crocodile:bd
+orn "$SRC/ornement-jaguar.png" "$OUT/pose-jaguar.webp"; orn "$SRC/ornement-statue.png" "$OUT/pose-statue.webp"; orn "$SRC/ornement-guirlande.png" "$OUT/suspendu.webp"
+orn "$SRC/ornement-lance.png" "$OUT/allonge.webp"
+humain cites-libres eventail:hg gobelet:hd des:bg luth:bd
+orn "$SRC/ornement-gondole.png" "$OUT/pose-gondole.webp"; orn "$SRC/ornement-masques.png" "$OUT/suspendu.webp"; orn "$SRC/ornement-rapiere.png" "$OUT/allonge.webp"

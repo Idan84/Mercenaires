@@ -3,7 +3,7 @@
 Ce qui attend une décision d'Idan, ce qu'on a reporté et ce qu'il faut surveiller en jouant. À chaque décision, la règle
 part dans son document et la ligne quitte cette page.
 
-**Dernière mise à jour : 2026-11-18.**
+**Dernière mise à jour : 2026-11-26.**
 
 ## 0 — Feuille de route (Idan, 2026-11-06)
 
@@ -74,6 +74,11 @@ Les gros chantiers à venir, dans l'ordre d'Idan.
 - **Bios évolutives** : une ligne ajoutée après un exploit, une blessure, une trahison
   ([doc 15](/design/#doc=15-biographies-and-narrative-tags.md)).
 - **Prime de risque** selon le danger de la mission ([doc 14](/design/#doc=14-tavern-recruitment.md)).
+- **Le retour du candidat qui a renversé la table** (Idan, 2026-11-26 : « Je voudrais qu'on garde le profil du mercenaire et
+  le montant de la négociation en mémoire. J'imagine une proba, ou quand la réputation de la compagnie gagne une étoile,
+  le mec revient en disant qu'il a bien réfléchi ») : sa fiche, sa dernière demande et l'offre refusée sont gardées ; il
+  peut revenir à la Taverne, sur une probabilité ou quand la compagnie gagne une étoile de réputation. À décider : la
+  probabilité, le délai, et ce qu'il demande en revenant ([doc 14](/design/#doc=14-tavern-recruitment.md) §9).
 - **Siège du château** ([doc 11](/design/#doc=11-camp-and-ruined-castle.md)).
 - **Sonner l'alerte** (Idan, 2026-11-18) : un ennemi qui sonne l'alerte change le comportement de l'IA. Le
   comportement dépendra de la mission : aujourd'hui c'est nous qui attaquons, l'IA garde ou fait sa ronde tant qu'elle

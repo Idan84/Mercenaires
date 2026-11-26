@@ -185,7 +185,10 @@ function noticeLook(id,level=1){
     +(drip?`;--coul-o:1;--coul-x:${pct(10,90)}`:"")
     +(damp?`;--bord-o:1;--bord-a:${[0,90,180,270][Math.floor(r()*4)]}deg`:"")
     +(specks?";--points-o:1"+[1,2,3,4].map(k=>`;--p${k}x:${margin()};--p${k}y:${pct(10,92)}`).join(""):"");
-  return {pin,wax,head,fade,paper,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt};--w:${w.toFixed(3)};--h:${ht.toFixed(3)}${folds}${crumple}${marks}`};
+  // Le tampon du type (Idan, 2026-11-26, variante B) : appliqué à la main, il penche de 3 à 6° d'un côté ou de l'autre
+  // à l'écran, quelle que soit la pente de la feuille (sinon les deux pentes s'annulent et il paraît posé droit).
+  const stamp=(r()<.5?-1:1)*(3+r()*3)-tilt;
+  return {pin,wax,head,fade,paper,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt};--w:${w.toFixed(3)};--h:${ht.toFixed(3)}${folds}${crumple}${marks};--tampon:${stamp.toFixed(1)}deg`};
 }
 // Idan, 2026-11-14 : « réduis la police des longs titres » (sur les feuilles étroites, « Camp d'hommes-bêtes » passait
 // sur trois lignes). Trois crans selon le nombre de lettres du titre.
@@ -200,8 +203,9 @@ function factIcon(kind){
   return missionIcon(kind);
 }
 // Le type de la mission (Idan, 2026-11-26 : « un tag qui indique le type de mission : Chasse, Attaque de camp, Garde du
-// corps (on en aura d'autres après) ») : une ligne imprimée au-dessus du titre, sur l'annonce et dans son détail ; il vient
-// des données (one-shot-missions.json : type ; bodyguard-missions.json : textes.titre).
+// corps (on en aura d'autres après) », puis « un badge plus visible… peut-être à l'encre rouge ») : un tampon bordeaux
+// au-dessus du titre (styles.css), sur l'annonce et dans son détail ; il vient des données (one-shot-missions.json : type ;
+// bodyguard-missions.json : textes.titre).
 // L'annonce, en petit sur le panneau, ou en grand dans le détail (detail : l'essentiel en pictos à la place de la
 // paie et de la durée, sans ouverture au clic, le titre en h2 pour la fenêtre).
 function renderBoardNotice(card,detail=null){

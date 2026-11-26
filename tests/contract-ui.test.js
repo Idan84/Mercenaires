@@ -58,14 +58,16 @@ assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\
   "étoiles, or (avec l'espace des milliers), sablier et durée");
 assert.doesNotMatch(board, /Faire le ménage|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni nom de mission, ni description, ni case vide");
 // Le type de la mission (Idan, 2026-11-26 : « un tag qui indique le type de mission : Chasse, Attaque de camp, Garde du
-// corps ») : une ligne imprimée au-dessus du titre, venue des données.
+// corps ») : un tampon au-dessus du titre, venu des données.
 assert.match(board, /<p class="board-notice-type">Attaque de camp<\/p>\s*<h3 class="board-notice-title"><span class="board-notice-name">Camp gobelin/);
 assert.match(board, /<p class="board-notice-type">Garde du corps<\/p>\s*<h3 class="board-notice-title"><span class="board-notice-name board-notice-name--l">Une veuve fortunée/);
 {
   const missions = JSON.parse(fs.readFileSync(path.join(root, "data/reference/one-shot-missions.json"), "utf8")).missions;
   for (const m of missions) assert.equal(m.type, /^hunt_/.test(m.code) ? "Chasse" : "Attaque de camp", m.code + " : son type");
   const css = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
-  assert.match(css, /\.board-notice-type\{margin:calc\(var\(--u\) \* 12\) 0 0;font:700 calc\(var\(--u\) \* 6\.8\)\/1 var\(--police-titre\)/);
+  // Le badge (Idan, 2026-11-26, variante B) : un tampon à l'encre bordeaux, double filet, de travers, sur une ligne.
+  const rule = css.match(/\.board-notice-type\{[^}]*\}/)?.[0] || "";
+  for (const part of ["double var(--bordeaux)", "color:var(--bordeaux)", "rotate:var(--tampon,-4deg)", "white-space:nowrap"]) assert.ok(rule.includes(part), part);
 }
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
 // Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.

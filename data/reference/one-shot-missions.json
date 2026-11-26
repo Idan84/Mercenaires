@@ -6,6 +6,7 @@
     {
       "code": "cleanup",
       "nom": "Faire le ménage",
+      "type": "Attaque de camp",
       "description": "Attaquer un camp ennemi : tous les ennemis tués ou mis en déroute (sortis de la carte).",
       "illustration": "",
       "niveau": {
@@ -447,6 +448,7 @@
     {
       "code": "hunt_wolves",
       "nom": "Chasse au loup",
+      "type": "Chasse",
       "description": "Une meute de loups : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
       "illustrations": ["assets/missions/chasse-loups-1.webp"],
@@ -496,6 +498,7 @@
     {
       "code": "hunt_unicorn",
       "nom": "Chasse à la licorne",
+      "type": "Chasse",
       "description": "Des licornes : toutes tuées ou mises en déroute. Celles qui restent à terre peuvent être capturées.",
       "illustration": "",
       "illustrations": ["assets/missions/chasse-licorne-1.webp", "assets/missions/chasse-licorne-2.webp"],
@@ -545,6 +548,7 @@
     {
       "code": "hunt_cerberus",
       "nom": "Chasse au cerbère",
+      "type": "Chasse",
       "description": "Une meute de cerbères : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
       "illustrations": ["assets/missions/chasse-cerbere-1.webp"],
@@ -595,6 +599,7 @@
     {
       "code": "hunt_wild_dogs",
       "nom": "Chasse aux chiens sauvages",
+      "type": "Chasse",
       "description": "Une meute de chiens sauvages : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés : ce sont des molosses.",
       "illustration": "",
       "illustrations": ["assets/missions/chasse-chiens-sauvages-1.webp"],
@@ -651,6 +656,7 @@
     {
       "code": "hunt_butterflies",
       "nom": "Chasse aux papillons",
+      "type": "Chasse",
       "description": "Une nuée de papillons vénéneux : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés. Le plus dur : les repérer.",
       "illustration": "",
       "illustrations": ["assets/missions/chasse-papillons-1.webp"],
@@ -702,6 +708,7 @@
     {
       "code": "hunt_boars",
       "nom": "Chasse au sanglier",
+      "type": "Chasse",
       "description": "Une harde de sangliers de combat : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
       "illustrations": [],
@@ -753,6 +760,7 @@
     {
       "code": "hunt_pegasus",
       "nom": "Chasse au pégase",
+      "type": "Chasse",
       "description": "Un troupeau de pégases : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
       "illustrations": [],
@@ -804,6 +812,7 @@
     {
       "code": "hunt_mammoths",
       "nom": "Chasse au mammouth",
+      "type": "Chasse",
       "description": "Une harde de mammouths : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
       "illustrations": [],
@@ -856,6 +865,7 @@
     {
       "code": "hunt_triceratops",
       "nom": "Chasse au tricératops",
+      "type": "Chasse",
       "description": "Un troupeau de tricératops : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
       "illustrations": [],

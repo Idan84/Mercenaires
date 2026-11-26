@@ -88,7 +88,7 @@ function contractCard(offer){
   const order=contractOrder(offer);
   // Une chasse (Idan, 2026-11-07) : la récompense seule, ni coffre ni butin.
   const loot=def.bete?"":" + butin";
-  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
+  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,missionType:def.type||"",title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
     illustration:missionIllustration(def,offer),description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
     reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
@@ -101,7 +101,7 @@ function contractCard(offer){
 }
 function bodyguardCard(guard){
   const t=bodyguardTexts(),plural=guard.count>1;
-  return {id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",title:guard.client,
+  return {id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",missionType:t.titre||"Garde du corps",title:guard.client,
     // La gravure du client (Jean-Mi, 2026-11-14), sinon l'illustration commune des gardes du corps.
     illustration:stablePick(game.referenceData?.bodyguardMissions?.illustrations_clients?.[guard.client],guard.id)||game.referenceData?.bodyguardMissions?.illustration||"",
     description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
@@ -185,7 +185,10 @@ function noticeLook(id,level=1){
     +(drip?`;--coul-o:1;--coul-x:${pct(10,90)}`:"")
     +(damp?`;--bord-o:1;--bord-a:${[0,90,180,270][Math.floor(r()*4)]}deg`:"")
     +(specks?";--points-o:1"+[1,2,3,4].map(k=>`;--p${k}x:${margin()};--p${k}y:${pct(10,92)}`).join(""):"");
-  return {pin,wax,head,fade,paper,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt};--w:${w.toFixed(3)};--h:${ht.toFixed(3)}${folds}${crumple}${marks}`};
+  // Le tampon du type (Idan, 2026-11-26, variante B) : appliqué à la main, il penche de 3 à 6° d'un côté ou de l'autre
+  // à l'écran, quelle que soit la pente de la feuille (sinon les deux pentes s'annulent et il paraît posé droit).
+  const stamp=(r()<.5?-1:1)*(3+r()*3)-tilt;
+  return {pin,wax,head,fade,paper,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt};--w:${w.toFixed(3)};--h:${ht.toFixed(3)}${folds}${crumple}${marks};--tampon:${stamp.toFixed(1)}deg`};
 }
 // Idan, 2026-11-14 : « réduis la police des longs titres » (sur les feuilles étroites, « Camp d'hommes-bêtes » passait
 // sur trois lignes). Trois crans selon le nombre de lettres du titre.
@@ -199,6 +202,10 @@ function factIcon(kind){
   if(kind==="crew") return '<img class="mission-fact-picto" src="assets/hud/picto-mercenaires.webp" alt="">';
   return missionIcon(kind);
 }
+// Le type de la mission (Idan, 2026-11-26 : « un tag qui indique le type de mission : Chasse, Attaque de camp, Garde du
+// corps (on en aura d'autres après) », puis « un badge plus visible… peut-être à l'encre rouge ») : un tampon bordeaux
+// au-dessus du titre (styles.css), sur l'annonce et dans son détail ; il vient des données (one-shot-missions.json : type ;
+// bodyguard-missions.json : textes.titre).
 // L'annonce, en petit sur le panneau, ou en grand dans le détail (detail : l'essentiel en pictos à la place de la
 // paie et de la durée, sans ouverture au clic, le titre en h2 pour la fenêtre).
 function renderBoardNotice(card,detail=null){
@@ -216,6 +223,7 @@ function renderBoardNotice(card,detail=null){
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
+    ${card.missionType?`<p class="board-notice-type">${esc(card.missionType)}</p>`:""}
     <${title} class="board-notice-title"><span class="board-notice-name${nameSize(card.name||card.title)}">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</${title.split(" ")[0]}>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>
     <span class="board-notice-level" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>

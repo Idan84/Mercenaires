@@ -1690,7 +1690,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    taille de l'écran d'un bloc (.recruit-carousel : zoom par --ui-scale, screen-ui.js). */
 #tavern-recruits-view{--board-w:1935.5px;
   --recruit-portrait-w:clamp(100px,calc((1080px - 364px - 81.6px * var(--bb-h) - 81.6px * var(--ht-barre) * (var(--ht-top) + 1.3)) * 9 / 16),280px);
-  --recruit-pad:50px;--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .088);
+  --recruit-pad:50px;--recruit-card-w:calc(max(260px,var(--recruit-portrait-w)) + 2 * var(--recruit-pad));--recruit-fleche-w:calc(var(--board-w) * .08);
   margin-top:-8px;margin-bottom:-48px}
 /* Un grand parchemin (celui de la création du capitaine et du dortoir, coins jamais déformés) sous les cartes et les flèches,
    à la place du voile noir et flou (Idan, 2026-11-19 : « Plan B : On met un grand parchemin à la place du fond noir / flou »,
@@ -1728,13 +1728,13 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-track .recruit-card{flex:0 0 auto;translate:var(--recruit-shift,0px) 0;transition:translate .5s ease,opacity .4s ease}
 .recruit-track .recruit-card.is-off{opacity:0;visibility:hidden;pointer-events:none;transition:translate .5s ease,opacity .4s ease,visibility 0s .4s}
 .recruit-track .recruit-empty{flex:1}
-/* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), l'équerre de fer
-   forgé (fleche-fer.webp) à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol comme
+/* Les flèches : celles du panneau des missions (« les mêmes que pour les missions » ; .mission-board-arrow), la flèche du
+   kit cadre or et velours rouge à la même taille (--board-w, la largeur du panneau), posée sur le grand parchemin ; survol comme
    sur le panneau ; au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en
    grisée », sur le panneau des missions aussi) : elle garde sa place, la rangée ne bouge pas. */
-.recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:640/284;font-size:0;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+.recruit-nav{all:unset;flex:none;width:var(--recruit-fleche-w);aspect-ratio:600/417;font-size:0;cursor:pointer;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;filter:drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8));transition:filter .15s,translate .15s}
 .recruit-nav[data-recruit-scroll="-1"]{transform:scaleX(-1)}
-.recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.recruit-nav:hover,.recruit-nav:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 calc(var(--board-w) * .005) rgba(240,211,149,.6)) drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8))}
 .recruit-nav[data-recruit-scroll="1"]:hover,.recruit-nav[data-recruit-scroll="1"]:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .recruit-nav[data-recruit-scroll="-1"]:hover,.recruit-nav[data-recruit-scroll="-1"]:focus-visible{translate:calc(var(--board-w) * -.003) 0}
 .recruit-nav:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}
@@ -2741,12 +2741,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-board-light::after{left:86%;top:22%;width:calc(var(--board-w) * .0013);animation-duration:34s;animation-delay:-12s}
 @keyframes bougie{0%,100%{opacity:1}18%{opacity:.86}24%{opacity:.97}47%{opacity:.9}61%{opacity:1}74%{opacity:.84}83%{opacity:.95}}
 @keyframes poussiere{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--board-w) * -.025),calc(var(--board-w) * -.03))}88%{opacity:1}100%{transform:translate(calc(var(--board-w) * -.05),calc(var(--board-w) * -.06));opacity:0}}
-/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre.
-   Au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0. Elle fait bizarre en grisée »). */
-.mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .088);aspect-ratio:640/284;padding:0;border:0;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+/* Les flèches : la flèche du kit, cadre or et velours rouge (kit/boutons/fleche-rouge-droite.webp ; Idan, 2026-11-26 :
+   « nos trucs en fer ne sont pas assez lisibles », piste C, « grossit encore un peu les flèches »), sur le montant du
+   cadre ; la gauche est la même, retournée. Au bout, elle s'efface (Idan, 2026-11-19 : « La flèche inactive en opacité 0.
+   Elle fait bizarre en grisée »). */
+.mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .08);aspect-ratio:600/417;padding:0;border:0;background:url("assets/kit/boutons/fleche-rouge-droite.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8));transition:filter .15s,translate .15s}
 .mission-board-arrow--prev{left:14.2%;transform:translate(-50%,-50%) scaleX(-1)}
 .mission-board-arrow--next{left:85.8%}
-.mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.15) saturate(1.1) drop-shadow(0 0 calc(var(--board-w) * .005) rgba(240,211,149,.6)) drop-shadow(0 calc(var(--board-w) * .0022) calc(var(--board-w) * .0028) rgba(0,0,0,.8))}
 .mission-board-arrow--next:hover,.mission-board-arrow--next:focus-visible{translate:calc(var(--board-w) * .003) 0}
 .mission-board-arrow--prev:hover,.mission-board-arrow--prev:focus-visible{translate:calc(var(--board-w) * -.003) 0}
 .mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:0;pointer-events:none}

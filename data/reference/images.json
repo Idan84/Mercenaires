@@ -443,7 +443,7 @@
       "cle": "panneau-missions",
       "famille": "Panneau des missions",
       "nombre": 40,
-      "ou": "« Trouver une mission » : le panneau de bois, les feuilles d'annonce, leurs attaches (clous, punaises, cire, dagues), lambeaux ; la flèche de fer ne sert plus qu'à la galerie de l'escouade (le panneau et Recruter ont la flèche du kit, cadre or et velours rouge).",
+      "ou": "« Trouver une mission » : le panneau de bois, les feuilles d'annonce, leurs attaches (clous, punaises, cire, dagues), lambeaux ; la flèche de fer n'est plus utilisée dans le jeu (gardée dans le dossier) : le panneau, Recruter et la galerie de l'escouade ont la flèche du kit, cadre or et velours rouge.",
       "pourquoi": "Un vrai panneau d'affichage de taverne, avec ses annonces usées.",
       "fichiers": "assets/taverne/panneau-missions.webp, feuille-N(-large).webp, estompe-N.webp, clou-N, punaise-N, cire-*, dague-*, lambeau-N, fleche-fer.webp",
       "affichage": "Panneau plein écran ; une feuille environ 350 × 560 px sur 1920 × 1080 ; attaches de 12 à 100 unités du panneau.",

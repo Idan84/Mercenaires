@@ -1313,8 +1313,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
   box-sizing:border-box;width:500px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;
   border-style:solid;border-width:62px;border-image:url("assets/creation/parchemin.webp") 180 fill / 62px stretch;
   filter:drop-shadow(0 12px 18px rgba(0,0,0,.45));color:var(--encre)}
-/* « Au menu » (Idan, 2026-11-26 : « une police un peu manuscrite façon brasserie parisienne ») : Yellowtail (Google Fonts). */
-.canteen-menu-kicker{margin:0;font:400 46px/1.05 "Yellowtail",cursive;color:#5a2a18}
+/* « Au menu » (Idan, 2026-11-26 : « une police un peu manuscrite façon brasserie parisienne », puis « Police C : la
+   Parisienne. Plus gros, plus beige foncé (genre ton sur ton) et un peu de travers ») : Parisienne (Google Fonts), d'un
+   beige plus foncé que le parchemin, penchée. */
+.canteen-menu-kicker{--kicker-encre:#8b6a45;--kicker-angle:-6deg;margin:-6px 0 -4px;font:400 64px/1.05 "Parisienne",cursive;color:var(--kicker-encre);
+  transform:rotate(var(--kicker-angle))}
 #tavern-canteen-view .canteen-dish-name{display:flex;align-items:center;justify-content:center;min-height:2.3em;margin:8px 0 14px;font:700 27px/1.15 var(--police-titre);color:var(--encre);text-shadow:none;text-wrap:balance}
 .canteen-dish-row{display:flex;align-items:center;justify-content:center;gap:8px}
 .canteen-dish-img{position:relative;flex:none;width:260px;aspect-ratio:596/600;margin:0}

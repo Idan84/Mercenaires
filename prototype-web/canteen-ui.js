@@ -30,15 +30,14 @@ function setCanteenBackground(level,levels){
 // plat du jour (canteen-dishes.json : nom, image, phrase), le cadre carré or du kit. Changer le menu (Idan : « le clic
 // transforme le bouton en Certain de manger ça ? et des flèches apparaissent à gauche et à droite de l'icône du plat. On
 // fait tourner et on peut valider ») : les flèches font tourner les plats disponibles (les plats goûtés, puis celui que
-// propose le tavernier, dont on ne voit que le nom et l'image) ; « Certain de manger ça ? » met au menu le plat montré
+// propose le tavernier, avec sa vraie phrase : Idan, « Non, mets la vraie phrase ») ; « Certain de manger ça ? » met au menu le plat montré
 // (celui du tavernier : il est goûté, son effet est alors connu ; game-core/canteen.js). Le niveau et l'amélioration de
 // la salle sont dans la fenêtre Construction.
 let canteenBrowse=null; // pendant le choix : l'index du plat montré dans canteenChoices ; null sinon
 // Les plats qu'on peut mettre au menu : les plats goûtés, puis celui que propose le tavernier.
 function canteenChoices(state,offer){ return [...state.dishes,...(offer&&!state.dishes.includes(offer.code)?[offer.code]:[])]; }
-function canteenMenuHtml(dish,{change=false,browsing=false,fresh=false}={}){
+function canteenMenuHtml(dish,{change=false,browsing=false}={}){
   const arrow=(dir,label)=>browsing?`<button type="button" class="canteen-arrow canteen-arrow--${dir>0?"next":"prev"}" data-canteen-turn="${dir}" aria-label="${label}"></button>`:"";
-  const phrase=fresh?"Le nouveau plat du tavernier : on ne sait ce qu’il fait qu’une fois goûté !":dish.phrase||"";
   const button=browsing
     ?`<button type="button" class="mission-btn canteen-change" data-canteen-confirm>Certain de manger ça ?</button>`
     :change?`<button type="button" class="mission-btn canteen-change" data-canteen-change>Changer le menu</button>`:"";
@@ -46,7 +45,7 @@ function canteenMenuHtml(dish,{change=false,browsing=false,fresh=false}={}){
       <p class="canteen-menu-kicker">Au menu</p>
       <h2 class="canteen-dish-name">${esc(dish.nom)}</h2>
       <div class="canteen-dish-row">${arrow(-1,"Plat précédent")}<figure class="canteen-dish-img"><img src="${esc(dish.image||"")}" alt="${esc(dish.nom)}"></figure>${arrow(1,"Plat suivant")}</div>
-      <p class="canteen-dish-phrase${fresh?" is-new":""}">${esc(phrase)}</p>
+      <p class="canteen-dish-phrase">${esc(dish.phrase||"")}</p>
       ${button}
     </article>`;
 }
@@ -64,7 +63,7 @@ function renderCanteen(){
   if(choices.length<2) canteenBrowse=null;
   if(canteenBrowse==null){ box.innerHTML=canteenMenuHtml(current,{change:choices.length>1}); return; }
   const code=choices[(canteenBrowse%choices.length+choices.length)%choices.length];
-  box.innerHTML=canteenMenuHtml(canteen.dish(code),{browsing:true,fresh:Boolean(offer&&code===offer.code)});
+  box.innerHTML=canteenMenuHtml(canteen.dish(code),{browsing:true});
 }
 
 // Le clic sur « Changer le menu » : le choix commence sur le plat du jour (open = false : il se referme).

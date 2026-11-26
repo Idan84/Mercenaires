@@ -131,6 +131,11 @@ assert.deepEqual([0,1,5,10,12].map(n=>ui.canteenBackground(n)),
   ["assets/cantine/cantine-1.webp","assets/cantine/cantine-1.webp","assets/cantine/cantine-5.webp","assets/cantine/cantine-10.webp","assets/cantine/cantine-10.webp"]);
 for(let n=1;n<=10;n++) assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",ui.canteenBackground(n))),"le fond du niveau "+n);
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
+// « Au menu » en manuscrit de brasserie ; deux lignes réservées pour le nom et la phrase (rien ne saute en tournant).
+assert.match(css,/\.canteen-menu-kicker\{[^}]*"Yellowtail",cursive/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8"),/fonts\.googleapis\.com\/css2\?[^"]*family=Yellowtail/);
+assert.match(css,/#tavern-canteen-view \.canteen-dish-name\{[^}]*min-height:2\.3em/);
+assert.match(css,/\.canteen-dish-phrase\{[^}]*min-height:2\.7em/);
 assert.match(css,/#tavern-canteen-view::before\{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var\(--canteen-bg,url\("assets\/cantine\/cantine-1\.webp"\)\) center\/cover no-repeat\}/,"plein écran, sous les barres");
 const props={};
 elements["tavern-canteen-view"]={innerHTML:"",style:{setProperty:(k,v)=>{props[k]=v;}}};
@@ -164,12 +169,11 @@ screen=elements["tavern-canteen"].innerHTML;
 assert.match(screen,/data-canteen-turn="-1" aria-label="Plat précédent"><\/button><figure class="canteen-dish-img"><img src="assets\/cantine\/plats\/fromage_lait_de_poule\.webp"[^>]*><\/figure><button type="button" class="canteen-arrow canteen-arrow--next" data-canteen-turn="1"/,"les flèches de part et d'autre du plat");
 assert.match(screen,/data-canteen-confirm>Certain de manger ça \?<\/button>/);
 assert.ok(!screen.includes("data-canteen-change"),"le bouton s'est transformé");
-// Le plat suivant : celui du tavernier, son nom et son image ; son effet reste caché.
+// Le plat suivant : celui du tavernier, avec sa vraie phrase (Idan : « Non, mets la vraie phrase »).
 ui.turnCanteenDish(1);
 screen=elements["tavern-canteen"].innerHTML;
 assert.ok(screen.includes(`<h2 class="canteen-dish-name">${esc(offered.nom)}</h2>`)&&screen.includes(offered.image),"le plat du tavernier");
-assert.ok(!screen.includes(esc(offered.phrase))&&!screen.includes(offered.caracteristique),"son effet reste caché");
-assert.match(screen,/canteen-dish-phrase is-new">Le nouveau plat du tavernier/);
+assert.ok(screen.includes(`<p class="canteen-dish-phrase">${esc(offered.phrase)}</p>`),"sa vraie phrase");
 // On fait tourner : on revient au fromage, dans un sens comme dans l'autre.
 ui.turnCanteenDish(1);
 assert.match(elements["tavern-canteen"].innerHTML,/fromage_lait_de_poule\.webp/,"en tournant");

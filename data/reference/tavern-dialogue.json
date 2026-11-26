@@ -4,7 +4,7 @@
   "purpose": "Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; refonte doc 14 §6 bis, 2026-11-19 et 2026-11-22 ; textes rédigés par JC, à retoucher librement). Le candidat salue selon son affinité avec le capitaine (20 tranches de 10 points, de −100 à +100). On ne lui pose que des questions qui remplissent une case de sa fiche, regroupées sous « Puis-je en savoir plus sur vous ? » (titre, set 1, set 2, armure, magie : il répond en listant ses écoles), puis « Quelles sont vos prétentions salariales ? » et la négociation. Le capitaine vouvoie les candidats (Idan, 2026-11-22 : « on a un langage décalé presque corporate ») ; le tavernier et lui se tutoient. Gabarits : {titre}, {armes} / {Armes} (avec article, colonne weapons), {armure} / {Armure}, {ecoles} (« d’Eau, de Feu et de Vie »), {salaire}, {prime}, {prenom}, {compagnie} ; {masculin|féminin} selon le sexe du mercenaire. Plusieurs variantes par réplique : le jeu en choisit une, toujours la même pour un mercenaire donné. Tavernier (tavernkeeper) : accueil, options, et deux questions payantes sur un candidat (questions, answers) : son titre (estimé à ±10 %) et son affinité avec le capitaine, en un mot (Hostile, Neutre, Amical). Les groupes de caractéristiques (groups) servent encore à l’Intendant, laissé de côté (doc 14 §7).",
   "questions": {
     "about": "Puis-je en savoir plus sur vous ?",
-    "title": "Comment vous appelle-t-on, dans le métier ?",
+    "title": "Et dans le métier, on vous appelle comment ?",
     "tags": "Quels sont vos points forts ?",
     "set1": "Quelle arme de corps à corps maniez-vous ?",
     "set2": "Quelle arme de tir avez-vous ?",

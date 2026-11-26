@@ -301,6 +301,19 @@ function wornArmor(m){
   return id==null?null:(m.items||[]).find(item=>String(item.id)===String(id))||null;
 }
 
+// La fiche repliée sous la boîte de dialogue (Idan, 2026-11-25) ; le choix tient le temps de la partie ouverte.
+function setRecruitFolded(folded){
+  game.recruitFolded=folded;
+  const dialog=$("recruit-talk-dialog"),button=dialog?.querySelector?.(".conv-fold");
+  dialog?.classList?.toggle("is-folded",folded);
+  if(button){
+    const label=folded?"Déplier la fiche":"Replier la fiche";
+    button.setAttribute("aria-expanded",String(!folded));
+    button.setAttribute("aria-label",label);
+    button.title=label;
+  }
+}
+
 function openRecruitTalk(id){
   const candidate=tavernCandidate(id);
   if(!candidate) return;
@@ -310,6 +323,7 @@ function openRecruitTalk(id){
   game.recruitTalk={id,mercenary:m,lines:[{who:"merc",text:recruitDialogue().greeting(m,captainAffinity(m)?.total)}],
     mode:"choices",round:0,closeTimer:null};
   renderRecruitTalk();
+  setRecruitFolded(Boolean(game.recruitFolded));
   $("recruit-talk-dialog").showModal();
 }
 
@@ -343,6 +357,24 @@ function recruitCardOptions(candidate){
     knownTags:shown?shown.names:null,tagSource:shown?d.tagSourceLabel(shown.source,candidate.mercenary):null};
 }
 
+// Les répliques d'une discussion (Idan, 2026-11-24, d'après la maquette de Chatty) : la vignette et le nom de qui parle,
+// sa réplique dans une bulle (les autres à gauche, le capitaine à droite : « Vous ») ; le récit, centré, sans bulle.
+// speaker(line) : la personne qui parle (sa vignette) ; first : le nom par défaut des autres.
+function talkCaptain(){
+  const company=game.campaign?.company;
+  return company?.roster.find(m=>m.id===company.captainId)||game.captain||null;
+}
+function talkMini(person){
+  const src=person&&typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(person,"portrait"):null;
+  const initials=person&&typeof avatarInitials==="function"?avatarInitials(person):"?";
+  return `<span class="talk-mini" aria-hidden="true"><i>${esc(initials)}</i>${src?`<img src="${esc(src)}" alt="" decoding="async" onerror="this.remove()">`:""}</span>`;
+}
+function renderTalkLines(lines,speaker,first){
+  return lines.map(line=>line.who==="note"
+    ?`<p class="talk-note">${esc(line.text)}</p>`
+    :`<div class="talk-say talk-say--${line.who}">${talkMini(speaker(line))}<div class="talk-say-body"><b>${line.who==="you"?"Vous":esc(line.name||first)}</b><span>« ${esc(line.text)} »</span></div></div>`).join("");
+}
+
 function renderRecruitTalk(){
   const t=game.recruitTalk;
   if(!t) return;
@@ -356,10 +388,11 @@ function renderRecruitTalk(){
   $("recruit-talk-name").textContent=m.name;
   $("recruit-talk-origin").innerHTML=`${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}`;
   const log=$("recruit-talk-log");
-  log.innerHTML=t.lines.map(line=>line.who==="note"
-    ?`<p class="talk-note">${esc(line.text)}</p>`
-    :`<p class="talk-say talk-say--${line.who}"><b>${line.who==="you"?"Vous":esc(line.name||first)}</b><span>«\u00a0${esc(line.text)}\u00a0»</span></p>`).join("");
+  const steward=t.lines.some(line=>line.face==="steward")?tavernSteward():null;
+  log.innerHTML=renderTalkLines(t.lines,line=>line.who==="you"?talkCaptain():line.face==="steward"?steward:m,first);
+  // La dernière réplique toujours visible, une fois les réponses posées en dessous (elles changent la hauteur).
   log.scrollTop=log.scrollHeight;
+  requestAnimationFrame(()=>{ log.scrollTop=log.scrollHeight; });
   if(t.mode==="negotiate"&&candidate){
     const n=tavernRules().negotiationState(candidate);
     $("recruit-talk-choices").innerHTML=`<form id="recruit-offer" class="talk-offer">
@@ -370,8 +403,11 @@ function renderRecruitTalk(){
     </form>`;
     return;
   }
-  $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map(choice=>
-    `<li><button type="button" data-talk="${choice.key}">${esc(choice.label)}</button></li>`).join("")}</ol>`;
+  // Les mots composés (« avez-vous », « maniez-vous ») ne se coupent pas à leur trait d'union : la ligne passe avant eux ;
+  // la ponctuation double (? ! : ; ») reste collée au mot qui la précède (espace insécable), jamais seule sur sa ligne.
+  const unbroken=text=>esc(text).replace(/\S*-\S*/g,word=>`<span class="talk-nobr">${word}</span>`).replace(/ ([?!:;»])/g,"\u00a0$1");
+  $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map((choice,i)=>
+    `<li><button type="button" data-talk="${choice.key}"><span class="talk-num" aria-hidden="true">${i+1}</span><span class="talk-choice">${unbroken(choice.label)}</span></button></li>`).join("")}</ol>`;
 }
 
 // Les tags d'un candidat, en noms (game-core/company-tags.js ; Idan, 2026-11-24 : « tes suggestions sont parfaites ») : tels
@@ -444,7 +480,7 @@ function recruitTalkChoice(key){
     k.asked.steward=true;
     k.stewardTags=names;
     t.lines.push({who:"you",text:d.stewardAsk(steward)},
-      {who:"merc",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names)});
+      {who:"merc",face:"steward",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names)});
     saveGame();
   }else if(d.aboutQuestions.includes(key)){
     const answer=recruitAnswer(candidate,key);
@@ -676,6 +712,11 @@ function initializeTavernUi(){
   initializeRecruitCarousel();
   const recruit=$("recruit-talk-dialog");
   recruit.addEventListener("click",event=>{
+    // Replier la fiche sous la boîte (Idan, 2026-11-25), ou la rouvrir par ce qui dépasse.
+    if(event.target.closest(".conv-fold")||recruit.classList.contains("is-folded")&&event.target.closest("#recruit-talk-card")){
+      setRecruitFolded(!recruit.classList.contains("is-folded"));
+      return;
+    }
     const option=event.target.closest("[data-talk]");
     if(option&&!option.disabled) recruitTalkChoice(option.dataset.talk);
   });
@@ -696,6 +737,16 @@ function initializeTavernUi(){
     if(open===talk) tavernTalk(option.dataset.talk,option.dataset.arg);
     else recruitTalkChoice(option.dataset.talk);
   });
+  // Espace replie ou rouvre la fiche (Idan, 2026-11-25). Écouté avant tout le monde, et retenu jusqu'au relâché : il ne
+  // déclenche pas en plus le bouton qui a le focus. Pas dans un champ de saisie (la négociation).
+  const isSpace=event=>event.code==="Space"||event.key===" ";
+  const spaceFolds=event=>recruit.open&&isSpace(event)&&!event.target.matches?.("input,select,textarea")&&!event.ctrlKey&&!event.metaKey&&!event.altKey;
+  document.addEventListener("keydown",event=>{
+    if(!spaceFolds(event)) return;
+    event.preventDefault();
+    if(!event.repeat) setRecruitFolded(!recruit.classList.contains("is-folded"));
+  },true);
+  document.addEventListener("keyup",event=>{ if(spaceFolds(event)) event.preventDefault(); },true);
   recruit.addEventListener("close",()=>{
     clearTimeout(game.recruitTalk?.closeTimer);
     game.recruitTalk=null;

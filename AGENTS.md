@@ -37,7 +37,10 @@ Avant toute modification de logique métier :
 - Une valeur de table utilisée par le code doit provenir de `data/reference/` ou d'une donnée dérivée documentée.
 - Le HTML/CSS ne doit pas contenir de règle de gameplay.
 - Interface joueur (Idan, 2026-10-30) : jamais de tier (T1, T2…) ; un objet s'affiche sous son nom public (`item-titles.json`) et son cadre de couleur dit la qualité. Peu de texte : ce qui est évident ne s'écrit pas.
-- Interface joueur (Idan, 2026-11-15, choix global pour tout le jeu) : jamais de défilement ni de barre de défilement. Une liste se lit par pages de contenus entiers (jamais de portrait ni de carte coupés), tournées par des flèches de clic et par la molette (un cran, une page) ; quand tout doit rester visible (l'escouade choisie, par exemple), les éléments rétrécissent pour tenir plutôt que de passer en pages. « Le défilement ne fait pas très jeux. »
+- Interface joueur (Idan, 2026-11-15, choix global pour tout le jeu) : jamais de défilement ni de barre de défilement. Une liste se lit par pages de contenus entiers (jamais de portrait ni de carte coupés), tournées par des flèches de clic et par la molette (un cran, une page) ; quand tout doit rester visible (l'escouade choisie, par exemple), les éléments rétrécissent pour tenir plutôt que de passer en pages. « Le défilement ne fait pas très jeux. » Exception (Idan, 2026-11-25 : « on a une scrollbar pour parchemin qu'on peut
+  réutiliser… il faut que t'y penses quand on fait un autre écran et qu'on en a besoin ») : quand un parchemin doit
+  défiler, comme la conversation de la boîte de dialogue, on reprend la barre de défilement du parchemin (charte,
+  composants réutilisables ; `scripts/build-parchment-scrollbar.py`).
 - Design et interface (Idan, 2026-11-15 : « quand on code ou on design, tu aies le réflexe d'aller regarder et proposer des
   choses sur les bibliothèques CC BY 3.0 ! … il faut que tu passes du temps à chercher ») : avant de dessiner ou de coder
   un picto, un ornement, une icône ou un élément d'interface, chercher d'abord dans les bibliothèques libres —

@@ -1,0 +1,27 @@
+<!-- @dsCard group="Cadres" height=380 subtitle="Le cadre doré du bouton d'Idan : vignettes et barre de défilement" -->
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Cadre doré</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&amp;display=swap">
+<style>
+  body{margin:0;font-family:var(--font-texte)}
+  .papier{display:flex;justify-content:center;align-items:center;gap:48px;padding:30px 24px;background:var(--parchemin)}
+  figure{margin:0;display:grid;justify-items:center;gap:14px}
+  figcaption{font:700 11px/1 var(--font-titre);letter-spacing:.12em;text-transform:uppercase;color:var(--encre-secondaire)}
+  .vignette{position:relative;display:grid;place-items:center;width:120px;height:120px;filter:drop-shadow(3px 6px 6px rgba(30,16,4,.42)) drop-shadow(1px 2px 1.5px rgba(30,16,4,.3))}
+  .vignette::before{content:"";position:absolute;inset:0;background:url("{{asset:Cadre doré/velours-brun.webp}}") center/cover;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px)}
+  .vignette::after{content:"";position:absolute;inset:0;box-sizing:border-box;border-style:solid;border-width:12px;border-image:url("{{asset:Cadre doré/cadre-or.webp}}") 45 / 12px stretch}
+  .vignette i{position:relative;color:var(--or-clair);font:700 34px/1 var(--font-titre);font-style:normal}
+  .barre{display:flex;flex-direction:column;width:33px;height:260px;filter:drop-shadow(2px 3px 3px rgba(58,36,16,.38))}
+  .barre .haut,.barre .bas{height:52px;background:center/33px 52px no-repeat}
+  .barre .haut{background-image:url("{{asset:Cadre doré/barre-defilement-haut.webp}}")}
+  .barre .bas{background-image:url("{{asset:Cadre doré/barre-defilement-bas.webp}}")}
+  .barre .milieu{flex:1;background:url("{{asset:Cadre doré/barre-defilement-milieu.webp}}") 0 0/33px 84px no-repeat round}
+</style></head>
+<body>
+<div class="papier">
+  <figure><span class="vignette"><i>ZO</i></span><figcaption>Vignette (sans portrait)</figcaption></figure>
+  <figure><div class="barre"><span class="haut"></span><span class="milieu"></span><span class="bas"></span></div><figcaption>Barre de défilement</figcaption></figure>
+</div>
+</body>
+</html>

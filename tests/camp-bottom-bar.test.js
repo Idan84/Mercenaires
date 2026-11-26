@@ -47,7 +47,8 @@ assert.deepEqual(actions.filter(a=>a.disabled).map(a=>a.label),["Combats du jour
 assert.match(actionsNav,/<ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden><\/ul>/,"le menu des combats, s'il y en a plusieurs");
 assert.match(actionsNav,/<button id="hud-talk-btn"[^\n]*\n\s*<div id="hud-context" class="hud-context">\s*<button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu"/,"le bouton du lieu à droite des pictos (Idan, 2026-11-14)");
 assert.match(css,/\.hud-context \.hud-menu-list\{left:auto;right:0\}/,"son menu calé à droite");
-assert.match(actionsNav,/<span id="hud-context-name" class="hud-context-name">Ce lieu<\/span><span class="hud-context-chevron" aria-hidden="true"><\/span><\/button>/,"le nom du lieu et sa flèche, plus de « ••• »");
+assert.match(actionsNav,/<span class="hud-context-grave"><span id="hud-context-name" class="hud-context-name">Ce lieu<\/span><span class="hud-context-fleche" aria-hidden="true"><\/span><\/span><\/button>/,"le nom du lieu et sa flèche gravés, plus de « ••• »");
+assert.match(css,/\.hud-context-btn\{[^}]*background:url\("assets\/hud\/bouton-lieu\.webp"\) center\/100% 100% no-repeat/,"le bouton capitaine en argent (Idan, 2026-11-26)");
 assert.match(actionsNav,/<ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden><\/ul>/);
 assert.match(actionsNav,/id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal"/);
 assert.ok(bottom.indexOf('class="hud-play"')<bottom.indexOf('class="hud-actions"'),"à droite du bouton play");

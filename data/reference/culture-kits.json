@@ -646,7 +646,643 @@
         "nom": "clair",
         "cuir": {"grain": 100, "sombre": 20}
       }
+    },
+    {
+      "cle": "royaumes-du-soleil-levant",
+      "culture": "Royaumes du Soleil Levant",
+      "dossier": "assets/fiche/kits/royaumes-du-soleil-levant",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 140, "coupeX": 132, "coupeY": 105, "clouX": 12, "clouY": -15, "coeur": 72, "coeurV": 76, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 72, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 76, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 78, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 78, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 158, "h": 64, "y0": 48, "barre": 72, "tige": 78, "cx": 79.0}
+        },
+        "ornementsCoin": {"eventail": "coin-orne-eventail.webp", "dragon": "coin-orne-dragon.webp", "kabuto": "coin-orne-kabuto.webp", "kitsune": "coin-orne-kitsune.webp", "taiko": "coin-orne-taiko.webp"},
+        "poses": {
+          "dragon": {"f": "pose-dragon.webp", "w": 700, "h": 226, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 342, "attache": 0.15},
+        "allonge": {"f": "allonge.webp", "w": 149, "h": 700},
+        "texture": "texture.webp",
+        "voile": "40,8,12",
+        "ornementTitre": {"largeur": 104},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 674, "cx": 0.4963, "cy": 0.4948, "trou": 0.3725},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 364}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": -1.3, "dy": -1.1},
+          "hd": {"sens": "miroir", "dx": 1.3, "dy": -1.1},
+          "bd": {"sens": "miroir", "dx": 1.3, "dy": 1.1},
+          "bg": {"sens": "miroir", "dx": -1.3, "dy": 1.1}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "eventail", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "kabuto", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "taiko", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "kitsune", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "dragon", "place": "bas-centre", "taille": 200, "dx": 150, "dy": 0, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 170, "dx": 0, "dy": -3},
+        "allonge": {"place": "separation", "taille": 34, "longueur": 25, "espacement": 0, "dx": 0, "dy": 0},
+        "titre": {"hauteur": 12, "ecart": 0},
+        "cuir": {"grain": 100, "sombre": 45},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 45, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 138, "dx": 35.5, "dy": -38},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -36.9}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 45, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 330, "dx": 0, "dy": -10.5},
+          "bouton": {"taille": 129, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "dragon", "place": "sur-bas-droite", "taille": 202, "dx": 433, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 176, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": -600, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {
+          "ep": 20,
+          "dy": 0,
+          "jonctions": true,
+          "tGauche": {"dx": 0, "dy": 0},
+          "tDroite": {"dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 20,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": -1.6, "dy": -1.4},
+          "hd": {"sens": "miroir", "dx": 1.6, "dy": -1.4},
+          "bd": {"sens": "miroir", "dx": 1.6, "dy": 1.4},
+          "bg": {"sens": "miroir", "dx": -1.6, "dy": 1.4}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "eventail", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "kabuto", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "taiko", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "kitsune", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "dragon", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
+    },
+    {
+      "cle": "empire-de-la-nuit-blanche",
+      "culture": "Empire de la nuit blanche",
+      "dossier": "assets/fiche/kits/empire-de-la-nuit-blanche",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 150, "coupeX": 141, "coupeY": 139, "clouX": 21, "clouY": 19, "coeur": 64, "coeurV": 66, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 64, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 66, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 52, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 52, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 122, "h": 69, "y0": 30, "barre": 64, "tige": 52, "cx": 61.0}
+        },
+        "ornementsCoin": {"casque": "coin-orne-casque.webp", "statue": "coin-orne-statue.webp", "corbeau": "coin-orne-corbeau.webp", "cor": "coin-orne-cor.webp", "ours": "coin-orne-ours.webp"},
+        "poses": {
+          "loup": {"f": "pose-loup.webp", "w": 700, "h": 229, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 228, "attache": 0.15},
+        "allonge": {"f": "allonge.webp", "w": 222, "h": 700},
+        "texture": "texture.webp",
+        "voile": "8,20,32",
+        "ornementTitre": {"largeur": 104},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 617, "cx": 0.4983, "cy": 0.5065, "trou": 0.3333},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 378}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "hd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bg": {"sens": "miroir", "dx": 0.0, "dy": 0.0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "casque", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "corbeau", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "ours", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "cor", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "loup", "place": "bas-centre", "taille": 200, "dx": 150, "dy": 0, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 170, "dx": 0, "dy": -3},
+        "allonge": {"place": "separation", "taille": 34, "longueur": 25, "espacement": 0, "dx": 0, "dy": 0},
+        "titre": {"hauteur": 12, "ecart": 0},
+        "cuir": {"grain": 100, "sombre": 55},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 55, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 138, "dx": 35.5, "dy": -38},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -40.3}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 55, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 360, "dx": 0, "dy": -10.5},
+          "bouton": {"taille": 126, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "loup", "place": "sur-bas-droite", "taille": 202, "dx": 433, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 176, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": -600, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {
+          "ep": 20,
+          "dy": 0,
+          "jonctions": true,
+          "tGauche": {"dx": 0, "dy": 0},
+          "tDroite": {"dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 20,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "hd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bg": {"sens": "miroir", "dx": 0.0, "dy": 0.0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "casque", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "corbeau", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "ours", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "cor", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "loup", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
+    },
+    {
+      "cle": "terres-des-deux-fleuves",
+      "culture": "Terres des Deux Fleuves",
+      "dossier": "assets/fiche/kits/terres-des-deux-fleuves",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 100, "coupeX": 90, "coupeY": 90, "clouX": -30, "clouY": -30, "coeur": 64, "coeurV": 62, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 64, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 62, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 62, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 62, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 122, "h": 61, "y0": 48, "barre": 64, "tige": 62, "cx": 61.0}
+        },
+        "ornementsCoin": {"sculpte": "coin-orne-sculpte.webp", "lotus": "coin-orne-lotus.webp", "elephant": "coin-orne-elephant.webp", "paon": "coin-orne-paon.webp", "bouclier": "coin-orne-bouclier.webp", "veena": "coin-orne-veena.webp"},
+        "poses": {
+          "tigre": {"f": "pose-tigre.webp", "w": 700, "h": 228, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 343, "attache": 0.15},
+        "allonge": {"f": "allonge.webp", "w": 203, "h": 700},
+        "texture": "texture.webp",
+        "voile": "4,20,22",
+        "ornementTitre": {"largeur": 104},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 603, "cx": 0.4988, "cy": 0.4577, "trou": 0.306},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 370}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "hd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bg": {"sens": "miroir", "dx": 0.0, "dy": 0.0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "elephant", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "paon", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "veena", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "bouclier", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "tigre", "place": "bas-centre", "taille": 200, "dx": 150, "dy": 0, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 170, "dx": 0, "dy": -3},
+        "allonge": {"place": "separation", "taille": 34, "longueur": 25, "espacement": 0, "dx": 0, "dy": 0},
+        "titre": {"hauteur": 12, "ecart": 0},
+        "cuir": {"grain": 100, "sombre": 20},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 138, "dx": 35.5, "dy": -38},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -53.6}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 380, "dx": 0, "dy": -10.5},
+          "bouton": {"taille": 122, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 100, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "tigre", "place": "sur-bas-droite", "taille": 202, "dx": 433, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 176, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": -600, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {
+          "ep": 20,
+          "dy": 0,
+          "jonctions": true,
+          "tGauche": {"dx": 0, "dy": 0},
+          "tDroite": {"dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 20,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "hd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bg": {"sens": "miroir", "dx": 0.0, "dy": 0.0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "elephant", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "paon", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "veena", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "bouclier", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "tigre", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
+    },
+    {
+      "cle": "tribus-de-la-jungle",
+      "culture": "Tribus de la jungle",
+      "dossier": "assets/fiche/kits/tribus-de-la-jungle",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 200, "coupeX": 191, "coupeY": 71, "clouX": 71, "clouY": -49, "coeur": 53, "coeurV": 52, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 53, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 52, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 51, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 51, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 181, "h": 96, "y0": 2, "barre": 53, "tige": 51, "cx": 90.5}
+        },
+        "ornementsCoin": {"masque": "coin-orne-masque.webp", "tortue": "coin-orne-tortue.webp", "serpent": "coin-orne-serpent.webp", "tambour": "coin-orne-tambour.webp", "crocodile": "coin-orne-crocodile.webp"},
+        "poses": {
+          "jaguar": {"f": "pose-jaguar.webp", "w": 700, "h": 225, "base": 0.1},
+          "statue": {"f": "pose-statue.webp", "w": 700, "h": 231, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 227, "attache": 0.15},
+        "allonge": {"f": "allonge.webp", "w": 78, "h": 700},
+        "texture": "texture.webp",
+        "voile": "4,16,8",
+        "ornementTitre": {"largeur": 104},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 923, "cx": 0.4933, "cy": 0.5114, "trou": 0.5275},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 263}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "hd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bg": {"sens": "miroir", "dx": 0.0, "dy": 0.0}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "masque", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "serpent", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "crocodile", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "tambour", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "jaguar", "place": "bas-centre", "taille": 200, "dx": 150, "dy": 0, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 170, "dx": 0, "dy": -3},
+        "allonge": {"place": "separation", "taille": 34, "longueur": 25, "espacement": 0, "dx": 0, "dy": 0},
+        "titre": {"hauteur": 12, "ecart": 0},
+        "cuir": {"grain": 100, "sombre": 20},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 138, "dx": 35.5, "dy": -38},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -47.2}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 260, "dx": 0, "dy": -10.5},
+          "bouton": {"taille": 144, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "jaguar", "place": "sur-bas-droite", "taille": 202, "dx": 433, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 176, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": -600, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {
+          "ep": 20,
+          "dy": 0,
+          "jonctions": true,
+          "tGauche": {"dx": 0, "dy": 0},
+          "tDroite": {"dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 20,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "hd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bd": {"sens": "miroir", "dx": 0.0, "dy": 0.0},
+          "bg": {"sens": "miroir", "dx": 0.0, "dy": 0.0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "masque", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "serpent", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "crocodile", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "tambour", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "jaguar", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
+    },
+    {
+      "cle": "cites-libres",
+      "culture": "Cités libres",
+      "dossier": "assets/fiche/kits/cites-libres",
+      "geometrie": {
+        "cadre": {
+          "coin": {"f": "coin.webp", "n": 115, "coupeX": 110, "coupeY": 105, "clouX": -10, "clouY": -15, "coeur": 51, "coeurV": 56, "pasX": 240, "pasV": 240},
+          "h": {"f": "cell-h.webp", "coeur": 51, "pas": 240},
+          "v": {"f": "cell-v.webp", "coeur": 56, "pas": 240},
+          "m": {"f": "cell-m.webp", "coeur": 53, "pas": 240},
+          "mh": {"f": "cell-m-h.webp", "coeur": 53, "pas": 240},
+          "jonction": {"f": "jonction.webp", "w": 71, "h": 75, "y0": -8, "barre": 51, "tige": 53, "cx": 35.5}
+        },
+        "ornementsCoin": {"eventail": "coin-orne-eventail.webp", "gobelet": "coin-orne-gobelet.webp", "des": "coin-orne-des.webp", "luth": "coin-orne-luth.webp"},
+        "poses": {
+          "gondole": {"f": "pose-gondole.webp", "w": 700, "h": 213, "base": 0.1}
+        },
+        "suspendu": {"f": "suspendu.webp", "w": 700, "h": 222, "attache": 0.15},
+        "allonge": {"f": "allonge.webp", "w": 211, "h": 700},
+        "texture": "texture.webp",
+        "voile": "30,4,8",
+        "ornementTitre": {"largeur": 104},
+        "rond": {"f": "rond-central.webp", "w": 1200, "h": 896, "cx": 0.4929, "cy": 0.4994, "trou": 0.47},
+        "bouton": {"f": "bouton-jour-suivant.webp"},
+        "embleme": {"f": "embleme-fin-de-barre.webp", "w": 480, "h": 238}
+      },
+      "fiche": {
+        "cadre": {"ep": 16},
+        "cotes": {"haut": -7, "bas": 0, "gauche": 0, "droite": 0},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": -2.0, "dy": -2.2},
+          "hd": {"sens": "miroir", "dx": 2.0, "dy": -2.2},
+          "bd": {"sens": "miroir", "dx": 2.0, "dy": 2.2},
+          "bg": {"sens": "miroir", "dx": -2.0, "dy": 2.2}
+        },
+        "separation": {
+          "ep": 16,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "sousNom": {
+          "ep": 16,
+          "dy": 0,
+          "jonctions": true,
+          "tPortrait": {"dx": 0, "dy": 0},
+          "tBord": {"dx": 0, "dy": 0}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "eventail", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "gobelet", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "luth", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "des", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "gondole", "place": "bas-centre", "taille": 200, "dx": 150, "dy": 0, "retourne": false},
+        "suspendu": {"place": "haut-portrait", "taille": 170, "dx": 0, "dy": -3},
+        "allonge": {"place": "separation", "taille": 34, "longueur": 25, "espacement": 0, "dx": 0, "dy": 0},
+        "titre": {"hauteur": 12, "ecart": 0},
+        "cuir": {"grain": 100, "sombre": 10},
+        "nom": "clair"
+      },
+      "barres": {
+        "ecran": {"w": 1920, "h": 1080, "B": 81.6},
+        "haut": {
+          "bande": {"cale": "gauche", "distance": 40, "largeur": 1850, "hauteur": 50, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 13, "dy": -3},
+          "sangleBas": {"style": "bande", "ep": 13, "dy": 3},
+          "emblemeDroit": {"visible": true, "taille": 138, "dx": 35.5, "dy": -38},
+          "emblemeGauche": {"visible": false, "taille": 130, "dx": 0, "dy": 0},
+          "textes": {"ecart": -40, "dy": -37.9}
+        },
+        "bas": {
+          "bande": {"haut": 990, "fond": "cuir", "sombre": 40, "grain": 250},
+          "sangleHaut": {"style": "bande", "ep": 18, "dy": 0},
+          "sangleBas": {"style": "aucune", "ep": 16, "dy": 0},
+          "rond": {"taille": 290, "dx": 0, "dy": -10.5},
+          "bouton": {"taille": 143, "dx": 0, "dy": 0},
+          "pictos": {"ecart": 50, "dy": 0}
+        },
+        "ornements": {
+          "pose": {"modele": "gondole", "place": "sur-bas-droite", "taille": 202, "dx": 433, "dy": 0, "retourne": false},
+          "suspendu": {"place": "sous-haut-gauche", "taille": 176, "dx": -300, "dy": 0},
+          "allonge": {"place": "aucune", "taille": 24, "longueur": 30, "espacement": 0, "dx": -600, "dy": 0}
+        },
+        "contenu": "clair"
+      },
+      "plein": {
+        "largeur": "ecran",
+        "haut": 150,
+        "gauche": 440,
+        "cadre": {"ep": 20},
+        "cotes": {"haut": 0, "bas": 0, "gauche": 0, "droite": 0},
+        "bande": {
+          "ep": 20,
+          "dy": 0,
+          "jonctions": true,
+          "tGauche": {"dx": 0, "dy": 0},
+          "tDroite": {"dx": 0, "dy": 0}
+        },
+        "separation": {
+          "ep": 20,
+          "dx": 0,
+          "jonctions": true,
+          "tHaut": {"dx": 0, "dy": 0},
+          "tBas": {"dx": 0, "dy": 0}
+        },
+        "barre": {"margeGauche": 70, "margeDroite": 40, "avatarMarge": 10, "ecart": 22, "nom": 44, "titre": 23},
+        "coins": {
+          "hg": {"sens": "miroir", "dx": -2.5, "dy": -2.7},
+          "hd": {"sens": "miroir", "dx": 2.5, "dy": -2.7},
+          "bd": {"sens": "miroir", "dx": 2.5, "dy": 2.7},
+          "bg": {"sens": "miroir", "dx": -2.5, "dy": 2.7}
+        },
+        "ornementsCoin": {
+          "hg": {"modele": "eventail", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "hd": {"modele": "gobelet", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bd": {"modele": "luth", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0},
+          "bg": {"modele": "des", "taille": 140, "sens": "miroir", "dx": 0, "dy": 0}
+        },
+        "pose": {"modele": "gondole", "place": "aucune", "taille": 230, "dx": 0, "dy": 0, "retourne": false},
+        "suspendu": {"place": "aucune", "taille": 200, "dx": 0, "dy": 0},
+        "allonge": {"place": "aucune", "taille": 42.5, "longueur": 49, "espacement": 0, "dx": 0, "dy": 0},
+        "nom": "clair",
+        "cuir": {"grain": 100, "sombre": 20}
+      }
     }
   ],
-  "row_count": 6
+  "row_count": 11
 }

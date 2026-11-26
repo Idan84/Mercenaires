@@ -26,4 +26,11 @@ convert "$tmp/forme.png" -morphology Erode Disk:2 -blur 0x5 "$tmp/bord.png"
 convert "$tmp/plaque.png" "$tmp/bord.png" -compose multiply -composite \
   "$tmp/forme.png" -alpha off -compose copy_opacity -composite "$tmp/plaque-a.png"
 convert "$tmp/plaque-a.png" "$tmp/cadre-argent.png" -compose over -composite -define webp:lossless=false -quality 92 "$OUT"
-echo "$OUT"
+# Pour le panneau du sous-menu (Idan, 2026-11-26 : « répéter au lieu d'étirer ») : le cadre seul (le centre vide), dont
+# le CSS répète les bords autour des pans coupés, et une plaque de métal brossé raccordée bout à bout (le flou fait le
+# tour de l'image), répétée sous le cadre ; la lumière (plus claire en haut) est un dégradé CSS posé dessus.
+CADRE=prototype-web/assets/hud/bouton-lieu-cadre.webp METAL=prototype-web/assets/hud/metal-brosse.webp
+convert "$tmp/cadre-argent.png" -define webp:lossless=false -quality 92 "$CADRE"
+convert -size 512x256 xc:gray50 -seed 11 +noise Gaussian -virtual-pixel tile -motion-blur 0x40+0 -level 35%,65% "$tmp/grain.png"
+convert -size 512x256 xc:'#b3aea5' "$tmp/grain.png" -compose overlay -composite -define webp:lossless=false -quality 90 "$METAL"
+echo "$OUT $CADRE $METAL"

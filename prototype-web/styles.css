@@ -1931,12 +1931,14 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .game-bottom-bar.is-dore .hud-context-btn{--hc-ombre:sepia(1) saturate(1.7) hue-rotate(-10deg) brightness(.8) drop-shadow(0 4px 5px #0008)}
 /* Le sous-menu du lieu (Idan, 2026-11-26 : « un seul panneau argent avec les cinq noms gravés et séparés par des
    filets » ; « fait une animation d'ouverture ») : le bouton capitaine en argent étiré en panneau, à la largeur du bouton
-   du lieu, découpé en tranches autour de ses coins coupés (border-image 82 / 52 / 92 : les pans coupés restent entiers,
-   seuls les bords droits et la plaque s'étirent). Les salles gravées comme le nom du lieu, séparées par un filet creusé
+   du lieu, découpé en tranches autour de ses coins coupés (border-image 92 / 52 / 102 : les pans coupés restent entiers,
+   seuls les bords droits s'allongent, par répétition : Idan, même jour, « répéter au lieu d'étirer »), sur une plaque de
+   métal brossé répétée (assets/hud/metal-brosse.webp, raccordée bout à bout) et éclairée par un dégradé. Les salles gravées comme le nom du lieu, séparées par un filet creusé
    (trait sombre, reflet clair dessous) ; au survol, la ligne s'éclaire. À l'ouverture, le panneau se déplie depuis le
    bouton (de bas en haut), puis les noms apparaissent l'un après l'autre. */
 .hud-context .hud-menu-list{isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr);gap:0;bottom:calc(100% + var(--hb-B-z) * .4);width:calc(var(--hb-B-z) * var(--bb-picto) * 1.3 * 760 / 257);min-width:0;box-sizing:border-box;padding:14px 18px 15px;border:0;border-radius:0;background:none;box-shadow:none;transform-origin:50% 100%;animation:hud-panneau .2s cubic-bezier(.2,.8,.3,1) both}
-.hud-context .hud-menu-list::before{content:"";position:absolute;inset:-13px -1px -16px;z-index:-1;box-sizing:border-box;border-style:solid;border-width:27px 17px 30px;border-image:url("assets/hud/bouton-lieu.webp") 82 52 92 fill / 27px 17px 30px stretch;filter:drop-shadow(0 6px 8px #000c);pointer-events:none}
+.hud-context .hud-menu-list::before{content:"";position:absolute;inset:2px;z-index:-1;background:linear-gradient(180deg,#ffffff38,#ffffff00 38%,#00000000 62%,#0000002e),url("assets/hud/metal-brosse.webp") 0 0 / 256px 128px repeat;box-shadow:inset 0 0 9px #0000004d,0 6px 14px #000a;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 13px) 100%,13px 100%,0 calc(100% - 12px),0 12px);pointer-events:none}
+.hud-context .hud-menu-list::after{content:"";position:absolute;inset:-13px -1px -16px;z-index:-1;box-sizing:border-box;border-style:solid;border-width:30px 17px 34px;border-image:url("assets/hud/bouton-lieu-cadre.webp") 92 52 102 / 30px 17px 34px round;filter:drop-shadow(0 4px 5px #000b);pointer-events:none}
 .hud-context .hud-menu-list li{position:relative;animation:hud-salle .18s ease-out both}
 .hud-context .hud-menu-list li+li::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,#2a262200,#2a2622a6 18%,#2a2622a6 82%,#2a262200);box-shadow:0 1px rgba(255,255,255,.5)}
 .hud-context .hud-menu-list li:nth-child(1){animation-delay:.08s}

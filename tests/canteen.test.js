@@ -198,11 +198,14 @@ assert.equal(fresh.company.canteen.current,offered.code);
 // Les phrases du menu : une par plat, sans chiffres ; les images, une par plat.
 for(const d of canteen.dishes()){
   assert.ok(d.phrase&&!/\d|XP/.test(d.phrase),d.code+" : une phrase sans chiffres");
-  assert.ok(d.phrase.includes(d.nom),d.code+" : la phrase nomme le plat");
   assert.equal(d.image,`assets/cantine/plats/${d.code}.webp`);
   assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",d.image)),d.image);
 }
 assert.equal(canteen.dish("ragout_mamie_ogresse").phrase,"Le Ragoût de Mamie Ogresse, au bon goût de Mamie, rendra toute la compagnie plus forte !","la phrase d'Idan");
+// Les phrases d'Idan (2026-11-26), sous le nom du plat.
+assert.deepEqual(["fromage_lait_de_poule","herisson_roti","lapin_roti","tataki_hirondelle"].map(code=>canteen.dish(code).phrase),
+  ["Après en avoir mangé, vous pouvez tout endurer !","Un peu piquant, mais il vous fera aller plus vite… aux toilettes !","Attrapez-le si vous pouvez !","Sauvage, attrapée à la main !"]);
+assert.equal(canteen.dish("tataki_hirondelle").nom,"Tataki d'hirondelle","on ne renomme pas le plat");
 ui.logCanteen({dish:offered,xp:80,eaters:[{id:1,changes:[{before:40,after:41}]},{id:2,changes:[]}]});
 assert.equal(log.at(-1).message,`La Cantine sert ${offered.nom} : +80 XP de ${offered.caracteristique} pour 2 mercenaires (1 gagne un point).`);
 const buildings=fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8");

@@ -108,7 +108,7 @@ while(canteen.offer(state)) canteen.unlock(state);
 assert.equal(state.company.canteen.dishes.length,10);
 assert.equal(canteen.lockedDishes(state).length,0);
 
-// Écran : la Cantine dans la Taverne (zone de l'accueil de la taverne, vue), pas dans Ma Compagnie.
+// Écran : la Cantine dans la Taverne (zone de l'accueil de la taverne, vue, une fois construite).
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-scene-ui.js"),"utf8"),/\{key:"canteen",label:"La Cantine"\}/,"une zone de l'accueil de la taverne");
 assert.match(html,/<section id="tavern-canteen-view"[\s\S]*<div id="tavern-canteen"/);
@@ -121,29 +121,102 @@ const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>
 const log=[];
 const game={campaign:null};
 const ui=new Function("game","$","fmt","esc","campaignRules","tavernLog","saveGame","renderGame","campBuildingAction",
-  fs.readFileSync(path.join(ROOT,"prototype-web","canteen-ui.js"),"utf8")+"\nreturn {renderCanteen,chooseCanteenDish,tasteCanteenDish,logCanteen,canteenEffect};")(
+  fs.readFileSync(path.join(ROOT,"prototype-web","canteen-ui.js"),"utf8")+"\nreturn {renderCanteen,chooseCanteenDish,tasteCanteenDish,logCanteen,canteenEffect,canteenBackground,openCanteenChoice,turnCanteenDish,confirmCanteenDish};")(
   game,$,fmt,esc,()=>rules,(message,kind)=>log.push({message,kind}),()=>{},()=>{},(c,code,level)=>`<button data-camp-build="${code}">${level?"Améliorer":"Construire"}</button>`);
 assert.deepEqual(["Force","Endurance","Courage","Intelligence","Dextérité"].map(ui.canteenEffect),
   ["augmente la Force","augmente l’Endurance","augmente le Courage","augmente l’Intelligence","augmente la Dextérité"]);
+// Le fond de l'écran (Idan, 2026-11-26 : « 10 backgrounds à mettre en plein écran (sous la barre de jeu). L'image à mettre
+// dépend du niveau de la cantine ») : celle de son niveau, de 1 à 10, en plein écran sous les barres.
+assert.deepEqual([0,1,5,10,12].map(n=>ui.canteenBackground(n)),
+  ["assets/cantine/cantine-1.webp","assets/cantine/cantine-1.webp","assets/cantine/cantine-5.webp","assets/cantine/cantine-10.webp","assets/cantine/cantine-10.webp"]);
+for(let n=1;n<=10;n++) assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",ui.canteenBackground(n))),"le fond du niveau "+n);
+const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
+// « Au menu » en manuscrit de brasserie ; deux lignes réservées pour le nom et la phrase (rien ne saute en tournant).
+assert.match(css,/\.canteen-menu-kicker\{[^}]*"Yellowtail",cursive/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8"),/fonts\.googleapis\.com\/css2\?[^"]*family=Yellowtail/);
+assert.match(css,/#tavern-canteen-view \.canteen-dish-name\{[^}]*min-height:2\.3em/);
+assert.match(css,/\.canteen-dish-phrase\{[^}]*min-height:2\.7em/);
+assert.match(css,/#tavern-canteen-view::before\{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:#201916 var\(--canteen-bg,url\("assets\/cantine\/cantine-1\.webp"\)\) center\/cover no-repeat\}/,"plein écran, sous les barres");
+const props={};
+elements["tavern-canteen-view"]={innerHTML:"",style:{setProperty:(k,v)=>{props[k]=v;}}};
 const fresh=rules.createCampaign({captain,squad:[]});
 game.campaign=fresh;
 ui.renderCanteen();
-assert.match(elements["tavern-canteen"].innerHTML,/À construire[\s\S]*data-camp-build="canteen">Construire/);
-fresh.company.camp.buildings={canteen:{level:2,construction:null},alchemy_lab:{level:2,construction:null}};
+assert.equal(elements["tavern-canteen"].innerHTML,"","pas de menu avant la construction (elle se fait dans la fenêtre Construction)");
+// Le parchemin (Idan, 2026-11-26 : « Retire tout le blabla actuel. On met un petit parchemin […] Au menu ; titre du plat ;
+// image du plat dans un cadre doré ; phrase explicative du plat (pas une phrase qui dit ce plat vous donne +40 xp par
+// jour) ; en dessous, un bouton capitaine : changer le menu, uniquement si un autre plat est dispo »).
+fresh.company.camp.buildings={canteen:{level:2,construction:null}};
 ui.renderCanteen();
-const screen=elements["tavern-canteen"].innerHTML;
-assert.match(screen,/Niveau 2 · \+80 XP par jour/);
-assert.match(screen,/<option value="fromage_lait_de_poule" selected>Fromage au lait de poule — augmente l’Endurance \(\+80 XP par jour\)<\/option>/);
+let screen=elements["tavern-canteen"].innerHTML;
+assert.equal(props["--canteen-bg"],'url("assets/cantine/cantine-2.webp")',"le fond du niveau 2");
+const fromage=canteen.dish("fromage_lait_de_poule");
+assert.match(screen,/<p class="canteen-menu-kicker">Au menu<\/p>\s*<h2 class="canteen-dish-name">Fromage au lait de poule<\/h2>\s*<div class="canteen-dish-row"><figure class="canteen-dish-img"><img src="assets\/cantine\/plats\/fromage_lait_de_poule\.webp" alt="Fromage au lait de poule"><\/figure>/);
+assert.ok(screen.includes(`<p class="canteen-dish-phrase">${esc(fromage.phrase)}</p>`),"sa phrase");
+assert.ok(!/XP|Niveau|Améliorer|data-camp-build|<select/.test(screen),"plus de blabla : ni chiffres, ni niveau, ni amélioration, ni liste");
+assert.ok(!screen.includes("data-canteen-change"),"un seul plat, rien d'autre au menu : pas de bouton");
+// Le Labo de niveau 2 : le tavernier propose un plat ; le bouton capitaine « Changer le menu » apparaît.
+fresh.company.camp.buildings.alchemy_lab={level:2,construction:null};
+ui.renderCanteen();
+screen=elements["tavern-canteen"].innerHTML;
+assert.match(screen,/<button type="button" class="mission-btn canteen-change" data-canteen-change>Changer le menu<\/button>/,"le bouton capitaine");
+assert.ok(!screen.includes("data-canteen-turn"),"pas de flèches avant le clic");
 const offered=canteen.offer(fresh);
-assert.match(screen,new RegExp(`data-canteen-taste>Goûter : ${offered.nom.replace(/[()]/g,"\\$&")}</button>`));
-assert.ok(!screen.includes(offered.caracteristique+" (+"),"l'effet du plat proposé reste caché");
-ui.tasteCanteenDish();
+// « Le clic transforme le bouton en Certain de manger ça ? et des flèches apparaissent à gauche et à droite de l'icône du
+// plat. On fait tourner et on peut valider » : le choix commence sur le plat du jour.
+ui.openCanteenChoice(true);
+screen=elements["tavern-canteen"].innerHTML;
+assert.match(screen,/data-canteen-turn="-1" aria-label="Plat précédent"><\/button><figure class="canteen-dish-img"><img src="assets\/cantine\/plats\/fromage_lait_de_poule\.webp"[^>]*><\/figure><button type="button" class="canteen-arrow canteen-arrow--next" data-canteen-turn="1"/,"les flèches de part et d'autre du plat");
+assert.match(screen,/data-canteen-confirm>Certain de manger ça \?<\/button>/);
+assert.ok(!screen.includes("data-canteen-change"),"le bouton s'est transformé");
+// Le plat suivant : celui du tavernier, avec sa vraie phrase (Idan : « Non, mets la vraie phrase »).
+ui.turnCanteenDish(1);
+screen=elements["tavern-canteen"].innerHTML;
+assert.ok(screen.includes(`<h2 class="canteen-dish-name">${esc(offered.nom)}</h2>`)&&screen.includes(offered.image),"le plat du tavernier");
+assert.ok(screen.includes(`<p class="canteen-dish-phrase">${esc(offered.phrase)}</p>`),"sa vraie phrase");
+// On fait tourner : on revient au fromage, dans un sens comme dans l'autre.
+ui.turnCanteenDish(1);
+assert.match(elements["tavern-canteen"].innerHTML,/fromage_lait_de_poule\.webp/,"en tournant");
+ui.turnCanteenDish(-1);
+assert.ok(elements["tavern-canteen"].innerHTML.includes(offered.image));
+ui.turnCanteenDish(-1);
+// Valider le plat du jour : on referme, rien ne change.
+ui.confirmCanteenDish();
+assert.match(elements["tavern-canteen"].innerHTML,/data-canteen-change>Changer le menu/,"on referme");
+assert.equal(fresh.company.canteen.current,"fromage_lait_de_poule");
+// Valider le plat du tavernier : il est goûté (son effet est connu) et passe au menu.
+ui.openCanteenChoice(true);
+ui.turnCanteenDish(1);
+ui.confirmCanteenDish();
 assert.match(log.at(-1).message,new RegExp(`^Le tavernier fait goûter un nouveau plat : ${offered.nom}\\. Il augmente`));
+assert.equal(fresh.company.canteen.current,offered.code,"au menu");
+assert.deepEqual(fresh.company.canteen.dishes,["fromage_lait_de_poule",offered.code]);
+// Puis un autre plat goûté : il passe au menu.
+ui.openCanteenChoice(true);
+ui.turnCanteenDish(-1);
+ui.confirmCanteenDish();
+assert.equal(fresh.company.canteen.current,"fromage_lait_de_poule","on revient au fromage");
+assert.match(log.at(-1).message,/^La Cantine : dès demain, Fromage au lait de poule au menu/);
 ui.chooseCanteenDish(offered.code);
 assert.equal(fresh.company.canteen.current,offered.code);
+// Les phrases du menu : une par plat, sans chiffres ; les images, une par plat.
+for(const d of canteen.dishes()){
+  assert.ok(d.phrase&&!/\d|XP/.test(d.phrase),d.code+" : une phrase sans chiffres");
+  assert.equal(d.image,`assets/cantine/plats/${d.code}.webp`);
+  assert.ok(fs.existsSync(path.join(ROOT,"prototype-web",d.image)),d.image);
+}
+assert.equal(canteen.dish("ragout_mamie_ogresse").phrase,"Au bon goût de Mamie, il rendra toute la compagnie plus forte !","la phrase d'Idan, sans le nom du plat");
+for(const d of canteen.dishes()) assert.ok(!d.phrase.includes(d.nom),d.code+" : la phrase ne répète pas le nom (il est au-dessus)");
+// Les phrases d'Idan (2026-11-26), sous le nom du plat.
+assert.deepEqual(["fromage_lait_de_poule","herisson_roti","lapin_roti","tataki_hirondelle"].map(code=>canteen.dish(code).phrase),
+  ["Après en avoir mangé, vous pouvez tout endurer !","Un peu piquant, mais il vous fera aller plus vite… aux toilettes !","Attrapez-le si vous pouvez !","Sauvage, attrapée à la main !"]);
+assert.equal(canteen.dish("tataki_hirondelle").nom,"Tataki d'hirondelle","on ne renomme pas le plat");
 ui.logCanteen({dish:offered,xp:80,eaters:[{id:1,changes:[{before:40,after:41}]},{id:2,changes:[]}]});
 assert.equal(log.at(-1).message,`La Cantine sert ${offered.nom} : +80 XP de ${offered.caracteristique} pour 2 mercenaires (1 gagne un point).`);
 const buildings=fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8");
-assert.match(buildings,/if\(!row\|\|row\.requiert\|\|row\.lieu\) return "";/,"pas dans Ma Compagnie");
+// Elle se construit dans la fenêtre Construction (Idan, 2026-11-26 : « On ajoute la possibilité de construire dans la
+// fenêtre construction ») ; les autres salles de la Taverne (la Cave) restent à la Taverne.
+assert.match(buildings,/const CAMP_BUILT_HERE=new Set\(\["canteen"\]\);/,"la Cantine dans la fenêtre Construction");
+assert.match(buildings,/if\(!row\|\|row\.requiert\|\|\(row\.lieu&&!CAMP_BUILT_HERE\.has\(code\)\)\) return "";/,"la Cave, non");
 
 console.log("La Cantine : salle de la Taverne, 10 plats, 40 × niveau XP par jour, nouveaux plats avec le Labo, écran — OK");

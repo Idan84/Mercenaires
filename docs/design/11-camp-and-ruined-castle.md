@@ -38,6 +38,16 @@ d'où les candidats qui traînent longtemps à la taverne faute de succès.
 
 - **Une salle de la Taverne**, où cuisine le tavernier. **10 niveaux, 500 × n² PO** (500, 2 000, 4 500… 50 000) et
   **4 × n jours**.
+- **Elle se construit dans la fenêtre Construction** (Idan, 2026-11-26). Tant qu'elle n'est pas construite, **le menu
+  n'est pas au mur** de la taverne : ni image, ni zone cliquable, ni ligne dans le bouton du lieu.
+- **Son écran** a un fond plein écran par niveau (Idan, 2026-11-26 ; `assets/cantine/cantine-<niveau>.webp`) : la cuisine
+  et le tavernier s'embellissent du niveau 1 au niveau 10.
+- **Le menu** (Idan, 2026-11-26) : un petit parchemin « Au menu », le nom du plat du jour, son image dans un cadre or, une
+  phrase sans chiffres ; le bouton « Changer le menu » n'apparaît que si un autre plat est disponible (un autre plat
+  goûté, ou celui que propose le tavernier). Au clic, il devient « Certain de manger ça ? » et des flèches apparaissent de
+  part et d'autre du plat : on fait tourner les plats disponibles (celui du tavernier aussi, avec sa phrase), puis on
+  valide (le plat du tavernier est alors goûté). Le niveau et l'amélioration de la salle sont dans la
+  fenêtre Construction.
 - **Chaque matin**, le **plat du jour** donne **40 × niveau XP** dans sa caractéristique à **chaque mercenaire au camp**
   (blessés, fatigués et prisonniers du Cachot compris ; pas ceux partis en contrat, chasse ou garde du corps). Pas de
   multiplicateur.

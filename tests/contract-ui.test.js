@@ -100,7 +100,8 @@ assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>
 for (const wax of ["rouge", "noire", "bleue"]) assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/cire-" + wax + ".webp")), "la cire " + wax);
 // La matière du panneau (Jean-Mi, détourée par scripts/key-green-sheet.js) : chaque fichier existe et le CSS s'en sert.
 const boardCss = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
-for (const file of ["fleche-fer", "clou-1", "clou-2", "clou-3", "punaise-1", "punaise-2", "punaise-3", "lambeau-1", "lambeau-2", "lambeau-3"]) {
+// (La flèche de fer n'est plus utilisée : le panneau, Recruter et l'escouade ont la flèche du kit ; Idan, 2026-11-26.)
+for (const file of ["clou-1", "clou-2", "clou-3", "punaise-1", "punaise-2", "punaise-3", "lambeau-1", "lambeau-2", "lambeau-3"]) {
   assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/" + file + ".webp")), file);
   assert.ok(boardCss.includes("assets/taverne/" + file + ".webp"), "le CSS utilise " + file);
 }
@@ -275,11 +276,13 @@ assert.match(choiceCss, /\.mission-pick\.is-off-page\{display:none\}/);
 assert.match(choiceDialog, /data-roster-page="-1"[\s\S]*data-roster-page="1"/, "des flèches pour la galerie");
 assert.doesNotMatch(choiceDialog, /data-squad-page/, "« Comme ça pas de flèche » pour l'escouade");
 assert.doesNotMatch(choiceDialog, /data-roster-scroll/);
-assert.match(choiceCss, /\.mission-scroll\{[^}]*fleche-fer\.webp/, "la flèche de fer du panneau");
+// « C réduite, pas de flèche grisée, on la vire » : la flèche du kit du panneau des missions, plus petite.
+assert.match(choiceCss, /\.mission-scroll\{[^}]*width:84px;aspect-ratio:600\/417;[^}]*fleche-rouge-droite\.webp/, "la flèche du kit, comme le panneau");
+assert.doesNotMatch(choiceCss, /\.mission-scroll\{[^}]*fleche-fer/, "plus de flèche de fer");
 // « Un léger problème d'alignement de ces flèches » : celle du haut est celle du bas retournée, sur le même axe.
 assert.match(choiceCss, /\.mission-scroll--down\{[^}]*transform:rotate\(90deg\)\}/);
 assert.match(choiceCss, /\.mission-scroll--up\{[^}]*transform:rotate\(90deg\) scaleX\(-1\)\}/);
-assert.match(choiceCss, /\.mission-scroll:disabled\{/, "grisées au début et à la fin, comme celles du panneau");
+assert.match(choiceCss, /\.mission-scroll:disabled\{[^}]*opacity:0;pointer-events:none\}/, "effacées au début et à la fin, comme celles du panneau");
 // « Gardons le carré pour la sélection, c'est natif. Le 4:3 plus petit à droite. »
 assert.match(choiceCss, /\.mission-pick-portrait\{[^}]*aspect-ratio:1\}/);
 assert.match(choiceCss, /\.mission-slot-portrait\{[^}]*aspect-ratio:4\/3\}/);

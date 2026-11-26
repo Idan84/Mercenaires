@@ -85,10 +85,10 @@ assert.match(css,/\.recruit-carousel\{[^}]*margin-inline:calc\(-1 \* max\(0px,\(
 assert.doesNotMatch(css.slice(css.indexOf("#tavern-recruits-view{"),css.indexOf("#tavern-recruits-view::before{")),/100vw|100vh|100dvh/,"plus rien ne dépend de la taille de l'écran dans les réglages");
 // Le panneau des missions couvre l'écran « de référence » (tout proportionnel : --vw, --vh) ; 1935,5 px en 1920 × 1080.
 assert.match(css,/\.mission-board\{--board-w:max\(calc\(100 \* var\(--vw\)\),calc\(100 \* var\(--vh\)\) \* 2000 \/ 1116\);/,"la même largeur de panneau que les missions");
-assert.match(css,/#tavern-recruits-view\{[^}]*--recruit-fleche-w:calc\(var\(--board-w\) \* \.088\)/,"la flèche du panneau : 8,8 % de sa largeur");
-assert.match(css,/\.recruit-nav\{[^}]*width:var\(--recruit-fleche-w\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
+assert.match(css,/#tavern-recruits-view\{[^}]*--recruit-fleche-w:calc\(var\(--board-w\) \* \.08\)/,"la flèche du panneau : 8 % de sa largeur (Idan, 2026-11-26 : « grossit encore un peu »)");
+assert.match(css,/\.recruit-nav\{[^}]*width:var\(--recruit-fleche-w\);aspect-ratio:600\/417;[^}]*kit\/boutons\/fleche-rouge-droite\.webp/);
 assert.doesNotMatch(css,/\.recruit-nav::(before|after)/,"plus de plaque sous les flèches (« c'est horrible ! »)");
-assert.match(css,/\.mission-board-arrow\{[^}]*width:calc\(var\(--board-w\) \* \.088\);aspect-ratio:640\/284;[^}]*fleche-fer\.webp/);
+assert.match(css,/\.mission-board-arrow\{[^}]*width:calc\(var\(--board-w\) \* \.08\);aspect-ratio:600\/417;[^}]*kit\/boutons\/fleche-rouge-droite\.webp/);
 assert.doesNotMatch(css,/\.recruit-grid\{/);
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
 assert.match(ui,/updateRecruitCarousel\(\);\n\}/,"après chaque rendu de la Taverne");

@@ -27,11 +27,11 @@ assert.match(css,/\.tavern-scene\{z-index:0\}\n\.tavern-zones\{z-index:2\}/,"le 
 assert.match(css,/\.tavern-layer\.is-hover\{filter:url\(#tavern-glow\)\}/,"le glow au survol");
 assert.match(css,/\.tavern-label\.is-on\{opacity:1\}/,"et le nom");
 
-const scene=new Function("window","document","TAVERN_VARIANTS","TAVERN_LAYER_BOXES","TAVERN_ZONE_HULLS",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
-  +"return {TAVERN_ZONES,TAVERN_SCENE_SIZE,TAVERN_LAYERS,TAVERN_MENU,TAVERN_ASSETS,tavernSceneSvg,tavernZonesSvg,tavernPick,tavernTaverniers,pickTavernier,tavernVariants,pickTavernVariant};");
+const scene=new Function("window","document","TAVERN_VARIANTS","TAVERN_LAYER_BOXES","TAVERN_ZONE_HULLS","campaignRules",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
+  +"return {TAVERN_ZONES,TAVERN_SCENE_SIZE,TAVERN_LAYERS,TAVERN_MENU,TAVERN_ASSETS,tavernSceneSvg,tavernZonesSvg,tavernPick,tavernTaverniers,pickTavernier,tavernVariants,pickTavernVariant,tavernZoneOpen,tavernClosedZones};");
 // Les calques, leurs cadres et les taverniers : tavern-layers.js, écrit par scripts/build-tavern.js depuis les images d'Idan.
 const data=require("../prototype-web/tavern-layers.js");
-const api=scene({},{},data.TAVERN_VARIANTS,data.TAVERN_LAYER_BOXES,data.TAVERN_ZONE_HULLS);
+const api=scene({},{},data.TAVERN_VARIANTS,data.TAVERN_LAYER_BOXES,data.TAVERN_ZONE_HULLS,()=>({buildingLevel:(c,code)=>c.levels[code]||0}));
 const variants=data;
 // La qualité avant le poids (Idan, 2026-11-14) : les images gardent tous les pixels d'Idan ; le repère reste 1376 × 768.
 const scale=data.TAVERN_SOURCE_SIZE.width/1376;
@@ -82,6 +82,21 @@ assert.equal(api.tavernPick(1150,300,alpha),"talk");
 assert.equal(api.tavernPick(1150,400,alpha),null,"derrière les tonneaux");
 assert.equal(api.tavernPick(700,700,alpha),null,"le sol de la taverne");
 assert.equal(api.tavernPick(1150,300,()=>null),undefined);
+
+// Une salle à construire n'apparaît qu'une fois construite (Idan, 2026-11-26 : « l'image du menu n'apparaît pas si on n'a
+// pas construit la cantine (le mur reste vide) ») : son calque est caché, il ne capte rien et ne cache rien.
+const sansCantine={levels:{}},avecCantine={levels:{canteen:1}};
+assert.deepEqual(api.TAVERN_ZONES.map(z=>[z.key,api.tavernZoneOpen(z.key,sansCantine)]),
+  [["missions",true],["recruits",true],["canteen",false],["cellar",true],["talk",true]],"seule la Cantine attend sa construction");
+assert.equal(api.tavernZoneOpen("canteen",avecCantine),true);
+assert.deepEqual([...api.tavernClosedZones(sansCantine)],["canteen"]);
+assert.deepEqual([...api.tavernClosedZones(avecCantine)],[]);
+const menuSeul=L=>L.key==="menu"?255:0,mb=data.TAVERN_LAYER_BOXES.menu,[mx,my]=[mb[0]+mb[2]/2,mb[1]+mb[3]/2];
+assert.equal(api.tavernPick(mx,my,menuSeul),"canteen");
+assert.equal(api.tavernPick(mx,my,menuSeul,api.tavernClosedZones(sansCantine)),null,"le mur reste vide");
+assert.match(css,/\.tavern-layer\.is-closed,\.tavern-zone\.is-closed,\.tavern-label\.is-closed\{display:none\}/,"caché, calque, zone et nom");
+assert.match(js,/if\(key&&tavernZoneOpen\(key\)&&typeof openTavernPlace==="function"\) openTavernPlace\(key\);/,"une salle fermée ne s'ouvre pas");
+assert.match(read("prototype-web/tavern-ui.js"),/if\(typeof updateTavernScene==="function"\) updateTavernScene\(c\);/,"le décor suit les constructions");
 
 // Le tavernier change à chaque entrée dans la taverne (Idan, 2026-11-14 : « au chargement de la taverne, on charge une
 // image au hasard du tavernier ») : l'original ou l'une des variantes d'Idan (scripts/build-tavern.js), chacune à sa

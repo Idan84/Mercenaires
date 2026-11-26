@@ -67,7 +67,7 @@
       "source": "Le jeu tire au hasard parmi plusieurs versions de ces images : la Design Lab propose « Ajouter une variante » en plus de « Remplacer » (Idan, 2026-11-16)."
     }
   ],
-  "row_count": 25,
+  "row_count": 27,
   "rows": [
     {
       "cle": "fond-camp",
@@ -148,6 +148,49 @@
       ],
       "motifs": [
         "assets/dormitory/dortoir-*.jpg"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "cantine",
+      "famille": "Fonds de la Cantine",
+      "nombre": 10,
+      "ou": "La Cantine (une salle de la Taverne) : un fond par niveau de la Cantine (1 à 10), le tavernier en cuisinier.",
+      "pourquoi": "Montrer la cuisine qui s'embellit avec le niveau de la Cantine, de la cave enfumée au palais doré.",
+      "fichiers": "assets/cantine/cantine-<niveau>.webp (canteen-ui.js, canteenBackground)",
+      "affichage": "Plein écran (cover), sous les barres du camp.",
+      "depot": "JPEG 16:9 sans transparence ; un fichier par niveau, cantine_<niveau>.jpg.",
+      "format_jeu": "WebP qualité 95, tous les pixels d'Idan (2752 × 1536).",
+      "alternates": "Non : un fichier par niveau, ce ne sont pas des alternates.",
+      "source": "Hostinger media/cantine_taverne.zip (Idan) → scripts/build-canteen-bg.js.",
+      "exemples": [
+        "assets/cantine/cantine-1.webp",
+        "assets/cantine/cantine-5.webp",
+        "assets/cantine/cantine-10.webp"
+      ],
+      "motifs": [
+        "assets/cantine/cantine-*.webp"
+      ],
+      "variantes": false
+    },
+    {
+      "cle": "plats-cantine",
+      "famille": "Plats de la Cantine",
+      "nombre": 10,
+      "ou": "La Cantine : l'image du plat du jour, dans le cadre carré or du kit, sur le parchemin « Au menu ».",
+      "pourquoi": "Montrer le plat que mange toute la compagnie.",
+      "fichiers": "assets/cantine/plats/<code>.webp (canteen-dishes.json, colonne image)",
+      "affichage": "Environ 235 × 235 px dans un cadre de 270 px (1920 × 1080), coins coupés.",
+      "depot": "Image carrée (le centre est gardé si elle ne l'est pas) ; un fichier par plat.",
+      "format_jeu": "WebP qualité 92, 640 × 640.",
+      "alternates": "Non : une image par plat.",
+      "source": "Hostinger media/plats_cuisine.zip (Idan) → scripts/build-canteen-dishes.js.",
+      "exemples": [
+        "assets/cantine/plats/ragout_mamie_ogresse.webp",
+        "assets/cantine/plats/tourte_aux_trefles.webp"
+      ],
+      "motifs": [
+        "assets/cantine/plats/*.webp"
       ],
       "variantes": false
     },
@@ -443,7 +486,7 @@
       "cle": "panneau-missions",
       "famille": "Panneau des missions",
       "nombre": 40,
-      "ou": "« Trouver une mission » : le panneau de bois, les feuilles d'annonce, leurs attaches (clous, punaises, cire, dagues), lambeaux, flèche.",
+      "ou": "« Trouver une mission » : le panneau de bois, les feuilles d'annonce, leurs attaches (clous, punaises, cire, dagues), lambeaux ; la flèche de fer n'est plus utilisée dans le jeu (gardée dans le dossier) : le panneau, Recruter et la galerie de l'escouade ont la flèche du kit, cadre or et velours rouge.",
       "pourquoi": "Un vrai panneau d'affichage de taverne, avec ses annonces usées.",
       "fichiers": "assets/taverne/panneau-missions.webp, feuille-N(-large).webp, estompe-N.webp, clou-N, punaise-N, cire-*, dague-*, lambeau-N, fleche-fer.webp",
       "affichage": "Panneau plein écran ; une feuille environ 350 × 560 px sur 1920 × 1080 ; attaches de 12 à 100 unités du panneau.",

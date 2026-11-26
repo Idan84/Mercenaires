@@ -18,6 +18,14 @@
     {
       "key": "peuple",
       "source": "Peuple dont c'est le plat"
+    },
+    {
+      "key": "phrase",
+      "source": "Phrase du menu, sous le nom du plat (Idan, 2026-11-26 : pas de chiffres ; phrases d'Idan)"
+    },
+    {
+      "key": "image",
+      "source": "Image du plat (media/plats_cuisine.zip d'Idan → scripts/build-canteen-dishes.js)"
     }
   ],
   "row_count": 10,
@@ -26,61 +34,81 @@
       "code": "ragout_mamie_ogresse",
       "nom": "Ragoût de Mamie Ogresse",
       "caracteristique": "Force",
-      "peuple": "Ogre"
+      "peuple": "Ogre",
+      "phrase": "Au bon goût de Mamie, il rendra toute la compagnie plus forte !",
+      "image": "assets/cantine/plats/ragout_mamie_ogresse.webp"
     },
     {
       "code": "fromage_lait_de_poule",
       "nom": "Fromage au lait de poule",
       "caracteristique": "Endurance",
-      "peuple": "Nain"
+      "peuple": "Nain",
+      "phrase": "Après en avoir mangé, vous pouvez tout endurer !",
+      "image": "assets/cantine/plats/fromage_lait_de_poule.webp"
     },
     {
       "code": "herisson_roti",
       "nom": "Hérisson rôti à la sauce des bois",
       "caracteristique": "Vitesse",
-      "peuple": "Reptilien"
+      "peuple": "Reptilien",
+      "phrase": "Un peu piquant, mais il vous fera aller plus vite… aux toilettes !",
+      "image": "assets/cantine/plats/herisson_roti.webp"
     },
     {
       "code": "poelee_champignons",
       "nom": "Poêlée de champignons",
       "caracteristique": "Perception",
-      "peuple": "Gnome"
+      "peuple": "Gnome",
+      "phrase": "« Mangez-moi », qu’il disait. Un plat pour vous ouvrir les volets de la perception.",
+      "image": "assets/cantine/plats/poelee_champignons.webp"
     },
     {
       "code": "lapin_roti",
       "nom": "Lapin rôti et ses carottes confites",
       "caracteristique": "Esquive",
-      "peuple": "Gobelin"
+      "peuple": "Gobelin",
+      "phrase": "Attrapez-le si vous pouvez !",
+      "image": "assets/cantine/plats/lapin_roti.webp"
     },
     {
       "code": "tourte_aux_trefles",
       "nom": "Tourte aux trèfles",
       "caracteristique": "Chance",
-      "peuple": "Halfling"
+      "peuple": "Halfling",
+      "phrase": "Quelle chance d’en manger !",
+      "image": "assets/cantine/plats/tourte_aux_trefles.webp"
     },
     {
       "code": "soupe_geant_vert",
       "nom": "Soupe de Géant Vert",
       "caracteristique": "Constitution",
-      "peuple": "Orc"
+      "peuple": "Orc",
+      "phrase": "Vous rendra solide comme un géant !",
+      "image": "assets/cantine/plats/soupe_geant_vert.webp"
     },
     {
       "code": "tetes_de_harengs",
       "nom": "Têtes de harengs",
       "caracteristique": "Intelligence",
-      "peuple": "Elfe"
+      "peuple": "Elfe",
+      "phrase": "Ça fait travailler la cervelle. Et ce ne sera pas du luxe !",
+      "image": "assets/cantine/plats/tetes_de_harengs.webp"
     },
     {
       "code": "chili_piments_doux",
       "nom": "Chili aux piments doux",
       "caracteristique": "Courage",
-      "peuple": "Homme-bête"
+      "peuple": "Homme-bête",
+      "phrase": "À manger si vous n’avez pas peur !",
+      "image": "assets/cantine/plats/chili_piments_doux.webp"
     },
     {
       "code": "tataki_hirondelle",
       "nom": "Tataki d'hirondelle",
       "caracteristique": "Dextérité",
-      "peuple": "Humain"
+      "peuple": "Humain",
+      "phrase": "Sauvage, attrapée à la main !",
+      "image": "assets/cantine/plats/tataki_hirondelle.webp"
     }
   ]
 }

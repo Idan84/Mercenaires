@@ -285,11 +285,19 @@ function setHudContextMenu(open){
   button.setAttribute("aria-expanded",String(open));
   $("hud-context")?.classList.toggle("is-open",open);
 }
+// Le nom du lieu sur son bouton (Idan, 2026-11-26 : « indiquer, par exemple Taverne ») : celui de son picto à gauche.
+function hudContextName(scene){
+  return document.querySelector?.(`.hud-places [data-hud-scene="${scene}"] .hud-nav-label`)?.textContent||"Ce lieu";
+}
 function updateHudContext(){
   const box=$("hud-context"),menu=$("hud-context-menu");
   if(!box||!menu) return;
-  const items=hudContextItems(document.body.dataset.screen==="camp"?document.body.dataset.campScene:"");
+  const scene=document.body.dataset.screen==="camp"?document.body.dataset.campScene:"";
+  const items=hudContextItems(scene),name=hudContextName(scene);
   box.classList.toggle("is-active",items.length>0);
+  const label=$("hud-context-name");
+  if(label) label.textContent=name;
+  menu.setAttribute("aria-label",name);
   menu.innerHTML=items.map(x=>`<li role="none"><button type="button" role="menuitem" data-hud-context="${esc(x.key)}">${esc(x.label)}</button></li>`).join("");
   setHudContextMenu(false);
 }

@@ -48,6 +48,7 @@ Blood & Wages est un jeu de gestion de mercenaires en dark fantasy. L'écran mon
 À reprendre tels quels quand un autre écran en a besoin, avant d'en dessiner un nouveau.
 
 - Barre de défilement du parchemin (Idan, 2026-11-25 : « on a une scrollbar pour parchemin qu'on peut réutiliser ») : le cadre du bouton d'Idan tourné à la verticale, velours brun, les flèches et le curseur du kit doré, le creusé, l'ombre portée sur le parchemin (composant Cadre doré). Aujourd'hui sur la conversation de la boîte de dialogue (`.conv .talk-log`) ; pour un autre parchemin, régénérer avec `scripts/build-parchment-scrollbar.py` en changeant le sélecteur. Le curseur se refait avec `scripts/build-scrollbar-thumb.js`.
+- Fiche pop-up (Idan, 2026-11-26 : « enregistrer cette fiche (sans le texte) comme fiche pop up ») : le modèle des pop-ups sur un mercenaire. C'est la fiche au survol coupée à la hauteur de son portrait carré agrandi (960 × 409 px), avec le même cartouche, le cadre du kit de sa culture et une page claire vide. Les boutons capitaine se placent dessous. Aujourd'hui sur le pop-up de bienvenue après la signature d'une recrue. Dans le jeu : `renderPopupCard` (composant FichePopUp).
 
 La boîte de dialogue (Idan, 2026-11-25/26, `prototype-web/styles.css`, règles `.conv*` et `.conv-*`) est le modèle des
 fenêtres du jeu. Ses pièces se reprennent pour tout écran qui en a besoin :

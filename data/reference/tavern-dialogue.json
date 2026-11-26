@@ -187,6 +187,12 @@
     "accepted": [
       "Parfait. {Ravi|Ravie} de faire partie de {compagnie}."
     ],
+    "welcome": [
+      "{prenom} fait maintenant partie de votre compagnie"
+    ],
+    "left_gone": [
+      "{prenom} a quitté la taverne"
+    ],
     "floor": [
       "Vous m’offriez déjà {salaire} et {prime} tout à l’heure. Vous me prenez pour {un idiot|une idiote} ?"
     ],

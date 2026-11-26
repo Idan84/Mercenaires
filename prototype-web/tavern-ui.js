@@ -394,13 +394,8 @@ function renderRecruitTalk(){
   log.scrollTop=log.scrollHeight;
   requestAnimationFrame(()=>{ log.scrollTop=log.scrollHeight; });
   if(t.mode==="negotiate"&&candidate){
-    const n=tavernRules().negotiationState(candidate);
-    $("recruit-talk-choices").innerHTML=`<form id="recruit-offer" class="talk-offer">
-      <label>Salaire journalier<span><input id="recruit-offer-salary" type="number" min="0" value="${n.salary}"> PO</span></label>
-      <label>Prime de mission<span><input id="recruit-offer-bonus" type="number" min="0" value="${n.bonus}"> PO</span></label>
-      <button type="submit" class="talk-offer-btn">Proposer</button>
-      <button type="button" class="talk-offer-back" data-talk="back">Retour</button>
-    </form>`;
+    $("recruit-talk-choices").innerHTML=renderRecruitOffer(tavernRules().negotiationState(candidate));
+    syncRecruitOffer();
     return;
   }
   // Les mots composés (« avez-vous », « maniez-vous ») ne se coupent pas à leur trait d'union : la ligne passe avant eux ;
@@ -504,6 +499,41 @@ function recruitTalkChoice(key){
   renderRecruitTalk();
 }
 
+// La négociation dans le plateau des boutons (Idan, 2026-11-26 : « La partie négociation du salaire. Tu me fais une première
+// version », puis « On garde seulement les flèches simples. On aligne la pointe des flèches simples entre les deux boutons à
+// droite. On vire tout ce qui est sous chaque montant ») : le salaire journalier et la prime de mission côte à côte, chacun
+// dans un champ au cadre doré sur le velours brun (le cadre doré de la charte), entre les flèches dorées du kit dans les
+// ronds de la croix de la boîte (1 PO) ; à droite, Proposer et Retour, les boutons des réponses. Après un refus, l'offre
+// refusée est le plancher (doc 14 §9, règle anti-spam) : la flèche vers le bas s'éteint là. Les règles restent celles de
+// tavern.js (makeOffer) ; une offre acceptée signe aussitôt (finishRecruitment).
+function renderRecruitOffer(n){
+  const step=(dir,label)=>`<button type="button" class="offer-step offer-step--${dir}" data-offer-step="${dir==="down"?-1:1}" aria-label="1 PO ${label}"></button>`;
+  const amount=(key,label,value,floor)=>`<div class="offer-amount" data-offer="${key}" data-floor="${floor}">
+      <span class="offer-label">${label}</span>
+      <div class="offer-stepper">${step("down","de moins")}<label class="offer-field"><img src="assets/hud/picto-or.webp" alt=""><input id="recruit-offer-${key}" type="number" inputmode="numeric" min="${floor}" step="1" value="${value}" aria-label="${label}"><span>PO</span></label>${step("up","de plus")}</div>
+    </div>`;
+  return `<form id="recruit-offer" class="offer-contract">
+    ${amount("salary","Salaire journalier",n.salary,n.refused?.salary||0)}
+    ${amount("bonus","Prime de mission",n.bonus,n.refused?.bonus||0)}
+    <ol class="talk-options offer-actions">
+      <li><button type="submit"><span class="talk-choice">Proposer</span></button></li>
+      <li><button type="button" data-offer-back><span class="talk-choice">Retour</span></button></li>
+    </ol>
+  </form>`;
+}
+// La flèche vers le bas éteinte au plancher.
+function syncRecruitOffer(){
+  for(const box of document.querySelectorAll("#recruit-offer .offer-amount")){
+    const value=Math.max(0,Math.round(Number(box.querySelector("input").value)||0));
+    box.querySelector(".offer-step--down").disabled=value<=(Number(box.dataset.floor)||0);
+  }
+}
+function stepRecruitOffer(button){
+  const box=button.closest(".offer-amount"),input=box.querySelector("input"),floor=Number(box.dataset.floor)||0;
+  input.value=Math.max(floor,Math.round(Number(input.value)||0)+Number(button.dataset.offerStep));
+  syncRecruitOffer();
+}
+
 function submitRecruitOffer(){
   const t=game.recruitTalk;
   if(!t) return;
@@ -524,12 +554,14 @@ function submitRecruitOffer(){
   }else if(result.outcome==="counter"){
     t.lines.push({who:"merc",text:d.line("counter",m,{salaire:fmt(result.counter.salary),prime:fmt(result.counter.bonus)},t.round)});
   }else if(result.outcome==="left"){
-    // Il renverse la table : la fenêtre se ferme d'elle-même (Idan, 2026-10-21).
-    t.lines.push({who:"note",text:d.line("left",m)});
+    // Il renverse la table (Idan, 2026-10-21) : le pop-up du départ, qui ferme la discussion (Idan, 2026-11-26).
+    const said=d.line("left",m);
+    t.lines.push({who:"note",text:said});
     t.mode="left";
     tavernLog(m.name+" renverse la table et quitte la taverne.","bad");
-    t.closeTimer=setTimeout(()=>$("recruit-talk-dialog").close(),2600);
-    renderTavern();
+    saveGame();
+    openRecruitLeft(m,said);
+    return;
   }
   saveGame();
   renderRecruitTalk();
@@ -540,11 +572,15 @@ function finishRecruitment(){
   const result=campaignRules().signCandidate(game.campaign,t.id);
   if(result.ok){
     result.mercenary.role="Recrue";
-    t.lines.push({who:"merc",text:d.line("accepted",m,{compagnie:companyPhrase()})});
+    const said=d.line("accepted",m,{compagnie:companyPhrase()});
+    t.lines.push({who:"merc",text:said});
     t.mode="ended";
     tavernLog(m.name+" signe et rejoint la compagnie.","turn");
     saveGame();
     renderGame();
+    // Le pop-up de bienvenue (Idan, 2026-11-26) : dès la signature ; sa réplique passe dans le pop-up.
+    openRecruitWelcome(result.mercenary,said);
+    return;
   }else{
     // Dortoir plein (un ogre a besoin de deux places).
     if(result.dormFull) t.lines.push({who:"merc",text:d.line(result.places>1?"dorm_full_ogre":"dorm_full",m)},
@@ -554,6 +590,38 @@ function finishRecruitment(){
     saveGame();
   }
   renderRecruitTalk();
+}
+
+// Le pop-up de bienvenue (Idan, 2026-11-26 : « Après avoir signé le mercenaire, un pop up apparaît » ; hover-card-ui.js,
+// renderWelcomeCard) : la discussion se ferme, le pop-up s'ouvre sur le même fond noir flou. Dessous, trois boutons :
+// continuer le recrutement (les candidats), aller boire un verre (la salle de la Taverne : « Salle de la Taverne »), retour
+// au camp. Échap le ferme comme « Continuer le recrutement ».
+function openRecruitWelcome(m,said){
+  const contract=m.contract||{};
+  const host=$("recruit-welcome-card");
+  host.innerHTML=renderWelcomeCard(m,{line:said,join:recruitDialogue().line("welcome",m),
+    salary:Number(contract.dailySalary)||0,bonus:Number(contract.missionBonus)||0});
+  const card=host.querySelector(".hover-card");
+  if(card&&typeof fitHoverCard==="function") requestAnimationFrame(()=>fitHoverCard(card));
+  $("recruit-talk-dialog").close();
+  $("recruit-welcome-dialog").showModal();
+}
+// Le pop-up du départ (Idan, 2026-11-26 : « le renversement de table… en mode pop up pour forcer à quitter » ; hover-card-ui.js,
+// renderLeftCard) : la discussion se ferme, sa fiche tombe de travers sur le même fond noir flou ; ce qu'il fait en partant,
+// « Prénom a quitté la taverne ». Un seul bouton : Continuer le recrutement.
+function openRecruitLeft(m,said){
+  const host=$("recruit-left-card");
+  host.innerHTML=renderLeftCard(m,{line:said,gone:recruitDialogue().line("left_gone",m)});
+  const card=host.querySelector(".hover-card");
+  if(card&&typeof fitHoverCard==="function") requestAnimationFrame(()=>fitHoverCard(card));
+  $("recruit-talk-dialog").close();
+  $("recruit-left-dialog").showModal();
+}
+function recruitWelcomeChoice(key){
+  $("recruit-welcome-dialog").close();
+  if(key==="drink") showTavernView("home");
+  else if(key==="camp"&&typeof openCampScene==="function") openCampScene("home");
+  else showTavernView("recruits");
 }
 
 // Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
@@ -717,9 +785,13 @@ function initializeTavernUi(){
       setRecruitFolded(!recruit.classList.contains("is-folded"));
       return;
     }
+    const step=event.target.closest("[data-offer-step]");
+    if(step){ if(!step.disabled) stepRecruitOffer(step); return; }
+    if(event.target.closest("[data-offer-back]")){ recruitTalkChoice("back"); return; }
     const option=event.target.closest("[data-talk]");
     if(option&&!option.disabled) recruitTalkChoice(option.dataset.talk);
   });
+  recruit.addEventListener("input",event=>{ if(event.target.closest("#recruit-offer")) syncRecruitOffer(); });
   recruit.addEventListener("submit",event=>{
     event.preventDefault();
     submitRecruitOffer();
@@ -751,5 +823,14 @@ function initializeTavernUi(){
     clearTimeout(game.recruitTalk?.closeTimer);
     game.recruitTalk=null;
     renderTavern();
+  });
+  $("recruit-welcome-dialog").addEventListener("click",event=>{
+    const button=event.target.closest("[data-welcome]");
+    if(button) recruitWelcomeChoice(button.dataset.welcome);
+  });
+  $("recruit-left-dialog").addEventListener("click",event=>{
+    if(!event.target.closest("[data-left]")) return;
+    $("recruit-left-dialog").close();
+    showTavernView("recruits");
   });
 }

@@ -20,7 +20,8 @@ const kits = json("culture-kits.json"), colors = json("culture-colors.json");
 
 // 1. Les données : une ligne par kit, sa culture, ses pièces.
 assert.equal(kits.row_count, kits.rows.length);
-assert.deepEqual(kits.rows.map(k => k.cle), ["elfes-noirs", "elfes-sylvains", "elfes-des-grandes-cites", "nains-des-montagnes", "nains-du-chaos", "nains-esclaves"]);
+assert.deepEqual(kits.rows.map(k => k.cle), ["elfes-noirs", "elfes-sylvains", "elfes-des-grandes-cites", "nains-des-montagnes", "nains-du-chaos", "nains-esclaves",
+  "royaumes-du-soleil-levant", "empire-de-la-nuit-blanche", "terres-des-deux-fleuves", "tribus-de-la-jungle", "cites-libres"]);
 assert.deepEqual(kits.columns.map(c => c.key), ["cle", "culture", "dossier", "geometrie", "fiche", "barres", "plein"]);
 for (const kit of kits.rows) {
   assert.equal(HUD_BARS[kit.cle]?.culture, kit.culture, kit.cle + " : culture de sa barre");
@@ -107,9 +108,9 @@ for (const v of ['--hc-texture:url("assets/fiche/kits/elfes-noirs/texture.webp")
 const fs2 = api.hoverCultureFrame("Elfes sylvains");
 assert.equal(fs2.kit, sylvains);
 for (const v of ['--hc-orn:url("assets/fiche/kits/elfes-sylvains/titre.webp")', "--hc-kit-voile:4,18,6", "--hc-orn-vide:calc(var(--hc-cart-h) * 0.0000)"]) assert.ok(fs2.vars.includes(v), v);
-const other = api.hoverCultureFrame("Cités libres");
+const other = api.hoverCultureFrame("Clans des grandes steppes");
 assert.equal(other.kit, null);
-assert.ok(other.vars.includes("assets/hud/barres/cites-libres/center.webp"), "les autres cultures gardent la texture de leur barre");
+assert.ok(other.vars.includes("assets/hud/barres/clans-des-grandes-steppes/center.webp"), "les autres cultures gardent la texture de leur barre");
 assert.equal(api.hoverKitFrame(null), "");
 const srcsOf = html => [...html.matchAll(/(?:src="|url\(')([^"']+)/g)].map(m => m[1]);
 for (const kit of kits.rows) {
@@ -163,7 +164,7 @@ assert.match(css, /\.hover-card\[data-kit-nom="or"\] \.hc-title span\{background
 assert.match(css, /\.hover-card\[data-kit\] \.hc-orn\{width:var\(--hc-orn-w\);height:var\(--hc-orn-h\)\}/);
 assert.match(css, /\.hc-cadre\{position:absolute;inset:0;z-index:2;pointer-events:none\}/);
 assert.match(read("prototype-web/reference-data.js"), /cultureKits: "culture-kits\.json"/);
-assert.match(read("data/reference/CATALOG.md"), /\| culture-kits\.json \| 6 \| cle, culture, dossier, geometrie, fiche, barres, plein /);
+assert.match(read("data/reference/CATALOG.md"), /\| culture-kits\.json \| 11 \| cle, culture, dossier, geometrie, fiche, barres, plein /);
 assert.match(read("scripts/build-pictos.sh"), /for src in assets-src\/Kits\/\*\/logo\.png; do/);
 assert.match(read("prototype-web/godmode.css"), /\.godmode-preview-scale\{width:860px;margin:25px;transform:scale\(\.45\)/, "l'aperçu du mode dieu montre les ornements qui débordent");
 
@@ -236,7 +237,7 @@ assert.ok(kitUi.hudKitBars(sylvains, HUD_BARS["elfes-sylvains"]).piecesBas.inclu
 const forKit = new Function("game", read("prototype-web/hud-kit-ui.js") + "\nreturn hudKitFor;")({referenceData: {cultureKits: kits}});
 assert.equal(forKit("elfes-noirs"), elfes);
 assert.equal(forKit("elfes-sylvains"), sylvains);
-assert.equal(forKit("cites-libres"), null);
+assert.equal(forKit("clans-des-grandes-steppes"), null);
 
 // 6. Les trois cultures naines (Idan, 2026-11-19) : leur cadre mesuré sur leurs masters (assets-src/Kits/<cle>/README.md),
 // les réglages de départ repris des Elfes sylvains, à régler par Idan dans le Design Lab : seuls changent les modèles
@@ -320,7 +321,7 @@ near(Le.bas.bouton * B, 144, "bouton des Nains esclaves");
   ui.applyHudBar("elfes-des-grandes-cites");
   assert.ok(topBar.classes.has("has-kit") && topBar.classes.has("is-dore") && bottomBar.classes.has("is-dore"));
   assert.equal(bottomBar.props["--hud-inactifs"], "0.5");
-  ui.applyHudBar("cites-libres");
+  ui.applyHudBar("clans-des-grandes-steppes");
   assert.ok(topBar.classes.has("has-art") && !topBar.classes.has("has-kit") && !bottomBar.classes.has("has-kit") && !topBar.classes.has("is-dore"));
   assert.ok(!("--hud-inactifs" in bottomBar.props));
   assert.deepEqual([topBar.layer.innerHTML, play.attrs.src, rootProps["--ht-gauche"], rootProps["--bb-bouton-dx"]], ["", "assets/hud/next.webp", undefined, undefined]);
@@ -369,4 +370,17 @@ assert.match(css, /\.game-bottom-bar\.is-dore \.hud-nav-img\{filter:sepia\(1\) s
   assert.match(read("prototype-web/reference-data.js"), /data\.cultureKits[^\]]*\] = await Promise\.all\(\[[^\]]*loadCultureSettings\(data\.cultureKits\)[^\]]*\]\)/);
 }
 
+// 7. Les cinq cultures humaines (Idan, 2026-11-26, humains.zip) : réglages de départ repris des Nains des montagnes, à
+// régler par Idan dans le Design Lab ; plusieurs ornements de coin et de pose par culture, tous proposés ; pas
+// d'ornement du titre dans le kit : elles gardent celui de la charte.
+const humaines = {"royaumes-du-soleil-levant": ["dragon", "dragon"], "empire-de-la-nuit-blanche": ["loup", "flocon"], "terres-des-deux-fleuves": ["tigre", "croissant-haut"],
+  "tribus-de-la-jungle": ["jaguar", "fleur"], "cites-libres": ["gondole", "lys"]};
+for (const [cle, [pose, orn]] of Object.entries(humaines)) {
+  const kit = byKey[cle];
+  assert.ok(Object.keys(kit.geometrie.poses).includes(pose) && Object.keys(kit.geometrie.ornementsCoin).length >= 4, cle + " : modèles du kit");
+  assert.deepEqual([kit.fiche.pose.modele, kit.plein.pose.modele, kit.barres.ornements.pose.modele], [pose, pose, pose], cle + " : poses");
+  assert.deepEqual(Object.keys(kit.fiche).sort(), Object.keys(montagnes.fiche).sort(), cle + " : mêmes réglages de fiche que les autres kits");
+  assert.ok(!kit.geometrie.ornementTitre.f && api.hoverCultureFrame(kit.culture).ornament === orn, cle + " : ornement du titre de la charte");
+  for (const f of Object.values(kit.geometrie.ornementsCoin)) assert.ok(fs.existsSync(path.join(WEB, kit.dossier, f)), cle + " : " + f);
+}
 console.log(`Kits des cultures : ${kits.rows.map(k => k.culture).join(", ")} — cadre en une pièce, jonctions, ornements, logo, barres du camp — OK`);

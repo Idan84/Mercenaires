@@ -150,8 +150,8 @@ function hoverCultureFrame(culture){
 // ---- Les kits graphiques par culture (Chatty, Idan) : le cadre de la fiche ----
 // Positions en pixels de la carte (860 × 565, styles.css), relevées sur ses zones : séparation portrait / texte (entre
 // le portrait, 1,2 % + 34 %, et la page, 36,2 %), bas du cartouche (entre 15,85 % et la page, 17,25 %), milieux du
-// portrait et de la page ; la hauteur du cartouche (14,35 %).
-const HOVER_CARD={w:860,h:565,sepX:307,sepNomY:93.5,pageCx:580.5,portraitCx:156.5,cartH:81.08};
+// portrait, de la page et de la carte (cx : le « centre » des ornements posés) ; la hauteur du cartouche (14,35 %).
+const HOVER_CARD={w:860,h:565,sepX:307,sepNomY:93.5,pageCx:580.5,portraitCx:156.5,cx:430,cartH:81.08};
 // Les coins : côté extérieur (x, y) ; transformations (pièces dessinées pour le coin haut gauche ; le coin du cadre se
 // retourne autour de son angle extérieur, les ornements autour de leur milieu) et où elles envoient un point.
 const HOVER_KIT_ANGLES={
@@ -211,17 +211,18 @@ function hoverKitJunction(kit,A,d,a,barre,tige,o){
   return `<i style="${hcPose(ox,oy)};width:${hcPx(w)};height:${hcPx(h)};background:url('${kit.dossier}/${J.f}') 0 0/${hcPx(w)} ${hcPx(h)} no-repeat;transform-origin:0 0;transform:matrix(${a[0]},${a[1]},${d[0]},${d[1]},0,0)"></i>`;
 }
 // Le cadre : d'abord le cadre de base (la bande sous le nom, la barre du milieu, la bordure entre les bouts des bras des
-// coins, les jonctions en T, les coins), puis les ornements (allongé, de coin, suspendu, posé).
-function hoverKitFrame(kit){
+// coins, les jonctions en T, les coins), puis les ornements (allongé, de coin, suspendu, posé). size : la carte (la fiche au
+// survol, ou une autre carte, comme le pop-up de bienvenue : sa taille et ses repères, séparation et milieux).
+function hoverKitFrame(kit,size=HOVER_CARD){
   if(!kit) return "";
   const G=kit.geometrie,K=G.cadre,F=kit.fiche,dir=kit.dossier,C=F.cotes,out=[];
   // Les épaisseurs restent des pixels entiers : le navigateur arrondit au pixel la taille d'un motif répété. Les côtés
   // gardent les proportions de l'original (bande de gauche contre bande du haut).
   const e=Math.round(F.cadre.ep),eV=Math.round(e*K.coin.coeurV/K.coin.coeur);
-  const B={x0:C.gauche,x1:HOVER_CARD.w+C.droite,y0:C.haut,y1:HOVER_CARD.h+C.bas};
+  const B={x0:C.gauche,x1:size.w+C.droite,y0:C.haut,y1:size.h+C.bas};
   const coins=Object.fromEntries(Object.keys(HOVER_KIT_ANGLES).map(a=>[a,hoverKitCorner(kit,a,B,e,eV)]));
   const mi={haut:B.y0+e/2,bas:B.y1-e/2,gauche:B.x0+eV/2,droite:B.x1-eV/2};
-  const S=F.separation,N=F.sousNom,sx=HOVER_CARD.sepX+S.dx,se=Math.round(S.ep),nomY=HOVER_CARD.sepNomY+N.dy,nomEp=Math.round(N.ep);
+  const S=F.separation,N=F.sousNom,sx=size.sepX+S.dx,se=Math.round(S.ep),nomY=size.sepNomY+N.dy,nomEp=Math.round(N.ep);
   // La bande sous le nom (la barre du milieu couchée) part du milieu de la barre du milieu, qui la recouvre.
   out.push(hoverKitStrap(dir,K.mh,"x",sx,B.x1-eV/2,nomY-nomEp/2,nomEp));
   out.push(hoverKitStrap(dir,K.m,"y",B.y0,B.y1,sx-se/2,se));
@@ -241,14 +242,18 @@ function hoverKitFrame(kit){
   const al=F.allonge,AG=G.allonge;
   if(al.place!=="aucune"){
     const w=al.taille,h=w*AG.h/AG.w,pas=Math.max(2,h+al.espacement),vertical=["separation","gauche","droite"].includes(al.place);
-    const L=(vertical?HOVER_CARD.h:HOVER_CARD.w)*al.longueur/100,nb=Math.max(1,Math.floor((L-h)/pas)+1),total=h+(nb-1)*pas;
+    // Le long de la séparation ou d'un côté : sa longueur et sa place de la fiche au survol, en pixels depuis le haut (comme
+    // le cartouche) ; sur une carte moins haute, s'il dépasse le bas, il remonte et garde son écart au bas de la fiche.
+    const L=(vertical?HOVER_CARD.h:size.w)*al.longueur/100,nb=Math.max(1,Math.floor((L-h)/pas)+1),total=h+(nb-1)*pas;
     const maillons=Array.from({length:nb},(_,i)=>`<img src="${dir}/${AG.f}" alt="" style="left:0;top:${hcPx(i*pas)};width:${hcPx(w)};height:${hcPx(h)}">`).join("");
     if(vertical){
       const cx={separation:sx,gauche:mi.gauche,droite:mi.droite}[al.place];
-      out.push(`<span style="left:${hcPx(cx-w/2+al.dx)};top:${hcPx((HOVER_CARD.h-total)/2+al.dy)};width:${hcPx(w)};height:${hcPx(total)}">${maillons}</span>`);
+      let y=(HOVER_CARD.h-total)/2+al.dy;
+      if(size.h<HOVER_CARD.h&&y+total>size.h) y=size.h-Math.max(0,HOVER_CARD.h-y-total)-total;
+      out.push(`<span style="left:${hcPx(cx-w/2+al.dx)};top:${hcPx(y)};width:${hcPx(w)};height:${hcPx(total)}">${maillons}</span>`);
     }else{
       const cy=al.place==="bas"?mi.bas:mi.haut;
-      out.push(`<span style="left:${hcPx(HOVER_CARD.w/2-w/2+al.dx)};top:${hcPx(cy-total/2+al.dy)};width:${hcPx(w)};height:${hcPx(total)};transform:rotate(90deg)">${maillons}</span>`);
+      out.push(`<span style="left:${hcPx(size.w/2-w/2+al.dx)};top:${hcPx(cy-total/2+al.dy)};width:${hcPx(w)};height:${hcPx(total)};transform:rotate(90deg)">${maillons}</span>`);
     }
   }
   for(const [a,A] of Object.entries(HOVER_KIT_ANGLES)){
@@ -261,18 +266,18 @@ function hoverKitFrame(kit){
   if(su.place!=="aucune"){
     const W=su.taille,H=W*SG.h/SG.w;
     if(su.place.startsWith("coin")){
-      const L=W/Math.SQRT2,g=su.place==="coin-g",cx=(g?L/2+mi.gauche:HOVER_CARD.w-L/2+C.droite-eV/2)+su.dx,cy=L/2+mi.haut+su.dy;
+      const L=W/Math.SQRT2,g=su.place==="coin-g",cx=(g?L/2+mi.gauche:size.w-L/2+C.droite-eV/2)+su.dx,cy=L/2+mi.haut+su.dy;
       out.push(`<img src="${dir}/${SG.f}" alt="" style="left:${hcPx(cx-W/2)};top:${hcPx(cy)};width:${hcPx(W)};height:${hcPx(H)};transform-origin:50% 0;transform:rotate(${g?-45:45}deg)">`);
     }else{
-      const cx={"haut-portrait":HOVER_CARD.portraitCx,"haut-page":HOVER_CARD.pageCx,"sous-nom":HOVER_CARD.pageCx}[su.place];
-      const y0=(su.place==="sous-nom"?HOVER_CARD.sepNomY:mi.haut)+su.dy;
+      const cx={"haut-portrait":size.portraitCx,"haut-page":size.pageCx,"sous-nom":size.pageCx}[su.place];
+      const y0=(su.place==="sous-nom"?size.sepNomY:mi.haut)+su.dy;
       out.push(`<img src="${dir}/${SG.f}" alt="" style="left:${hcPx(cx-W/2+su.dx)};top:${hcPx(y0-H*SG.attache)};width:${hcPx(W)};height:${hcPx(H)}">`);
     }
   }
   const po=F.pose,PG=G.poses[po.modele]||Object.values(G.poses)[0];
   if(po.place!=="aucune"){
     const W=po.taille,H=W*PG.h/PG.w,[cote,ou]=po.place.split("-");
-    const cx={page:HOVER_CARD.pageCx,centre:HOVER_CARD.w/2,portrait:HOVER_CARD.portraitCx}[ou],ligne=cote==="bas"?mi.bas:mi.haut;
+    const cx={page:size.pageCx,centre:size.cx,portrait:size.portraitCx}[ou],ligne=cote==="bas"?mi.bas:mi.haut;
     // Sa base (une part du bas de l'image) chevauche la bordure ; retourné, il pend sous la ligne.
     const haut=po.retourne?ligne-H*PG.base:ligne-H+H*PG.base;
     out.push(`<img src="${dir}/${PG.f}" alt="" style="left:${hcPx(cx-W/2+po.dx)};top:${hcPx(haut+po.dy)};width:${hcPx(W)};height:${hcPx(H)};transform:${po.retourne?"scaleY(-1)":"none"}">`);
@@ -378,6 +383,75 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=n
   </article>`;
 }
 
+// La fiche pop-up (Idan, 2026-11-26 : « enregistrer cette fiche (sans le texte) comme fiche pop up ») : le modèle des
+// pop-ups sur un mercenaire. La fiche au survol coupée à la hauteur de son portrait carré, agrandi (« agrandir le portrait
+// en hauteur et en largeur… Ça fait plus d'espace en bas ») : la colonne du portrait s'élargit de POPUP_DX, la carte avec
+// elle (960 px, la largeur d'une rangée de trois boutons capitaine) ; le cartouche et la page gardent leur largeur de la
+// fiche au survol, la carte prend la hauteur du portrait (mêmes marges en haut et en bas). Le même cadre du kit
+// (hoverKitFrame, à cette taille : les ornements gardent leur place par rapport à la page et à la séparation). La page
+// claire est vide : chaque pop-up y met son contenu (body), avec ses classes (pageClass) ; cardClass : une classe de plus
+// sur la carte (la fiche renversée du départ) ; overPortrait : ce qui se pose sur le portrait (la croix du départ).
+const POPUP_DX=100;
+const POPUP_CARD={...HOVER_CARD,w:HOVER_CARD.w+POPUP_DX,h:+(HOVER_CARD.w*.34+POPUP_DX+HOVER_CARD.h*.015*2).toFixed(2),
+  sepX:HOVER_CARD.sepX+POPUP_DX,pageCx:HOVER_CARD.pageCx+POPUP_DX,portraitCx:HOVER_CARD.portraitCx+POPUP_DX/2,cx:HOVER_CARD.cx+POPUP_DX};
+function renderPopupCard(c,{body="",pageClass="",cardClass="",overPortrait=""}={}){
+  const d=mercenaryHoverData(c),frame=hoverCultureFrame(d.culture);
+  const nameFit=Math.max(.6,Math.min(1,20/d.name.length));
+  return `<article class="hover-card hover-card--popup${cardClass?" "+cardClass:""}" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)};--hc-popup-w:${POPUP_CARD.w}px;--hc-popup-h:${POPUP_CARD.h}px;--hc-popup-dx:${POPUP_DX}px' aria-label="${esc(d.name)}">
+    <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"portrait"})}${overPortrait}</div>
+    <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
+    <div class="hc-page${pageClass?" "+pageClass:""}">${body}</div>
+    ${hoverKitFrame(frame.kit,POPUP_CARD)}
+  </article>`;
+}
+
+// Le pop-up de bienvenue, après la signature d'une recrue (Idan, 2026-11-26 : « un pop up apparaît avec son portrait carré
+// sur la partie gauche. À droite, la bande du haut de la fiche au survol et en dessous dans une case de la fiche : Prénom
+// fait maintenant partie de votre compagnie. On remet les icônes et les montants pour salaire et prime de mission » ; « On
+// met sa réplique dans le pop up au-dessus » ; le cadre de sa culture) : la fiche pop-up, et dans sa page, sa réplique
+// (line), la phrase d'accueil (join), le salaire et la prime.
+function renderWelcomeCard(c,{line="",join="",salary=0,bonus=0}={}){
+  const pay=(label,full,amount)=>`<div class="hc-stat"><span class="hc-label" title="${esc(full)}">${esc(label)}</span><span class="hc-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(amount))} PO</b></span></div>`;
+  return renderPopupCard(c,{pageClass:"hc-welcome",body:`
+      ${line?`<p class="hc-welcome-line">« ${esc(line)} »</p>`:""}
+      <p class="hc-welcome-join">${esc(join)}</p>
+      <i class="hc-fente hc-fente--h" aria-hidden="true"></i>
+      <div class="hc-welcome-pay">${pay("Salaire","Salaire journalier",salary)}<i class="hc-fente" aria-hidden="true"></i>${pay("Prime","Prime de mission",bonus)}</div>
+    `});
+}
+
+// Le pop-up du départ, quand un candidat renverse la table (Idan, 2026-11-26 : « le renversement de table. Je cherche une
+// idée graphique pour que ça soit sympa (certainement en mode pop up pour forcer à quitter...) » ; idée 1, « Vas-y pour la
+// 1 ») : la fiche pop-up, tombée de travers, son portrait passé en gris (styles.css, .hover-card--left) ; dans sa page, ce
+// qu'il fait en partant (line) et « Prénom a quitté la taverne » (gone). Sur le portrait, une grosse croix rouge comme
+// faite au feutre (Idan, 2026-11-26 : « ajouter sur le portrait une grosse croix rouge comme faite au feutre ») : deux
+// traits épais, un peu courbes, à main levée ; les bords bavent un peu et l'encre varie (filtre) ; là où ils se croisent,
+// l'encre est plus foncée. Elle se trace une fois la fiche tombée (styles.css).
+const HC_FEUTRE=`<svg class="hc-croix" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+  <filter id="hc-feutre" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="2" seed="3" result="grain"/>
+    <feDisplacementMap in="SourceGraphic" in2="grain" scale=".8" xChannelSelector="R" yChannelSelector="G" result="bord"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="2" seed="8" result="nuance"/>
+    <feColorMatrix in="nuance" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -.3 1.05" result="encre"/>
+    <feComposite in="bord" in2="encre" operator="in" result="corps"/>
+    <feMorphology in="bord" operator="erode" radius=".8" result="dedans"/>
+    <feComposite in="bord" in2="dedans" operator="out" result="lisere"/>
+    <feFlood flood-color="#6e0a10" flood-opacity=".5"/>
+    <feComposite in2="lisere" operator="in" result="bordfonce"/>
+    <feMerge><feMergeNode in="corps"/><feMergeNode in="bordfonce"/></feMerge>
+  </filter>
+  <g filter="url(#hc-feutre)" fill="none" stroke="#c4121b" stroke-linecap="round" stroke-linejoin="round">
+    <path pathLength="1" d="M15 15C33 33 57 58 86 85" stroke-width="7.5"/>
+    <path pathLength="1" d="M85 13C66 35 44 60 13 87" stroke-width="7"/>
+  </g>
+</svg>`;
+function renderLeftCard(c,{line="",gone=""}={}){
+  return renderPopupCard(c,{pageClass:"hc-welcome",cardClass:"hover-card--left",overPortrait:HC_FEUTRE,body:`
+      <p class="hc-welcome-line">${esc(line)}</p>
+      <p class="hc-welcome-join">${esc(gone)}</p>
+    `});
+}
+
 // Le nom et le titre dans le cartouche, une fois la fiche dans la page. Le nom : une ligne, sa police baisse tant qu'il
 // dépasse (jusqu'à 60 %). Le titre (il peut dépasser 80 lettres : « Archer éclaireur et soigneur en herbe à l'arc et à la
 // hache de guerre à dos de licorne ») : une ligne jusqu'à 75 % de sa taille ; au-delà, deux lignes, et la police baisse
@@ -425,4 +499,4 @@ function hoverCardPlacement({anchor,view,card={w:HOVER_CARD.w,h:HOVER_CARD.h},ga
   return {x:Math.round(x),y:Math.round(y),scale:Number(scale.toFixed(3)),side};
 }
 
-if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverSchoolRows,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase};
+if(typeof module!=="undefined"&&module.exports) module.exports={mercenaryHoverData,hoverWeapons,hoverSchoolRows,hoverMountPortrait,hoverTagPlates,hoverTagFullName,renderMercenaryHoverCard,hoverCultureFrame,hoverKitFrame,fitHoverCard,hoverCardPlacement,originPhrase,HOVER_CARD,POPUP_CARD,POPUP_DX,renderPopupCard,renderWelcomeCard,renderLeftCard};

@@ -81,7 +81,7 @@
         {
           "name": "cites-libres.webp",
           "source": "prototype-web/assets/pictos/culture-cites-libres.webp",
-          "size": 19690,
+          "size": 17320,
           "type": "image/webp"
         },
         {
@@ -111,7 +111,7 @@
         {
           "name": "empire-de-la-nuit-blanche.webp",
           "source": "prototype-web/assets/pictos/culture-empire-de-la-nuit-blanche.webp",
-          "size": 19440,
+          "size": 15084,
           "type": "image/webp"
         },
         {
@@ -237,19 +237,19 @@
         {
           "name": "royaumes-du-soleil-levant.webp",
           "source": "prototype-web/assets/pictos/culture-royaumes-du-soleil-levant.webp",
-          "size": 15194,
+          "size": 17550,
           "type": "image/webp"
         },
         {
           "name": "terres-des-deux-fleuves.webp",
           "source": "prototype-web/assets/pictos/culture-terres-des-deux-fleuves.webp",
-          "size": 18372,
+          "size": 22636,
           "type": "image/webp"
         },
         {
           "name": "tribus-de-la-jungle.webp",
           "source": "prototype-web/assets/pictos/culture-tribus-de-la-jungle.webp",
-          "size": 16694,
+          "size": 16700,
           "type": "image/webp"
         },
         {

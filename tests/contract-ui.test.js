@@ -18,7 +18,7 @@ const guard = {id:"g1", kind:"bodyguard", client:"Une veuve fortunée", count:2,
 // Taverne à 5 missions (Idan, 2026-11-01) : des cases, chacune une offre ou vide jusqu'au lendemain.
 const slots = [{offer:contract}, {offer:guard}, {offer:null, emptyUntil:2}];
 const game = {campaign:{day:1, tavernBoard:{slots}, expeditions:[], company:{roster:[]}},
-  referenceData:{oneShotMissions:{missions:[{code:"cleanup", description:"Attaquer un camp ennemi.", illustration:""}]},
+  referenceData:{oneShotMissions:{missions:[{code:"cleanup", type:"Attaque de camp", description:"Attaquer un camp ennemi.", illustration:""}]},
     bodyguardMissions:{illustration:"assets/missions/garde.webp", textes:{titre:"Garde du corps", offre:"{client} cherche {n} garde{s} du corps pour {jours} jours."}}}};
 const listeners = {}, selections = [];
 const arrows = {prev:{}, next:{}}, views = [];
@@ -56,7 +56,17 @@ assert.match(board, /<h3 class="board-notice-title"><span class="board-notice-na
 assert.match(board, /<span class="board-notice-rule" aria-hidden="true"><i><\/i><\/span>/);
 assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\/hud\/picto-or\.webp" alt=""><b>6\u202f800<\/b>[\s\S]*M5\.5 2\.8h13[\s\S]*2 jours de marche/,
   "étoiles, or (avec l'espace des milliers), sablier et durée");
-assert.doesNotMatch(board, /Faire le ménage|Garde du corps|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni type, ni description, ni case vide");
+assert.doesNotMatch(board, /Faire le ménage|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni nom de mission, ni description, ni case vide");
+// Le type de la mission (Idan, 2026-11-26 : « un tag qui indique le type de mission : Chasse, Attaque de camp, Garde du
+// corps ») : une ligne imprimée au-dessus du titre, venue des données.
+assert.match(board, /<p class="board-notice-type">Attaque de camp<\/p>\s*<h3 class="board-notice-title"><span class="board-notice-name">Camp gobelin/);
+assert.match(board, /<p class="board-notice-type">Garde du corps<\/p>\s*<h3 class="board-notice-title"><span class="board-notice-name board-notice-name--l">Une veuve fortunée/);
+{
+  const missions = JSON.parse(fs.readFileSync(path.join(root, "data/reference/one-shot-missions.json"), "utf8")).missions;
+  for (const m of missions) assert.equal(m.type, /^hunt_/.test(m.code) ? "Chasse" : "Attaque de camp", m.code + " : son type");
+  const css = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
+  assert.match(css, /\.board-notice-type\{margin:calc\(var\(--u\) \* 12\) 0 0;font:700 calc\(var\(--u\) \* 6\.8\)\/1 var\(--police-titre\)/);
+}
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
 // Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.
 const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)"| data-head="[123]")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%(?:;--sat:[\d.]+;--sale:1;--sale-x1:\d+%;--sale-y1:\d+%;--sale-x2:\d+%;--sale-y2:\d+%)?;--w:[\d.]+;--h:[\d.]+;--pli1:[^"]*)" data-paper="[1-8]"/g)];

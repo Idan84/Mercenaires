@@ -267,6 +267,10 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
 - **Les annonces**, trois par page, sur le parchemin de la création du capitaine : illustration, titre, difficulté en
   étoiles (la réputation minimale pour une garde du corps), récompense (picto or, sans « PO ») et durée (sablier) ; des
   flèches de fer tournent les pages. Case vide : rien (« Rien. Même pas de parchemin. On a le fond en bois »).
+- **Le type de la mission** (2026-11-26 : « un tag qui indique le type de mission ») : une ligne imprimée au-dessus du
+  titre, sur l'annonce et dans son détail : **Chasse**, **Attaque de camp**, **Garde du corps** (« on en aura d'autres
+  après »). Il vient des données : `type` de chaque mission de `one-shot-missions.json`, `textes.titre` de
+  `bodyguard-missions.json`.
 - **Départ demain** : une mission signée reste en tête, avec un tampon rouge « Départ demain » et « Annuler le départ ».
   Les escouades déjà parties n'y sont plus (« Ça n'a rien à faire ici »).
 - **Chaque annonce a son allure**, toujours la même pour la même offre, et les trois d'une page ne se ressemblent pas

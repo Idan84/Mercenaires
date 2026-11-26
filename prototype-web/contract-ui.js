@@ -88,7 +88,7 @@ function contractCard(offer){
   const order=contractOrder(offer);
   // Une chasse (Idan, 2026-11-07) : la récompense seule, ni coffre ni butin.
   const loot=def.bete?"":" + butin";
-  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
+  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,missionType:def.type||"",title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
     illustration:missionIllustration(def,offer),description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
     reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
@@ -101,7 +101,7 @@ function contractCard(offer){
 }
 function bodyguardCard(guard){
   const t=bodyguardTexts(),plural=guard.count>1;
-  return {id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",title:guard.client,
+  return {id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",missionType:t.titre||"Garde du corps",title:guard.client,
     // La gravure du client (Jean-Mi, 2026-11-14), sinon l'illustration commune des gardes du corps.
     illustration:stablePick(game.referenceData?.bodyguardMissions?.illustrations_clients?.[guard.client],guard.id)||game.referenceData?.bodyguardMissions?.illustration||"",
     description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
@@ -199,6 +199,9 @@ function factIcon(kind){
   if(kind==="crew") return '<img class="mission-fact-picto" src="assets/hud/picto-mercenaires.webp" alt="">';
   return missionIcon(kind);
 }
+// Le type de la mission (Idan, 2026-11-26 : « un tag qui indique le type de mission : Chasse, Attaque de camp, Garde du
+// corps (on en aura d'autres après) ») : une ligne imprimée au-dessus du titre, sur l'annonce et dans son détail ; il vient
+// des données (one-shot-missions.json : type ; bodyguard-missions.json : textes.titre).
 // L'annonce, en petit sur le panneau, ou en grand dans le détail (detail : l'essentiel en pictos à la place de la
 // paie et de la durée, sans ouverture au clic, le titre en h2 pour la fenêtre).
 function renderBoardNotice(card,detail=null){
@@ -216,6 +219,7 @@ function renderBoardNotice(card,detail=null){
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
+    ${card.missionType?`<p class="board-notice-type">${esc(card.missionType)}</p>`:""}
     <${title} class="board-notice-title"><span class="board-notice-name${nameSize(card.name||card.title)}">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</${title.split(" ")[0]}>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>
     <span class="board-notice-level" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>

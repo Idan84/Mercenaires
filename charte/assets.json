@@ -795,6 +795,733 @@
       ]
     },
     {
+      "name": "Cadre doré",
+      "tile": "m",
+      "files": [
+        {
+          "name": "cadre-or.webp",
+          "source": "prototype-web/assets/creation/cadre-or.webp",
+          "size": 18784,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "velours-brun.webp",
+          "source": "prototype-web/assets/creation/velours-brun.webp",
+          "size": 1854,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "barre-defilement-haut.webp",
+          "source": "prototype-web/assets/creation/barre-defilement-haut.webp",
+          "size": 10054,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "barre-defilement-milieu.webp",
+          "source": "prototype-web/assets/creation/barre-defilement-milieu.webp",
+          "size": 11616,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        },
+        {
+          "name": "barre-defilement-bas.webp",
+          "source": "prototype-web/assets/creation/barre-defilement-bas.webp",
+          "size": 10074,
+          "type": "image/webp",
+          "author": "Idan (tiré de bouton.webp)"
+        }
+      ]
+    },
+    {
+      "name": "Cadres dorés",
+      "tile": "m",
+      "files": [
+        {
+          "name": "anneau.webp",
+          "source": "prototype-web/assets/kit/cadres/anneau.webp",
+          "size": 60756,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "cadre-carre.webp",
+          "source": "prototype-web/assets/kit/cadres/cadre-carre.webp",
+          "size": 60262,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "cadre-fin.webp",
+          "source": "prototype-web/assets/kit/cadres/cadre-fin.webp",
+          "size": 46372,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "cadre-large.webp",
+          "source": "prototype-web/assets/kit/cadres/cadre-large.webp",
+          "size": 57508,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "cadre-vertical.webp",
+          "source": "prototype-web/assets/kit/cadres/cadre-vertical.webp",
+          "size": 48092,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coin-bas-droit.webp",
+          "source": "prototype-web/assets/kit/cadres/coin-bas-droit.webp",
+          "size": 69430,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coin-orne-bas-gauche.webp",
+          "source": "prototype-web/assets/kit/cadres/coin-orne-bas-gauche.webp",
+          "size": 66092,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coin-orne-haut-droit.webp",
+          "source": "prototype-web/assets/kit/cadres/coin-orne-haut-droit.webp",
+          "size": 59758,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coin-orne-haut-gauche.webp",
+          "source": "prototype-web/assets/kit/cadres/coin-orne-haut-gauche.webp",
+          "size": 72058,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
+      "name": "Boutons dorés",
+      "tile": "m",
+      "files": [
+        {
+          "name": "bouton-cadre.webp",
+          "source": "prototype-web/assets/kit/boutons/bouton-cadre.webp",
+          "size": 45092,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "bouton-rouge.webp",
+          "source": "prototype-web/assets/kit/boutons/bouton-rouge.webp",
+          "size": 54624,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "bouton-velours.webp",
+          "source": "prototype-web/assets/kit/boutons/bouton-velours.webp",
+          "size": 21644,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "carre-cadre.webp",
+          "source": "prototype-web/assets/kit/boutons/carre-cadre.webp",
+          "size": 51858,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "carre-rouge.webp",
+          "source": "prototype-web/assets/kit/boutons/carre-rouge.webp",
+          "size": 68568,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "carre-velours.webp",
+          "source": "prototype-web/assets/kit/boutons/carre-velours.webp",
+          "size": 22966,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-cadre-bas.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-cadre-bas.webp",
+          "size": 48708,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-cadre-droite.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-cadre-droite.webp",
+          "size": 35190,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-cadre-gauche.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-cadre-gauche.webp",
+          "size": 36376,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-cadre-haut.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-cadre-haut.webp",
+          "size": 53012,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-rouge-bas.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-rouge-bas.webp",
+          "size": 57426,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-rouge-droite.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-rouge-droite.webp",
+          "size": 43708,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-rouge-gauche.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-rouge-gauche.webp",
+          "size": 43128,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-rouge-haut.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-rouge-haut.webp",
+          "size": 65430,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-velours-bas.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-velours-bas.webp",
+          "size": 20642,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-velours-droite.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-velours-droite.webp",
+          "size": 12260,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-velours-gauche.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-velours-gauche.webp",
+          "size": 11380,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fleche-velours-haut.webp",
+          "source": "prototype-web/assets/kit/boutons/fleche-velours-haut.webp",
+          "size": 21722,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "rond-cadre.webp",
+          "source": "prototype-web/assets/kit/boutons/rond-cadre.webp",
+          "size": 58990,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "rond-rouge.webp",
+          "source": "prototype-web/assets/kit/boutons/rond-rouge.webp",
+          "size": 79716,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "rond-velours.webp",
+          "source": "prototype-web/assets/kit/boutons/rond-velours.webp",
+          "size": 27518,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
+      "name": "Velours",
+      "tile": "m",
+      "files": [
+        {
+          "name": "disque-velours.webp",
+          "source": "prototype-web/assets/kit/velours/disque-velours.webp",
+          "size": 37990,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "panneau-velours.webp",
+          "source": "prototype-web/assets/kit/velours/panneau-velours.webp",
+          "size": 23510,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
+      "name": "Bordures dorées",
+      "tile": "m",
+      "files": [
+        {
+          "name": "barre.webp",
+          "source": "prototype-web/assets/kit/bordures/barre.webp",
+          "size": 18764,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coin-arrondi.webp",
+          "source": "prototype-web/assets/kit/bordures/coin-arrondi.webp",
+          "size": 20486,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coin-equerre.webp",
+          "source": "prototype-web/assets/kit/bordures/coin-equerre.webp",
+          "size": 15922,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "croix.webp",
+          "source": "prototype-web/assets/kit/bordures/croix.webp",
+          "size": 28998,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "embout-pointe-droite.webp",
+          "source": "prototype-web/assets/kit/bordures/embout-pointe-droite.webp",
+          "size": 11046,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "embout-pointe-gauche.webp",
+          "source": "prototype-web/assets/kit/bordures/embout-pointe-gauche.webp",
+          "size": 11152,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "embout-rond-droit.webp",
+          "source": "prototype-web/assets/kit/bordures/embout-rond-droit.webp",
+          "size": 9056,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "embout-rond-gauche.webp",
+          "source": "prototype-web/assets/kit/bordures/embout-rond-gauche.webp",
+          "size": 8606,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "filet-deux-losanges.webp",
+          "source": "prototype-web/assets/kit/bordures/filet-deux-losanges.webp",
+          "size": 12976,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "filet-losange.webp",
+          "source": "prototype-web/assets/kit/bordures/filet-losange.webp",
+          "size": 15034,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "filet-trois-losanges.webp",
+          "source": "prototype-web/assets/kit/bordures/filet-trois-losanges.webp",
+          "size": 19216,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "noeud-losange.webp",
+          "source": "prototype-web/assets/kit/bordures/noeud-losange.webp",
+          "size": 9954,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "separateur-entrelacs.webp",
+          "source": "prototype-web/assets/kit/bordures/separateur-entrelacs.webp",
+          "size": 28986,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "separateur-fin.webp",
+          "source": "prototype-web/assets/kit/bordures/separateur-fin.webp",
+          "size": 18446,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "separateur-rinceaux.webp",
+          "source": "prototype-web/assets/kit/bordures/separateur-rinceaux.webp",
+          "size": 34178,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "separateur-volutes.webp",
+          "source": "prototype-web/assets/kit/bordures/separateur-volutes.webp",
+          "size": 26960,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "te.webp",
+          "source": "prototype-web/assets/kit/bordures/te.webp",
+          "size": 23400,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
+      "name": "Flèches dorées",
+      "tile": "s",
+      "files": [
+        {
+          "name": "bas.webp",
+          "source": "prototype-web/assets/kit/fleches/bas.webp",
+          "size": 13098,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "double-bas.webp",
+          "source": "prototype-web/assets/kit/fleches/double-bas.webp",
+          "size": 19958,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "double-droite.webp",
+          "source": "prototype-web/assets/kit/fleches/double-droite.webp",
+          "size": 18884,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "double-gauche.webp",
+          "source": "prototype-web/assets/kit/fleches/double-gauche.webp",
+          "size": 21248,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "double-haut.webp",
+          "source": "prototype-web/assets/kit/fleches/double-haut.webp",
+          "size": 20696,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "droite.webp",
+          "source": "prototype-web/assets/kit/fleches/droite.webp",
+          "size": 13878,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "fermer.webp",
+          "source": "prototype-web/assets/kit/fleches/fermer.webp",
+          "size": 20940,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "gauche.webp",
+          "source": "prototype-web/assets/kit/fleches/gauche.webp",
+          "size": 13946,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "haut.webp",
+          "source": "prototype-web/assets/kit/fleches/haut.webp",
+          "size": 14558,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
+      "name": "Icônes dorées",
+      "tile": "s",
+      "files": [
+        {
+          "name": "actualiser.webp",
+          "source": "prototype-web/assets/kit/icones/actualiser.webp",
+          "size": 26344,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "agrandir.webp",
+          "source": "prototype-web/assets/kit/icones/agrandir.webp",
+          "size": 23258,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "attention.webp",
+          "source": "prototype-web/assets/kit/icones/attention.webp",
+          "size": 18396,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "avance-rapide.webp",
+          "source": "prototype-web/assets/kit/icones/avance-rapide.webp",
+          "size": 19154,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "cadenas-ferme.webp",
+          "source": "prototype-web/assets/kit/icones/cadenas-ferme.webp",
+          "size": 24488,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "cadenas-ouvert.webp",
+          "source": "prototype-web/assets/kit/icones/cadenas-ouvert.webp",
+          "size": 24106,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "case-cochee.webp",
+          "source": "prototype-web/assets/kit/icones/case-cochee.webp",
+          "size": 20306,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "case-vide.webp",
+          "source": "prototype-web/assets/kit/icones/case-vide.webp",
+          "size": 16464,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "coche.webp",
+          "source": "prototype-web/assets/kit/icones/coche.webp",
+          "size": 15470,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "croix.webp",
+          "source": "prototype-web/assets/kit/icones/croix.webp",
+          "size": 25296,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "filtre.webp",
+          "source": "prototype-web/assets/kit/icones/filtre.webp",
+          "size": 17312,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "info.webp",
+          "source": "prototype-web/assets/kit/icones/info.webp",
+          "size": 25796,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "loupe.webp",
+          "source": "prototype-web/assets/kit/icones/loupe.webp",
+          "size": 26252,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "moins.webp",
+          "source": "prototype-web/assets/kit/icones/moins.webp",
+          "size": 10670,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "plus.webp",
+          "source": "prototype-web/assets/kit/icones/plus.webp",
+          "size": 19872,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "question.webp",
+          "source": "prototype-web/assets/kit/icones/question.webp",
+          "size": 26094,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "retour-rapide.webp",
+          "source": "prototype-web/assets/kit/icones/retour-rapide.webp",
+          "size": 19420,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "rond-coche.webp",
+          "source": "prototype-web/assets/kit/icones/rond-coche.webp",
+          "size": 17722,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "rond-vide.webp",
+          "source": "prototype-web/assets/kit/icones/rond-vide.webp",
+          "size": 20898,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "triangle-bas.webp",
+          "source": "prototype-web/assets/kit/icones/triangle-bas.webp",
+          "size": 6574,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "triangle-droit.webp",
+          "source": "prototype-web/assets/kit/icones/triangle-droit.webp",
+          "size": 6604,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "triangle-gauche.webp",
+          "source": "prototype-web/assets/kit/icones/triangle-gauche.webp",
+          "size": 7002,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "triangle-haut.webp",
+          "source": "prototype-web/assets/kit/icones/triangle-haut.webp",
+          "size": 7394,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
+      "name": "Curseurs dorés",
+      "tile": "s",
+      "files": [
+        {
+          "name": "actualiser.webp",
+          "source": "prototype-web/assets/kit/curseurs/actualiser.webp",
+          "size": 32556,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "deplacer.webp",
+          "source": "prototype-web/assets/kit/curseurs/deplacer.webp",
+          "size": 32360,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "main-index.webp",
+          "source": "prototype-web/assets/kit/curseurs/main-index.webp",
+          "size": 32912,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "main-ouverte.webp",
+          "source": "prototype-web/assets/kit/curseurs/main-ouverte.webp",
+          "size": 39094,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "main-saisie.webp",
+          "source": "prototype-web/assets/kit/curseurs/main-saisie.webp",
+          "size": 33692,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "pointeur.webp",
+          "source": "prototype-web/assets/kit/curseurs/pointeur.webp",
+          "size": 28792,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "redim-diagonale-1.webp",
+          "source": "prototype-web/assets/kit/curseurs/redim-diagonale-1.webp",
+          "size": 19236,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "redim-diagonale-2.webp",
+          "source": "prototype-web/assets/kit/curseurs/redim-diagonale-2.webp",
+          "size": 19138,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "redim-horizontal.webp",
+          "source": "prototype-web/assets/kit/curseurs/redim-horizontal.webp",
+          "size": 16882,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "redim-vertical.webp",
+          "source": "prototype-web/assets/kit/curseurs/redim-vertical.webp",
+          "size": 16556,
+          "type": "image/webp",
+          "author": "Idan"
+        },
+        {
+          "name": "sablier.webp",
+          "source": "prototype-web/assets/kit/curseurs/sablier.webp",
+          "size": 41848,
+          "type": "image/webp",
+          "author": "Idan"
+        }
+      ]
+    },
+    {
       "name": "Pictos du camp",
       "tile": "s",
       "files": [

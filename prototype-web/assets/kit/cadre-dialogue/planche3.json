@@ -1,0 +1,112 @@
+{
+ "planche": "planche3.png",
+ "largeur": 1448,
+ "hauteur": 1086,
+ "pieces": [
+  {
+   "fichier": "planche3-01.webp",
+   "x": 41,
+   "y": 81,
+   "largeur": 161,
+   "hauteur": 166
+  },
+  {
+   "fichier": "planche3-02.webp",
+   "x": 230,
+   "y": 95,
+   "largeur": 990,
+   "hauteur": 74
+  },
+  {
+   "fichier": "planche3-03.webp",
+   "x": 1246,
+   "y": 80,
+   "largeur": 164,
+   "hauteur": 167
+  },
+  {
+   "fichier": "planche3-04.webp",
+   "x": 47,
+   "y": 258,
+   "largeur": 57,
+   "hauteur": 558
+  },
+  {
+   "fichier": "planche3-05.webp",
+   "x": 1345,
+   "y": 258,
+   "largeur": 56,
+   "hauteur": 557
+  },
+  {
+   "fichier": "planche3-06.webp",
+   "x": 163,
+   "y": 392,
+   "largeur": 783,
+   "hauteur": 136
+  },
+  {
+   "fichier": "planche3-07.webp",
+   "x": 989,
+   "y": 403,
+   "largeur": 117,
+   "hauteur": 116
+  },
+  {
+   "fichier": "planche3-08.webp",
+   "x": 1134,
+   "y": 392,
+   "largeur": 138,
+   "hauteur": 141
+  },
+  {
+   "fichier": "planche3-09.webp",
+   "x": 163,
+   "y": 568,
+   "largeur": 631,
+   "hauteur": 128
+  },
+  {
+   "fichier": "planche3-10.webp",
+   "x": 906,
+   "y": 616,
+   "largeur": 70,
+   "hauteur": 63
+  },
+  {
+   "fichier": "planche3-11.webp",
+   "x": 1037,
+   "y": 616,
+   "largeur": 70,
+   "hauteur": 63
+  },
+  {
+   "fichier": "planche3-12.webp",
+   "x": 1165,
+   "y": 615,
+   "largeur": 69,
+   "hauteur": 62
+  },
+  {
+   "fichier": "planche3-13.webp",
+   "x": 41,
+   "y": 827,
+   "largeur": 160,
+   "hauteur": 158
+  },
+  {
+   "fichier": "planche3-14.webp",
+   "x": 1248,
+   "y": 827,
+   "largeur": 162,
+   "hauteur": 159
+  },
+  {
+   "fichier": "planche3-15.webp",
+   "x": 230,
+   "y": 892,
+   "largeur": 992,
+   "hauteur": 86
+  }
+ ]
+}

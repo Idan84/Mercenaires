@@ -13,7 +13,7 @@ const DEPOT_MAX_OCTETS = 30 * 1024 * 1024;
 const DEPOT_TYPES = ['remplacer', 'variante', 'nouvelle', 'reutiliser'];
 const DEPOT_RASTER = ['png' => IMAGETYPE_PNG, 'jpg' => IMAGETYPE_JPEG, 'webp' => IMAGETYPE_WEBP, 'gif' => IMAGETYPE_GIF];
 
-// La réponse JSON des points d'entrée de la Design Lab (design/api/depot.php, design/api/reglages.php).
+// La réponse JSON des points d'entrée de la Design Lab (design/api/depot.php).
 function depot_repondre(int $code, array $corps): void
 {
     http_response_code($code);

@@ -91,7 +91,7 @@ check(!file_exists($web . '/design/.htaccess'), 'pas de .htaccess dans prototype
 // Les gardes sont communes (depot_garder, dans la bibliothèque) ; chaque point d'entrée les appelle d'abord.
 $lib = (string) file_get_contents($web . '/api/lib/depots.php');
 check(str_contains($lib, "depot_protege(\$site)") && str_contains($lib, "HTTP_X_DEPOT") && str_contains($lib, 'HTTP_ORIGIN'), 'gardes communes');
-foreach (['depot.php', 'reglages.php'] as $point) {
+foreach (['depot.php'] as $point) {
     $endpoint = (string) file_get_contents($web . '/design/api/' . $point);
     check((bool) preg_match('/require[^;]*depots\.php\';\s*(?:require[^;]*;\s*)?\$site = dirname\(__DIR__, 2\);\s*depot_garder\(\$site\);/', $endpoint), $point . ' : point d\'entrée gardé d\'abord');
 }

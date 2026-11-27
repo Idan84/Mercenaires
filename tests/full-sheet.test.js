@@ -1,9 +1,8 @@
 "use strict";
 
 // La fiche complète en plein écran (prototype-web/full-sheet-ui.js ; Idan, 2026-11-18 : « deux parties fixes. Une barre
-// en haut. Une colonne à gauche. Un onglet principal qui s'ouvre toujours en premier ») et l'onglet Cultures du Design
-// Lab qui règle, par culture, les trois panneaux sur l'aperçu du jeu (prototype-web/design/cultures-lab.js,
-// prototype-web/apercu-ui.js, design/api/reglages.php).
+// en haut. Une colonne à gauche. Un onglet principal qui s'ouvre toujours en premier »). L'onglet Cultures du Design Lab
+// qui la réglait par culture est retiré (Idan, 2026-11-27 : « vire la partie culture du design lab. Elle sert à rien »).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -81,41 +80,12 @@ context.game.referenceData.cultureKits.rows=kits;
 const sansKit=F.renderFullSheet({...c,culture:"Gnomes des forêts"},{W:1920,H:1080});
 assert.ok(sansKit.includes("is-sans-kit")&&!sansKit.includes("fs-cadre"),"sans kit : pas de cadre");
 
-// 3. L'onglet Cultures : chaque curseur pointe sur un réglage qui existe, pour les trois kits et les trois panneaux.
-const lab={localStorage:{getItem:()=>null,setItem(){}}};
-vm.createContext(lab);
-vm.runInContext(read("prototype-web/design/cultures-lab.js"),lab);
-const CL=vm.runInContext("CulturesLab",lab);
-assert.deepEqual(plain(CL.PANNEAUX).map(p=>p.cle),["barres","fiche","plein"]);
-// Un ancien enregistrement repris sur les réglages du jeu : les réglages connus seulement, du même type.
-assert.deepEqual(plain(CL.fondre({haut:150,cadre:{ep:20},nom:"clair"},{haut:200,marge:5,cadre:{ep:"x"},separations:{ep:9}})),{haut:200,cadre:{ep:20},nom:"clair"});
-for(const kit of kits){
-  for(const {cle} of CL.PANNEAUX){
-    const reglages=kit[cle];
-    for(const g of CL.groupes(cle,kit)) for(const f of g.champs){
-      if(!f.p||f.si) continue;
-      const v=CL.lire(reglages,f.p);
-      assert.notEqual(v,undefined,`${kit.cle} ${cle} : ${f.p}`);
-      if(f.t==="num") assert.equal(typeof v,"number",`${kit.cle} ${cle} : ${f.p}`);
-      if(f.t==="oui") assert.equal(typeof v,"boolean",`${kit.cle} ${cle} : ${f.p}`);
-      if(f.t==="choix") assert.ok(f.o.includes(v),`${kit.cle} ${cle} : ${f.p} = ${v}`);
-    }
-  }
-}
-// 4. L'aperçu : le jeu le charge, ne sauvegarde rien et reste muet ; le Design Lab a son onglet.
+// 3. Le jeu charge la fiche complète après la fiche au survol ; l'aperçu du Design Lab n'existe plus.
 const index=read("prototype-web/index.html");
 assert.match(index,/<script src="hover-card-ui\.js"><\/script>\s*<script src="full-sheet-ui\.js"><\/script>/);
-assert.match(index,/<script src="godmode-ui\.js"><\/script>\s*<script src="apercu-ui\.js"><\/script>/);
-assert.match(read("prototype-web/save-ui.js"),/function saveGame\(\)\{[\s\S]{0,200}game\.apercu\) return;/);
-assert.match(read("prototype-web/music-ui.js"),/function refreshMusic\(\)\{[\s\S]{0,160}game\?\.apercu\) return;/);
-const apercu=read("prototype-web/apercu-ui.js");
-assert.match(apercu,/event\.origin!==location\.origin\|\|event\.source!==window\.parent/,"n'écoute que le Design Lab");
-assert.match(apercu,/has\("apercu"\)&&window\.parent!==window/,"seulement dans un cadre, avec ?apercu");
-const design=read("prototype-web/design/index.html");
-assert.match(design,/data-mode="cultures"/);
-assert.match(design,/<script src="\.\/cultures-lab\.js"><\/script>/);
-assert.match(read("prototype-web/design/cultures-lab.js"),/id="cul-autre"/,"« Autre mercenaire »");
-assert.match(apercu,/tiragePartie!==\(message\.tirage\|\|0\)/);
-assert.match(read("prototype-web/design/cultures-lab.js"),/fetch\("api\/reglages\.php",\{method:"POST",headers:\{"Content-Type":"application\/json","X-Depot":"1"\}/);
+assert.doesNotMatch(index,/apercu-ui\.js/);
+assert.doesNotMatch(read("prototype-web/design/index.html"),/data-mode="cultures"|cultures-lab\.js/);
+assert.ok(!fs.existsSync(path.join(ROOT,"prototype-web/design/api/reglages.php")),"plus d'enregistrement des réglages");
+assert.doesNotMatch(read("prototype-web/reference-data.js"),/media\/reglages/,"le jeu ne lit plus les réglages du Design Lab");
 
-console.log("Fiche complète en plein écran et onglet Cultures du Design Lab — OK");
+console.log("Fiche complète en plein écran — OK");

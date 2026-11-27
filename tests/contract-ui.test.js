@@ -644,7 +644,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     // Avec le cadre d'Idan (2026-11-25/26) : la fiche décalée de 10 px à gauche, le cadre agrandi de 10 px à gauche, à droite
     // et en bas, puis haut, droite et bas à la même distance de la barre de métal (94 px).
     assert.match(css, /\.talk-dialog--fiche>\.recruit-fiche\{position:absolute;left:calc\(var\(--talk-marge\) - 10px\);top:calc\(50% - 282\.5px\);width:860px;height:565px\}/);
-    assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:calc\(var\(--talk-marge\) - 10px\);right:calc\(var\(--talk-marge\) - 10px\);bottom:calc\(var\(--talk-marge\) - 21\.8px\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\) - 10px\);[^}]*box-shadow:0 0 16px 3px rgba\(0,0,0,\.6\),6px 18px 50px #000a\}/);
+    assert.match(css, /\.talk-dialog--fiche>\.recruit-talk-box\{position:absolute;z-index:1;top:calc\(var\(--talk-marge\) - 10px\);right:calc\(var\(--talk-marge\) - 10px\);bottom:calc\(var\(--talk-marge\) - 21\.8px\);left:calc\(var\(--talk-marge\) \+ 860px - var\(--talk-mord\) - 10px\);[^}]*box-shadow:none;filter:drop-shadow\(0 0 8px rgba\(0,0,0,\.6\)\) drop-shadow\(6px 18px 25px #000a\)\}/);
   }
   // Avant les tags, la couronne et ses rinceaux dans la couleur de la culture (Idan, 2026-11-16) : la planche d'Idan
   // tracée en SVG noir, servi de masque.

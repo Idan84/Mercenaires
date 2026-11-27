@@ -1466,8 +1466,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--fiche>.recruit-fiche{position:absolute;left:calc(var(--talk-marge) - 10px);top:calc(50% - 282.5px);width:860px;height:565px}
 /* Une seule lumière, en haut à gauche (Idan, 2026-11-25 : « décale tout, et ombre douce de contact sur la fiche ») : les
    ombres portent vers le bas à droite ; la fenêtre pose sur la fiche une ombre douce de contact, sans direction. Une lumière
-   d'ambiance, à la bougie (« pas un spot de boîte de nuit ») : ombres douces, à peine décalées. */
-.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:calc(var(--talk-marge) - 10px);right:calc(var(--talk-marge) - 10px);bottom:calc(var(--talk-marge) - 21.8px);left:calc(var(--talk-marge) + 860px - var(--talk-mord) - 10px);display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:0 0 16px 3px rgba(0,0,0,.6),6px 18px 50px #000a}
+   d'ambiance, à la bougie (« pas un spot de boîte de nuit ») : ombres douces, à peine décalées.
+   L'ombre suit le dessin du cadre (Idan, 2026-11-27 : un rectangle clair sous les coins coupés et autour du losange) : une
+   ombre de boîte suit le rectangle de la boîte et n'est jamais peinte dedans, d'où ce rectangle là où le cadre est
+   transparent ; une ombre en filtre suit la transparence du cadre (le flou d'un filtre compte double : 8 et 25 px pour 16 et 50). */
+.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:calc(var(--talk-marge) - 10px);right:calc(var(--talk-marge) - 10px);bottom:calc(var(--talk-marge) - 21.8px);left:calc(var(--talk-marge) + 860px - var(--talk-mord) - 10px);display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:none;filter:drop-shadow(0 0 8px rgba(0,0,0,.6)) drop-shadow(6px 18px 25px #000a)}
 /* La fiche repliée (Idan, 2026-11-25 : « je voudrais qu'on puisse replier la fiche au survol : elle passe sous la boite de
    dialogue qui prend alors toute la largeur. La fiche au survol doit toujours dépasser de 30 / 40 px : on doit voir le début
    du portrait ») : la boîte glisse par-dessus la fiche, qui ne bouge pas et dépasse de --talk-depasse ; un clic sur ce qui
@@ -1519,7 +1522,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    le plateau des boutons. Marges intérieures : la marge de départ (44 / 17 px), « + 10 px à gauche, à droite et en bas »,
    « un padding de 20 px sur les 4 côtés », « encore 3 » deux fois, « rajoute 15 px » sur les côtés (pour la diagonale
    des volutes, voir .conv-page) : 70 / 68 / 70 px. */
-.conv{position:relative;gap:12px;padding:70px 68px 70px;border:0;border-radius:0;background:none;box-shadow:6px 18px 50px #000a}
+.conv{position:relative;gap:12px;padding:70px 68px 70px;border:0;border-radius:0;background:none;filter:drop-shadow(6px 18px 25px #000a)}
 .conv::before,.conv::after{content:"";position:absolute;pointer-events:none}
 /* Le cadre d'Idan (assets-src/Kits/cadre-dialogue/cadre-idan.webp ; Idan, 2026-11-25 : « Tu as juste à découper : 5 parties
    verticales et 3 parties horizontales »). Deux moitiés, chacune en border-image : coin | cuir uni qui se répète |

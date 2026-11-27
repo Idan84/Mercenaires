@@ -78,6 +78,7 @@ jobs:
       - run: node tests/pictos.test.js
       - run: node tests/culture-colors.test.js
       - run: node tests/culture-kits.test.js
+      - run: node tests/culture-media.test.js
       - run: node tests/full-sheet.test.js
       - run: node --check prototype-web/full-sheet-ui.js
       - run: node --check prototype-web/apercu-ui.js

@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "name": "culture-media",
+  "description": "Les images de chaque culture qu’Idan dépose directement sur Hostinger (Idan, 2026-11-27 : « Enregistre les chemins par Culture et les noms des fichiers. Je veux que le jeu aille chercher directement dedans ») : un dossier par culture, media/cultures/<peuple>/<culture>/ (le premier : elfes/elfes_sylvains), et des noms de fichiers fixes. Le jeu les lira tels quels (prototype-web/culture-media.js, l’index api/cultures.php donne la date de chaque fichier, pour qu’un fichier remplacé sous le même nom soit relu) ; une image absente : le jeu gardera la sienne. L’affichage n’est pas encore branché (Idan finit ses images). Majuscules indifférentes.",
+  "base": "media/cultures",
+  "fichiers": {
+    "barreHaut": "Barre_haut.png",
+    "picto": "picto.png"
+  },
+  "columns": [
+    {
+      "key": "nom",
+      "source": "Culture (cultures.json)"
+    },
+    {
+      "key": "cle",
+      "source": "Clé de la culture dans le jeu (la même que culture-colors.json)"
+    },
+    {
+      "key": "dossier",
+      "source": "Son dossier sous media/cultures/ : <peuple>/<culture>, en minuscules, sans accents, mots liés par _"
+    }
+  ],
+  "row_count": 32,
+  "rows": [
+    {
+      "nom": "Elfes des grandes cités",
+      "cle": "elfes-des-grandes-cites",
+      "dossier": "elfes/elfes_des_grandes_cites"
+    },
+    {
+      "nom": "Elfes noirs",
+      "cle": "elfes-noirs",
+      "dossier": "elfes/elfes_noirs"
+    },
+    {
+      "nom": "Elfes sylvains",
+      "cle": "elfes-sylvains",
+      "dossier": "elfes/elfes_sylvains"
+    },
+    {
+      "nom": "Gnomes des cavernes",
+      "cle": "gnomes-des-cavernes",
+      "dossier": "gnomes/gnomes_des_cavernes"
+    },
+    {
+      "nom": "Gnomes des forêts",
+      "cle": "gnomes-des-forets",
+      "dossier": "gnomes/gnomes_des_forets"
+    },
+    {
+      "nom": "Gnomes des villes",
+      "cle": "gnomes-des-villes",
+      "dossier": "gnomes/gnomes_des_villes"
+    },
+    {
+      "nom": "Caravanes de ferrailleurs",
+      "cle": "caravanes-de-ferrailleurs",
+      "dossier": "gobelins/caravanes_de_ferrailleurs"
+    },
+    {
+      "nom": "Gobelins des cavernes",
+      "cle": "gobelins-des-cavernes",
+      "dossier": "gobelins/gobelins_des_cavernes"
+    },
+    {
+      "nom": "Gobelins des villes",
+      "cle": "gobelins-des-villes",
+      "dossier": "gobelins/gobelins_des_villes"
+    },
+    {
+      "nom": "Explorateurs",
+      "cle": "explorateurs",
+      "dossier": "halflings/explorateurs"
+    },
+    {
+      "nom": "Halflings des cités humaines",
+      "cle": "halflings-des-cites-humaines",
+      "dossier": "halflings/halflings_des_cites_humaines"
+    },
+    {
+      "nom": "Halflings des villages isolés",
+      "cle": "halflings-des-villages-isoles",
+      "dossier": "halflings/halflings_des_villages_isoles"
+    },
+    {
+      "nom": "Clans des grandes steppes",
+      "cle": "clans-des-grandes-steppes",
+      "dossier": "hommes_betes/clans_des_grandes_steppes"
+    },
+    {
+      "nom": "Tribus des forêts anciennes",
+      "cle": "tribus-des-forets-anciennes",
+      "dossier": "hommes_betes/tribus_des_forets_anciennes"
+    },
+    {
+      "nom": "Tribus nordiques",
+      "cle": "tribus-nordiques",
+      "dossier": "hommes_betes/tribus_nordiques"
+    },
+    {
+      "nom": "Cités libres",
+      "cle": "cites-libres",
+      "dossier": "humains/cites_libres"
+    },
+    {
+      "nom": "Empire de la nuit blanche",
+      "cle": "empire-de-la-nuit-blanche",
+      "dossier": "humains/empire_de_la_nuit_blanche"
+    },
+    {
+      "nom": "Royaumes du Soleil Levant",
+      "cle": "royaumes-du-soleil-levant",
+      "dossier": "humains/royaumes_du_soleil_levant"
+    },
+    {
+      "nom": "Terres des Deux Fleuves",
+      "cle": "terres-des-deux-fleuves",
+      "dossier": "humains/terres_des_deux_fleuves"
+    },
+    {
+      "nom": "Tribus de la jungle",
+      "cle": "tribus-de-la-jungle",
+      "dossier": "humains/tribus_de_la_jungle"
+    },
+    {
+      "nom": "Nains des montagnes",
+      "cle": "nains-des-montagnes",
+      "dossier": "nains/nains_des_montagnes"
+    },
+    {
+      "nom": "Nains du chaos",
+      "cle": "nains-du-chaos",
+      "dossier": "nains/nains_du_chaos"
+    },
+    {
+      "nom": "Nains esclaves",
+      "cle": "nains-esclaves",
+      "dossier": "nains/nains_esclaves"
+    },
+    {
+      "nom": "Ogres des cités humaines",
+      "cle": "ogres-des-cites-humaines",
+      "dossier": "ogres/ogres_des_cites_humaines"
+    },
+    {
+      "nom": "Ogres des montagnes",
+      "cle": "ogres-des-montagnes",
+      "dossier": "ogres/ogres_des_montagnes"
+    },
+    {
+      "nom": "Ogres des steppes",
+      "cle": "ogres-des-steppes",
+      "dossier": "ogres/ogres_des_steppes"
+    },
+    {
+      "nom": "Orcs des steppes",
+      "cle": "orcs-des-steppes",
+      "dossier": "orcs/orcs_des_steppes"
+    },
+    {
+      "nom": "Orcs des villes",
+      "cle": "orcs-des-villes",
+      "dossier": "orcs/orcs_des_villes"
+    },
+    {
+      "nom": "Orcs noirs",
+      "cle": "orcs-noirs",
+      "dossier": "orcs/orcs_noirs"
+    },
+    {
+      "nom": "Reptiliens des cités-temples",
+      "cle": "reptiliens-des-cites-temples",
+      "dossier": "reptiliens/reptiliens_des_cites_temples"
+    },
+    {
+      "nom": "Reptiliens des marécages",
+      "cle": "reptiliens-des-marecages",
+      "dossier": "reptiliens/reptiliens_des_marecages"
+    },
+    {
+      "nom": "Reptiliens des villes",
+      "cle": "reptiliens-des-villes",
+      "dossier": "reptiliens/reptiliens_des_villes"
+    }
+  ]
+}

@@ -1466,8 +1466,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog--fiche>.recruit-fiche{position:absolute;left:calc(var(--talk-marge) - 10px);top:calc(50% - 282.5px);width:860px;height:565px}
 /* Une seule lumière, en haut à gauche (Idan, 2026-11-25 : « décale tout, et ombre douce de contact sur la fiche ») : les
    ombres portent vers le bas à droite ; la fenêtre pose sur la fiche une ombre douce de contact, sans direction. Une lumière
-   d'ambiance, à la bougie (« pas un spot de boîte de nuit ») : ombres douces, à peine décalées. */
-.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:calc(var(--talk-marge) - 10px);right:calc(var(--talk-marge) - 10px);bottom:calc(var(--talk-marge) - 21.8px);left:calc(var(--talk-marge) + 860px - var(--talk-mord) - 10px);display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:0 0 16px 3px rgba(0,0,0,.6),6px 18px 50px #000a}
+   d'ambiance, à la bougie (« pas un spot de boîte de nuit ») : ombres douces, à peine décalées.
+   L'ombre suit le dessin du cadre (Idan, 2026-11-27 : un rectangle clair sous les coins coupés et autour du losange) : une
+   ombre de boîte suit le rectangle de la boîte et n'est jamais peinte dedans, d'où ce rectangle là où le cadre est
+   transparent ; une ombre en filtre suit la transparence du cadre (le flou d'un filtre compte double : 8 et 25 px pour 16 et 50). */
+.talk-dialog--fiche>.recruit-talk-box{position:absolute;z-index:1;top:calc(var(--talk-marge) - 10px);right:calc(var(--talk-marge) - 10px);bottom:calc(var(--talk-marge) - 21.8px);left:calc(var(--talk-marge) + 860px - var(--talk-mord) - 10px);display:flex;flex-direction:column;width:auto;height:auto;max-height:none;overflow:visible;box-shadow:none;filter:drop-shadow(0 0 8px rgba(0,0,0,.6)) drop-shadow(6px 18px 25px #000a)}
 /* La fiche repliée (Idan, 2026-11-25 : « je voudrais qu'on puisse replier la fiche au survol : elle passe sous la boite de
    dialogue qui prend alors toute la largeur. La fiche au survol doit toujours dépasser de 30 / 40 px : on doit voir le début
    du portrait ») : la boîte glisse par-dessus la fiche, qui ne bouge pas et dépasse de --talk-depasse ; un clic sur ce qui
@@ -1519,7 +1522,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    le plateau des boutons. Marges intérieures : la marge de départ (44 / 17 px), « + 10 px à gauche, à droite et en bas »,
    « un padding de 20 px sur les 4 côtés », « encore 3 » deux fois, « rajoute 15 px » sur les côtés (pour la diagonale
    des volutes, voir .conv-page) : 70 / 68 / 70 px. */
-.conv{position:relative;gap:12px;padding:70px 68px 70px;border:0;border-radius:0;background:none;box-shadow:6px 18px 50px #000a}
+.conv{position:relative;gap:12px;padding:70px 68px 70px;border:0;border-radius:0;background:none;filter:drop-shadow(6px 18px 25px #000a)}
 .conv::before,.conv::after{content:"";position:absolute;pointer-events:none}
 /* Le cadre d'Idan (assets-src/Kits/cadre-dialogue/cadre-idan.webp ; Idan, 2026-11-25 : « Tu as juste à découper : 5 parties
    verticales et 3 parties horizontales »). Deux moitiés, chacune en border-image : coin | cuir uni qui se répète |
@@ -1955,6 +1958,17 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    du kit dans la couche .hud-kit de chaque barre, sous les textes, le bouton et les pictos, à la place de la barre du
    pack ; le bouton Jour suivant du kit, à sa taille (le dessin remplit le bouton), décalé de --bb-bouton-dx. */
 .hud-kit{position:absolute;inset:0;pointer-events:none}
+/* Les barres d'Idan (media/cultures/<culture>/ux.png ; screen-ui.js, Idan, 2026-11-28) : l'image de tout l'écran, pleine
+   largeur à ses proportions, sa moitié haute dans la barre du haut, sa moitié basse dans celle du bas ; elle remplace la
+   barre du pack et les pièces du kit. Son play.png, recadré sur le rond du bouton (gabarit : 176 de diamètre, centré en
+   1920 × 1988 sur 3840 × 2160 : l'image fait 3840 / 176 fois le bouton). */
+.hud-media{display:none;position:absolute;left:0;width:100%;aspect-ratio:32/9;background-repeat:no-repeat;background-size:100% auto;pointer-events:none}
+.is-media .hud-media{display:block}
+.game-top-bar .hud-media{top:0;background-position:0 0}
+.game-bottom-bar .hud-media{bottom:0;background-position:0 100%}
+.is-media .hud-bar-art,.is-media .hud-kit{display:none}
+.game-bottom-bar.is-media-play .hud-play{overflow:hidden}
+.game-bottom-bar.is-media-play .hud-play-img{left:calc(50% - 100% * 1920 / 176);top:calc(50% - 100% * 1988 / 176);width:calc(100% * 3840 / 176);height:auto;transform:none;filter:none}
 .hud-kit-piece{position:absolute;display:block;max-width:none}
 .has-kit .hud-bar-art{display:none}
 .game-bottom-bar.has-kit .hud-play{margin-left:calc(var(--hb-B) * var(--bb-bouton-dx,0))}
@@ -3480,6 +3494,3 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
   font:600 calc(var(--s) * 18px)/1 var(--police-texte);background:rgba(90,60,30,.08)}
 .fs-onglet.is-on{background:#7a1f1c;color:#f6e7c6}
 .fs-recap{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(0,1fr);gap:calc(var(--s) * 16px);padding:calc(var(--s) * 26px) calc(var(--s) * 40px) calc(var(--s) * 30px)}
-/* L'aperçu du Design Lab (apercu-ui.js) : la fiche au survol au milieu de l'écran ; la fiche complète par-dessus le camp. */
-.is-apercu body{pointer-events:none}
-.apercu-carte{position:fixed;z-index:60;transform-origin:0 0}

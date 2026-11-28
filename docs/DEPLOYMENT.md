@@ -95,8 +95,9 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 « Je veux que le jeu lise les datas de l'atelier, que l'atelier soit une sorte de base admin de gestion du jeu. » Le
 principe, domaine par domaine : Idan règle les données dans un onglet du Design Lab ; ses enregistrements sont rangés sur
 Hostinger (`media/…`, par une API de `design/api/`) ; le jeu les lit au chargement et, sans eux (serveur local, tests),
-garde la copie du dépôt (`data/reference/`). Déjà fait : les réglages des cultures (ci-dessous). En cours : l'atelier
-des tags (ci-dessous, doc 20 §12). Ensuite : le bestiaire et les constantes de formules.
+garde la copie du dépôt (`data/reference/`). En place : l'atelier des tags (ci-dessous, doc 20 §12). Ensuite : le
+bestiaire et les constantes de formules. (L'onglet Cultures et ses réglages, `media/reglages/`, sont retirés : Idan,
+2026-11-27, « vire la partie culture du design lab. Elle sert à rien ». Le dossier peut être effacé sur Hostinger.)
 
 ### Atelier des tags : `media/atelier/` (en ligne depuis le 2026-11-23, basculé le 2026-11-24)
 
@@ -109,9 +110,9 @@ pas, la copie du dépôt (`data/reference/tag-workshop.json`). Chaque modificati
 navigateur). Chaque version est gardée dans `media/atelier/<id>/atelier.json` (les 200 dernières, puis la dernière de
 chaque jour) ; `media/atelier/index.json` liste l'historique. Le jeu lit `actuel.json` au chargement (`prototype-web/reference-data.js`, doc 20 §12).
 
-### Réglages des cultures : `media/reglages/`
+### Images par culture : `media/cultures/`
 
-L'onglet **Cultures** du Design Lab (https://bloodandwages.idanwizen.com/design/#cultures ; Idan, 2026-11-18) règle, culture par culture, les trois panneaux du kit graphique : barres du camp, fiche au survol, fiche complète en plein écran. L'aperçu est le jeu lui-même (`index.html?apercu`, `prototype-web/apercu-ui.js` : une partie de démonstration jamais sauvegardée, sans musique), à la résolution choisie. « Enregistrer » range les réglages dans `media/reglages/<id>/reglage.json` (`design/api/reglages.php`, mêmes gardes que les dépôts d'images ; `media/reglages/index.json` les liste) . Le jeu les lit en direct (Idan, 2026-11-21 ; `prototype-web/reference-data.js`, `loadCultureSettings`) : au chargement, pour chaque culture et chaque panneau, le dernier enregistrement par-dessus le kit de `data/reference/culture-kits.json`, seulement les réglages que le kit connaît, du même type. Il suffit de recharger le jeu. Sans index (serveur local, tests), le kit du dépôt. JC reporte de temps en temps les derniers réglages dans `culture-kits.json`, pour que le dépôt reste à jour.
+Idan y range les images de chaque culture, un dossier par culture (2026-11-27 : « Je veux que le jeu aille chercher directement dedans ») : `media/cultures/<peuple>/<culture>/`, par exemple `media/cultures/elfes/elfes_sylvains/`. Les 32 dossiers et les noms de fichiers sont dans `data/reference/culture-media.json` : `Barre_haut.png`, la barre du haut en une image (son plan de travail plein écran, transparent sous la barre), et `picto.png`, le picto de la culture. Majuscules indifférentes. Contrairement aux pictos et aux barres ci-dessous, le jeu lira ces fichiers **directement**, sans étape de conversion (l'affichage n'est pas encore branché : Idan finit ses images, 2026-11-27) : `api/cultures.php` liste le dossier (chemin, date, taille réelle sur le disque : https://bloodandwages.idanwizen.com/api/cultures.php), et `prototype-web/culture-media.js` ajoute la date à l'adresse de l'image, pour qu'une image remplacée sous le même nom soit relue malgré le cache de 7 jours. Une image absente : le jeu gardera la sienne (le picto du jeu, la barre du kit). Attention au CDN (ci-dessous) : une image de plus de 1600 px de large est servie réduite à 1600 px.
 
 ### Pictos : `media/pictos/`
 

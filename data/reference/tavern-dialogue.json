@@ -503,6 +503,10 @@
       "{Tags}. C’est ce que je vois.",
       "À vue de nez ? {Tags}. Mais je peux me tromper."
     ],
+    "answers_title": [
+      "{Tags}. Dans le métier, on dira {titre}. C’est ce que je vois.",
+      "À vue de nez ? {Tags}. On l’appellera {titre}, je parie. Mais je peux me tromper."
+    ],
     "none": [
       "Rien de spécial. Je ne vois rien à en dire."
     ]

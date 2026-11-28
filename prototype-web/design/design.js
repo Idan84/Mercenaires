@@ -24,7 +24,6 @@ async function init(){
     else if(hash==="charte"||hash.startsWith("charte-")){setMode("charte")}
     else if(hash==="bestiary"||hash.startsWith("best-")){setMode("bestiary")}
     else if(hash==="missions"||hash.startsWith("mis-")){setMode("missions")}
-    else if(hash==="cultures"||hash.startsWith("cult-")){setMode("cultures")}
     else if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
     else if(hash.startsWith("doc=")){openDoc(decodeURIComponent(hash.slice(4)))}
     else openDoc(state.docs.documents[0]?.file);
@@ -51,7 +50,6 @@ function setMode(mode){
   else if(mode==="charte") openLab("charte");
   else if(mode==="bestiary") openLab("bestiary");
   else if(mode==="missions") openLab("missions");
-  else if(mode==="cultures") openLab("cultures");
   else openTable(state.tables.tables[0]?.file);
 }
 function renderNav(){
@@ -121,9 +119,7 @@ async function openImages(){
 const LABS={
   charte:{module:()=>CharteLab,prefix:"charte-",kicker:"Design",title:"Charte graphique"},
   bestiary:{module:()=>BestiaryLab,prefix:"best-",kicker:"Contenu",title:"Bestiaire",search:"Rechercher : arme, ligne, nom…"},
-  missions:{module:()=>MissionsLab,prefix:"mis-",kicker:"Contenu",title:"Missions"},
-  // Onglet Cultures (Idan, 2026-11-18, cultures-lab.js) : les panneaux de chaque culture réglés sur l'aperçu du jeu.
-  cultures:{module:()=>CulturesLab,prefix:"cult-",kicker:"Design",title:"Cultures"}
+  missions:{module:()=>MissionsLab,prefix:"mis-",kicker:"Contenu",title:"Missions"}
 };
 async function openLab(mode){
   const lab=LABS[mode],Lab=lab.module();

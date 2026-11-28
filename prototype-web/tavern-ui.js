@@ -347,6 +347,13 @@ function recruitChoices(t){
   return list;
 }
 
+// Ses armes d'une sorte (Idan, 2026-11-28 : « Arme de tir → Aucune. Arme de CAC → Arc ») : « set1 » demande ce qu'il manie
+// au corps à corps, « set2 » ce qu'il a pour tirer. Le set 1 porte son arme principale, de corps à corps ou de tir (doc 05) :
+// on répond sur la sorte demandée, où qu'elle soit rangée. ranged : true pour le tir.
+function recruitWeapons(m,ranged){
+  const gear=mercenaryHoverData(m),kinds=gear.setRanged||[false,true];
+  return gear.sets.flatMap((names,i)=>names.length&&kinds[i]===ranged?names:[]);
+}
 // Sa fiche (Idan, 2026-11-22 : « reprendre le contenu de la fiche au survol, d'ajouter son portrait, une boite de
 // dialogue ») : ce qu'on ne sait pas encore est un « ? » ; on connaît ses origines et sa réputation, le reste vient des
 // réponses (doc 14 §6 bis). Le salaire et la prime suivent la négociation (sa demande, puis ses contre-propositions).
@@ -357,7 +364,13 @@ function recruitCardOptions(candidate){
   if(title==null) unknown.add("title");
   if(k.affinity==null) unknown.add("affinity");
   if(!k.salary){ unknown.add("salary"); unknown.add("bonus"); }
-  for(const key of ["set1","set2","armor","magic"]) if(!k.asked[key]) unknown.add(key);
+  for(const key of ["armor","magic"]) if(!k.asked[key]) unknown.add(key);
+  // Les cases Set 1 et Set 2 : chacune se dévoile à la question sur la sorte de son arme (recruitWeapons) ; un set vide, dès
+  // qu'il a répondu n'avoir rien de l'une des deux sortes.
+  const gear=mercenaryHoverData(candidate.mercenary),kinds=gear.setRanged||[false,true];
+  const askedKind=ranged=>Boolean(k.asked[ranged?"set2":"set1"]);
+  const none=[false,true].some(ranged=>askedKind(ranged)&&!recruitWeapons(candidate.mercenary,ranged).length);
+  gear.sets.forEach((names,i)=>{ if(names.length?!askedKind(kinds[i]):!none) unknown.add("set"+(i+1)); });
   return {unknown,salary:terms.salary,bonus:terms.bonus,title,affinityWord:k.affinity!=null?d.affinityWord(k.affinity):null,
     knownTags:shown?shown.names:null,tagSource:shown?d.tagSourceLabel(shown.source,candidate.mercenary):null};
 }
@@ -415,13 +428,25 @@ function renderRecruitTalk(){
 // qu'il les annonce (candidate, sa vantardise), tels que le tavernier les estime (keeper, draw : ses estimations à ±10 %),
 // tels que l'intendant les voit (steward, son biais). null sans les règles des tags.
 function candidateTagNames(candidate,source,draw=null){
+  const res=candidateTagResult(candidate,source,draw);
+  return res?res.affiches.map(t=>t.nom.trim()):null;
+}
+function candidateTagResult(candidate,source,draw=null){
   const rules=typeof companyTagRules==="function"?companyTagRules():null;
   const ctx=typeof companyTagContext==="function"?companyTagContext():null;
   if(!rules||!ctx) return null;
-  const res=source==="steward"?rules.stewardCandidateTags?.(candidate,ctx)
+  return (source==="steward"?rules.stewardCandidateTags?.(candidate,ctx)
     :source==="keeper"?rules.describedTags?.(recruitDialogue().described(candidate.mercenary,value=>value*draw()),candidate,ctx)
-    :rules.candidateTags?.(candidate,ctx);
-  return res?res.affiches.map(t=>t.nom.trim()):null;
+    :rules.candidateTags?.(candidate,ctx))||null;
+}
+// Le titre que l'intendant lui donne (Idan, 2026-11-28 : « Cruxor donne les tags, il devrait donner aussi le titre avec sa
+// marge d'erreur ») : le titre de ses tags tels qu'il les voit, avec son biais ; un seul tag devient le titre, plusieurs
+// font le titre composé (Idan, 2026-11-24). null s'il n'en voit aucun.
+function stewardTitle(res){
+  const rules=typeof companyTagRules==="function"?companyTagRules():null;
+  if(!rules||!res?.affiches?.length) return null;
+  const one=rules.titleTag?.(res);
+  return one?one.nom.trim():rules.tagTitle?.(res)?.name||null;
 }
 // L'intendant de la compagnie (le nommé, sinon Cruxor) ; aucun : pas d'avis.
 function tavernSteward(){
@@ -445,7 +470,7 @@ function recruitAnswer(candidate,key){
   }
   if(key==="set1"||key==="set2"){
     k.asked[key]=true;
-    const names=mercenaryHoverData(m).sets[key==="set1"?0:1];
+    const names=recruitWeapons(m,key==="set2");
     return names.length?d.answer(key,m,{armes:d.withArticles(names,m)}):d.answer(key+"_none",m);
   }
   if(key==="armor"){
@@ -477,11 +502,12 @@ function recruitTalkChoice(key){
   if(key==="steward"){
     const steward=tavernSteward();
     if(!steward) return;
-    const names=candidateTagNames(candidate,"steward")||[];
+    const res=candidateTagResult(candidate,"steward"),names=res?res.affiches.map(tag=>tag.nom.trim()):[];
     k.asked.steward=true;
     k.stewardTags=names;
+    k.stewardTitle=stewardTitle(res);
     t.lines.push({who:"you",text:d.stewardAsk(steward)},
-      {who:"merc",face:"steward",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names)});
+      {who:"merc",face:"steward",name:MercenairesRecruitDialogue.firstName(steward),text:d.stewardAnswer(steward,m,names,k.stewardTitle)});
     saveGame();
   }else if(d.aboutQuestions.includes(key)){
     const answer=recruitAnswer(candidate,key);

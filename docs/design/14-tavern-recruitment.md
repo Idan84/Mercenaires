@@ -139,8 +139,8 @@ textes sont un détail pour la v2. La question du salaire reste « Quelles sont 
 repasses à la bonne version »). La magie : une seule question, il répond en listant ses écoles (Idan, 2026-11-22 : « on
 lui demande s'il connait des sorts, il répond en listant les écoles »). **Le titre sur la fiche : priorité au
 tavernier** (Idan, 2026-11-22) ; sinon celui que le candidat se donne. Depuis que l'intendant donne aussi le titre
-(Idan, 2026-11-28), l'ordre est celui des tags : l'intendant, puis le tavernier, puis le candidat (proposition de JC, à
-valider).
+(Idan, 2026-11-28), l'ordre est celui des tags : l'intendant, puis le tavernier, puis le candidat (Idan,
+2026-11-28 : « Oui pour l'ordre »).
 
 **Les armes (Idan, 2026-11-28 : « Arme de tir → Aucune. Arme de CAC → Arc »)** : le set 1 porte l'arme principale, de
 corps à corps ou de tir, le set 2 l'autre sorte (doc 05, arme secondaire). Les deux questions répondent donc sur la sorte

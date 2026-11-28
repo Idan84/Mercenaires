@@ -617,13 +617,13 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.match(tavernJs, /\$\("recruit-talk-card"\)\.innerHTML=renderMercenaryHoverCard\(m,recruitCardOptions\(candidate\)\);/);
     // Les cases : ce qu'on a appris (recruitDialogue().known) ; le salaire et la prime, une fois ses prétentions dites, suivent
     // la négociation.
-    const cardOptions = new Function("recruitDialogue", "tavernRules",
-      tavernJs.slice(tavernJs.indexOf("function recruitCardOptions(candidate){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return recruitCardOptions;");
+    const cardOptions = new Function("recruitDialogue", "tavernRules", "mercenaryHoverData",
+      tavernJs.slice(tavernJs.indexOf("function recruitWeapons(m,ranged){"), tavernJs.indexOf("function renderRecruitTalk(){")) + "return recruitCardOptions;");
     const {createRecruitDialogue} = require(path.join(root, "game-core/recruit-dialogue.js"));
     const dialogue = createRecruitDialogue({reference: {tavernDialogue: JSON.parse(fs.readFileSync(path.join(root, "data/reference/tavern-dialogue.json"), "utf8"))}});
     const candidate = {mercenary: merc};
     const negotiation = {salary: 12, bonus: 30, agreed: null};
-    const optionsOf = cardOptions(() => dialogue, () => ({negotiationState: () => negotiation}));
+    const optionsOf = cardOptions(() => dialogue, () => ({negotiationState: () => negotiation}), () => ({sets: [["Épée longue"], []], setRanged: [false, null]}));
     const fresh = optionsOf(candidate);
     assert.deepEqual([...fresh.unknown].sort(), ["affinity", "armor", "bonus", "magic", "mount", "salary", "set1", "set2", "tags", "title"]);
     const k = dialogue.known(candidate);

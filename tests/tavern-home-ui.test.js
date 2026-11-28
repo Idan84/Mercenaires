@@ -213,6 +213,32 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.equal(cards.at(-1).title,"Chair à canon");
 }
 
+// Une archère (Idan, 2026-11-28 : « Arme de tir → Aucune. Arme de CAC → Arc ») : le set 1 porte son arme principale, ici
+// un arc (doc 05) ; chaque question répond sur la sorte d'arme demandée, et sa case se dévoile ; le set vide, à la réponse
+// « rien ».
+{
+  const dialogue=createRecruitDialogue({reference:{tavernDialogue:dialogueCopy}});
+  const merc={id:8,name:"Oriella",sex:"femme",stats:{},items:[],equipment:{slots:{}}};
+  const candidate={mercenary:merc},cards=[];
+  const game={referenceData:{},recruitDialogue:dialogue};
+  const api=new Function("game","$","tavernCandidate","tavernRules","profileRules","companyTagRules","mercenaryHoverData","captainAffinity",
+    "saveGame","renderMercenaryHoverCard","renderPicto","esc","fmt","MercenairesRecruitDialogue","requestAnimationFrame",
+    js.slice(js.indexOf("function recruitDialogue(){"),js.indexOf("function submitRecruitOffer(){"))+"return {openRecruitTalk,recruitChoices,recruitTalkChoice};")(
+    game,()=>({innerHTML:"",textContent:"",scrollTop:0,scrollHeight:0,querySelector:()=>null,showModal(){},close(){},focus(){}}),
+    id=>id===8?candidate:null,()=>({negotiationState:()=>({salary:12,bonus:30,agreed:null})}),()=>null,()=>({candidateFactor:()=>1}),
+    ()=>({sets:[["Arc long"],[]],setRanged:[true,null],schools:[]}),()=>({total:0}),
+    ()=>{},(m,o)=>{ cards.push(o); return ""; },()=>"",x=>String(x??""),n=>String(n),{firstName:m=>m.name.split(" ")[0]},()=>{});
+  api.openRecruitTalk(8);
+  const t=game.recruitTalk,lastSay=()=>t.lines.at(-1).text,unknownSets=()=>["set1","set2"].filter(k=>cards.at(-1).unknown.has(k));
+  api.recruitTalkChoice("about");
+  api.recruitTalkChoice("set2");
+  assert.match(lastSay(),/arc long/i,"son arme de tir : l'arc du set 1");
+  assert.deepEqual(unknownSets(),["set2"],"la case de l'arc se dévoile");
+  api.recruitTalkChoice("set1");
+  assert.ok(dialogueCopy.answers.set1_none.includes(lastSay()),"pas d'arme de corps à corps");
+  assert.deepEqual(unknownSets(),[],"le set vide se dévoile à la réponse « rien »");
+}
+
 // Un seul tag annoncé devient son titre (Idan, 2026-11-24 : « S'il a un seul tag, son titre devient le tag » ; « oui,
 // candidats aussi ») ; plusieurs : le titre calculé.
 {
@@ -260,7 +286,16 @@ assert.ok(!/askTavernAdvice|t\.view==="stats"/.test(js),"plus de conseils sur le
   assert.equal(lastSay().name,"Cruxor","l'intendant répond");
   assert.ok(dialogueCopy.steward.answers.map(x=>x.replace("{Tags}","Roc")).includes(lastSay().text));
   assert.deepEqual([cards.at(-1).knownTags,cards.at(-1).tagSource],[["Roc"],"D’après l’intendant"]);
+  // Son titre aussi (Idan, 2026-11-28 : « il devrait donner aussi le titre avec sa marge d'erreur ») : son seul tag, qui
+  // passe devant le titre que le candidat se donne.
+  assert.equal(cards.at(-1).title,"Roc","le titre de l'intendant passe devant");
   assert.equal(api.recruitChoices(t).some(c=>c.key==="steward"),false,"une fois demandé, l'option disparaît");
+  // Plusieurs tags : il dit le titre composé de ses tags.
+  tagRules.stewardCandidateTags=()=>({affiches:[{nom:"Roc"},{nom:"Veinard"}]});
+  tagRules.tagTitle=res=>({name:res.affiches.length===2?"Trompe-la-mort":"?"});
+  api.recruitTalkChoice("steward");
+  assert.ok(dialogueCopy.steward.answers_title.map(x=>x.replace("{Tags}","Roc et Veinard").replace("{titre}","Trompe-la-mort")).includes(lastSay().text));
+  assert.equal(cards.at(-1).title,"Trompe-la-mort");
   assert.match(js,/esc\(line\.name\|\|first\)/,"le nom de celui qui parle");
 }
 

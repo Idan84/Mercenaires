@@ -85,8 +85,12 @@ assert.match(php, /Cache-Control: no-cache/);
   const near = (a, b) => assert.ok(Math.abs(Number(a) - b) < 1e-3, `${a} ≈ ${b}`);
   near(rootProps["--ht-barre"], 96 / 163.2); near(rootProps["--ht-gauche"], 250 / 96); near(rootProps["--bb-bouton"], 176 / 163.2);
   near(rootProps["--bb-centre"], 172 / 163.2); near(rootProps["--bb-pictos-droite"], 520 / 163.2);
+  // La date et le menu, à droite : alignés à gauche, à 240 du milieu (zone H9 de la bible).
+  near(rootProps["--ht-d-centre"], 240 / 96);
+  assert.match(css, /\.game-top-bar\.is-media \.hud-top-side--right\{position:absolute;top:0;bottom:0;left:calc\(50% \+ var\(--ht-B\) \* var\(--ht-d-centre,2\.5\)\)/);
   ui.applyHudBar("orcs-noirs");
   assert.ok(!topBar.classes.has("is-media") && !bottomBar.classes.has("is-media-play") && topBar.media.style.backgroundImage === "", "une autre culture : rien");
+  assert.equal(rootProps["--ht-d-centre"], undefined, "une autre culture : la date reste à droite");
 }
 
 console.log("culture-media : ok");

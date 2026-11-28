@@ -119,18 +119,21 @@ function hudGoldDelta(gold){
 // bouton Jour suivant, et les textes, le bouton et les pictos déplacés comme dans la planche.
 const HUD_BAR_PIECES=["center","right"];
 const HUD_BAR_VARS={h:"--hb-h",right:"--hb-rw",bandTop:"--hb-bt",band:"--hb-band",bandRight:"--hb-ri"};
-const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge",gauche:"--ht-gauche"};
+const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge",gauche:"--ht-gauche",
+  droiteCentre:"--ht-d-centre"};
 const HUD_BOTTOM_VARS={artBas:"--bb-art-bas",artHaut:"--bb-art-haut",centre:"--bb-centre",bouton:"--bb-bouton",anneau:"--bb-anneau",
   picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosGauche:"--bb-pictos-gauche",pictosY:"--bb-pictos-y",hauteur:"--bb-h",boutonDx:"--bb-bouton-dx"};
 // Les barres d'Idan (Idan, 2026-11-28 : « ux contient le bas et le haut dernière version » ; « on adapte le CSS pour que
 // ça marche ») : une culture qui a son ux.png dans media/cultures/ (culture-media.js) le montre en entier, sa moitié haute
 // dans la barre du haut, sa moitié basse dans celle du bas, et son play.png dans le bouton Jour suivant. Ses textes, ses
 // pictos et le bouton se placent alors sur le gabarit de l'écran (Bible des gabarits, 3840 × 2160 ; la bande B vaut 81,6 px
-// en 1080, soit 163,2 px du gabarit) : la barre du haut porte ses textes de 44 à 140 du haut, à 250 des bords ; le bouton,
-// 176 de diamètre, est centré à 1988 ; les pictos du bas, 120 de haut, de 2010 à 2130, s'arrêtent à 520 du milieu.
+// en 1080, soit 163,2 px du gabarit) : la barre du haut porte ses textes de 44 à 140 du haut, à 250 des bords ; ceux de
+// droite (date, menu) partent de 240 à droite du milieu, alignés à gauche (zone H9 de la bible ; Idan, 2026-11-28 : « Le
+// texte en haut à droite doit s'aligner à présent à gauche, comme on a défini dans la bible ») ; le bouton, 176 de
+// diamètre, est centré à 1988 ; les pictos du bas, 120 de haut, de 2010 à 2130, s'arrêtent à 520 du milieu.
 const HUD_MEDIA_B=163.2;
 const HUD_MEDIA_LAYOUT={
-  haut:{barre:96/HUD_MEDIA_B,top:44/96,gauche:250/96,marge:250/96,contenu:.86,embout:0},
+  haut:{barre:96/HUD_MEDIA_B,top:44/96,gauche:250/96,marge:250/96,droiteCentre:240/96,contenu:.86,embout:0},
   bas:{centre:(2160-1988)/HUD_MEDIA_B,bouton:176/HUD_MEDIA_B,picto:120/HUD_MEDIA_B,pictosY:(2160-2070)/HUD_MEDIA_B,
     pictosDroite:520/HUD_MEDIA_B,pictosGauche:520/HUD_MEDIA_B,ecart:.3,hauteur:2.1,boutonDx:0}
 };

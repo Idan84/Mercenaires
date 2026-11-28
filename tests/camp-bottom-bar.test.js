@@ -53,7 +53,13 @@ assert.match(css,/\.hud-context \.hud-menu-list::after\{[^}]*border-image:url\("
 assert.match(css,/\.hud-context \.hud-menu-list::before\{[^}]*url\("assets\/hud\/metal-brosse\.webp"\) 0 0 \/ 256px 128px repeat/,"sa plaque de métal répétée, jamais étirée");
 assert.match(css,/\.hud-context \.hud-menu-list\{[^}]*animation:hud-panneau /,"il se déplie à l'ouverture");
 assert.match(css,/\.hud-context-grave\{display:flex;align-items:baseline;/,"le nom posé sur le bas de la flèche");
-assert.match(css,/\.hud-context-name\{font:700 calc\(var\(--hb-B\) \* \.24 \* var\(--hc-taille,1\)\)/,"un nom long rapetisse (Construction)");
+assert.match(css,/\.hud-context-name\{font:700 calc\(var\(--hb-B\) \* \.24 \* var\(--bb-p-k\) \* var\(--hc-taille,1\)\)/,"un nom long rapetisse (Construction)");
+// Les pictos du bas et le bouton du lieu, texte compris, à 80 % ; la chope et le marchand à 75 % (Idan, 2026-11-28).
+assert.match(css,/--bb-p-k:\.8;--bb-p:calc\(var\(--bb-picto\) \* var\(--bb-p-k\)\);/,"les pictos à 80 %");
+assert.equal((css.match(/var\(--bb-picto\)/g)||[]).length,1,"tout passe par --bb-p");
+assert.match(css,/\.hud-nav\{[^}]*width:calc\(var\(--hb-B\) \* var\(--bb-p\)\);height:calc\(var\(--hb-B\) \* var\(--bb-p\)\)/,"le picto");
+assert.match(css,/\.hud-context-btn\{[^}]*height:calc\(var\(--hb-B\) \* var\(--bb-p\) \* 1\.3\)/,"le bouton du lieu");
+assert.match(css,/#hud-tavern-btn \.hud-nav-img,#hud-merchant-btn \.hud-nav-img\{transform:scale\(calc\(\.75 \/ \.8\)\)\}/,"la chope et le marchand à 75 %");
 assert.match(js,/--hc-taille",String\(\+Math\.min\(1,10\/\[\.\.\.name\]\.length\)/,"au-delà de 10 lettres");
 assert.match(css,/\.hud-context \.hud-menu-list button\{[^}]*white-space:normal;text-wrap:balance;/,"une salle au nom long passe sur deux lignes");
 assert.match(css,/\.hud-context \.hud-menu-list\.is-closing\{pointer-events:none;animation:hud-panneau-ferme /,"le panneau se replie à la fermeture");
@@ -79,8 +85,8 @@ assert.match(css,/\.game-bottom-bar\{position:fixed;left:0;right:0;bottom:0;heig
 assert.match(css,/\.game-bottom-bar \.hud-bar-art\{left:0;right:0;top:auto;bottom:calc\(var\(--hb-B\) \* var\(--bb-art-bas\)\);height:calc\(var\(--hb-B\) \* var\(--bb-art-haut\)\)\}/,"d'un bord à l'autre de l'écran");
 assert.match(css,/\.hud-play\{position:absolute;left:50%;bottom:calc\(var\(--hb-B\) \* \(var\(--bb-centre\) - var\(--bb-bouton\) \/ 2\)\);/,"le bouton au milieu");
 assert.match(css,/\.hud-ornament\{position:absolute;left:calc\(50% - var\(--hb-B\) \* var\(--bb-anneau\) \/ 2\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-centre\) - var\(--bb-anneau\) \/ 4\)\);z-index:2;/,"l'anneau autour du bouton, par-dessus");
-assert.match(css,/\.hud-places\{position:absolute;right:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-droite\)\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-pictos-y\) - var\(--bb-picto\) \/ 2\)\);/,"les pictos contre l'anneau");
-assert.match(css,/\.hud-actions\{position:absolute;left:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-gauche\)\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-pictos-y\) - var\(--bb-picto\) \/ 2\)\);/,"les actions contre l'anneau, à droite");
+assert.match(css,/\.hud-places\{position:absolute;right:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-droite\)\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-pictos-y\) - var\(--bb-p\) \/ 2\)\);/,"les pictos contre l'anneau");
+assert.match(css,/\.hud-actions\{position:absolute;left:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-gauche\)\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-pictos-y\) - var\(--bb-p\) \/ 2\)\);/,"les actions contre l'anneau, à droite");
 assert.match(css,/\.hud-context:not\(\.is-active\)\{visibility:hidden\}/,"sans menu, le bouton du lieu est caché, sa place reste");
 assert.match(css,/\.hud-menu-list\{position:absolute;left:0;bottom:calc\(100% \+ 12px\);/,"son menu s'ouvre vers le haut");
 assert.match(css,/\.hud-journal\{position:absolute;left:calc\(50% \+ var\(--hb-B-z\) \* var\(--bb-pictos-gauche\)\);[^}]*overflow-y:auto[^}]*zoom:var\(--ui-scale,1\)\}/,"le journal au-dessus des actions, qui défile");

@@ -153,7 +153,7 @@ assert.equal(srcsOf(api.hoverKitFrame(sylvains)).filter(s => s.endsWith("/pose-d
 assert.equal(srcsOf(api.hoverKitFrame(cites)).filter(s => /coin-orne-/.test(s)).length, 3, "pas d'ornement en bas à droite");
 assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-banner\{padding-bottom:14px\}\n\.hover-card\[data-kit\] \.hc-title\{margin-top:-5px\}/, "de l'air sous le titre, le nom en place");
 assert.match(read("prototype-web/styles.css"), /\.hover-card\[data-kit\] \.hc-page\{padding-top:27px\}/, "de l'air entre la bande sous le nom et les pictos");
-assert.match(read("prototype-web/hover-card-ui.js"), /\$\{hoverKitFrame\(frame\.kit\)\}\n {2}<\/article>/, "le cadre par-dessus la carte");
+assert.match(read("prototype-web/hover-card-ui.js"), /\$\{frame\.cadre\.survol\?hoverAtelierFrame\(frame\.cadre\.survol\):hoverKitFrame\(frame\.kit\)\}\n {2}<\/article>/, "le cadre par-dessus la carte (celui de l'atelier, sinon celui du kit)");
 assert.match(read("prototype-web/hover-card-ui.js"), /data-kit="\$\{esc\(frame\.kit\.cle\)\}"\$\{frame\.kit\.fiche\.nom==="or"\?' data-kit-nom="or"':""\}/);
 
 // 4. Le style et le chargement.

@@ -3052,6 +3052,22 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hover-card--popup :is(.hc-banner,.hc-page){left:calc(var(--hc-w) * .362 + var(--hc-popup-dx));right:calc(var(--hc-w) * .012)}
 .hover-card--popup .hc-banner{top:calc(var(--hc-h) * .015);height:var(--hc-cart-h);padding:0 calc(var(--hc-w) * .04)}
 .hover-card--popup .hc-page{top:calc(var(--hc-h) * .1725);bottom:calc(var(--hc-h) * .015);padding:14px 40px 16px}
+/* Les fiches de l'Atelier des cultures (hover-card-ui.js, hoverAtelierFrame ; Idan, 2026-11-28) : les zones de la bible, en
+   part de la carte (gabarit 3840 × 2160 ; la fiche au survol, 1720 × 1130 : bordure 24, écart 12, portrait en pied
+   604 × 1082, cartouche de 170, la page dessous ; le pop-up, 1886 × 818, son portrait carré de 770), et le cadre exporté
+   par l'atelier, la carte et ses 60 de débord, par-dessus. */
+.hover-card--atelier{--hc-cart-h:calc(var(--hc-h) * 170 / 1130)}
+.hover-card--atelier .hc-portrait{left:calc(100% * 24 / 1720);top:calc(100% * 24 / 1130);width:calc(100% * 604 / 1720);height:calc(100% * 1082 / 1130)}
+.hover-card--atelier :is(.hc-banner,.hc-page){left:calc(100% * 640 / 1720);right:calc(100% * 24 / 1720)}
+.hover-card--atelier .hc-banner{top:calc(100% * 24 / 1130);height:calc(100% * 170 / 1130)}
+.hover-card--atelier .hc-page{top:calc(100% * 206 / 1130);bottom:calc(100% * 24 / 1130)}
+.hc-cadre-atelier{position:absolute;z-index:2;left:calc(100% * -60 / 1720);top:calc(100% * -60 / 1130);width:calc(100% * 1840 / 1720);height:calc(100% * 1250 / 1130);background:0 0/100% 100% no-repeat;pointer-events:none}
+.hover-card--popup.hover-card--atelier{width:calc(var(--hc-w) * 1886 / 1720);height:calc(var(--hc-h) * 818 / 1130)}
+.hover-card--popup.hover-card--atelier .hc-portrait{left:calc(100% * 24 / 1886);top:calc(100% * 24 / 818);bottom:auto;width:calc(100% * 770 / 1886);height:calc(100% * 770 / 818)}
+.hover-card--popup.hover-card--atelier :is(.hc-banner,.hc-page){left:calc(100% * 806 / 1886);right:calc(100% * 24 / 1886)}
+.hover-card--popup.hover-card--atelier .hc-banner{top:calc(100% * 24 / 818);height:calc(100% * 170 / 818)}
+.hover-card--popup.hover-card--atelier .hc-page{top:calc(100% * 206 / 818);bottom:calc(100% * 24 / 818)}
+.hover-card--popup .hc-cadre-atelier{left:calc(100% * -60 / 1886);top:calc(100% * -60 / 818);width:calc(100% * 2006 / 1886);height:calc(100% * 938 / 818)}
 /* La bienvenue : son contenu centré dans la page. */
 .hover-card--popup .hc-welcome{align-content:center;justify-items:center;gap:10px;text-align:center}
 /* Le départ, quand un candidat renverse la table (Idan, 2026-11-26 : « une idée graphique pour que ça soit sympa

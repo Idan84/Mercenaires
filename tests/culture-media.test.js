@@ -17,7 +17,8 @@ const {cultureMediaKey, cultureMediaResolve} = require(path.join(ROOT, "prototyp
 // Un dossier par culture, les 32, sous media/cultures/<peuple>/<culture>/, en minuscules sans accents ; le premier,
 // celui d'Idan : elfes/elfes_sylvains. La clé est celle du jeu (la même que culture-colors.json).
 assert.equal(table.base, "media/cultures");
-assert.deepEqual(table.fichiers, {barreHaut: "Barre_haut.png", barreBas: "Barre_bas.png", picto: "picto.png", play: "play.png"});
+assert.deepEqual(table.fichiers, {barreHaut: "Barre_haut.png", barreBas: "Barre_bas.png", picto: "picto.png", play: "play.png",
+  ficheSurvol: "Fiche_survol.png", fichePopup: "Fiche_popup.png"});
 assert.equal(table.row_count, 32);
 assert.deepEqual(table.rows.map(row => row.nom).sort(), [...cultures].sort());
 assert.equal(new Set(table.rows.map(row => row.dossier)).size, 32);
@@ -101,6 +102,22 @@ assert.match(php, /Cache-Control: no-cache/);
   assert.ok(!topBar.classes.has("is-media") && !bottomBar.classes.has("is-media-play") && topBar.media.style.backgroundImage === "", "une autre culture : rien");
   assert.equal(rootProps["--ht-d-centre"], undefined, "une autre culture : la date reste à droite");
   assert.equal(rootProps["--ht-g-centre"], undefined, "une autre culture : le nom reste à gauche");
+}
+
+// Les fiches exportées par l'atelier (Idan, 2026-11-28 : « mets également la fiche pop up et survol des elfes sylvains ») :
+// avec son Fiche_survol.png (ou son Fiche_popup.png), la carte suit les zones de la bible et porte le cadre de l'atelier, la
+// carte et son débord de 60, à la place du cadre du kit ; sans, rien ne change.
+{
+  const js = read("prototype-web/hover-card-ui.js"), css = read("prototype-web/styles.css");
+  assert.match(js, /const cadre=\{survol:media\("ficheSurvol"\),popup:media\("fichePopup"\)\};/);
+  assert.match(js, /class="hover-card\$\{frame\.cadre\.survol\?" hover-card--atelier":""\}"/);
+  assert.match(js, /\$\{frame\.cadre\.popup\?hoverAtelierFrame\(frame\.cadre\.popup\):hoverKitFrame\(frame\.kit,POPUP_CARD\)\}/);
+  const rule = sel => (css.match(new RegExp(sel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\{([^}]*)\\}")) || [])[1] || "";
+  assert.match(rule(".hover-card--atelier .hc-portrait"), /width:calc\(100% \* 604 \/ 1720\);height:calc\(100% \* 1082 \/ 1130\)/);
+  assert.match(rule(".hover-card--atelier .hc-banner"), /height:calc\(100% \* 170 \/ 1130\)/);
+  assert.match(rule(".hc-cadre-atelier"), /left:calc\(100% \* -60 \/ 1720\);top:calc\(100% \* -60 \/ 1130\);width:calc\(100% \* 1840 \/ 1720\);height:calc\(100% \* 1250 \/ 1130\)/);
+  assert.match(rule(".hover-card--popup.hover-card--atelier"), /width:calc\(var\(--hc-w\) \* 1886 \/ 1720\);height:calc\(var\(--hc-h\) \* 818 \/ 1130\)/);
+  assert.match(rule(".hover-card--popup .hc-cadre-atelier"), /width:calc\(100% \* 2006 \/ 1886\);height:calc\(100% \* 938 \/ 818\)/);
 }
 
 console.log("culture-media : ok");

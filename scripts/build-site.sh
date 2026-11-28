@@ -25,6 +25,9 @@ cp -R game-core/. "$OUT/core/"
 mkdir -p "$OUT/charte"
 cp charte/tokens.json charte/assets.json charte/README.md "$OUT/charte/"
 node scripts/build-charte.js --site "$OUT/charte/site" >/dev/null
+# Les 32 dossiers des images par culture (media/cultures/<peuple>/<culture>/, Idan, 2026-11-28), chacun avec son
+# LISEZ-MOI.txt : la mise en ligne crée ainsi les dossiers, sans jamais toucher aux images d'Idan.
+node scripts/build-culture-folders.js "$OUT" >/dev/null
 # L'inventaire des images, fichier par fichier, pour l'onglet Images de la Design Lab (scripts/build-images-index.js).
 node scripts/build-images-index.js "$OUT/data/images-fichiers.json" >/dev/null
 # L'atelier des tags de la Design Lab (design/atelier/, Idan, 2026-11-22) : la page, le moteur des tags et des recrues

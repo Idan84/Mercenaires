@@ -674,7 +674,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.doesNotMatch(hoverSrc + css, /hc-rule/, "plus de filet : les fentes du parchemin");
   // Les écoles : les pictos seuls, 48 px, sur une ligne, qui rétrécissent pour tout faire tenir (Idan, 2026-11-16).
   assert.match(hoverSrc, /`<span class="hc-school" role="img" aria-label="\$\{esc\(name\)\}">\$\{renderPicto\("school",name,\{size:"md"\}\)\}<\/span>`/, "pictos seuls, sans nom");
-  assert.match(css, /\.hc-school\{position:relative;flex:0 0 min\(48px,calc\(\(100% - \(var\(--n,1\) - 1\) \* var\(--ecart\)\) \/ var\(--n,1\)\)\);/, "48 px, rétrécis pour tout faire tenir");
+  assert.match(css, /\.hc-school\{position:relative;flex:0 0 min\(var\(--hc-school,48px\),calc\(\(100% - \(var\(--n,1\) - 1\) \* var\(--ecart\)\) \/ var\(--n,1\)\)\);/, "48 px, rétrécis pour tout faire tenir");
   // Une ligne ; à côté de la monture, au-delà de 4, deux lignes, la première la plus longue (« Deux lignes »).
   const {hoverSchoolRows} = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {hoverSchoolRows};")(...Object.values(stubs));
   const nine = ["Transmutation", "Nécromancie", "Télékinésie", "Invocation", "Illusion", "Foudre", "Feu", "Eau", "Vie"];

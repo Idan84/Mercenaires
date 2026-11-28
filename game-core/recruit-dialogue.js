@@ -110,7 +110,8 @@
     // Ce qu'on sait d'un candidat (tavern.candidates[] : {mercenary, …}), gardé sur lui tant qu'il est à la taverne : la
     // fiche garde ce qu'on a appris, une question posée disparaît, une réponse reste figée (doc 14 §6 bis).
     // {asked: {title, tags, set1, set2, armor, magic, steward} (ce qu'on lui a demandé), salary (il a dit ses prétentions), title (le
-    // titre qu'il se donne), keeperTitle (celui que donne le tavernier), affinity (l'estimation du tavernier), tags,
+    // titre qu'il se donne), keeperTitle (celui que donne le tavernier), stewardTitle (celui que donne l'intendant),
+    // affinity (l'estimation du tavernier), tags,
     // keeperTags, stewardTags (les noms de ses tags : ce qu'il annonce, ce que dit le tavernier, ce que voit l'intendant)}
     function known(candidate){
       const k=candidate.recruitKnown||(candidate.recruitKnown={});
@@ -121,10 +122,11 @@
     function aboutLeft(k){
       return ABOUT_QUESTIONS.filter(key=>!k.asked?.[key]);
     }
-    // Le titre sur sa fiche : celui du tavernier d'abord (Idan, 2026-11-22 : « priorité au tavernier »), sinon le sien ;
+    // Le titre sur sa fiche : la source la plus fiable qu'on ait, comme pour ses tags : l'intendant (Idan, 2026-11-28 :
+    // « il devrait donner aussi le titre »), puis le tavernier (Idan, 2026-11-22 : « priorité au tavernier »), puis le sien ;
     // null tant qu'on ne sait rien.
     function shownTitle(k){
-      return k.keeperTitle??k.title??null;
+      return k.stewardTitle??k.keeperTitle??k.title??null;
     }
     // Ses tags sur sa fiche (Idan, 2026-11-24 : « tes suggestions sont parfaites ») : la source la plus fiable qu'on ait,
     // l'intendant, puis le tavernier, puis ce qu'il annonce lui-même ; {source, names}, ou null tant qu'on ne sait rien.
@@ -145,9 +147,13 @@
     // L'intendant donne son avis sur un candidat : l'option du menu, sa question, sa réponse.
     function stewardOption(){ return copy.steward?.option||""; }
     function stewardAsk(steward){ return fill(copy.steward?.ask,{intendant:firstName(steward)}); }
-    function stewardAnswer(steward,m,names){
-      return names.length?say(copy.steward?.answers,m,"steward|"+(steward?.id??steward?.name),{tags:listNames(names)})
-        :say(copy.steward?.none,m,"steward-none");
+    // Son avis : les tags qu'il voit, et le titre qu'il en tire (Idan, 2026-11-28) quand ce n'est pas son seul tag.
+    function stewardAnswer(steward,m,names,title=null){
+      if(!names.length) return say(copy.steward?.none,m,"steward-none");
+      const who=steward?.id??steward?.name,vars={tags:listNames(names)};
+      return title&&!(names.length===1&&names[0]===title)
+        ?say(copy.steward?.answers_title,m,"steward-title|"+who,{...vars,titre:title})
+        :say(copy.steward?.answers,m,"steward|"+who,vars);
     }
 
     // L'affinité en un mot, chacun pour un tiers de l'échelle (doc 14 §7) : Hostile, Neutre, Amical.

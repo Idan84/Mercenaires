@@ -17,8 +17,7 @@ function savedGame(){
 }
 
 function saveGame(){
-  // L'aperçu du Design Lab (apercu-ui.js) joue une partie de démonstration : jamais sauvegardée.
-  if(!game.campaign||game.campaign.gameOver||game.apercu) return;
+  if(!game.campaign||game.campaign.gameOver) return;
   try{
     localStorage.setItem(SAVE_KEY,MercenairesCampaign.serializeCampaign(game.campaign,{tavernLog:game.tavernLog||[],dayNews:game.dayNews||null}));
     game.saveError=null;
@@ -31,7 +30,6 @@ function saveGame(){
 
 // Mort du capitaine = Game Over : la sauvegarde est effacée (décision Idan, 2026-10-03).
 function deleteSavedGame(){
-  if(game.apercu) return;
   try{ localStorage.removeItem(SAVE_KEY); }catch(error){ console.warn(error); }
 }
 

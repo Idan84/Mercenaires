@@ -122,6 +122,29 @@ const HUD_BAR_VARS={h:"--hb-h",right:"--hb-rw",bandTop:"--hb-bt",band:"--hb-band
 const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge",gauche:"--ht-gauche"};
 const HUD_BOTTOM_VARS={artBas:"--bb-art-bas",artHaut:"--bb-art-haut",centre:"--bb-centre",bouton:"--bb-bouton",anneau:"--bb-anneau",
   picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosGauche:"--bb-pictos-gauche",pictosY:"--bb-pictos-y",hauteur:"--bb-h",boutonDx:"--bb-bouton-dx"};
+// Les barres d'Idan (Idan, 2026-11-28 : « ux contient le bas et le haut dernière version » ; « on adapte le CSS pour que
+// ça marche ») : une culture qui a son ux.png dans media/cultures/ (culture-media.js) le montre en entier, sa moitié haute
+// dans la barre du haut, sa moitié basse dans celle du bas, et son play.png dans le bouton Jour suivant. Ses textes, ses
+// pictos et le bouton se placent alors sur le gabarit de l'écran (Bible des gabarits, 3840 × 2160 ; la bande B vaut 81,6 px
+// en 1080, soit 163,2 px du gabarit) : la barre du haut porte ses textes de 44 à 140 du haut, à 250 des bords ; le bouton,
+// 176 de diamètre, est centré à 1988 ; les pictos du bas, 120 de haut, de 2010 à 2130, s'arrêtent à 520 du milieu.
+const HUD_MEDIA_B=163.2;
+const HUD_MEDIA_LAYOUT={
+  haut:{barre:96/HUD_MEDIA_B,top:44/96,gauche:250/96,marge:250/96,contenu:.86,embout:0},
+  bas:{centre:(2160-1988)/HUD_MEDIA_B,bouton:176/HUD_MEDIA_B,picto:120/HUD_MEDIA_B,pictosY:(2160-2070)/HUD_MEDIA_B,
+    pictosDroite:520/HUD_MEDIA_B,pictosGauche:520/HUD_MEDIA_B,ecart:.3,hauteur:2.1,boutonDx:0}
+};
+function hudMediaFor(culture){
+  if(!culture||typeof cultureMediaUrl!=="function") return null;
+  const ux=cultureMediaUrl(culture,"ux");
+  return ux?{ux,play:cultureMediaUrl(culture,"play")}:null;
+}
+function paintHudMedia(bar,url){
+  if(!bar) return;
+  bar.classList.toggle("is-media",Boolean(url));
+  const layer=bar.querySelector(".hud-media");
+  if(layer) layer.style.backgroundImage=url?`url("${url}")`:"";
+}
 let hudBarShown=null;
 function hudBarFor(culture){
   return culture&&typeof HUD_BARS==="object"&&HUD_BARS[culture]?HUD_BARS[culture]:null;
@@ -137,13 +160,17 @@ function setHudVars(style,names,values){
 }
 function applyHudBar(culture){
   const topBar=hudFind(".game-top-bar"),bottomBar=hudFind(".game-bottom-bar");
-  const data=hudBarFor(culture);
+  const media=hudMediaFor(culture);
+  const data=media?null:hudBarFor(culture);
   const kit=data&&typeof hudKitFor==="function"?hudKitFor(culture):null;
-  const key=data?culture+(kit?":kit":""):"";
+  const key=media?culture+":media:"+media.ux+"|"+(media.play||""):data?culture+(kit?":kit":""):"";
   if((!topBar&&!bottomBar)||hudBarShown===key) return;
   hudBarShown=key;
-  const layout=kit?hudKitBars(kit,data):null;
+  const layout=media?HUD_MEDIA_LAYOUT:kit?hudKitBars(kit,data):null;
   const bottom=!kit&&data?.ornament&&data.bas?data:null;
+  paintHudMedia(topBar,media?.ux);
+  paintHudMedia(bottomBar,media?.ux);
+  bottomBar?.classList.toggle("is-media-play",Boolean(media?.play));
   paintHudBar(topBar,culture,kit?null:data);
   paintHudBar(bottomBar,culture,bottom);
   const root=document.documentElement?.style;
@@ -158,7 +185,7 @@ function applyHudBar(culture){
   if(layout?.inactifs!=null) bottomBar?.style.setProperty("--hud-inactifs",String(layout.inactifs));
   else bottomBar?.style.removeProperty("--hud-inactifs");
   const play=hudFind(".hud-play-img");
-  if(play) play.setAttribute("src",layout?layout.bouton:"assets/hud/next.webp");
+  if(play) play.setAttribute("src",media?.play||layout?.bouton||"assets/hud/next.webp");
   const ring=hudFind(".hud-ornament");
   if(!ring) return;
   if(bottom) ring.setAttribute("src",`assets/hud/barres/${culture}/ornement.webp`);
@@ -215,6 +242,8 @@ function fitHudCompanyName(force=false){
 }
 // Les chiffres de la barre du haut avec l'espace des milliers, comme sur la maquette d'Idan (« 10 000 »).
 function hudNumber(n){ return Math.round(Number(n)||0).toLocaleString("fr-FR"); }
+// Les images d'Idan arrivent après le premier dessin : les barres se refont une fois l'index lu.
+if(typeof onCultureMediaReady==="function") onCultureMediaReady(()=>{ hudBarShown=null; if(typeof game!=="undefined"&&game.campaign) renderHudIdentity(); });
 function renderHudIdentity(){
   const culture=game.campaign&&game.captain?.culture&&typeof pictoSlug==="function"?pictoSlug(game.captain.culture):"";
   if(culture) document.body.dataset.captainCulture=culture;

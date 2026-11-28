@@ -120,12 +120,13 @@ l'aubergiste.
 |---|---|---|---|---|---|
 | Titre | ligne vide | « Et dans le métier, on vous appelle comment ? » | Candidat | son titre | vantardise : le titre recalculé sur ses valeurs telles qu'il les annonce |
 | Titre | ligne vide | « Qu'est-ce qu'on dit de lui ? » | Aubergiste | son titre | précision de l'aubergiste : le titre recalculé sur ses estimations |
+| Titre | ligne vide | « Demander l'avis de l'intendant » | Intendant | le titre de ses tags tels qu'il les voit (Idan, 2026-11-28) | biais de l'intendant, comme pour ses tags |
 | Origines | visibles | — | — | — | — |
 | Réputation | visible | — | — | — | — |
 | Affinité | vide | « Il m'apprécierait, à ton avis ? » | Aubergiste seul | un mot à la place des cœurs : Hostile, Neutre ou Amical | précision de l'aubergiste, comme pour le titre |
 | Salaire et prime | vides | « Quelles sont vos prétentions salariales ? » | Candidat | sa demande, puis ses contre-propositions | aucun |
-| Set 1 | vide | « Quelle arme de corps à corps maniez-vous ? » | Candidat | l'arme qu'il porte (pas sa meilleure) | aucun |
-| Set 2 | vide | « Quelle arme de tir avez-vous ? » | Candidat | l'arme de tir qu'il porte | aucun |
+| Set 1, set 2 | vides | « Quelle arme de corps à corps maniez-vous ? » | Candidat | ses armes de corps à corps portées (pas sa meilleure), dans le set où elles sont | aucun |
+| Set 1, set 2 | vides | « Quelle arme de tir avez-vous ? » | Candidat | ses armes de tir portées, dans le set où elles sont | aucun |
 | Armure | vide | « Quelle armure portez-vous ? » | Candidat | son armure | aucun |
 | Magie | vide | « Connaissez-vous des sorts ? » | Candidat | il liste ses écoles : leurs pictos s'affichent | aucun : réponse exacte |
 | Tags | « ? » | « Quels sont vos points forts ? » | Candidat | les tags qu'il annonce | vantardise (doc 20 §12) |
@@ -137,7 +138,14 @@ et lui se tutoient. **Le ton** (Idan, 2026-11-22) : « le capitaine est corporat
 textes sont un détail pour la v2. La question du salaire reste « Quelles sont vos prétentions salariales ? » (Idan, 2026-11-22 : « Tu
 repasses à la bonne version »). La magie : une seule question, il répond en listant ses écoles (Idan, 2026-11-22 : « on
 lui demande s'il connait des sorts, il répond en listant les écoles »). **Le titre sur la fiche : priorité au
-tavernier** (Idan, 2026-11-22) ; sinon celui que le candidat se donne.
+tavernier** (Idan, 2026-11-22) ; sinon celui que le candidat se donne. Depuis que l'intendant donne aussi le titre
+(Idan, 2026-11-28), l'ordre est celui des tags : l'intendant, puis le tavernier, puis le candidat (Idan,
+2026-11-28 : « Oui pour l'ordre »).
+
+**Les armes (Idan, 2026-11-28 : « Arme de tir → Aucune. Arme de CAC → Arc »)** : le set 1 porte l'arme principale, de
+corps à corps ou de tir, le set 2 l'autre sorte (doc 05, arme secondaire). Les deux questions répondent donc sur la sorte
+d'arme demandée, où qu'elle soit rangée : une archère répond « l'arc » à la question du tir. La case du set qui porte
+cette arme se dévoile ; un set vide, quand il répond n'avoir rien de l'une des deux sortes.
 
 **La fiche du candidat** (Idan, 2026-11-22) : « C'est normalement la fiche au survol avec des ? quand on ne connait pas
 les infos. En lui parlant, en parlant à l'aubergiste ou à l'intendant, on doit remplir les cases... » Ses tags, tels qu'il
@@ -187,7 +195,9 @@ en savoir plus sur vous ? (on aura donc 3 choix en menu 1) ».
     ±10 % (`describedTags`), comme son titre.
   - **L'intendant** : « Demander l'avis de l'intendant » au menu du candidat, une fois ; il répond dans la discussion
     (« Cruxor, qu'en pensez-vous ? ») avec son biais, comme pour nos mercenaires (`stewardCandidateTags`). Sans intendant,
-    pas d'option.
+    pas d'option. Il donne aussi le titre de ces tags (Idan, 2026-11-28 : « il devrait donner aussi le titre avec sa
+    marge d'erreur ») : un seul tag devient le titre, plusieurs font le titre composé ; son biais passe ainsi dans le
+    titre. Il ne le dit à voix haute que s'il diffère de son seul tag (`tavern-dialogue.json`, steward.answers_title).
   - **Sur la fiche**, les tags de la source la plus fiable : l'intendant, puis le tavernier, puis le candidat (même une
     liste vide : sa consolation, doc 20 §11). La source s'affiche au survol des plaques (« D'après le tavernier ») ; une
     mention visible attend le choix d'Idan.

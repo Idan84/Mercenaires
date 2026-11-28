@@ -72,6 +72,12 @@ function mercenaryHoverData(c){
     const main=itemIn(`weapon_set_${n}_main`),off=itemIn(`weapon_set_${n}_off`);
     return [main,off&&off!==main?off:null].map(handLabel).filter(Boolean);
   };
+  // La sorte d'arme d'un set (true : de tir, false : de corps à corps, null : vide), d'après son arme principale : le set 1
+  // porte l'arme principale du mercenaire, de corps à corps ou de tir, le set 2 l'autre sorte (doc 05, arme secondaire).
+  const setRanged=n=>{
+    const item=itemIn(`weapon_set_${n}_main`)||itemIn(`weapon_set_${n}_off`);
+    return item?item.combatFamily==="ranged":null;
+  };
   const armor=itemIn("armor");
   const ARMOR={"Lourde":"Armure lourde","Intermédiaire":"Armure intermédiaire","Légère":"Armure légère","Vêtement":"Vêtement"};
   // Les écoles où il a au moins un sort.
@@ -90,7 +96,7 @@ function mercenaryHoverData(c){
     origin:originPhrase({people:c.people||"",culture:c.culture||"",ascendance:c.ascendance||""}),
     bonus:Number(c.contract?.missionBonus??(typeof tavernRules==="function"?tavernRules().missionBonusDemand(c):0))||0,
     affinity:affinity?affinityPresentation(affinity.total,c):null,
-    sets:[set(1),set(2)],
+    sets:[set(1),set(2)],setRanged:[setRanged(1),setRanged(2)],
     armor:armor?(armor.name||ARMOR[armor.category]||armor.category):"",
     schools,
     // Son nom (celui qu'on lui a donné, stables.js), son espèce (mounts.json), son code (pour son portrait).

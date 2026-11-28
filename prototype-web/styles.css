@@ -3067,6 +3067,9 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hover-card--popup.hover-card--atelier :is(.hc-banner,.hc-page){left:calc(100% * 806 / 1886);right:calc(100% * 24 / 1886)}
 .hover-card--popup.hover-card--atelier .hc-banner{top:calc(100% * 24 / 818);height:calc(100% * 170 / 818)}
 .hover-card--popup.hover-card--atelier .hc-page{top:calc(100% * 206 / 818);bottom:calc(100% * 24 / 818)}
+/* La page garde la marge de la bible, 60 du gabarit tout autour (Idan, 2026-11-28 : « Oui : on peut réadapter légèrement
+   le contenu si on voit que ça gêne »). */
+.hover-card.hover-card--atelier .hc-page{padding:calc(var(--hc-h) * 60 / 1130);gap:5px}
 .hover-card--popup .hc-cadre-atelier{left:calc(100% * -60 / 1886);top:calc(100% * -60 / 818);width:calc(100% * 2006 / 1886);height:calc(100% * 938 / 818)}
 /* La bienvenue : son contenu centré dans la page. */
 .hover-card--popup .hc-welcome{align-content:center;justify-items:center;gap:10px;text-align:center}
@@ -3134,7 +3137,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-magic{display:grid;justify-items:center;width:100%}
 .hc-schools{--ecart:10px;display:grid;row-gap:10px;width:100%}
 .hc-schools-row{display:flex;justify-content:center;gap:var(--ecart)}
-.hc-school{position:relative;flex:0 0 min(48px,calc((100% - (var(--n,1) - 1) * var(--ecart)) / var(--n,1)));display:grid;place-items:center;min-width:0}
+.hc-school{position:relative;flex:0 0 min(var(--hc-school,48px),calc((100% - (var(--n,1) - 1) * var(--ecart)) / var(--n,1)));display:grid;place-items:center;min-width:0}
 .hc-school+.hc-school::before{left:calc(var(--ecart) / -2 - 1.5px)}
 .hc-school .picto{width:100%;height:auto;aspect-ratio:1;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
 

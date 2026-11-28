@@ -118,6 +118,28 @@ assert.match(php, /Cache-Control: no-cache/);
   assert.match(rule(".hc-cadre-atelier"), /left:calc\(100% \* -60 \/ 1720\);top:calc\(100% \* -60 \/ 1130\);width:calc\(100% \* 1840 \/ 1720\);height:calc\(100% \* 1250 \/ 1130\)/);
   assert.match(rule(".hover-card--popup.hover-card--atelier"), /width:calc\(var\(--hc-w\) \* 1886 \/ 1720\);height:calc\(var\(--hc-h\) \* 818 \/ 1130\)/);
   assert.match(rule(".hover-card--popup .hc-cadre-atelier"), /width:calc\(100% \* 2006 \/ 1886\);height:calc\(100% \* 938 \/ 818\)/);
+  // La page garde la marge de la bible (60 du gabarit), un peu moins d'air entre les blocs ; si elle déborde encore, les
+  // pictos des écoles rapetissent (jusqu'à 32 px).
+  assert.match(rule(".hover-card.hover-card--atelier .hc-page"), /^padding:calc\(var\(--hc-h\) \* 60 \/ 1130\);gap:5px$/);
+  assert.match(css, /\.hc-school\{position:relative;flex:0 0 min\(var\(--hc-school,48px\),/);
+  assert.match(js, /for\(let px=46;!pageFits\(\)&&px>=32;px-=2\) schools\.style\.setProperty\("--hc-school",px\+"px"\);/);
+}
+
+// Les 32 dossiers créés par la mise en ligne (Idan, 2026-11-28 : « tu peux me créer les dossiers peuples et cultures ») :
+// un LISEZ-MOI.txt par dossier, avec les noms attendus ; rien d'autre dans media/.
+{
+  const os = require("node:os");
+  const {buildCultureFolders} = require(path.join(ROOT, "scripts/build-culture-folders.js"));
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), "cultures-"));
+  assert.equal(buildCultureFolders(out), 32);
+  const made = [];
+  const walk = dir => fs.readdirSync(dir, {withFileTypes: true}).forEach(e => e.isDirectory() ? walk(path.join(dir, e.name)) : made.push(path.relative(out, path.join(dir, e.name))));
+  walk(out);
+  assert.deepEqual(made.sort(), table.rows.map(row => `media/cultures/${row.dossier}/LISEZ-MOI.txt`).sort());
+  const sylvains = fs.readFileSync(path.join(out, "media/cultures/elfes/elfes_sylvains/LISEZ-MOI.txt"), "utf8");
+  for (const file of Object.values(table.fichiers)) assert.match(sylvains, new RegExp("- " + file.replace(".", "\\.") + " : "));
+  assert.match(read("scripts/build-site.sh"), /node scripts\/build-culture-folders\.js "\$OUT"/);
+  fs.rmSync(out, {recursive: true, force: true});
 }
 
 console.log("culture-media : ok");

@@ -522,6 +522,18 @@ function fitHoverCard(root){
     if(name) shrink(name,bannerFits,.8);
     shrink(title,()=>title.scrollWidth<=title.clientWidth+1&&bannerFits(),.8);
   }
+  // La page tient dans la carte (les fiches de l'atelier gardent la marge de la bible) : au besoin, les pictos des écoles
+  // rapetissent (Idan, 2026-11-16 : « Pictos seuls en 48 px avec la possibilité de les rétrécir pour tout rentrer »),
+  // jusqu'à 32 px.
+  const page=root.querySelector(".hc-page"),schools=root.querySelector(".hc-schools");
+  if(page&&schools){
+    const pad=parseFloat(getComputedStyle(page).paddingBottom)||0;
+    const pageFits=()=>{
+      const last=[...page.children].filter(el=>el.offsetHeight).pop();
+      return !last||last.offsetTop+last.offsetHeight<=page.clientHeight-pad+1;
+    };
+    for(let px=46;!pageFits()&&px>=32;px-=2) schools.style.setProperty("--hc-school",px+"px");
+  }
 }
 
 // Où poser la fiche à côté de ce qu'on survole (anchor : son rectangle à l'écran ; view : l'écran ; card : la fiche).

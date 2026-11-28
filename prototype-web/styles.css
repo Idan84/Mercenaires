@@ -1962,9 +1962,9 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    du kit dans la couche .hud-kit de chaque barre, sous les textes, le bouton et les pictos, à la place de la barre du
    pack ; le bouton Jour suivant du kit, à sa taille (le dessin remplit le bouton), décalé de --bb-bouton-dx. */
 .hud-kit{position:absolute;inset:0;pointer-events:none}
-/* Les barres d'Idan (media/cultures/<culture>/ux.png ; screen-ui.js, Idan, 2026-11-28) : l'image de tout l'écran, pleine
-   largeur à ses proportions, sa moitié haute dans la barre du haut, sa moitié basse dans celle du bas ; elle remplace la
-   barre du pack et les pièces du kit. Son play.png, recadré sur le rond du bouton (gabarit : 176 de diamètre, centré en
+/* Les barres de l'Atelier des cultures (media/cultures/<culture>/Barre_haut.png et Barre_bas.png ; screen-ui.js, Idan,
+   2026-11-28) : chacune l'image de tout l'écran, pleine largeur à ses proportions, la moitié haute de la première dans la
+   barre du haut, la moitié basse de la seconde dans celle du bas ; elles remplacent la barre du pack et les pièces du kit. Son play.png, recadré sur le rond du bouton (gabarit : 176 de diamètre, centré en
    1920 × 1988 sur 3840 × 2160 : l'image fait 3840 / 176 fois le bouton). */
 .hud-media{display:none;position:absolute;left:0;width:100%;aspect-ratio:32/9;background-repeat:no-repeat;background-size:100% auto;pointer-events:none}
 .is-media .hud-media{display:block}

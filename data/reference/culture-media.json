@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "name": "culture-media",
-  "description": "Les images de chaque culture qu’Idan dépose directement sur Hostinger (Idan, 2026-11-27 : « Enregistre les chemins par Culture et les noms des fichiers. Je veux que le jeu aille chercher directement dedans ») : un dossier par culture, media/cultures/<peuple>/<culture>/ (le premier : elfes/elfes_sylvains), et des noms de fichiers fixes. Le jeu les lira tels quels (prototype-web/culture-media.js, l’index api/cultures.php donne la date de chaque fichier, pour qu’un fichier remplacé sous le même nom soit relu) ; une image absente : le jeu gardera la sienne. Branché pour les barres du camp (Idan, 2026-11-28) : ux.png, l’image de tout l’écran avec la barre du haut et celle du bas, et play.png, le bouton Jour suivant, tous deux sur le gabarit de l’écran (3840 × 2160 ou une réduction aux mêmes proportions). Majuscules indifférentes.",
+  "description": "Les images de chaque culture qu’Idan dépose directement sur Hostinger (Idan, 2026-11-27 : « Enregistre les chemins par Culture et les noms des fichiers. Je veux que le jeu aille chercher directement dedans ») : un dossier par culture, media/cultures/<peuple>/<culture>/ (le premier : elfes/elfes_sylvains), et des noms de fichiers fixes. Le jeu les lira tels quels (prototype-web/culture-media.js, l’index api/cultures.php donne la date de chaque fichier, pour qu’un fichier remplacé sous le même nom soit relu) ; une image absente : le jeu gardera la sienne. Branché pour les barres du camp (Idan, 2026-11-28) : Barre_haut.png et Barre_bas.png, exportés par l’Atelier des cultures (il faut les deux), et play.png, le bouton Jour suivant, tous sur le gabarit de l’écran (3840 × 2160 ou une réduction aux mêmes proportions). Majuscules indifférentes.",
   "base": "media/cultures",
   "fichiers": {
     "barreHaut": "Barre_haut.png",
+    "barreBas": "Barre_bas.png",
     "picto": "picto.png",
-    "ux": "ux.png",
     "play": "play.png"
   },
   "columns": [

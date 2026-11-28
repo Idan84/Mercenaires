@@ -17,7 +17,7 @@ const {cultureMediaKey, cultureMediaResolve} = require(path.join(ROOT, "prototyp
 // Un dossier par culture, les 32, sous media/cultures/<peuple>/<culture>/, en minuscules sans accents ; le premier,
 // celui d'Idan : elfes/elfes_sylvains. La clé est celle du jeu (la même que culture-colors.json).
 assert.equal(table.base, "media/cultures");
-assert.deepEqual(table.fichiers, {barreHaut: "Barre_haut.png", picto: "picto.png", ux: "ux.png", play: "play.png"});
+assert.deepEqual(table.fichiers, {barreHaut: "Barre_haut.png", barreBas: "Barre_bas.png", picto: "picto.png", play: "play.png"});
 assert.equal(table.row_count, 32);
 assert.deepEqual(table.rows.map(row => row.nom).sort(), [...cultures].sort());
 assert.equal(new Set(table.rows.map(row => row.dossier)).size, 32);
@@ -49,9 +49,10 @@ const php = read("prototype-web/api/cultures.php");
 assert.match(php, /avatar_find_dir\(\$site, \['media', 'cultures'\]\)/);
 assert.match(php, /Cache-Control: no-cache/);
 
-// Les barres du camp (Idan, 2026-11-28 : « ux contient le bas et le haut dernière version » ; « on adapte le CSS pour que
-// ça marche ») : avec son ux.png, la culture montre l'image d'Idan dans les deux barres (à la place du pack et du kit), son
-// play.png dans le bouton, et place textes, bouton et pictos sur le gabarit ; sans, rien ne change.
+// Les barres du camp exportées par l'Atelier des cultures (Idan, 2026-11-28 : « fallait pas coder autour de ux.png […]
+// pour les autres, faut qu'on ait ton système optimisé ») : avec son Barre_haut.png et son Barre_bas.png, la culture les
+// montre dans les deux barres (à la place du pack et du kit), son play.png dans le bouton, et place textes, bouton et
+// pictos sur le gabarit ; avec une seule des deux barres, ou sans, rien ne change.
 {
   const html = read("prototype-web/index.html"), css = read("prototype-web/styles.css"), js = read("prototype-web/screen-ui.js");
   assert.match(html, /<script src="culture-media\.js"><\/script>\s*<script src="hud-kit-ui\.js"><\/script>\s*<script src="screen-ui\.js"><\/script>/);
@@ -74,22 +75,28 @@ assert.match(php, /Cache-Control: no-cache/);
   const play = {attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }};
   const doc = {documentElement: {style: {setProperty: (k, v) => { rootProps[k] = v; }, removeProperty: k => { delete rootProps[k]; }}},
     querySelector: sel => ({".game-top-bar": topBar, ".game-bottom-bar": bottomBar, ".hud-ornament": ornament, ".hud-play-img": play})[sel] || null};
-  const files = {ux: "/media/cultures/elfes/elfes_sylvains/ux.png?v=7", play: "/media/cultures/elfes/elfes_sylvains/play.png?v=7"};
+  const dir = "/media/cultures/elfes/elfes_sylvains/";
+  const files = {barreHaut: dir + "Barre_haut.png?v=7", barreBas: dir + "Barre_bas.png?v=7", play: dir + "play.png?v=7"};
+  const deposes = {"elfes-sylvains": files, "elfes-noirs": {barreHaut: "/media/cultures/elfes/elfes_noirs/Barre_haut.png?v=3"}};
   const ui = hud(doc, {"elfes-sylvains": {h: 90}}, () => ({}), () => { throw new Error("pas de kit"); },
-    (culture, kind) => culture === "elfes-sylvains" ? files[kind] || null : null);
+    (culture, kind) => deposes[culture]?.[kind] || null);
   ui.applyHudBar("elfes-sylvains");
   assert.ok(topBar.classes.has("is-media") && bottomBar.classes.has("is-media") && bottomBar.classes.has("is-media-play"));
   assert.ok(!topBar.classes.has("has-art") && !topBar.classes.has("has-kit") && !bottomBar.classes.has("has-ornament"), "ni pack ni kit");
-  assert.deepEqual([topBar.media.style.backgroundImage, bottomBar.media.style.backgroundImage], [`url("${files.ux}")`, `url("${files.ux}")`]);
+  assert.deepEqual([topBar.media.style.backgroundImage, bottomBar.media.style.backgroundImage], [`url("${files.barreHaut}")`, `url("${files.barreBas}")`]);
   assert.deepEqual([play.attrs.src, ornament.hidden], [files.play, true]);
   const near = (a, b) => assert.ok(Math.abs(Number(a) - b) < 1e-3, `${a} ≈ ${b}`);
   near(rootProps["--ht-barre"], 96 / 163.2); near(rootProps["--ht-gauche"], 250 / 96); near(rootProps["--bb-bouton"], 176 / 163.2);
   near(rootProps["--bb-centre"], 172 / 163.2); near(rootProps["--bb-pictos-droite"], 520 / 163.2);
+  // Les pictos, 10 plus bas que dans la bible (milieu à 2080) : « Les baisser de 5 px » en 1920 × 1080.
+  near(rootProps["--bb-pictos-y"], 80 / 163.2);
   // Serrés contre l'emblème : le nom et les chiffres finissent à 250 du milieu (H8, alignés à droite), la date et le menu
   // partent de 240 du milieu (H9, alignés à gauche).
   near(rootProps["--ht-g-centre"], 250 / 96); near(rootProps["--ht-d-centre"], 240 / 96);
   assert.match(css, /\.game-top-bar\.is-media \.hud-top-side--left\{position:absolute;top:0;bottom:0;right:calc\(50% \+ var\(--ht-B\) \* var\(--ht-g-centre,2\.6\)\);justify-content:flex-end;/);
   assert.match(css, /\.game-top-bar\.is-media \.hud-top-side--right\{position:absolute;top:0;bottom:0;left:calc\(50% \+ var\(--ht-B\) \* var\(--ht-d-centre,2\.5\)\)/);
+  ui.applyHudBar("elfes-noirs");
+  assert.ok(!topBar.classes.has("is-media") && !bottomBar.classes.has("is-media"), "la barre du haut seule : rien");
   ui.applyHudBar("orcs-noirs");
   assert.ok(!topBar.classes.has("is-media") && !bottomBar.classes.has("is-media-play") && topBar.media.style.backgroundImage === "", "une autre culture : rien");
   assert.equal(rootProps["--ht-d-centre"], undefined, "une autre culture : la date reste à droite");

@@ -6,8 +6,8 @@
 // (Barre_haut.png, picto.png). L'index api/cultures.php dit quelles images existent et leur date : l'adresse porte cette
 // date (« ?v= »), et une image remplacée sous le même nom est relue malgré le cache de 7 jours de Hostinger. Majuscules
 // indifférentes. Sans index (serveur local sans PHP, tests) ou sans l'image : null, et le jeu garde la sienne.
-// Purement visuel. Pas encore branché sur l'affichage (Idan, 2026-11-27 : « Commence pas à faire le CSS, c'est pas
-// terminé ») : la barre du haut et le picto restent ceux du jeu jusqu'à son feu vert.
+// Purement visuel. Branché pour les barres du camp (Idan, 2026-11-28 : « on adapte le CSS pour que ça marche ») : ux.png
+// et play.png (screen-ui.js, applyHudBar) ; Barre_haut.png et picto.png ne sont pas encore affichés.
 
 function cultureMediaKey(name){
   return String(name??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")

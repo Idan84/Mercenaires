@@ -328,7 +328,7 @@ near(Le.bas.bouton * B, 144, "bouton des Nains esclaves");
 }
 const html2 = read("prototype-web/index.html");
 assert.equal((html2.match(/<div class="hud-kit" aria-hidden="true"><\/div>/g) || []).length, 2, "une couche du kit dans chaque barre");
-assert.match(html2, /<script src="hud-bars\.js"><\/script>\s*<script src="hud-kit-ui\.js"><\/script>\s*<script src="screen-ui\.js"><\/script>/);
+assert.match(html2, /<script src="hud-bars\.js"><\/script>\s*<script src="culture-media\.js"><\/script>\s*<script src="hud-kit-ui\.js"><\/script>\s*<script src="screen-ui\.js"><\/script>/);
 assert.match(css, /\.hud-kit\{position:absolute;inset:0;pointer-events:none\}/);
 assert.match(css, /\.has-kit \.hud-bar-art\{display:none\}/);
 assert.match(css, /\.game-bottom-bar\.has-kit \.hud-play-img\{width:100%;height:100%\}/);

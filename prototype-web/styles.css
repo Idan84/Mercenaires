@@ -1938,10 +1938,11 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    l'anneau ; leur centre à --bb-pictos-y du bas, dans la bande sombre) ; --bb-h, la place qu'ils prennent, que les lieux
    du camp laissent libre. Sans anneau pour cette culture, un cadre provisoire et le bouton seul (valeurs de départ).
    Les pictos et le bouton du lieu (son texte compris) à 80 % de --bb-picto, pour toutes les cultures (Idan, 2026-11-28 :
-   « reduire aussi la taille de toutes les icones du bas de 20% ») : --bb-p. */
+   « reduire aussi la taille de toutes les icones du bas de 20% ») : --bb-p ; le bouton du lieu, le plus lourd à droite,
+   encore 12,5 % plus petit (--bb-lieu-k ; « Ok » d'Idan à la proposition de le baisser de 10 à 15 %). */
 :root{
   --bb-art-bas:-.2;--bb-art-haut:1.44;--bb-centre:1.2;--bb-bouton:1.54;--bb-anneau:4.1;--bb-picto:.85;--bb-ecart:.3;--bb-pictos-droite:1.2;--bb-pictos-gauche:1.2;--bb-pictos-y:.55;--bb-h:2.1;
-  --bb-p-k:.8;--bb-p:calc(var(--bb-picto) * var(--bb-p-k));
+  --bb-p-k:.8;--bb-p:calc(var(--bb-picto) * var(--bb-p-k));--bb-lieu-k:.875;
   --hud-bottom-h:calc(var(--hb-B) * var(--bb-h));
 }
 .game-bottom-bar{position:fixed;left:0;right:0;bottom:0;height:var(--hud-bottom-h);pointer-events:none}
@@ -1999,10 +2000,10 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    focus comme le bouton capitaine ; doré sur la barre dorée, comme les pictos. */
 .hud-context{position:relative;flex:none;display:flex;align-items:center;height:calc(var(--hb-B) * var(--bb-p))}
 .hud-context:not(.is-active){visibility:hidden}
-.hud-context-btn{--hc-ombre:drop-shadow(0 4px 5px #000b);all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;height:calc(var(--hb-B) * var(--bb-p) * 1.3);aspect-ratio:760/257;padding:0 0 calc(var(--hb-B) * .015);background:url("assets/hud/bouton-lieu.webp") center/100% 100% no-repeat;filter:var(--hc-ombre);cursor:pointer;transition:transform .12s,filter .12s}
-.hud-context-grave{display:flex;align-items:baseline;gap:calc(var(--hb-B) * .1 * var(--bb-p-k));filter:drop-shadow(0 1px 0 rgba(255,255,255,.55)) drop-shadow(0 -1px 0 rgba(0,0,0,.3))}
-.hud-context-name{font:700 calc(var(--hb-B) * .24 * var(--bb-p-k) * var(--hc-taille,1))/1 Cinzel,Georgia,serif;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:#3a3530}
-.hud-context-fleche{width:calc(var(--hb-B) * .17 * var(--bb-p-k));height:calc(var(--hb-B) * .2 * var(--bb-p-k));background:#3a3530;clip-path:polygon(50% 0,100% 52%,66% 52%,66% 100%,34% 100%,34% 52%,0 52%)}
+.hud-context-btn{--hc-ombre:drop-shadow(0 4px 5px #000b);all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;height:calc(var(--hb-B) * var(--bb-p) * 1.3 * var(--bb-lieu-k));aspect-ratio:760/257;padding:0 0 calc(var(--hb-B) * .015);background:url("assets/hud/bouton-lieu.webp") center/100% 100% no-repeat;filter:var(--hc-ombre);cursor:pointer;transition:transform .12s,filter .12s}
+.hud-context-grave{display:flex;align-items:baseline;gap:calc(var(--hb-B) * .1 * var(--bb-p-k) * var(--bb-lieu-k));filter:drop-shadow(0 1px 0 rgba(255,255,255,.55)) drop-shadow(0 -1px 0 rgba(0,0,0,.3))}
+.hud-context-name{font:700 calc(var(--hb-B) * .24 * var(--bb-p-k) * var(--bb-lieu-k) * var(--hc-taille,1))/1 Cinzel,Georgia,serif;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:#3a3530}
+.hud-context-fleche{width:calc(var(--hb-B) * .17 * var(--bb-p-k) * var(--bb-lieu-k));height:calc(var(--hb-B) * .2 * var(--bb-p-k) * var(--bb-lieu-k));background:#3a3530;clip-path:polygon(50% 0,100% 52%,66% 52%,66% 100%,34% 100%,34% 52%,0 52%)}
 .hud-context-btn:hover,.hud-context-btn:focus-visible,.hud-context.is-open .hud-context-btn{filter:brightness(1.13) var(--hc-ombre)}
 .hud-context-btn:active{transform:translateY(2px);filter:brightness(.84) drop-shadow(0 2px 3px #000b)}
 .hud-context-btn:focus-visible{outline:2px solid #f0d395;outline-offset:2px}
@@ -2017,7 +2018,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    métal brossé répétée (assets/hud/metal-brosse.webp, raccordée bout à bout) et éclairée par un dégradé. Les salles gravées comme le nom du lieu, séparées par un filet creusé
    (trait sombre, reflet clair dessous) ; au survol, la ligne s'éclaire. À l'ouverture, le panneau se déplie depuis le
    bouton (de bas en haut), puis les noms apparaissent l'un après l'autre. */
-.hud-context .hud-menu-list{isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr);gap:0;bottom:calc(100% + var(--hb-B-z) * .4);width:calc(var(--hb-B-z) * var(--bb-p) * 1.3 * 760 / 257);min-width:0;box-sizing:border-box;padding:14px 18px 15px;border:0;border-radius:0;background:none;box-shadow:none;transform-origin:50% 100%;animation:hud-panneau .2s cubic-bezier(.2,.8,.3,1) both}
+.hud-context .hud-menu-list{isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr);gap:0;bottom:calc(100% + var(--hb-B-z) * .4);width:calc(var(--hb-B-z) * var(--bb-p) * 1.3 * var(--bb-lieu-k) * 760 / 257);min-width:0;box-sizing:border-box;padding:14px 18px 15px;border:0;border-radius:0;background:none;box-shadow:none;transform-origin:50% 100%;animation:hud-panneau .2s cubic-bezier(.2,.8,.3,1) both}
 .hud-context .hud-menu-list::before{content:"";position:absolute;inset:2px;z-index:-1;background:linear-gradient(180deg,#ffffff38,#ffffff00 38%,#00000000 62%,#0000002e),url("assets/hud/metal-brosse.webp") 0 0 / 256px 128px repeat;box-shadow:inset 0 0 9px #0000004d,0 6px 14px #000a;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 13px) 100%,13px 100%,0 calc(100% - 12px),0 12px);pointer-events:none}
 .hud-context .hud-menu-list::after{content:"";position:absolute;inset:-13px -1px -16px;z-index:-1;box-sizing:border-box;border-style:solid;border-width:30px 17px 34px;border-image:url("assets/hud/bouton-lieu-cadre.webp") 92 52 102 / 30px 17px 34px round;filter:drop-shadow(0 4px 5px #000b);pointer-events:none}
 .hud-context .hud-menu-list li{position:relative;animation:hud-salle .18s ease-out both}
@@ -2075,9 +2076,10 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    relâchement ; grisés, le lieu où l'on est (« quand on est sur le château, on le grise ») et le Marchand sans marchand. */
 .hud-nav{position:relative;display:block;flex:none;width:calc(var(--hb-B) * var(--bb-p));height:calc(var(--hb-B) * var(--bb-p));padding:0;border:0;border-radius:calc(var(--hb-B) * .12);background:none;cursor:pointer;transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .15s}
 .hud-nav-img{display:block;width:100%;height:100%;filter:drop-shadow(0 4px 6px #000c);pointer-events:none}
-/* La chope (Taverne) et le Marchand paraissent plus grands que les autres : leur image à 75 % au lieu de 80 % (Idan,
-   2026-11-28 : « Le bouton à l'icone de chope doit lui perdre 25% […] celui du marchand aussi »), dans la même place. */
-#hud-tavern-btn .hud-nav-img,#hud-merchant-btn .hud-nav-img{transform:scale(calc(.75 / .8))}
+/* La chope (Taverne), le Marchand et la bulle des Discussions paraissent plus grands que les autres : leur image à 75 %
+   au lieu de 80 % (Idan, 2026-11-28 : « Le bouton à l'icone de chope doit lui perdre 25% […] celui du marchand aussi »,
+   puis « Ok » pour la bulle), dans la même place. */
+#hud-tavern-btn .hud-nav-img,#hud-merchant-btn .hud-nav-img,#hud-talk-btn .hud-nav-img{transform:scale(calc(.75 / .8))}
 .hud-nav-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hud-nav:hover,.hud-nav:focus-visible{transform:scale(1.08);filter:brightness(1.15);outline:none}
 .hud-nav:active{transform:scale(.94);filter:brightness(.95);transition-duration:.06s}

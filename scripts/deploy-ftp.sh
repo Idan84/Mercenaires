@@ -9,7 +9,8 @@
 #      les fichiers qu'elle avait elle-même envoyés et qui ont quitté le site, et ceux de scripts/deploy-obsolete.txt
 #      (scripts/deploy-obsolete.sh), puis leurs dossiers s'ils sont vides ; un échec est signalé sans arrêter l'envoi ;
 #   5. envoie le nouveau manifeste, seulement si l'envoi est passé.
-# Ce qu'Idan dépose directement chez Hostinger (media/) n'est jamais touché.
+# Ce qu'Idan dépose directement chez Hostinger (media/) n'est jamais touché (le site n'y ajoute que les LISEZ-MOI.txt des
+# dossiers des cultures, scripts/build-culture-folders.js).
 #
 # Usage : LFTP_OPEN='open …' bash scripts/deploy-ftp.sh <site> <dossier distant>
 #   LFTP_OPEN : la commande lftp « open » complète (le mot de passe reste dans LFTP_PASSWORD, avec --env-password).

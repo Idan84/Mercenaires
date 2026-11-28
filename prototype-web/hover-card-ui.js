@@ -149,7 +149,11 @@ function hoverCultureFrame(culture){
     :[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
       `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`];
   const titre=kit?.geometrie.ornementTitre.f?`${kit.dossier}/${kit.geometrie.ornementTitre.f}`:`assets/fiche/ornements/${ornament}.svg`;
-  return {key,ornament,color,kit,
+  // Ses fiches de l'Atelier des cultures, s'il les a déposées (culture-media.js : Fiche_survol.png, Fiche_popup.png) : le
+  // cadre entier de la fiche au survol et du pop-up, à la place du cadre du kit (hoverAtelierFrame).
+  const media=kind=>typeof cultureMediaUrl==="function"?cultureMediaUrl(culture,kind):null;
+  const cadre={survol:media("ficheSurvol"),popup:media("fichePopup")};
+  return {key,ornament,color,kit,cadre,
     vars:[...texture,`--hc-orn:url("${titre}")`,...(color?[`--hc-culture:${color}`]:[])].join(";")};
 }
 
@@ -291,6 +295,13 @@ function hoverKitFrame(kit,size=HOVER_CARD){
   return `<div class="hc-cadre" aria-hidden="true">${out.join("")}</div>`;
 }
 
+// Le cadre exporté par l'Atelier des cultures (Idan, 2026-11-28 : « mets également la fiche pop up et survol des elfes
+// sylvains ») : une seule image, la carte et son débord (60 du gabarit de chaque côté), posée par-dessus la carte, dont les
+// zones suivent alors celles de la bible (styles.css, .hover-card--atelier).
+function hoverAtelierFrame(url){
+  return `<i class="hc-cadre-atelier" aria-hidden="true" style='background-image:url("${esc(url)}")'></i>`;
+}
+
 // La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15). Une carte et un avatar aux dimensions fixes,
 // aux proportions de Chatty (styles.css) ; le cadre vient du kit graphique de la culture, posé par-dessus
 // (hoverKitFrame ; les cultures sans kit n'en ont pas encore). À gauche le portrait en pied ; à droite le
@@ -366,7 +377,7 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=n
   const steed=showSteed?hoverMountPortrait(d.mount):"";
   const foot=magic||steed?`<i class="hc-fente hc-fente--h" aria-hidden="true"></i><div class="hc-foot${magic&&steed?" is-2":""}">${magic}${magic&&steed?`<i class="hc-fente" aria-hidden="true"></i>`:""}${steed}</div>`:"";
   const tags=hidden("tags")?`<li class="hc-tag hc-tag--bleu is-more hc-tag--unknown" style="grid-column:3/span 2">?</li>`:hoverTagPlates(d.tags).map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}${tag.more?" is-more":""}" style="grid-column:${tag.col}/span 2"${tag.more?` title="${esc((tagSource?tagSource+" : ":"")+tag.hidden.join(", "))}"`:tagSource?` title="${esc(tagSource)}"`:""}>${esc(tag.name)}</li>`).join("");
-  return `<article class="hover-card" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
+  return `<article class="hover-card${frame.cadre.survol?" hover-card--atelier":""}" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)}' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title||hidden("title")?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(hidden("title")?"?":d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page">
@@ -385,7 +396,7 @@ function renderMercenaryHoverCard(c,{unknown=null,bonus=null,salary=null,title=n
       <div class="hc-kit">${kit}</div>
       ${foot}
     </div>
-    ${hoverKitFrame(frame.kit)}
+    ${frame.cadre.survol?hoverAtelierFrame(frame.cadre.survol):hoverKitFrame(frame.kit)}
   </article>`;
 }
 
@@ -403,11 +414,11 @@ const POPUP_CARD={...HOVER_CARD,w:HOVER_CARD.w+POPUP_DX,h:+(HOVER_CARD.w*.34+POP
 function renderPopupCard(c,{body="",pageClass="",cardClass="",overPortrait=""}={}){
   const d=mercenaryHoverData(c),frame=hoverCultureFrame(d.culture);
   const nameFit=Math.max(.6,Math.min(1,20/d.name.length));
-  return `<article class="hover-card hover-card--popup${cardClass?" "+cardClass:""}" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)};--hc-popup-w:${POPUP_CARD.w}px;--hc-popup-h:${POPUP_CARD.h}px;--hc-popup-dx:${POPUP_DX}px' aria-label="${esc(d.name)}">
+  return `<article class="hover-card hover-card--popup${frame.cadre.popup?" hover-card--atelier":""}${cardClass?" "+cardClass:""}" data-culture="${esc(frame.key)}"${frame.kit?` data-kit="${esc(frame.kit.cle)}"${frame.kit.fiche.nom==="or"?' data-kit-nom="or"':""}`:""} style='${frame.vars};--hc-name-fit:${nameFit.toFixed(3)};--hc-popup-w:${POPUP_CARD.w}px;--hc-popup-h:${POPUP_CARD.h}px;--hc-popup-dx:${POPUP_DX}px' aria-label="${esc(d.name)}">
     <div class="hc-portrait">${renderAvatar(c,{variant:"detail",kind:"portrait"})}${overPortrait}</div>
     <header class="hc-banner"><h3>${esc(d.name)}</h3>${d.title?`<p class="hc-title"><i class="hc-orn hc-orn--l" aria-hidden="true"></i><span>${esc(d.title)}</span><i class="hc-orn hc-orn--r" aria-hidden="true"></i></p>`:""}</header>
     <div class="hc-page${pageClass?" "+pageClass:""}">${body}</div>
-    ${hoverKitFrame(frame.kit,POPUP_CARD)}
+    ${frame.cadre.popup?hoverAtelierFrame(frame.cadre.popup):hoverKitFrame(frame.kit,POPUP_CARD)}
   </article>`;
 }
 
@@ -510,6 +521,18 @@ function fitHoverCard(root){
     title.parentElement.classList.add("is-two-lines");
     if(name) shrink(name,bannerFits,.8);
     shrink(title,()=>title.scrollWidth<=title.clientWidth+1&&bannerFits(),.8);
+  }
+  // La page tient dans la carte (les fiches de l'atelier gardent la marge de la bible) : au besoin, les pictos des écoles
+  // rapetissent (Idan, 2026-11-16 : « Pictos seuls en 48 px avec la possibilité de les rétrécir pour tout rentrer »),
+  // jusqu'à 32 px.
+  const page=root.querySelector(".hc-page"),schools=root.querySelector(".hc-schools");
+  if(page&&schools){
+    const pad=parseFloat(getComputedStyle(page).paddingBottom)||0;
+    const pageFits=()=>{
+      const last=[...page.children].filter(el=>el.offsetHeight).pop();
+      return !last||last.offsetTop+last.offsetHeight<=page.clientHeight-pad+1;
+    };
+    for(let px=46;!pageFits()&&px>=32;px-=2) schools.style.setProperty("--hc-school",px+"px");
   }
 }
 

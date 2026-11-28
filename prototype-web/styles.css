@@ -1970,6 +1970,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .game-top-bar .hud-media{top:0;background-position:0 0}
 .game-bottom-bar .hud-media{bottom:0;background-position:0 100%}
 .is-media .hud-bar-art,.is-media .hud-kit{display:none}
+.game-top-bar.is-media .hud-top-side--left{position:absolute;top:0;bottom:0;right:calc(50% + var(--ht-B) * var(--ht-g-centre,2.6));justify-content:flex-end;max-width:calc(50% - var(--ht-B) * var(--ht-g-centre,2.6))}
 .game-top-bar.is-media .hud-top-side--right{position:absolute;top:0;bottom:0;left:calc(50% + var(--ht-B) * var(--ht-d-centre,2.5));max-width:calc(50% - var(--ht-B) * var(--ht-d-centre,2.5))}
 .game-bottom-bar.is-media-play .hud-play{overflow:hidden}
 .game-bottom-bar.is-media-play .hud-play-img{left:calc(50% - 100% * 1920 / 176);top:calc(50% - 100% * 1988 / 176);width:calc(100% * 3840 / 176);height:auto;transform:none;filter:none}
